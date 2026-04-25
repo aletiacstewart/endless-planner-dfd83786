@@ -903,6 +903,98 @@ function YearlyHabitGrid({
     onChange({ ...data, marks: { ...data.marks, [k]: !data.marks[k] } });
   };
 
+  const isMobile = useIsMobile();
+
+  const modeButtons = (i: number, row: { mode: "begin" | "break" | ""; label: string }) => (
+    <div className="flex gap-1">
+      <button
+        type="button"
+        onClick={() => setMode(i, row.mode === "begin" ? "" : "begin")}
+        className={cn(
+          "px-1.5 py-0.5 rounded text-[10px] border",
+          row.mode === "begin"
+            ? "bg-accent text-accent-foreground border-accent"
+            : "bg-background/60 border-input text-muted-foreground"
+        )}
+      >
+        Begin
+      </button>
+      <button
+        type="button"
+        onClick={() => setMode(i, row.mode === "break" ? "" : "break")}
+        className={cn(
+          "px-1.5 py-0.5 rounded text-[10px] border",
+          row.mode === "break"
+            ? "bg-accent text-accent-foreground border-accent"
+            : "bg-background/60 border-input text-muted-foreground"
+        )}
+      >
+        Break
+      </button>
+    </div>
+  );
+
+  if (isMobile) {
+    const renderHalf = (start: number, end: number, title: string) => (
+      <div>
+        <div className="text-[10px] text-muted-foreground mb-1">{title}</div>
+        <div className="space-y-3">
+          {rows.slice(start, end).map((row, idx) => {
+            const i = start + idx;
+            return (
+              <div key={i} className="rounded-md border border-border/40 p-2 bg-background/30">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="text-xs font-medium text-muted-foreground w-10 shrink-0">
+                    {FULL_MONTHS[i].slice(0, 3)}
+                  </div>
+                  {modeButtons(i, row)}
+                </div>
+                <Input
+                  value={row.label}
+                  onChange={(e) => setLabel(i, e.target.value)}
+                  placeholder="Habit"
+                  className="h-7 text-xs bg-background/60 mb-2"
+                />
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(1.5rem,1fr))] gap-1">
+                  {Array.from({ length: 31 }, (_, di) => di + 1).map((d) => {
+                    const k = `${i}-${d}`;
+                    const on = !!data.marks[k];
+                    return (
+                      <button
+                        key={d}
+                        type="button"
+                        onClick={() => toggleDay(i, d)}
+                        className={cn(
+                          "h-6 rounded-sm border text-[9px] leading-none",
+                          on
+                            ? "bg-primary border-primary text-primary-foreground"
+                            : "bg-background/60 border-input text-muted-foreground"
+                        )}
+                        aria-label={`${FULL_MONTHS[i]} day ${d}`}
+                      >
+                        {d}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+
+    return (
+      <div>
+        <label className="field-label block mb-2">Monthly habit to begin or break</label>
+        <div className="space-y-4">
+          {renderHalf(0, 6, "Jan – Jun")}
+          {renderHalf(6, 12, "Jul – Dec")}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <label className="field-label block mb-2">Monthly habit to begin or break</label>
@@ -910,7 +1002,7 @@ function YearlyHabitGrid({
         <table className="text-xs border-separate border-spacing-1">
           <thead>
             <tr>
-              <th className="font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-12 z-10 border-r border-border/40">Month</th>
+              <th className="font-normal text-muted-foreground pr-2 w-12">Month</th>
               <th className="font-normal text-muted-foreground pr-2 w-32">Begin / Break + Habit</th>
               {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
                 <th key={d} className="font-normal text-muted-foreground w-6">{d}</th>
@@ -920,37 +1012,12 @@ function YearlyHabitGrid({
           <tbody>
             {rows.map((row, i) => (
               <tr key={i}>
-                <td className="sticky left-0 bg-card pr-2 text-muted-foreground z-10 border-r border-border/40">
+                <td className="pr-2 text-muted-foreground">
                   {FULL_MONTHS[i].slice(0, 3)}
                 </td>
                 <td className="pr-2">
                   <div className="flex flex-col gap-1 min-w-[10rem]">
-                    <div className="flex gap-1">
-                      <button
-                        type="button"
-                        onClick={() => setMode(i, row.mode === "begin" ? "" : "begin")}
-                        className={cn(
-                          "px-1.5 py-0.5 rounded text-[10px] border",
-                          row.mode === "begin"
-                            ? "bg-accent text-accent-foreground border-accent"
-                            : "bg-background/60 border-input text-muted-foreground"
-                        )}
-                      >
-                        Begin
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setMode(i, row.mode === "break" ? "" : "break")}
-                        className={cn(
-                          "px-1.5 py-0.5 rounded text-[10px] border",
-                          row.mode === "break"
-                            ? "bg-accent text-accent-foreground border-accent"
-                            : "bg-background/60 border-input text-muted-foreground"
-                        )}
-                      >
-                        Break
-                      </button>
-                    </div>
+                    {modeButtons(i, row)}
                     <Input
                       value={row.label}
                       onChange={(e) => setLabel(i, e.target.value)}
