@@ -168,6 +168,43 @@ export function FieldRenderer({ field, value, allValues, onChange }: Props) {
         </div>
       );
     }
+    case "mood-rating": {
+      const current = Number(value) || 0;
+      const moods = [
+        { n: 1, Icon: Angry, label: "Awful" },
+        { n: 2, Icon: Frown, label: "Low" },
+        { n: 3, Icon: Meh, label: "Okay" },
+        { n: 4, Icon: Smile, label: "Good" },
+        { n: 5, Icon: Laugh, label: "Great" },
+      ];
+      return (
+        <div>
+          {label}
+          <div className="flex gap-2 flex-wrap">
+            {moods.map(({ n, Icon, label: l }) => {
+              const active = current === n;
+              return (
+                <button
+                  key={n}
+                  type="button"
+                  aria-label={l}
+                  title={l}
+                  onClick={() => onChange(active ? 0 : n)}
+                  className={cn(
+                    "w-10 h-10 rounded-full border flex items-center justify-center transition-colors",
+                    active
+                      ? "bg-accent text-accent-foreground border-accent"
+                      : "bg-background/60 border-input text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <Icon className="w-5 h-5" />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
     case "ingredients-list":
       return <IngredientsList value={value as string[]} onChange={onChange} />;
     case "calendar-grid":
@@ -213,7 +250,7 @@ export function FieldRenderer({ field, value, allValues, onChange }: Props) {
     case "daily-month-grid":
       return (
         <DailyMonthGrid
-          value={value as { rowLabel?: string; cells: Record<string, string>; achieved: Record<string, boolean> }}
+          value={value as { rowLabel?: string; cells: Record<string, string>; achieved: Record<string, boolean>; notes?: Record<string, string> }}
           label={field.label}
           onChange={onChange}
         />
