@@ -1,10 +1,17 @@
 import { useState } from "react";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Angry, Frown, Meh, Smile, Laugh } from "lucide-react";
 import type { FieldDef, FieldValue } from "@/lib/pageTypes";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -161,6 +168,43 @@ export function FieldRenderer({ field, value, allValues, onChange }: Props) {
         </div>
       );
     }
+    case "mood-rating": {
+      const current = Number(value) || 0;
+      const moods = [
+        { n: 1, Icon: Angry, label: "Awful" },
+        { n: 2, Icon: Frown, label: "Low" },
+        { n: 3, Icon: Meh, label: "Okay" },
+        { n: 4, Icon: Smile, label: "Good" },
+        { n: 5, Icon: Laugh, label: "Great" },
+      ];
+      return (
+        <div>
+          {label}
+          <div className="flex gap-2 flex-wrap">
+            {moods.map(({ n, Icon, label: l }) => {
+              const active = current === n;
+              return (
+                <button
+                  key={n}
+                  type="button"
+                  aria-label={l}
+                  title={l}
+                  onClick={() => onChange(active ? 0 : n)}
+                  className={cn(
+                    "w-10 h-10 rounded-full border flex items-center justify-center transition-colors",
+                    active
+                      ? "bg-accent text-accent-foreground border-accent"
+                      : "bg-background/60 border-input text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <Icon className="w-5 h-5" />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
     case "ingredients-list":
       return <IngredientsList value={value as string[]} onChange={onChange} />;
     case "calendar-grid":
@@ -206,7 +250,7 @@ export function FieldRenderer({ field, value, allValues, onChange }: Props) {
     case "daily-month-grid":
       return (
         <DailyMonthGrid
-          value={value as { rowLabel?: string; cells: Record<string, string>; achieved: Record<string, boolean> }}
+          value={value as { rowLabel?: string; cells: Record<string, string>; achieved: Record<string, boolean>; notes?: Record<string, string> }}
           label={field.label}
           onChange={onChange}
         />
@@ -296,7 +340,6 @@ function CalendarGrid({
   const monthLookup = (month ?? "").trim().toLowerCase();
   let monthIndex = MONTH_NAMES.indexOf(monthLookup);
   if (monthIndex === -1) {
-    // Allow numeric month input ("4" or "04")
     const numeric = parseInt(monthLookup, 10);
     if (!Number.isNaN(numeric) && numeric >= 1 && numeric <= 12) {
       monthIndex = numeric - 1;
@@ -309,12 +352,26 @@ function CalendarGrid({
     return Number.isNaN(n) || n < 1000 || n > 9999 ? now.getFullYear() : n;
   })();
 
+  const monthName = MONTH_NAMES[monthIndex].charAt(0).toUpperCase() + MONTH_NAMES[monthIndex].slice(1);
   const daysInMonth = new Date(yearNum, monthIndex + 1, 0).getDate();
   const startWeekday = new Date(yearNum, monthIndex, 1).getDay();
 
+  // Open day in a popup so the cell stays clean and notes are fully visible.
+  const [openDay, setOpenDay] = useState<number | null>(null);
+  const [draft, setDraft] = useState("");
+
+  const openCell = (d: number) => {
+    setDraft(data[d] ?? "");
+    setOpenDay(d);
+  };
+  const saveCell = () => {
+    if (openDay !== null) update(openDay, draft);
+    setOpenDay(null);
+  };
+
   return (
     <div>
-      <label className="field-label block mb-2">Days of the month</label>
+      <label className="field-label block mb-2">Days of the month — tap to add a note</label>
       <div className="grid grid-cols-7 gap-1.5 mb-1.5">
         {WEEKDAYS.map((w) => (
           <div
@@ -329,18 +386,56 @@ function CalendarGrid({
         {Array.from({ length: startWeekday }).map((_, i) => (
           <div key={`pad-${i}`} className="aspect-square" aria-hidden="true" />
         ))}
-        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => (
-          <div key={d} className="aspect-square rounded-md border border-border bg-background/60 p-1 flex flex-col">
-            <span className="text-[10px] text-muted-foreground">{d}</span>
-            <textarea
-              value={data[d] ?? ""}
-              onChange={(e) => update(d, e.target.value)}
-              className="flex-1 w-full bg-transparent text-[10px] resize-none focus:outline-none"
-              rows={2}
-            />
-          </div>
-        ))}
+        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => {
+          const note = data[d] ?? "";
+          const filled = note.trim().length > 0;
+          return (
+            <button
+              type="button"
+              key={d}
+              onClick={() => openCell(d)}
+              aria-label={`${monthName} ${d}${filled ? " — has note" : ""}`}
+              className={cn(
+                "aspect-square rounded-md border p-1 flex flex-col items-stretch text-left transition-colors hover:border-primary/60 focus:outline-none focus:ring-2 focus:ring-ring",
+                filled
+                  ? "bg-primary-soft/40 border-primary/40"
+                  : "bg-background/60 border-border"
+              )}
+            >
+              <span className="text-[10px] text-muted-foreground leading-none">{d}</span>
+              {filled && (
+                <span className="mt-0.5 text-[9px] leading-tight text-foreground/80 line-clamp-2 break-words">
+                  {note}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
+
+      <Dialog open={openDay !== null} onOpenChange={(o) => !o && setOpenDay(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>
+              {openDay !== null ? `${monthName} ${openDay}, ${yearNum}` : ""}
+            </DialogTitle>
+          </DialogHeader>
+          <Textarea
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            rows={6}
+            placeholder="Add a note for this day…"
+            className="bg-background/60 resize-none"
+            autoFocus
+          />
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="ghost" onClick={() => setOpenDay(null)}>
+              Cancel
+            </Button>
+            <Button onClick={saveCell}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -380,11 +475,11 @@ function HabitGrid({
   return (
     <div>
       <label className="field-label block mb-2">Habits — tap to mark</label>
-      <div className="overflow-x-auto -mx-2 px-2">
+      <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
         <table className="text-xs border-separate border-spacing-1">
           <thead>
             <tr>
-              <th className="text-left font-normal text-muted-foreground sticky left-0 bg-card pr-2">Habit</th>
+              <th className="text-left font-normal text-muted-foreground sticky left-0 bg-card pr-2 z-10 border-r border-border/40">Habit</th>
               {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
                 <th key={d} className="font-normal text-muted-foreground w-6">{d}</th>
               ))}
@@ -394,7 +489,7 @@ function HabitGrid({
           <tbody>
             {data.habits.map((h, i) => (
               <tr key={i}>
-                <td className="sticky left-0 bg-card pr-2">
+                <td className="sticky left-0 bg-card pr-2 z-10 border-r border-border/40">
                   <Input
                     value={h}
                     onChange={(e) => setHabit(i, e.target.value)}
@@ -464,11 +559,11 @@ function MonthTracker({
   return (
     <div>
       <label className="field-label block mb-2">Activities by month</label>
-      <div className="overflow-x-auto -mx-2 px-2">
+      <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
         <table className="text-xs border-separate border-spacing-1">
           <thead>
             <tr>
-              <th className="text-left font-normal text-muted-foreground sticky left-0 bg-card pr-2">Activity</th>
+              <th className="text-left font-normal text-muted-foreground sticky left-0 bg-card pr-2 z-10 border-r border-border/40">Activity</th>
               {months.map((m, i) => (
                 <th key={i} className="font-normal text-muted-foreground w-6">{m}</th>
               ))}
@@ -477,11 +572,11 @@ function MonthTracker({
           <tbody>
             {data.items.map((it, i) => (
               <tr key={i}>
-                <td className="sticky left-0 bg-card pr-2">
+                <td className="sticky left-0 bg-card pr-2 z-10 border-r border-border/40">
                   <Input
                     value={it}
                     onChange={(e) => setItem(i, e.target.value)}
-                    className="h-7 text-xs min-w-[8rem] bg-background/60"
+                    className="h-7 text-xs w-32 sm:w-40 bg-background/60"
                   />
                 </td>
                 {months.map((_, mi) => {
@@ -545,11 +640,11 @@ function MeasurementGrid({
   return (
     <div>
       <label className="field-label block mb-2">{label}</label>
-      <div className="overflow-x-auto -mx-2 px-2">
+      <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
         <table className="text-xs border-separate border-spacing-1 min-w-full">
           <thead>
             <tr>
-              <th className="text-left font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-10">
+              <th className="text-left font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-10 z-10 border-r border-border/40">
                 {rowLabel}
               </th>
               {columns.map((c) => (
@@ -562,7 +657,7 @@ function MeasurementGrid({
           <tbody>
             {Array.from({ length: rowCount }, (_, i) => i + 1).map((row) => (
               <tr key={row}>
-                <td className="sticky left-0 bg-card pr-2 text-muted-foreground text-center">
+                <td className="sticky left-0 bg-card pr-2 text-muted-foreground text-center z-10 border-r border-border/40">
                   {row}
                 </td>
                 {columns.map((c) => (
@@ -595,16 +690,28 @@ function DailyMonthGrid({
   label,
   onChange,
 }: {
-  value: { rowLabel?: string; cells: Record<string, string>; achieved: Record<string, boolean> } | null;
+  value: {
+    rowLabel?: string;
+    cells: Record<string, string>;
+    achieved: Record<string, boolean>;
+    notes?: Record<string, string>;
+  } | null;
   label: string;
   onChange: (v: FieldValue) => void;
 }) {
-  const data = value ?? { rowLabel: "", cells: {}, achieved: {} };
+  const data = value ?? { rowLabel: "", cells: {}, achieved: {}, notes: {} };
+  const notes = data.notes ?? {};
   const setCell = (day: number, month: number, v: string) =>
-    onChange({ ...data, cells: { ...data.cells, [`${day}-${month}`]: v } });
+    onChange({ ...data, notes, cells: { ...data.cells, [`${day}-${month}`]: v } });
   const toggleAchieved = (day: number) =>
-    onChange({ ...data, achieved: { ...data.achieved, [day]: !data.achieved[day] } });
-  const setRowLabel = (v: string) => onChange({ ...data, rowLabel: v });
+    onChange({
+      ...data,
+      notes,
+      achieved: { ...data.achieved, [day]: !data.achieved[day] },
+    });
+  const setNote = (day: number, v: string) =>
+    onChange({ ...data, notes: { ...notes, [day]: v } });
+  const setRowLabel = (v: string) => onChange({ ...data, notes, rowLabel: v });
 
   return (
     <div>
@@ -617,21 +724,31 @@ function DailyMonthGrid({
           className="h-8 text-xs bg-background/60 max-w-md"
         />
       </div>
-      <div className="overflow-x-auto -mx-2 px-2">
+      <div
+        className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full"
+        style={{ WebkitOverflowScrolling: "touch" }}
+      >
         <table className="text-xs border-separate border-spacing-1">
           <thead>
             <tr>
-              <th className="font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-10">Day</th>
+              <th className="font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-10 z-10 border-r border-border/40">
+                Day
+              </th>
               {MONTH_INITIALS.map((m, i) => (
                 <th key={i} className="font-normal text-muted-foreground w-8">{m}</th>
               ))}
               <th className="font-normal text-muted-foreground w-8">✓</th>
+              <th className="font-normal text-muted-foreground text-left pl-2 min-w-[10rem]">
+                Note
+              </th>
             </tr>
           </thead>
           <tbody>
             {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
               <tr key={day}>
-                <td className="sticky left-0 bg-card pr-2 text-muted-foreground text-center">{day}</td>
+                <td className="sticky left-0 bg-card pr-2 text-muted-foreground text-center z-10 border-r border-border/40">
+                  {day}
+                </td>
                 {MONTH_INITIALS.map((_, mi) => (
                   <td key={mi}>
                     <input
@@ -652,6 +769,14 @@ function DailyMonthGrid({
                         : "bg-background/60 border-input"
                     )}
                     aria-label={`Day ${day} achieved`}
+                  />
+                </td>
+                <td className="pl-2">
+                  <input
+                    value={notes[day] ?? ""}
+                    onChange={(e) => setNote(day, e.target.value)}
+                    placeholder="Note…"
+                    className="w-40 h-7 px-2 text-[11px] rounded border border-input bg-background/60 focus:outline-none focus:border-primary"
                   />
                 </td>
               </tr>
@@ -704,11 +829,11 @@ function YearlyHabitGrid({
   return (
     <div>
       <label className="field-label block mb-2">Monthly habit to begin or break</label>
-      <div className="overflow-x-auto -mx-2 px-2">
+      <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
         <table className="text-xs border-separate border-spacing-1">
           <thead>
             <tr>
-              <th className="font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-12">Month</th>
+              <th className="font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-12 z-10 border-r border-border/40">Month</th>
               <th className="font-normal text-muted-foreground pr-2 w-32">Begin / Break + Habit</th>
               {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
                 <th key={d} className="font-normal text-muted-foreground w-6">{d}</th>
@@ -718,7 +843,7 @@ function YearlyHabitGrid({
           <tbody>
             {rows.map((row, i) => (
               <tr key={i}>
-                <td className="sticky left-0 bg-card pr-2 text-muted-foreground">
+                <td className="sticky left-0 bg-card pr-2 text-muted-foreground z-10 border-r border-border/40">
                   {FULL_MONTHS[i].slice(0, 3)}
                 </td>
                 <td className="pr-2">
