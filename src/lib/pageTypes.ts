@@ -1,5 +1,5 @@
 /**
- * Schema definitions for every unique page in the Change of Life Planner.
+ * Schema definitions for every unique page in the Change of Life - Wellness Journey.
  * Each page type maps to a configurable form rendered by PageRenderer.
  */
 
