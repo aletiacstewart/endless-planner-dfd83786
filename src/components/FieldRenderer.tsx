@@ -461,3 +461,268 @@ function MonthTracker({
     </div>
   );
 }
+
+/* -------------------------------------------------------------------------- */
+/*  Measurement grid — fixed N rows × labelled free-text columns.             */
+/*  Used by Bi-Monthly Weight (4 cols) and Bi-Monthly Measurements (8 cols).  */
+/* -------------------------------------------------------------------------- */
+
+function MeasurementGrid({
+  value,
+  columns,
+  rowCount,
+  rowLabel,
+  label,
+  onChange,
+}: {
+  value: Record<string, string> | null;
+  columns: string[];
+  rowCount: number;
+  rowLabel: string;
+  label: string;
+  onChange: (v: FieldValue) => void;
+}) {
+  const data = value ?? {};
+  const set = (row: number, col: string, v: string) =>
+    onChange({ ...data, [`${row}-${col}`]: v });
+
+  return (
+    <div>
+      <label className="field-label block mb-2">{label}</label>
+      <div className="overflow-x-auto -mx-2 px-2">
+        <table className="text-xs border-separate border-spacing-1 min-w-full">
+          <thead>
+            <tr>
+              <th className="text-left font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-10">
+                {rowLabel}
+              </th>
+              {columns.map((c) => (
+                <th key={c} className="font-normal text-muted-foreground text-left px-1">
+                  {c}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: rowCount }, (_, i) => i + 1).map((row) => (
+              <tr key={row}>
+                <td className="sticky left-0 bg-card pr-2 text-muted-foreground text-center">
+                  {row}
+                </td>
+                {columns.map((c) => (
+                  <td key={c}>
+                    <Input
+                      value={data[`${row}-${c}`] ?? ""}
+                      onChange={(e) => set(row, c, e.target.value)}
+                      className="h-7 text-xs min-w-[5rem] bg-background/60"
+                    />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Daily × Month grid — 31 day rows × 12 month cols + Achieved column.       */
+/*  Used by Blood Sugar / BP / O2 / Cleaning / Self-Care.                     */
+/* -------------------------------------------------------------------------- */
+
+const MONTH_INITIALS = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
+
+function DailyMonthGrid({
+  value,
+  label,
+  onChange,
+}: {
+  value: { rowLabel?: string; cells: Record<string, string>; achieved: Record<string, boolean> } | null;
+  label: string;
+  onChange: (v: FieldValue) => void;
+}) {
+  const data = value ?? { rowLabel: "", cells: {}, achieved: {} };
+  const setCell = (day: number, month: number, v: string) =>
+    onChange({ ...data, cells: { ...data.cells, [`${day}-${month}`]: v } });
+  const toggleAchieved = (day: number) =>
+    onChange({ ...data, achieved: { ...data.achieved, [day]: !data.achieved[day] } });
+  const setRowLabel = (v: string) => onChange({ ...data, rowLabel: v });
+
+  return (
+    <div>
+      <label className="field-label block mb-2">{label}</label>
+      <div className="mb-2">
+        <Input
+          value={data.rowLabel ?? ""}
+          onChange={(e) => setRowLabel(e.target.value)}
+          placeholder="Row label (e.g. chore name, self-care item)"
+          className="h-8 text-xs bg-background/60 max-w-md"
+        />
+      </div>
+      <div className="overflow-x-auto -mx-2 px-2">
+        <table className="text-xs border-separate border-spacing-1">
+          <thead>
+            <tr>
+              <th className="font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-10">Day</th>
+              {MONTH_INITIALS.map((m, i) => (
+                <th key={i} className="font-normal text-muted-foreground w-8">{m}</th>
+              ))}
+              <th className="font-normal text-muted-foreground w-8">✓</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+              <tr key={day}>
+                <td className="sticky left-0 bg-card pr-2 text-muted-foreground text-center">{day}</td>
+                {MONTH_INITIALS.map((_, mi) => (
+                  <td key={mi}>
+                    <input
+                      value={data.cells[`${day}-${mi}`] ?? ""}
+                      onChange={(e) => setCell(day, mi, e.target.value)}
+                      className="w-8 h-7 px-1 text-[10px] text-center rounded border border-input bg-background/60 focus:outline-none focus:border-primary"
+                    />
+                  </td>
+                ))}
+                <td>
+                  <button
+                    type="button"
+                    onClick={() => toggleAchieved(day)}
+                    className={cn(
+                      "w-5 h-5 rounded-sm border",
+                      data.achieved[day]
+                        ? "bg-primary border-primary"
+                        : "bg-background/60 border-input"
+                    )}
+                    aria-label={`Day ${day} achieved`}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Yearly Habit Grid — 12 months: Begin/Break + label + 31 check cells.      */
+/* -------------------------------------------------------------------------- */
+
+const FULL_MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
+function YearlyHabitGrid({
+  value,
+  onChange,
+}: {
+  value: { rows: { mode: "begin" | "break" | ""; label: string }[]; marks: Record<string, boolean> } | null;
+  onChange: (v: FieldValue) => void;
+}) {
+  const data = value ?? {
+    rows: FULL_MONTHS.map(() => ({ mode: "" as const, label: "" })),
+    marks: {} as Record<string, boolean>,
+  };
+  // Defensive: ensure 12 rows.
+  const rows = data.rows.length === 12
+    ? data.rows
+    : [...data.rows, ...Array(12 - data.rows.length).fill({ mode: "", label: "" })];
+
+  const setMode = (i: number, mode: "begin" | "break" | "") => {
+    const next = rows.map((r, idx) => (idx === i ? { ...r, mode } : r));
+    onChange({ ...data, rows: next });
+  };
+  const setLabel = (i: number, label: string) => {
+    const next = rows.map((r, idx) => (idx === i ? { ...r, label } : r));
+    onChange({ ...data, rows: next });
+  };
+  const toggleDay = (i: number, d: number) => {
+    const k = `${i}-${d}`;
+    onChange({ ...data, marks: { ...data.marks, [k]: !data.marks[k] } });
+  };
+
+  return (
+    <div>
+      <label className="field-label block mb-2">Monthly habit to begin or break</label>
+      <div className="overflow-x-auto -mx-2 px-2">
+        <table className="text-xs border-separate border-spacing-1">
+          <thead>
+            <tr>
+              <th className="font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-12">Month</th>
+              <th className="font-normal text-muted-foreground pr-2 w-32">Begin / Break + Habit</th>
+              {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
+                <th key={d} className="font-normal text-muted-foreground w-6">{d}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, i) => (
+              <tr key={i}>
+                <td className="sticky left-0 bg-card pr-2 text-muted-foreground">
+                  {FULL_MONTHS[i].slice(0, 3)}
+                </td>
+                <td className="pr-2">
+                  <div className="flex flex-col gap-1 min-w-[10rem]">
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setMode(i, row.mode === "begin" ? "" : "begin")}
+                        className={cn(
+                          "px-1.5 py-0.5 rounded text-[10px] border",
+                          row.mode === "begin"
+                            ? "bg-accent text-accent-foreground border-accent"
+                            : "bg-background/60 border-input text-muted-foreground"
+                        )}
+                      >
+                        Begin
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setMode(i, row.mode === "break" ? "" : "break")}
+                        className={cn(
+                          "px-1.5 py-0.5 rounded text-[10px] border",
+                          row.mode === "break"
+                            ? "bg-accent text-accent-foreground border-accent"
+                            : "bg-background/60 border-input text-muted-foreground"
+                        )}
+                      >
+                        Break
+                      </button>
+                    </div>
+                    <Input
+                      value={row.label}
+                      onChange={(e) => setLabel(i, e.target.value)}
+                      placeholder="Habit"
+                      className="h-7 text-xs bg-background/60"
+                    />
+                  </div>
+                </td>
+                {Array.from({ length: 31 }, (_, di) => di + 1).map((d) => {
+                  const k = `${i}-${d}`;
+                  const on = !!data.marks[k];
+                  return (
+                    <td key={d}>
+                      <button
+                        type="button"
+                        onClick={() => toggleDay(i, d)}
+                        className={cn(
+                          "w-5 h-5 rounded-sm border",
+                          on ? "bg-primary border-primary" : "bg-background/60 border-input"
+                        )}
+                        aria-label={`${FULL_MONTHS[i]} day ${d}`}
+                      />
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
