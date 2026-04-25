@@ -10,10 +10,11 @@ import { cn } from "@/lib/utils";
 interface Props {
   field: FieldDef;
   value: FieldValue;
+  allValues?: Record<string, FieldValue>;
   onChange: (v: FieldValue) => void;
 }
 
-export function FieldRenderer({ field, value, onChange }: Props) {
+export function FieldRenderer({ field, value, allValues, onChange }: Props) {
   const label = (
     <label className="field-label block mb-1.5" htmlFor={field.key}>
       {field.label}
@@ -163,7 +164,18 @@ export function FieldRenderer({ field, value, onChange }: Props) {
     case "ingredients-list":
       return <IngredientsList value={value as string[]} onChange={onChange} />;
     case "calendar-grid":
-      return <CalendarGrid value={value as Record<string, string>} onChange={onChange} />;
+      return (
+        <CalendarGrid
+          value={value as Record<string, string>}
+          month={typeof allValues?.month === "string" ? (allValues.month as string) : ""}
+          year={
+            typeof allValues?.year === "string" || typeof allValues?.year === "number"
+              ? String(allValues.year)
+              : ""
+          }
+          onChange={onChange}
+        />
+      );
     case "habit-grid":
       return (
         <HabitGrid
@@ -260,20 +272,64 @@ function IngredientsList({
   );
 }
 
+const MONTH_NAMES = [
+  "january", "february", "march", "april", "may", "june",
+  "july", "august", "september", "october", "november", "december",
+];
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
 function CalendarGrid({
   value,
+  month,
+  year,
   onChange,
 }: {
   value: Record<string, string> | null;
+  month?: string;
+  year?: string;
   onChange: (v: FieldValue) => void;
 }) {
   const data = value ?? {};
   const update = (day: number, v: string) => onChange({ ...data, [day]: v });
+
+  const now = new Date();
+  const monthLookup = (month ?? "").trim().toLowerCase();
+  let monthIndex = MONTH_NAMES.indexOf(monthLookup);
+  if (monthIndex === -1) {
+    // Allow numeric month input ("4" or "04")
+    const numeric = parseInt(monthLookup, 10);
+    if (!Number.isNaN(numeric) && numeric >= 1 && numeric <= 12) {
+      monthIndex = numeric - 1;
+    } else {
+      monthIndex = now.getMonth();
+    }
+  }
+  const yearNum = (() => {
+    const n = parseInt((year ?? "").trim(), 10);
+    return Number.isNaN(n) || n < 1000 || n > 9999 ? now.getFullYear() : n;
+  })();
+
+  const daysInMonth = new Date(yearNum, monthIndex + 1, 0).getDate();
+  const startWeekday = new Date(yearNum, monthIndex, 1).getDay();
+
   return (
     <div>
       <label className="field-label block mb-2">Days of the month</label>
+      <div className="grid grid-cols-7 gap-1.5 mb-1.5">
+        {WEEKDAYS.map((w) => (
+          <div
+            key={w}
+            className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground text-center"
+          >
+            {w}
+          </div>
+        ))}
+      </div>
       <div className="grid grid-cols-7 gap-1.5">
-        {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
+        {Array.from({ length: startWeekday }).map((_, i) => (
+          <div key={`pad-${i}`} className="aspect-square" aria-hidden="true" />
+        ))}
+        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => (
           <div key={d} className="aspect-square rounded-md border border-border bg-background/60 p-1 flex flex-col">
             <span className="text-[10px] text-muted-foreground">{d}</span>
             <textarea

@@ -1,93 +1,59 @@
-# Why these pages weren't there
+## Problem
 
-Your planner currently has **10 page types**: My Goals, Goals Reflection, Yearly Calendar, Monthly Calendar, Weekly Calendar, Daily Tracker, Habit Tracker (monthly, 31 days), Fun Tracker, Recipe, Notes.
+On the **Monthly Calendar** page, the day grid (`calendar-grid` field) always renders a fixed 31 cells starting at column 1, regardless of the **Month** and **Year** chosen above. It should:
 
-The 17 PDFs you uploaded across both batches represent **8 distinct tracker pages** that were never added — they're all health / self-care / household trackers missing from `src/lib/pageTypes.ts`. Many PDFs are just the second half (Jul–Dec) of a tracker whose first half (Jan–Jun) is on a different PDF, so they collapse into one page in the app.
+- Show only the actual number of days in the selected month (28/29/30/31).
+- Start the first day of the month under the correct weekday column (Sun–Sat).
+- Show weekday headers (Sun, Mon, …, Sat).
+- Update live whenever the user changes Month or Year.
 
-# What's missing (mapped to your PDFs)
+The **Yearly Calendar** page does not have a date grid (it's just 12 month textareas), so no change is needed there. The user mentioned "yearly, monthly calendars that have dates on the grids" — the only date grid is the Monthly Calendar. We'll also handle the leap-year case via the selected Year.
 
-| # | Page (app)                         | PDFs covered             | Layout                                                            |
-|---|------------------------------------|--------------------------|-------------------------------------------------------------------|
-| 1 | **Bi-Monthly Weight Tracker**      | 41                       | 26 weeks × Date / Weight / Difference / Notes                     |
-| 2 | **Bi-Monthly Measurement Tracker** | 42                       | 26 weeks × 8 body-measurement columns                             |
-| 3 | **Yearly Blood Sugar Tracker**     | 43 + 44                  | 31 days × 12 months value grid + Achieved ✓                       |
-| 4 | **Yearly Blood Pressure Tracker**  | 45 + 46                  | 31 days × 12 months value grid + Achieved ✓                       |
-| 5 | **Yearly Oxygen (O₂) Tracker**     | 47 + 48                  | 31 days × 12 months value grid + Achieved ✓                       |
-| 6 | **Yearly Habit Tracker**           | 49                       | 12 months × Begin/Break + 31-day check-in row                     |
-| 7 | **Cleaning Check List**            | 62 + 63                  | 31 days × 12 months grid + chore label per row + Achieved ✓       |
-| 8 | **Self-Care Check List**           | 64+65, 66+67, 68+69      | One page, **three category sections** (Physical / Emotional / Spiritual), each a 31×12 grid + Achieved ✓ |
+## Changes
 
-# Plan
+### 1. Pass sibling field values into `FieldRenderer`
 
-## 1. Extend the field schema (`src/lib/pageTypes.ts` + `src/components/FieldRenderer.tsx`)
+Currently `FieldRenderer` only receives a single `value`. To make the calendar grid month/year-aware, it needs access to the page's other field values.
 
-Add three new `FieldType`s (the existing `month-tracker`/`habit-grid` aren't enough — they only support checkboxes, not free-text values, and don't span the 31×12 reading layout):
+- `src/components/PageRenderer.tsx`: pass `values` down to `<FieldRenderer />` as a new optional `allValues` prop.
+- `src/components/FieldRenderer.tsx`: accept `allValues?: Record<string, FieldValue>` and forward it into `<CalendarGrid />`.
 
-- `measurement-grid` — fixed N rows × labelled columns (numeric/text). Used by Weight (4 cols) and Measurement (8 cols).
-- `daily-month-grid` — 31 rows × 12 month columns of free-text values + "Achieved" check column. Used by Blood Sugar, Blood Pressure, O₂, Cleaning, and each Self-Care section.
-- `yearly-habit-grid` — 12 month rows, each with Begin/Break radio + habit text + 31 check cells. Used by the Yearly Habit Tracker.
+### 2. Make `CalendarGrid` month/year-aware
 
-Each new field type gets a renderer in `FieldRenderer.tsx` that mirrors the styling of the current `habit-grid` / `month-tracker` (sticky first column, horizontal scroll on small screens, semantic tokens only — no hard-coded colours).
+In `src/components/FieldRenderer.tsx`:
 
-## 2. Register the 8 new page types in `PAGE_TYPES`
+- Read `month` (string like "April") and `year` (string/number) from `allValues`.
+- Compute:
+  - `monthIndex` from the month name (fallback: current month if unset/invalid).
+  - `yearNum` (fallback: current year if unset/invalid).
+  - `daysInMonth = new Date(yearNum, monthIndex + 1, 0).getDate()`.
+  - `startWeekday = new Date(yearNum, monthIndex, 1).getDay()` (0 = Sun).
+- Render a 7-column grid with:
+  - A header row of weekday labels: Sun, Mon, Tue, Wed, Thu, Fri, Sat.
+  - `startWeekday` empty leading cells.
+  - `daysInMonth` day cells (each still keyed by day number 1..N so existing saved notes survive).
+- Keep the existing textarea-per-day editing behavior and the `data[day]` storage shape (no data migration needed).
 
-Each page follows the existing `PageTypeDef` shape so it's automatically picked up by:
-- the section grid on `Home.tsx` (lists every page type),
-- the `Section.tsx` route (`/section/:pageTypeId`),
-- the `PageRenderer` (renders sections + fields),
-- the existing autosave + cover-theming pipeline (no extra wiring).
+### 3. Keep storage backward compatible
 
-Suggested IDs / icons:
+Saved entries keyed by day number (1..31) continue to work. If the user switches from a 31-day month to a 30-day month, the day-31 note is hidden but not deleted (it'll reappear if they switch back).
 
-```text
-weight-tracker         icon: Scale          (Bi-Monthly Weight)
-measurement-tracker    icon: Ruler          (Bi-Monthly Measurements)
-blood-sugar-tracker    icon: Droplet        (Yearly Blood Sugar)
-blood-pressure-tracker icon: HeartPulse     (Yearly Blood Pressure)
-oxygen-tracker         icon: Activity       (Yearly Oxygen O2)
-yearly-habit-tracker   icon: CalendarCheck  (Yearly Habit Tracker)
-cleaning-checklist     icon: Sparkle        (Cleaning Check List)
-self-care-checklist    icon: HeartHandshake (Self-Care Check List)
-```
+## Out of scope
 
-The **Self-Care Check List** is one page with three sections — Physical, Emotional, Spiritual — each rendered as its own `daily-month-grid`. This matches the printable PDFs exactly (they're three category variants of the same template) without bloating the section list.
+- Yearly Calendar layout (no day grid present).
+- Weekly Calendar (already day-named, no dates to compute).
+- Other 31×12 trackers (Blood Sugar, Cleaning, etc.) — these are intentionally year-spanning grids per the source PDFs and don't depend on a selected month.
 
-The existing **monthly Habit Tracker** stays as-is — the new **Yearly Habit Tracker** is a separate page (matches PDF 49 exactly: 12 months × Begin/Break + 31 check cells).
-
-## 3. Display + ordering on Home
-
-Group the new pages logically. Suggested order on Home:
+## Technical summary
 
 ```text
-Daily Tracker
-Habit Tracker (monthly)
-Yearly Habit Tracker
-Weight Tracker
-Measurement Tracker
-Blood Sugar Tracker
-Blood Pressure Tracker
-Oxygen Tracker
-Self-Care Check List
-Cleaning Check List
-Fun Tracker
-Recipe
-Notes
+PageRenderer ──(values)──▶ FieldRenderer ──(allValues)──▶ CalendarGrid
+                                                            │
+                                                            ├─ reads allValues.month, allValues.year
+                                                            ├─ computes daysInMonth + startWeekday
+                                                            └─ renders weekday header + offset + N day cells
 ```
 
-## 4. Backwards compatibility
-
-No existing entries change shape. The `FieldValue` type already accepts arbitrary nested objects, so the new grids serialise cleanly into the same `entries` table without a migration.
-
-# Out of scope for this batch
-
-- Cover artwork / palettes — already handled in earlier turns.
-- PDF export of these new trackers — separate task if you want it later.
-- Any additional pages you haven't sent yet.
-
-# Acceptance check
-
-After implementation:
-- All 8 new pages appear on `Home.tsx` in the order above.
-- Each opens, lets you add an entry, fills the matching grid(s), autosaves, and reopens with the saved values.
-- Self-Care page shows Physical / Emotional / Spiritual as three distinct grids on the same entry.
-- `bunx tsc --noEmit` is clean.
+Files touched:
+- `src/components/PageRenderer.tsx` — pass `allValues` prop.
+- `src/components/FieldRenderer.tsx` — thread `allValues`, rewrite `CalendarGrid` to use month/year.
