@@ -50,6 +50,12 @@ import featherArrowGold from "@/assets/covers/feather-arrow-gold.png";
 import featherArrowEmerald from "@/assets/covers/feather-arrow-emerald.png";
 import featherArrowAzure from "@/assets/covers/feather-arrow-azure.png";
 import featherArrowAmethyst from "@/assets/covers/feather-arrow-amethyst.png";
+import chroniclesLightRoseDove from "@/assets/covers/chronicles-light-rose-dove.jpg";
+import chroniclesDarkLightPair from "@/assets/covers/chronicles-dark-light-pair.jpg";
+import chroniclesDarkRavenRoses from "@/assets/covers/chronicles-dark-raven-roses.jpg";
+import faithAffirmationsSticker from "@/assets/covers/faith-affirmations-sticker.jpg";
+import faithCrossRoses from "@/assets/covers/faith-cross-roses.jpg";
+import faithCrossHeart from "@/assets/covers/faith-cross-heart.jpg";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
