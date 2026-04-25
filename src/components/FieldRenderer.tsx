@@ -1,10 +1,17 @@
 import { useState } from "react";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Angry, Frown, Meh, Smile, Laugh } from "lucide-react";
 import type { FieldDef, FieldValue } from "@/lib/pageTypes";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 interface Props {
