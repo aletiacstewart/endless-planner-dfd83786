@@ -10,10 +10,11 @@ import { cn } from "@/lib/utils";
 interface Props {
   field: FieldDef;
   value: FieldValue;
+  allValues?: Record<string, FieldValue>;
   onChange: (v: FieldValue) => void;
 }
 
-export function FieldRenderer({ field, value, onChange }: Props) {
+export function FieldRenderer({ field, value, allValues, onChange }: Props) {
   const label = (
     <label className="field-label block mb-1.5" htmlFor={field.key}>
       {field.label}
