@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -19,18 +19,13 @@ const queryClient = new QueryClient();
 
 function AppShell() {
   const { settings, loading } = useUserSettings();
+  // Splash stays open until the user taps it — like opening the front
+  // cover of a paper journal. Re-shows on full reload.
   const [splashed, setSplashed] = useState(false);
 
   // Apply cover theme whenever cover changes (also during onboarding the
   // OnboardingFlow has its own preview hook).
   useCoverTheme(settings?.coverId);
-
-  // Show splash for ~1.2s after the user has been onboarded.
-  useEffect(() => {
-    if (!settings?.onboarded) return;
-    const t = setTimeout(() => setSplashed(true), 1200);
-    return () => clearTimeout(t);
-  }, [settings?.onboarded]);
 
   if (loading || !settings) return null;
 
@@ -45,6 +40,7 @@ function AppShell() {
           cover={getCover(settings.coverId)}
           plannerName={settings.plannerName}
           ownerName={settings.ownerName}
+          onOpen={() => setSplashed(true)}
         />
       )}
       <BrowserRouter>
@@ -60,7 +56,6 @@ function AppShell() {
     </>
   );
 }
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>

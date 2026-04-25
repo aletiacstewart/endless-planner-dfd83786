@@ -1,48 +1,38 @@
-## Add 10 New Covers to the Library
+# Fix cover cropping + make splash user-dismissed
 
-Bringing total active covers from **17 → 27**.
+## What you'll see after
 
-### New covers (grouped by collection)
+**1. Home hero shows the full cover.** Today the hero is a short letterbox (~h-72) using `object-cover`, so portrait covers like *Ember Hummingbird* get the head, top, and most of the wings cropped away. After the fix the hero matches the cover's natural 3:4 portrait shape on phones, scaling sensibly on larger screens — the whole artwork is visible, with the planner name + Settings cog still floating on top in readable contrast.
 
-**Black Moon (5)** — dark/jewel palettes, gold sparkles
-1. `black-rose-chains` — Spiked black rose with gold chains on starry black (the spread image, personalized — name fits the negative space on the left page)
-2. `black-dahlia-sparks` — Black dahlia with golden star bursts
-3. `black-dahlia-lights` — Black dahlia with fairy lights
-4. `black-iris-stars` — Dark iris on starry field
-5. `black-iris-glow` — Purple/black iris with golden bokeh
+**2. Splash stays until you tap it.** Today the splash auto-disappears after 1.2 seconds. After the fix it stays as long as you want, like opening the front cover of a real journal. You dismiss it by either tapping the cover anywhere or pressing a soft "Open planner" pill button at the bottom. A subtle "Tap to open" hint appears after a moment so first-time users know what to do.
 
-**Celestial Florals (3)** — moonlit romantic
-6. `red-rose-moon` — Red rose under blue moon with fairy lights
-7. `white-rose-moon` — White rose under full moon
-8. `black-lilies-sparks` — Black lilies with golden sparkles
+---
 
-**Garden (1)**
-9. `moonlit-oak` — Ancient oak draped in fairy lights under full moon
+## Files & changes
 
-**Sparrow Series (1)**
-10. `sparrow-moon-fairy-lights` — Plump sparrow on branch in front of full moon with fairy lights
+### `src/pages/Home.tsx` — uncropped cover hero
+- Replace the fixed-height letterbox (`h-56 sm:h-72` + `object-cover`) with a proper portrait container:
+  - Mobile: `aspect-[3/4]` so the full portrait artwork fits edge-to-edge with no crop.
+  - Tablet/desktop (`sm:` and up): cap at a max height (e.g. `sm:max-h-[60vh]`) and use `object-contain` so wider screens letterbox the artwork against the themed paper background instead of zooming in and slicing it.
+- Keep the existing Settings cog (top-right) and the planner-name overlay (bottom). Strengthen the bottom gradient so the title remains legible regardless of cover.
+- No change to data flow or theming.
 
-### Implementation
+### `src/App.tsx` — splash dismissal
+- Remove the `setTimeout(..., 1200)` auto-dismiss.
+- `SplashScreen` now receives an `onOpen` callback; `AppShell` passes `() => setSplashed(true)`.
+- The splash stays mounted until the user opens it. Re-shows on full reload (existing behavior — splash is one-shot per session).
 
-**Assets** — copy uploads → `src/assets/covers/`:
-- `black-rose-chains.png` (the PDF spread)
-- `black-dahlia-sparks.jpg`, `black-dahlia-lights.jpg`
-- `black-iris-stars.jpg`, `black-iris-glow.jpg`
-- `red-rose-moon.jpg`, `white-rose-moon.jpg`
-- `black-lilies-sparks.jpg`
-- `moonlit-oak.jpg`
-- `sparrow-moon-fairy-lights.jpg`
+### `src/components/SplashScreen.tsx` — interactive cover
+- Wrap the whole splash in a `<button>` so tapping anywhere dismisses it. Add `aria-label="Open planner"` and proper focus styles.
+- Add a centered "Open planner" pill near the bottom that visually says "tap me" — same click handler as the wrapper.
+- Add a small "Tap to open" hint that fades in after ~1.5s for discoverability (purely visual, doesn't auto-dismiss).
+- Keep the cover artwork centered and uncropped here too: switch the inner `CoverImage` wrapper from filling the viewport to a centered `aspect-[3/4]` block so the full painting shows on tall and wide screens.
 
-**`src/data/covers.ts`** — add imports + 10 entries to `COVERS` array. Reuse existing palettes:
-- Black Moon entries → `paletteMoonlitButterflies` (deep purple-black with gold accents)
-- `red-rose-moon` → new `paletteCrimsonMoon` (deep navy bg, crimson primary, warm gold accent)
-- `white-rose-moon` → `paletteSparrowForgetMeNots` (cool moonlit blue)
-- `moonlit-oak` → `paletteJewelDark`
-- `sparrow-moon-fairy-lights` → `paletteSparrowWishes` (warm cream — fits the bird's tones)
+### No other files touched
+- Section/Entry headers are unaffected — the user's screenshot of "Change of Life Wellness" is the **Home hero**, not a section header. The fix to Home covers that case.
+- Cover manifest, theming, onboarding, and routing are unchanged.
 
-**Personalization**: Mark `black-rose-chains` as `personalized: true` so the user's planner name renders into the left page's empty starry space (matches the existing scrapbook personalization pattern).
-
-**New palette** — add `paletteCrimsonMoon` (one new dark palette tuned for the red-rose-on-moon mood: navy-black background, crimson primary, soft gold accent).
-
-### Out of scope
-No changes to `CoverPicker`, `useCoverTheme`, or any UI components — they read from `COVERS` automatically, so the 10 new covers appear immediately once the manifest updates.
+## Out of scope
+- No new "tap-anywhere" behavior on Section/Entry pages.
+- No new cover assets in this change.
+- Splash still appears once per session after onboarding; we are not adding a "show splash on every navigation" mode.
