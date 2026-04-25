@@ -44,6 +44,11 @@ import whiteButterflyTrumpetFlowers from "@/assets/covers/white-butterfly-trumpe
 import angelTrumpetButterfly from "@/assets/covers/angel-trumpet-butterfly.jpg";
 import hummingbirdCrimsonCosmos from "@/assets/covers/hummingbird-crimson-cosmos.jpg";
 import dragonflySalviaBokeh from "@/assets/covers/dragonfly-salvia-bokeh.jpg";
+import hummingbirdPinkMimosa from "@/assets/covers/hummingbird-pink-mimosa.jpg";
+import blueButterflyAnemone from "@/assets/covers/blue-butterfly-anemone.jpg";
+import redAdmiralWhiteOrchids from "@/assets/covers/red-admiral-white-orchids.jpg";
+import dragonflyPinkGrass from "@/assets/covers/dragonfly-pink-grass.jpg";
+import dewdropPinkRose from "@/assets/covers/dewdrop-pink-rose.jpg";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
@@ -431,6 +436,91 @@ const paletteDragonflyMeadow: CoverPalette = {
   mutedForeground: "270 12% 45%",
   border: "30 20% 84%",
   paperGradient: "linear-gradient(180deg, hsl(30 50% 96%), hsl(280 30% 90%))",
+};
+
+const palettePinkMimosa: CoverPalette = {
+  mode: "light",
+  background: "345 55% 94%",
+  foreground: "340 30% 24%",
+  card: "345 60% 98%",
+  cardForeground: "340 30% 24%",
+  primary: "345 65% 60%",
+  primaryForeground: "345 60% 98%",
+  primarySoft: "345 45% 90%",
+  accent: "165 40% 50%",
+  accentForeground: "345 60% 98%",
+  muted: "345 30% 91%",
+  mutedForeground: "340 15% 45%",
+  border: "345 25% 86%",
+  paperGradient: "linear-gradient(180deg, hsl(345 60% 96%), hsl(345 45% 90%))",
+};
+
+const paletteCopperAnemone: CoverPalette = {
+  mode: "light",
+  background: "20 35% 90%",
+  foreground: "20 30% 22%",
+  card: "20 50% 97%",
+  cardForeground: "20 30% 22%",
+  primary: "215 55% 55%",
+  primaryForeground: "20 50% 97%",
+  primarySoft: "20 38% 88%",
+  accent: "20 75% 55%",
+  accentForeground: "20 50% 97%",
+  muted: "20 25% 88%",
+  mutedForeground: "20 15% 42%",
+  border: "20 22% 82%",
+  paperGradient: "linear-gradient(180deg, hsl(20 50% 95%), hsl(15 40% 88%))",
+};
+
+const paletteWhiteOrchid: CoverPalette = {
+  mode: "light",
+  background: "200 25% 95%",
+  foreground: "210 25% 22%",
+  card: "200 35% 99%",
+  cardForeground: "210 25% 22%",
+  primary: "15 70% 55%",
+  primaryForeground: "200 35% 99%",
+  primarySoft: "200 25% 90%",
+  accent: "210 40% 50%",
+  accentForeground: "200 35% 99%",
+  muted: "200 18% 92%",
+  mutedForeground: "210 12% 45%",
+  border: "200 18% 86%",
+  paperGradient: "linear-gradient(180deg, hsl(200 35% 98%), hsl(200 25% 92%))",
+};
+
+const palettePinkGrassMeadow: CoverPalette = {
+  mode: "light",
+  background: "20 45% 92%",
+  foreground: "10 30% 25%",
+  card: "20 55% 97%",
+  cardForeground: "10 30% 25%",
+  primary: "180 50% 40%",
+  primaryForeground: "20 55% 97%",
+  primarySoft: "20 40% 88%",
+  accent: "5 65% 55%",
+  accentForeground: "20 55% 97%",
+  muted: "20 28% 90%",
+  mutedForeground: "10 15% 45%",
+  border: "20 22% 84%",
+  paperGradient: "linear-gradient(180deg, hsl(20 55% 95%), hsl(15 45% 88%))",
+};
+
+const paletteDewdropRose: CoverPalette = {
+  mode: "light",
+  background: "150 22% 93%",
+  foreground: "340 25% 24%",
+  card: "350 40% 98%",
+  cardForeground: "340 25% 24%",
+  primary: "340 55% 65%",
+  primaryForeground: "350 40% 98%",
+  primarySoft: "350 35% 92%",
+  accent: "150 35% 50%",
+  accentForeground: "350 40% 98%",
+  muted: "150 18% 90%",
+  mutedForeground: "340 12% 45%",
+  border: "150 18% 84%",
+  paperGradient: "linear-gradient(180deg, hsl(350 40% 97%), hsl(150 25% 91%))",
 };
 
 // --- Sky & Arrows palettes (feather + arrow series) --------------------------
@@ -951,6 +1041,41 @@ export const COVERS: Cover[] = [
     collection: "garden",
     image: dragonflySalviaBokeh,
     palette: paletteDragonflyMeadow,
+  },
+  {
+    id: "hummingbird-pink-mimosa",
+    name: "Hummingbird & Pink Mimosa",
+    collection: "celestial-birds-insects",
+    image: hummingbirdPinkMimosa,
+    palette: palettePinkMimosa,
+  },
+  {
+    id: "blue-butterfly-anemone",
+    name: "Blue Butterfly on Anemone",
+    collection: "celestial-birds-insects",
+    image: blueButterflyAnemone,
+    palette: paletteCopperAnemone,
+  },
+  {
+    id: "red-admiral-white-orchids",
+    name: "Red Admiral & White Orchids",
+    collection: "garden",
+    image: redAdmiralWhiteOrchids,
+    palette: paletteWhiteOrchid,
+  },
+  {
+    id: "dragonfly-pink-grass",
+    name: "Dragonfly in Pink Grass",
+    collection: "garden",
+    image: dragonflyPinkGrass,
+    palette: palettePinkGrassMeadow,
+  },
+  {
+    id: "dewdrop-pink-rose",
+    name: "Dewdrop Pink Rose",
+    collection: "garden",
+    image: dewdropPinkRose,
+    palette: paletteDewdropRose,
   },
 ];
 
