@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Plus, X, Angry, Frown, Meh, Smile, Laugh } from "lucide-react";
 import type { FieldDef, FieldValue } from "@/lib/pageTypes";
 import { Input } from "@/components/ui/input";
@@ -763,42 +763,84 @@ function DailyMonthGrid({
 
   const isMobile = useIsMobile();
 
-  const renderTable = (mStart: number, mEnd: number, includeAchievedNote: boolean) => {
+  const FULL_MONTH_NAMES = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
+  ];
+
+  // Popup state — either editing a single month/day cell or a per-day note.
+  type Editing =
+    | { kind: "cell"; day: number; month: number }
+    | { kind: "note"; day: number }
+    | null;
+  const [editing, setEditing] = useState<Editing>(null);
+  const [draft, setDraft] = useState("");
+
+  const openCell = (day: number, month: number) => {
+    setDraft(data.cells[`${day}-${month}`] ?? "");
+    setEditing({ kind: "cell", day, month });
+  };
+  const openNote = (day: number) => {
+    setDraft(notes[day] ?? "");
+    setEditing({ kind: "note", day });
+  };
+  const saveEditing = () => {
+    if (!editing) return;
+    if (editing.kind === "cell") setCell(editing.day, editing.month, draft);
+    else setNote(editing.day, draft);
+    setEditing(null);
+  };
+
+  const dialogTitle = (() => {
+    if (!editing) return "";
+    if (editing.kind === "cell") return `Day ${editing.day} · ${FULL_MONTH_NAMES[editing.month]}`;
+    return `Day ${editing.day} · Note`;
+  })();
+
+  const renderTable = (mStart: number, mEnd: number) => {
     const monthSlice = MONTH_INITIALS.slice(mStart, mEnd);
+    const colCount = monthSlice.length;
     return (
       <table className="text-xs border-separate border-spacing-1 w-full">
         <thead>
           <tr>
-            <th className="font-normal text-muted-foreground pr-2 w-8">Day</th>
+            <th className="font-normal text-muted-foreground pr-2 w-8 text-left">Day</th>
             {monthSlice.map((m, idx) => (
               <th key={mStart + idx} className="font-normal text-muted-foreground w-8">{m}</th>
             ))}
-            {includeAchievedNote && (
-              <>
-                <th className="font-normal text-muted-foreground w-8">✓</th>
-                <th className="font-normal text-muted-foreground text-left pl-2 min-w-[6rem]">Note</th>
-              </>
-            )}
+            <th className="font-normal text-muted-foreground w-8">✓</th>
           </tr>
         </thead>
         <tbody>
-          {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-            <tr key={day}>
-              <td className="pr-2 text-muted-foreground text-center">{day}</td>
-              {monthSlice.map((_, idx) => {
-                const mi = mStart + idx;
-                return (
-                  <td key={mi}>
-                    <input
-                      value={data.cells[`${day}-${mi}`] ?? ""}
-                      onChange={(e) => setCell(day, mi, e.target.value)}
-                      className="w-full min-w-0 h-7 px-1 text-[10px] text-center rounded border border-input bg-background/60 focus:outline-none focus:border-primary"
-                    />
-                  </td>
-                );
-              })}
-              {includeAchievedNote && (
-                <>
+          {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => {
+            const noteText = notes[day] ?? "";
+            const noteFilled = noteText.trim().length > 0;
+            return (
+              <Fragment key={day}>
+                <tr>
+                  <td className="pr-2 text-muted-foreground text-center align-middle">{day}</td>
+                  {monthSlice.map((_, idx) => {
+                    const mi = mStart + idx;
+                    const cellVal = data.cells[`${day}-${mi}`] ?? "";
+                    const filled = cellVal.trim().length > 0;
+                    return (
+                      <td key={mi}>
+                        <button
+                          type="button"
+                          onClick={() => openCell(day, mi)}
+                          aria-label={`Day ${day} ${FULL_MONTH_NAMES[mi]}${filled ? ` — ${cellVal}` : ""}`}
+                          className={cn(
+                            "w-full min-w-0 h-7 px-1 text-[10px] text-center rounded border truncate transition-colors",
+                            filled
+                              ? "bg-primary-soft/40 border-primary/40 text-foreground"
+                              : "bg-background/60 border-input text-muted-foreground hover:border-primary/60"
+                          )}
+                        >
+                          {filled ? cellVal : ""}
+                        </button>
+                      </td>
+                    );
+                  })}
                   <td>
                     <button
                       type="button"
@@ -812,18 +854,28 @@ function DailyMonthGrid({
                       aria-label={`Day ${day} achieved`}
                     />
                   </td>
-                  <td className="pl-2">
-                    <input
-                      value={notes[day] ?? ""}
-                      onChange={(e) => setNote(day, e.target.value)}
-                      placeholder="Note…"
-                      className="w-full min-w-0 h-7 px-2 text-[11px] rounded border border-input bg-background/60 focus:outline-none focus:border-primary"
-                    />
+                </tr>
+                <tr>
+                  <td />
+                  <td colSpan={colCount + 1} className="pb-1">
+                    <button
+                      type="button"
+                      onClick={() => openNote(day)}
+                      aria-label={`Day ${day} note${noteFilled ? ` — ${noteText}` : ""}`}
+                      className={cn(
+                        "w-full min-w-0 h-7 px-2 text-[10px] text-left rounded border truncate transition-colors",
+                        noteFilled
+                          ? "bg-primary-soft/30 border-primary/40 text-foreground"
+                          : "bg-background/40 border-dashed border-input text-muted-foreground/70 hover:border-primary/60"
+                      )}
+                    >
+                      {noteFilled ? noteText : "Note…"}
+                    </button>
                   </td>
-                </>
-              )}
-            </tr>
-          ))}
+                </tr>
+              </Fragment>
+            );
+          })}
         </tbody>
       </table>
     );
@@ -844,13 +896,11 @@ function DailyMonthGrid({
         <div className="space-y-4">
           <div>
             <div className="text-[10px] text-muted-foreground mb-1">Jan – Jun</div>
-            {renderTable(0, 6, false)}
+            {renderTable(0, 6)}
           </div>
           <div>
-            <div className="text-[10px] text-muted-foreground mb-1">
-              Jul – Dec · ✓ &amp; Note apply to the whole year for that day
-            </div>
-            {renderTable(6, 12, true)}
+            <div className="text-[10px] text-muted-foreground mb-1">Jul – Dec</div>
+            {renderTable(6, 12)}
           </div>
         </div>
       ) : (
@@ -858,9 +908,31 @@ function DailyMonthGrid({
           className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full"
           style={{ WebkitOverflowScrolling: "touch" }}
         >
-          {renderTable(0, 12, true)}
+          {renderTable(0, 12)}
         </div>
       )}
+
+      <Dialog open={editing !== null} onOpenChange={(o) => !o && setEditing(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{dialogTitle}</DialogTitle>
+          </DialogHeader>
+          <Textarea
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            rows={editing?.kind === "note" ? 6 : 3}
+            placeholder={editing?.kind === "note" ? "Add a note for this day…" : "Enter value…"}
+            className="bg-background/60 resize-none"
+            autoFocus
+          />
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="ghost" onClick={() => setEditing(null)}>
+              Cancel
+            </Button>
+            <Button onClick={saveEditing}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
