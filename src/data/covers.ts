@@ -59,6 +59,9 @@ import botanicalDancerLake from "@/assets/covers/botanical-dancer-lake.jpg";
 import botanicalDancerCosmos from "@/assets/covers/botanical-dancer-cosmos.jpg";
 import botanicalDancerPond from "@/assets/covers/botanical-dancer-pond.jpg";
 import shepherdLambWolf from "@/assets/covers/shepherd-lamb-wolf.jpg";
+import threeCrossesAurora from "@/assets/covers/three-crosses-aurora.jpg";
+import heavensGateAngels from "@/assets/covers/heavens-gate-angels.jpg";
+import scrapbookBotanicalBelongsTo from "@/assets/covers/scrapbook-botanical-belongs-to.jpg";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
@@ -671,6 +674,63 @@ const paletteShepherdStorm: CoverPalette = {
   mutedForeground: "40 15% 70%",
   border: "210 12% 26%",
   paperGradient: "linear-gradient(180deg, hsl(210 24% 14%), hsl(215 28% 8%))",
+};
+
+// --- Three Crosses Aurora (cosmic faith) -------------------------------------
+
+const paletteCrossesAurora: CoverPalette = {
+  mode: "dark",
+  background: "215 35% 10%",
+  foreground: "40 35% 92%",
+  card: "215 30% 14%",
+  cardForeground: "40 35% 92%",
+  primary: "35 75% 65%",
+  primaryForeground: "215 35% 10%",
+  primarySoft: "215 22% 20%",
+  accent: "285 45% 60%",
+  accentForeground: "40 35% 95%",
+  muted: "215 18% 18%",
+  mutedForeground: "40 18% 72%",
+  border: "215 18% 24%",
+  paperGradient: "linear-gradient(180deg, hsl(215 38% 12%), hsl(280 32% 14%))",
+};
+
+// --- Heaven's Gate (warm radiant faith) --------------------------------------
+
+const paletteHeavensGate: CoverPalette = {
+  mode: "light",
+  background: "38 55% 94%",
+  foreground: "20 35% 22%",
+  card: "40 65% 97%",
+  cardForeground: "20 35% 22%",
+  primary: "32 70% 52%",
+  primaryForeground: "40 65% 97%",
+  primarySoft: "38 40% 88%",
+  accent: "350 50% 62%",
+  accentForeground: "40 65% 97%",
+  muted: "38 28% 89%",
+  mutedForeground: "20 15% 45%",
+  border: "38 28% 82%",
+  paperGradient: "linear-gradient(180deg, hsl(40 65% 96%), hsl(32 55% 86%))",
+};
+
+// --- Scrapbook Botanical (soft pastel collage) -------------------------------
+
+const paletteScrapbookBotanical: CoverPalette = {
+  mode: "light",
+  background: "20 35% 92%",
+  foreground: "20 25% 24%",
+  card: "30 45% 97%",
+  cardForeground: "20 25% 24%",
+  primary: "15 55% 60%",
+  primaryForeground: "30 45% 97%",
+  primarySoft: "20 30% 88%",
+  accent: "200 40% 65%",
+  accentForeground: "20 25% 24%",
+  muted: "20 22% 89%",
+  mutedForeground: "20 14% 46%",
+  border: "20 22% 82%",
+  paperGradient: "linear-gradient(180deg, hsl(30 50% 96%), hsl(20 32% 88%))",
 };
 
 // --- Sky & Arrows palettes (feather + arrow series) --------------------------
@@ -1296,6 +1356,27 @@ export const COVERS: Cover[] = [
     collection: "faith",
     image: shepherdLambWolf,
     palette: paletteShepherdStorm,
+  },
+  {
+    id: "three-crosses-aurora",
+    name: "Three Crosses & Aurora",
+    collection: "faith",
+    image: threeCrossesAurora,
+    palette: paletteCrossesAurora,
+  },
+  {
+    id: "heavens-gate-angels",
+    name: "Heaven's Gate",
+    collection: "faith",
+    image: heavensGateAngels,
+    palette: paletteHeavensGate,
+  },
+  {
+    id: "scrapbook-botanical-belongs-to",
+    name: "Botanical Scrapbook",
+    collection: "scrapbook",
+    image: scrapbookBotanicalBelongsTo,
+    palette: paletteScrapbookBotanical,
   },
 ];
 
