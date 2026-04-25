@@ -26,6 +26,16 @@ import whiteRoseMoon from "@/assets/covers/white-rose-moon.jpg";
 import blackLiliesSparks from "@/assets/covers/black-lilies-sparks.jpg";
 import moonlitOak from "@/assets/covers/moonlit-oak.jpg";
 import sparrowMoonFairyLights from "@/assets/covers/sparrow-moon-fairy-lights.jpg";
+import gardenBlueButterflyOrchid from "@/assets/covers/garden-blue-butterfly-orchid.png";
+import gardenHummingbirdMimosa from "@/assets/covers/garden-hummingbird-mimosa.png";
+import gardenAdmiralOrchid from "@/assets/covers/garden-admiral-orchid.png";
+import gardenDragonflyGrasses from "@/assets/covers/garden-dragonfly-grasses.png";
+import gardenPinkRoseDew from "@/assets/covers/garden-pink-rose-dew.png";
+import harvestMoonDahlia from "@/assets/covers/harvest-moon-dahlia.png";
+import harvestMoonRose from "@/assets/covers/harvest-moon-rose.png";
+import harvestMoonIris from "@/assets/covers/harvest-moon-iris.png";
+import harvestMoonLilies from "@/assets/covers/harvest-moon-lilies.png";
+import harvestMoonButterfly from "@/assets/covers/harvest-moon-butterfly.png";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
@@ -209,6 +219,57 @@ const paletteCrimsonMoon: CoverPalette = {
   mutedForeground: "30 15% 65%",
   border: "220 18% 22%",
   paperGradient: "linear-gradient(180deg, hsl(220 35% 10%), hsl(220 40% 6%))",
+};
+
+const paletteHarvestMoon: CoverPalette = {
+  mode: "dark",
+  background: "30 35% 6%",
+  foreground: "40 50% 92%",
+  card: "30 30% 11%",
+  cardForeground: "40 50% 92%",
+  primary: "38 85% 60%",
+  primaryForeground: "30 35% 6%",
+  primarySoft: "30 25% 16%",
+  accent: "30 70% 55%",
+  accentForeground: "30 35% 6%",
+  muted: "30 18% 14%",
+  mutedForeground: "40 25% 65%",
+  border: "30 18% 20%",
+  paperGradient: "linear-gradient(180deg, hsl(30 35% 8%), hsl(25 40% 5%))",
+};
+
+const paletteGardenRose: CoverPalette = {
+  mode: "light",
+  background: "150 20% 94%",
+  foreground: "340 25% 25%",
+  card: "350 35% 98%",
+  cardForeground: "340 25% 25%",
+  primary: "340 55% 65%",
+  primaryForeground: "350 35% 98%",
+  primarySoft: "340 35% 92%",
+  accent: "150 30% 50%",
+  accentForeground: "350 35% 98%",
+  muted: "150 15% 90%",
+  mutedForeground: "340 12% 45%",
+  border: "150 15% 84%",
+  paperGradient: "linear-gradient(180deg, hsl(350 35% 97%), hsl(150 25% 92%))",
+};
+
+const paletteGardenWarm: CoverPalette = {
+  mode: "light",
+  background: "20 35% 94%",
+  foreground: "15 25% 22%",
+  card: "25 45% 98%",
+  cardForeground: "15 25% 22%",
+  primary: "15 65% 55%",
+  primaryForeground: "25 45% 98%",
+  primarySoft: "20 35% 90%",
+  accent: "180 40% 45%",
+  accentForeground: "25 45% 98%",
+  muted: "20 22% 90%",
+  mutedForeground: "15 12% 45%",
+  border: "20 18% 84%",
+  paperGradient: "linear-gradient(180deg, hsl(25 45% 96%), hsl(20 30% 90%))",
 };
 
 const paletteMoonlitButterflies: CoverPalette = {
@@ -432,6 +493,83 @@ export const COVERS: Cover[] = [
     collection: "sparrow",
     image: sparrowMoonFairyLights,
     palette: paletteSparrowWishes,
+  },
+  // --- Garden additions -----------------------------------------------------
+  {
+    id: "garden-pink-rose-dew",
+    name: "Pink Rose & Dew",
+    collection: "garden",
+    image: gardenPinkRoseDew,
+    palette: paletteGardenRose,
+  },
+  {
+    id: "garden-blue-butterfly-orchid",
+    name: "Blue Butterfly on Orchid",
+    collection: "garden",
+    image: gardenBlueButterflyOrchid,
+    palette: paletteGardenWarm,
+  },
+  {
+    id: "garden-hummingbird-mimosa",
+    name: "Hummingbird & Pink Mimosa",
+    collection: "garden",
+    image: gardenHummingbirdMimosa,
+    palette: paletteGardenRose,
+  },
+  {
+    id: "garden-admiral-orchid",
+    name: "Red Admiral & White Orchid",
+    collection: "garden",
+    image: gardenAdmiralOrchid,
+    palette: paletteSparrowForgetMeNots,
+  },
+  {
+    id: "garden-dragonfly-grasses",
+    name: "Dragonfly in Plume Grasses",
+    collection: "garden",
+    image: gardenDragonflyGrasses,
+    palette: paletteGardenWarm,
+  },
+  // --- Harvest Moon (Black Moon) -------------------------------------------
+  {
+    id: "harvest-moon-rose",
+    name: "Harvest Moon & Black Rose",
+    collection: "black-moon",
+    image: harvestMoonRose,
+    personalized: true,
+    palette: paletteHarvestMoon,
+  },
+  {
+    id: "harvest-moon-dahlia",
+    name: "Harvest Moon & Black Dahlia",
+    collection: "black-moon",
+    image: harvestMoonDahlia,
+    personalized: true,
+    palette: paletteHarvestMoon,
+  },
+  {
+    id: "harvest-moon-iris",
+    name: "Harvest Moon & Black Iris",
+    collection: "black-moon",
+    image: harvestMoonIris,
+    personalized: true,
+    palette: paletteHarvestMoon,
+  },
+  {
+    id: "harvest-moon-lilies",
+    name: "Harvest Moon & Black Lilies",
+    collection: "black-moon",
+    image: harvestMoonLilies,
+    personalized: true,
+    palette: paletteHarvestMoon,
+  },
+  {
+    id: "harvest-moon-butterfly",
+    name: "Harvest Moon & Black Butterfly",
+    collection: "black-moon",
+    image: harvestMoonButterfly,
+    personalized: true,
+    palette: paletteHarvestMoon,
   },
 ];
 
