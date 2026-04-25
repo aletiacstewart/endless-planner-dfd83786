@@ -36,6 +36,14 @@ import harvestMoonRose from "@/assets/covers/harvest-moon-rose.png";
 import harvestMoonIris from "@/assets/covers/harvest-moon-iris.png";
 import harvestMoonLilies from "@/assets/covers/harvest-moon-lilies.png";
 import harvestMoonButterfly from "@/assets/covers/harvest-moon-butterfly.png";
+import gardenForgetMeNotsLadybugs from "@/assets/covers/garden-forget-me-nots-ladybugs.png";
+import dandelionLadybugsNight from "@/assets/covers/dandelion-ladybugs-night.png";
+import classicWarmLeather from "@/assets/covers/classic-warm-leather.png";
+import classicIvoryRibbons from "@/assets/covers/classic-ivory-ribbons.png";
+import crystalVinesAmber from "@/assets/covers/crystal-vines-amber.png";
+import crystalVinesBlush from "@/assets/covers/crystal-vines-blush.png";
+import affirmationFragileNotBroken from "@/assets/covers/affirmation-fragile-not-broken.png";
+import affirmationFloatsHope from "@/assets/covers/affirmation-floats-hope.png";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
@@ -570,6 +578,70 @@ export const COVERS: Cover[] = [
     image: harvestMoonButterfly,
     personalized: true,
     palette: paletteHarvestMoon,
+  },
+  // --- Garden additions II --------------------------------------------------
+  {
+    id: "garden-forget-me-nots-ladybugs",
+    name: "Forget-Me-Nots & Ladybugs",
+    collection: "garden",
+    image: gardenForgetMeNotsLadybugs,
+    palette: paletteSparrowForgetMeNots,
+  },
+  {
+    id: "dandelion-ladybugs-night",
+    name: "Dandelions & Ladybugs at Night",
+    collection: "garden",
+    image: dandelionLadybugsNight,
+    palette: paletteMoonlitButterflies,
+  },
+  // --- Classic --------------------------------------------------------------
+  {
+    id: "classic-warm-leather",
+    name: "Warm Leather Journal",
+    collection: "classic",
+    image: classicWarmLeather,
+    personalized: true,
+    palette: paletteVintageScrapbook,
+  },
+  {
+    id: "classic-ivory-ribbons",
+    name: "Ivory Ribbons",
+    collection: "classic",
+    image: classicIvoryRibbons,
+    personalized: true,
+    palette: paletteSparrowWishes,
+  },
+  // --- Sky & Arrows ---------------------------------------------------------
+  {
+    id: "crystal-vines-amber",
+    name: "Amber Crystal Vines",
+    collection: "sky-wings-arrows",
+    image: crystalVinesAmber,
+    personalized: true,
+    palette: paletteHarvestMoon,
+  },
+  {
+    id: "crystal-vines-blush",
+    name: "Blush Crystal Vines",
+    collection: "sky-wings-arrows",
+    image: crystalVinesBlush,
+    personalized: true,
+    palette: paletteCrimsonMoon,
+  },
+  // --- Affirmations ---------------------------------------------------------
+  {
+    id: "affirmation-fragile-not-broken",
+    name: "Fragile, Not Broken",
+    collection: "affirmations",
+    image: affirmationFragileNotBroken,
+    palette: paletteVintageScrapbook,
+  },
+  {
+    id: "affirmation-floats-hope",
+    name: "Floats Hope",
+    collection: "affirmations",
+    image: affirmationFloatsHope,
+    palette: paletteMoonlitButterflies,
   },
 ];
 
