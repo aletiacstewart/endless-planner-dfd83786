@@ -164,7 +164,18 @@ export function FieldRenderer({ field, value, allValues, onChange }: Props) {
     case "ingredients-list":
       return <IngredientsList value={value as string[]} onChange={onChange} />;
     case "calendar-grid":
-      return <CalendarGrid value={value as Record<string, string>} onChange={onChange} />;
+      return (
+        <CalendarGrid
+          value={value as Record<string, string>}
+          month={typeof allValues?.month === "string" ? (allValues.month as string) : ""}
+          year={
+            typeof allValues?.year === "string" || typeof allValues?.year === "number"
+              ? String(allValues.year)
+              : ""
+          }
+          onChange={onChange}
+        />
+      );
     case "habit-grid":
       return (
         <HabitGrid
