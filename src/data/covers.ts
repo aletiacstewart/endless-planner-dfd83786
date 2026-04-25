@@ -1,3 +1,9 @@
+import forgetMeNotsLadybugs from "@/assets/covers/forget-me-nots-ladybugs.jpg";
+import faithStickerCollage from "@/assets/covers/faith-sticker-collage.jpg";
+import dandelionLadybugsNight from "@/assets/covers/dandelion-ladybugs-night.jpg";
+import classicWarmLeather from "@/assets/covers/classic-warm-leather.jpg";
+import crystalVinesBranch from "@/assets/covers/crystal-vines-branch.jpg";
+
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
  * When a cover is selected, useTheme writes these values to the
@@ -441,11 +447,47 @@ const paletteBotanicalSpirit: CoverPalette = {
 
 // --- Cover catalog ------------------------------------------------------------
 
-// Catalog intentionally empty — covers are being rebuilt from new uploads.
-// Add entries here as new cover images are added to src/assets/covers/.
-export const COVERS: Cover[] = [];
+export const COVERS: Cover[] = [
+  {
+    id: "forget-me-nots-ladybugs",
+    name: "Forget-Me-Nots & Ladybugs",
+    collection: "garden",
+    image: forgetMeNotsLadybugs,
+    palette: paletteSparrowForgetMeNots,
+  },
+  {
+    id: "dandelion-ladybugs-night",
+    name: "Dandelions & Ladybugs at Night",
+    collection: "garden",
+    image: dandelionLadybugsNight,
+    palette: paletteMoonlitButterflies,
+  },
+  {
+    id: "classic-warm-leather",
+    name: "Warm Leather Journal",
+    collection: "classic",
+    image: classicWarmLeather,
+    personalized: true,
+    palette: paletteVintageScrapbook,
+  },
+  {
+    id: "crystal-vines-branch",
+    name: "Crystal Vines on Branch",
+    collection: "sky-wings-arrows",
+    image: crystalVinesBranch,
+    personalized: true,
+    palette: paletteHarvestMoon,
+  },
+  {
+    id: "faith-sticker-collage",
+    name: "Faith Sticker Collage",
+    collection: "faith",
+    image: faithStickerCollage,
+    palette: paletteFaithVibrant,
+  },
+];
 
-// Neutral fallback used when the catalog is empty so the app keeps rendering.
+// Neutral fallback used when no cover matches (e.g., stale saved coverId).
 const PLACEHOLDER_COVER: Cover = {
   id: "placeholder",
   name: "No cover yet",
@@ -456,7 +498,7 @@ const PLACEHOLDER_COVER: Cover = {
   palette: paletteLightChronicle,
 };
 
-export const DEFAULT_COVER_ID = PLACEHOLDER_COVER.id;
+export const DEFAULT_COVER_ID = "forget-me-nots-ladybugs";
 
 export function getCover(id: string | null | undefined): Cover {
   return (
