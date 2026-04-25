@@ -932,6 +932,20 @@ export const COVERS: Cover[] = [
     image: botanicalSpiritRiver,
     palette: paletteBotanicalSpirit,
   },
+  {
+    id: "botanical-spirit-cosmos",
+    name: "Botanical Spirit & Cosmos",
+    collection: "garden",
+    image: botanicalSpiritCosmos,
+    palette: paletteBotanicalSpirit,
+  },
+  {
+    id: "botanical-spirit-pond",
+    name: "Botanical Spirit at the Pond",
+    collection: "garden",
+    image: botanicalSpiritPond,
+    palette: paletteBotanicalSpirit,
+  },
 ];
 
 export const DEFAULT_COVER_ID = "sparrow-forget-me-nots";
