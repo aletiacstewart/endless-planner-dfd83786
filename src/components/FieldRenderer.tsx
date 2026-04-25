@@ -13,6 +13,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Props {
   field: FieldDef;
@@ -472,47 +473,49 @@ function HabitGrid({
     onChange({ habits, marks });
   };
 
-  return (
-    <div>
-      <label className="field-label block mb-2">Habits — tap to mark</label>
-      <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
-        <table className="text-xs border-separate border-spacing-1">
-          <thead>
-            <tr>
-              <th className="text-left font-normal text-muted-foreground sticky left-0 bg-card pr-2 z-10 border-r border-border/40">Habit</th>
-              {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
-                <th key={d} className="font-normal text-muted-foreground w-6">{d}</th>
-              ))}
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {data.habits.map((h, i) => (
-              <tr key={i}>
-                <td className="sticky left-0 bg-card pr-2 z-10 border-r border-border/40">
-                  <Input
-                    value={h}
-                    onChange={(e) => setHabit(i, e.target.value)}
-                    className="h-7 text-xs min-w-[7rem] bg-background/60"
-                  />
-                </td>
-                {Array.from({ length: 31 }, (_, di) => di + 1).map((d) => {
-                  const k = `${i}-${d}`;
-                  const on = !!data.marks[k];
-                  return (
-                    <td key={d}>
-                      <button
-                        type="button"
-                        onClick={() => toggle(i, d)}
-                        className={cn(
-                          "w-5 h-5 rounded-sm border",
-                          on ? "bg-primary border-primary" : "bg-background/60 border-input"
-                        )}
-                        aria-label={`Day ${d}`}
-                      />
-                    </td>
-                  );
-                })}
+  const isMobile = useIsMobile();
+
+  const renderTable = (dayStart: number, dayEnd: number, showRemove: boolean) => {
+    const days = Array.from({ length: dayEnd - dayStart + 1 }, (_, i) => i + dayStart);
+    return (
+      <table className="text-xs border-separate border-spacing-1 w-full">
+        <thead>
+          <tr>
+            <th className="text-left font-normal text-muted-foreground pr-2">Habit</th>
+            {days.map((d) => (
+              <th key={d} className="font-normal text-muted-foreground w-6">{d}</th>
+            ))}
+            {showRemove && <th />}
+          </tr>
+        </thead>
+        <tbody>
+          {data.habits.map((h, i) => (
+            <tr key={i}>
+              <td className="pr-2">
+                <Input
+                  value={h}
+                  onChange={(e) => setHabit(i, e.target.value)}
+                  className="h-7 text-xs min-w-[6rem] bg-background/60"
+                />
+              </td>
+              {days.map((d) => {
+                const k = `${i}-${d}`;
+                const on = !!data.marks[k];
+                return (
+                  <td key={d}>
+                    <button
+                      type="button"
+                      onClick={() => toggle(i, d)}
+                      className={cn(
+                        "w-5 h-5 rounded-sm border",
+                        on ? "bg-primary border-primary" : "bg-background/60 border-input"
+                      )}
+                      aria-label={`Day ${d}`}
+                    />
+                  </td>
+                );
+              })}
+              {showRemove && (
                 <td>
                   <Button
                     type="button"
@@ -524,11 +527,33 @@ function HabitGrid({
                     <X className="w-3.5 h-3.5" />
                   </Button>
                 </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  };
+
+  return (
+    <div>
+      <label className="field-label block mb-2">Habits — tap to mark</label>
+      {isMobile ? (
+        <div className="space-y-4">
+          <div>
+            <div className="text-[10px] text-muted-foreground mb-1">Days 1–16</div>
+            {renderTable(1, 16, false)}
+          </div>
+          <div>
+            <div className="text-[10px] text-muted-foreground mb-1">Days 17–31</div>
+            {renderTable(17, 31, true)}
+          </div>
+        </div>
+      ) : (
+        <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
+          {renderTable(1, 31, true)}
+        </div>
+      )}
       <Button type="button" variant="outline" size="sm" onClick={addHabit} className="mt-2">
         <Plus className="w-4 h-4 mr-1" /> Add habit
       </Button>
@@ -556,50 +581,73 @@ function MonthTracker({
     const k = `${i}-${m}`;
     onChange({ ...data, marks: { ...data.marks, [k]: !data.marks[k] } });
   };
+  const isMobile = useIsMobile();
+
+  const renderTable = (start: number, end: number) => {
+    const slice = months.slice(start, end);
+    return (
+      <table className="text-xs border-separate border-spacing-1 w-full">
+        <thead>
+          <tr>
+            <th className="text-left font-normal text-muted-foreground pr-2">Activity</th>
+            {slice.map((m, i) => (
+              <th key={start + i} className="font-normal text-muted-foreground w-6">{m}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {data.items.map((it, i) => (
+            <tr key={i}>
+              <td className="pr-2">
+                <Input
+                  value={it}
+                  onChange={(e) => setItem(i, e.target.value)}
+                  className="h-7 text-xs min-w-[6rem] w-full sm:w-40 bg-background/60"
+                />
+              </td>
+              {slice.map((_, idx) => {
+                const mi = start + idx;
+                const k = `${i}-${mi}`;
+                const on = !!data.marks[k];
+                return (
+                  <td key={mi}>
+                    <button
+                      type="button"
+                      onClick={() => toggle(i, mi)}
+                      className={cn(
+                        "w-5 h-5 rounded-sm border",
+                        on ? "bg-accent border-accent" : "bg-background/60 border-input"
+                      )}
+                    />
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  };
+
   return (
     <div>
       <label className="field-label block mb-2">Activities by month</label>
-      <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
-        <table className="text-xs border-separate border-spacing-1">
-          <thead>
-            <tr>
-              <th className="text-left font-normal text-muted-foreground sticky left-0 bg-card pr-2 z-10 border-r border-border/40">Activity</th>
-              {months.map((m, i) => (
-                <th key={i} className="font-normal text-muted-foreground w-6">{m}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {data.items.map((it, i) => (
-              <tr key={i}>
-                <td className="sticky left-0 bg-card pr-2 z-10 border-r border-border/40">
-                  <Input
-                    value={it}
-                    onChange={(e) => setItem(i, e.target.value)}
-                    className="h-7 text-xs w-32 sm:w-40 bg-background/60"
-                  />
-                </td>
-                {months.map((_, mi) => {
-                  const k = `${i}-${mi}`;
-                  const on = !!data.marks[k];
-                  return (
-                    <td key={mi}>
-                      <button
-                        type="button"
-                        onClick={() => toggle(i, mi)}
-                        className={cn(
-                          "w-5 h-5 rounded-sm border",
-                          on ? "bg-accent border-accent" : "bg-background/60 border-input"
-                        )}
-                      />
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {isMobile ? (
+        <div className="space-y-4">
+          <div>
+            <div className="text-[10px] text-muted-foreground mb-1">Jan – Jun</div>
+            {renderTable(0, 6)}
+          </div>
+          <div>
+            <div className="text-[10px] text-muted-foreground mb-1">Jul – Dec</div>
+            {renderTable(6, 12)}
+          </div>
+        </div>
+      ) : (
+        <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
+          {renderTable(0, 12)}
+        </div>
+      )}
       <Button
         type="button"
         variant="outline"
@@ -644,7 +692,7 @@ function MeasurementGrid({
         <table className="text-xs border-separate border-spacing-1 min-w-full">
           <thead>
             <tr>
-              <th className="text-left font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-10 z-10 border-r border-border/40">
+              <th className="text-left font-normal text-muted-foreground pr-2 w-10">
                 {rowLabel}
               </th>
               {columns.map((c) => (
@@ -657,7 +705,7 @@ function MeasurementGrid({
           <tbody>
             {Array.from({ length: rowCount }, (_, i) => i + 1).map((row) => (
               <tr key={row}>
-                <td className="sticky left-0 bg-card pr-2 text-muted-foreground text-center z-10 border-r border-border/40">
+                <td className="pr-2 text-muted-foreground text-center">
                   {row}
                 </td>
                 {columns.map((c) => (
@@ -713,6 +761,74 @@ function DailyMonthGrid({
     onChange({ ...data, notes: { ...notes, [day]: v } });
   const setRowLabel = (v: string) => onChange({ ...data, notes, rowLabel: v });
 
+  const isMobile = useIsMobile();
+
+  const renderTable = (mStart: number, mEnd: number, includeAchievedNote: boolean) => {
+    const monthSlice = MONTH_INITIALS.slice(mStart, mEnd);
+    return (
+      <table className="text-xs border-separate border-spacing-1 w-full">
+        <thead>
+          <tr>
+            <th className="font-normal text-muted-foreground pr-2 w-8">Day</th>
+            {monthSlice.map((m, idx) => (
+              <th key={mStart + idx} className="font-normal text-muted-foreground w-8">{m}</th>
+            ))}
+            {includeAchievedNote && (
+              <>
+                <th className="font-normal text-muted-foreground w-8">✓</th>
+                <th className="font-normal text-muted-foreground text-left pl-2 min-w-[6rem]">Note</th>
+              </>
+            )}
+          </tr>
+        </thead>
+        <tbody>
+          {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+            <tr key={day}>
+              <td className="pr-2 text-muted-foreground text-center">{day}</td>
+              {monthSlice.map((_, idx) => {
+                const mi = mStart + idx;
+                return (
+                  <td key={mi}>
+                    <input
+                      value={data.cells[`${day}-${mi}`] ?? ""}
+                      onChange={(e) => setCell(day, mi, e.target.value)}
+                      className="w-full min-w-0 h-7 px-1 text-[10px] text-center rounded border border-input bg-background/60 focus:outline-none focus:border-primary"
+                    />
+                  </td>
+                );
+              })}
+              {includeAchievedNote && (
+                <>
+                  <td>
+                    <button
+                      type="button"
+                      onClick={() => toggleAchieved(day)}
+                      className={cn(
+                        "w-5 h-5 rounded-sm border",
+                        data.achieved[day]
+                          ? "bg-primary border-primary"
+                          : "bg-background/60 border-input"
+                      )}
+                      aria-label={`Day ${day} achieved`}
+                    />
+                  </td>
+                  <td className="pl-2">
+                    <input
+                      value={notes[day] ?? ""}
+                      onChange={(e) => setNote(day, e.target.value)}
+                      placeholder="Note…"
+                      className="w-full min-w-0 h-7 px-2 text-[11px] rounded border border-input bg-background/60 focus:outline-none focus:border-primary"
+                    />
+                  </td>
+                </>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  };
+
   return (
     <div>
       <label className="field-label block mb-2">{label}</label>
@@ -724,66 +840,27 @@ function DailyMonthGrid({
           className="h-8 text-xs bg-background/60 max-w-md"
         />
       </div>
-      <div
-        className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full"
-        style={{ WebkitOverflowScrolling: "touch" }}
-      >
-        <table className="text-xs border-separate border-spacing-1">
-          <thead>
-            <tr>
-              <th className="font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-10 z-10 border-r border-border/40">
-                Day
-              </th>
-              {MONTH_INITIALS.map((m, i) => (
-                <th key={i} className="font-normal text-muted-foreground w-8">{m}</th>
-              ))}
-              <th className="font-normal text-muted-foreground w-8">✓</th>
-              <th className="font-normal text-muted-foreground text-left pl-2 min-w-[10rem]">
-                Note
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-              <tr key={day}>
-                <td className="sticky left-0 bg-card pr-2 text-muted-foreground text-center z-10 border-r border-border/40">
-                  {day}
-                </td>
-                {MONTH_INITIALS.map((_, mi) => (
-                  <td key={mi}>
-                    <input
-                      value={data.cells[`${day}-${mi}`] ?? ""}
-                      onChange={(e) => setCell(day, mi, e.target.value)}
-                      className="w-8 h-7 px-1 text-[10px] text-center rounded border border-input bg-background/60 focus:outline-none focus:border-primary"
-                    />
-                  </td>
-                ))}
-                <td>
-                  <button
-                    type="button"
-                    onClick={() => toggleAchieved(day)}
-                    className={cn(
-                      "w-5 h-5 rounded-sm border",
-                      data.achieved[day]
-                        ? "bg-primary border-primary"
-                        : "bg-background/60 border-input"
-                    )}
-                    aria-label={`Day ${day} achieved`}
-                  />
-                </td>
-                <td className="pl-2">
-                  <input
-                    value={notes[day] ?? ""}
-                    onChange={(e) => setNote(day, e.target.value)}
-                    placeholder="Note…"
-                    className="w-40 h-7 px-2 text-[11px] rounded border border-input bg-background/60 focus:outline-none focus:border-primary"
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {isMobile ? (
+        <div className="space-y-4">
+          <div>
+            <div className="text-[10px] text-muted-foreground mb-1">Jan – Jun</div>
+            {renderTable(0, 6, false)}
+          </div>
+          <div>
+            <div className="text-[10px] text-muted-foreground mb-1">
+              Jul – Dec · ✓ &amp; Note apply to the whole year for that day
+            </div>
+            {renderTable(6, 12, true)}
+          </div>
+        </div>
+      ) : (
+        <div
+          className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full"
+          style={{ WebkitOverflowScrolling: "touch" }}
+        >
+          {renderTable(0, 12, true)}
+        </div>
+      )}
     </div>
   );
 }
@@ -826,6 +903,98 @@ function YearlyHabitGrid({
     onChange({ ...data, marks: { ...data.marks, [k]: !data.marks[k] } });
   };
 
+  const isMobile = useIsMobile();
+
+  const modeButtons = (i: number, row: { mode: "begin" | "break" | ""; label: string }) => (
+    <div className="flex gap-1">
+      <button
+        type="button"
+        onClick={() => setMode(i, row.mode === "begin" ? "" : "begin")}
+        className={cn(
+          "px-1.5 py-0.5 rounded text-[10px] border",
+          row.mode === "begin"
+            ? "bg-accent text-accent-foreground border-accent"
+            : "bg-background/60 border-input text-muted-foreground"
+        )}
+      >
+        Begin
+      </button>
+      <button
+        type="button"
+        onClick={() => setMode(i, row.mode === "break" ? "" : "break")}
+        className={cn(
+          "px-1.5 py-0.5 rounded text-[10px] border",
+          row.mode === "break"
+            ? "bg-accent text-accent-foreground border-accent"
+            : "bg-background/60 border-input text-muted-foreground"
+        )}
+      >
+        Break
+      </button>
+    </div>
+  );
+
+  if (isMobile) {
+    const renderHalf = (start: number, end: number, title: string) => (
+      <div>
+        <div className="text-[10px] text-muted-foreground mb-1">{title}</div>
+        <div className="space-y-3">
+          {rows.slice(start, end).map((row, idx) => {
+            const i = start + idx;
+            return (
+              <div key={i} className="rounded-md border border-border/40 p-2 bg-background/30">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="text-xs font-medium text-muted-foreground w-10 shrink-0">
+                    {FULL_MONTHS[i].slice(0, 3)}
+                  </div>
+                  {modeButtons(i, row)}
+                </div>
+                <Input
+                  value={row.label}
+                  onChange={(e) => setLabel(i, e.target.value)}
+                  placeholder="Habit"
+                  className="h-7 text-xs bg-background/60 mb-2"
+                />
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(1.5rem,1fr))] gap-1">
+                  {Array.from({ length: 31 }, (_, di) => di + 1).map((d) => {
+                    const k = `${i}-${d}`;
+                    const on = !!data.marks[k];
+                    return (
+                      <button
+                        key={d}
+                        type="button"
+                        onClick={() => toggleDay(i, d)}
+                        className={cn(
+                          "h-6 rounded-sm border text-[9px] leading-none",
+                          on
+                            ? "bg-primary border-primary text-primary-foreground"
+                            : "bg-background/60 border-input text-muted-foreground"
+                        )}
+                        aria-label={`${FULL_MONTHS[i]} day ${d}`}
+                      >
+                        {d}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+
+    return (
+      <div>
+        <label className="field-label block mb-2">Monthly habit to begin or break</label>
+        <div className="space-y-4">
+          {renderHalf(0, 6, "Jan – Jun")}
+          {renderHalf(6, 12, "Jul – Dec")}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <label className="field-label block mb-2">Monthly habit to begin or break</label>
@@ -833,7 +1002,7 @@ function YearlyHabitGrid({
         <table className="text-xs border-separate border-spacing-1">
           <thead>
             <tr>
-              <th className="font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-12 z-10 border-r border-border/40">Month</th>
+              <th className="font-normal text-muted-foreground pr-2 w-12">Month</th>
               <th className="font-normal text-muted-foreground pr-2 w-32">Begin / Break + Habit</th>
               {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
                 <th key={d} className="font-normal text-muted-foreground w-6">{d}</th>
@@ -843,37 +1012,12 @@ function YearlyHabitGrid({
           <tbody>
             {rows.map((row, i) => (
               <tr key={i}>
-                <td className="sticky left-0 bg-card pr-2 text-muted-foreground z-10 border-r border-border/40">
+                <td className="pr-2 text-muted-foreground">
                   {FULL_MONTHS[i].slice(0, 3)}
                 </td>
                 <td className="pr-2">
                   <div className="flex flex-col gap-1 min-w-[10rem]">
-                    <div className="flex gap-1">
-                      <button
-                        type="button"
-                        onClick={() => setMode(i, row.mode === "begin" ? "" : "begin")}
-                        className={cn(
-                          "px-1.5 py-0.5 rounded text-[10px] border",
-                          row.mode === "begin"
-                            ? "bg-accent text-accent-foreground border-accent"
-                            : "bg-background/60 border-input text-muted-foreground"
-                        )}
-                      >
-                        Begin
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setMode(i, row.mode === "break" ? "" : "break")}
-                        className={cn(
-                          "px-1.5 py-0.5 rounded text-[10px] border",
-                          row.mode === "break"
-                            ? "bg-accent text-accent-foreground border-accent"
-                            : "bg-background/60 border-input text-muted-foreground"
-                        )}
-                      >
-                        Break
-                      </button>
-                    </div>
+                    {modeButtons(i, row)}
                     <Input
                       value={row.label}
                       onChange={(e) => setLabel(i, e.target.value)}
