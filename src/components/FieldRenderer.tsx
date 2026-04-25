@@ -180,6 +180,32 @@ export function FieldRenderer({ field, value, onChange }: Props) {
           onChange={onChange}
         />
       );
+    case "measurement-grid":
+      return (
+        <MeasurementGrid
+          value={value as Record<string, string>}
+          columns={field.columns ?? []}
+          rowCount={field.rowCount ?? 26}
+          rowLabel={field.rowLabel ?? "Row"}
+          label={field.label}
+          onChange={onChange}
+        />
+      );
+    case "daily-month-grid":
+      return (
+        <DailyMonthGrid
+          value={value as { rowLabel?: string; cells: Record<string, string>; achieved: Record<string, boolean> }}
+          label={field.label}
+          onChange={onChange}
+        />
+      );
+    case "yearly-habit-grid":
+      return (
+        <YearlyHabitGrid
+          value={value as { rows: { mode: "begin" | "break" | ""; label: string }[]; marks: Record<string, boolean> }}
+          onChange={onChange}
+        />
+      );
     default:
       return null;
   }
