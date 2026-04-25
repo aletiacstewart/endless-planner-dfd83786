@@ -692,7 +692,7 @@ function MeasurementGrid({
         <table className="text-xs border-separate border-spacing-1 min-w-full">
           <thead>
             <tr>
-              <th className="text-left font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-10 z-10 border-r border-border/40">
+              <th className="text-left font-normal text-muted-foreground pr-2 w-10">
                 {rowLabel}
               </th>
               {columns.map((c) => (
@@ -705,7 +705,7 @@ function MeasurementGrid({
           <tbody>
             {Array.from({ length: rowCount }, (_, i) => i + 1).map((row) => (
               <tr key={row}>
-                <td className="sticky left-0 bg-card pr-2 text-muted-foreground text-center z-10 border-r border-border/40">
+                <td className="pr-2 text-muted-foreground text-center">
                   {row}
                 </td>
                 {columns.map((c) => (
