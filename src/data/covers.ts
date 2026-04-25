@@ -49,6 +49,11 @@ import blueButterflyAnemone from "@/assets/covers/blue-butterfly-anemone.jpg";
 import redAdmiralWhiteOrchids from "@/assets/covers/red-admiral-white-orchids.jpg";
 import dragonflyPinkGrass from "@/assets/covers/dragonfly-pink-grass.jpg";
 import dewdropPinkRose from "@/assets/covers/dewdrop-pink-rose.jpg";
+import blackDahliaGoldenMoon from "@/assets/covers/black-dahlia-golden-moon.jpg";
+import blackRoseGoldenMoon from "@/assets/covers/black-rose-golden-moon.jpg";
+import midnightIrisGoldenMoon from "@/assets/covers/midnight-iris-golden-moon.jpg";
+import blackLiliesGoldenMoon from "@/assets/covers/black-lilies-golden-moon.jpg";
+import moonlitBlackButterfly from "@/assets/covers/moonlit-black-butterfly.jpg";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
@@ -521,6 +526,57 @@ const paletteDewdropRose: CoverPalette = {
   mutedForeground: "340 12% 45%",
   border: "150 18% 84%",
   paperGradient: "linear-gradient(180deg, hsl(350 40% 97%), hsl(150 25% 91%))",
+};
+
+const paletteGoldenMoonNoir: CoverPalette = {
+  mode: "dark",
+  background: "235 28% 7%",
+  foreground: "42 40% 92%",
+  card: "235 24% 11%",
+  cardForeground: "42 40% 92%",
+  primary: "42 82% 62%",
+  primaryForeground: "235 28% 7%",
+  primarySoft: "235 18% 17%",
+  accent: "190 28% 52%",
+  accentForeground: "235 28% 7%",
+  muted: "235 14% 15%",
+  mutedForeground: "42 18% 66%",
+  border: "235 14% 21%",
+  paperGradient: "linear-gradient(180deg, hsl(235 28% 9%), hsl(245 30% 5%))",
+};
+
+const paletteGoldenMoonIris: CoverPalette = {
+  mode: "dark",
+  background: "238 30% 7%",
+  foreground: "42 42% 92%",
+  card: "238 26% 11%",
+  cardForeground: "42 42% 92%",
+  primary: "225 58% 58%",
+  primaryForeground: "238 30% 7%",
+  primarySoft: "238 18% 17%",
+  accent: "38 82% 62%",
+  accentForeground: "238 30% 7%",
+  muted: "238 14% 15%",
+  mutedForeground: "42 18% 66%",
+  border: "238 14% 21%",
+  paperGradient: "linear-gradient(180deg, hsl(238 30% 9%), hsl(245 32% 5%))",
+};
+
+const paletteBlackButterflyMoon: CoverPalette = {
+  mode: "dark",
+  background: "240 24% 7%",
+  foreground: "0 0% 96%",
+  card: "240 20% 11%",
+  cardForeground: "0 0% 96%",
+  primary: "45 80% 62%",
+  primaryForeground: "240 24% 7%",
+  primarySoft: "240 14% 17%",
+  accent: "0 0% 88%",
+  accentForeground: "240 24% 7%",
+  muted: "240 12% 15%",
+  mutedForeground: "0 0% 70%",
+  border: "240 12% 21%",
+  paperGradient: "linear-gradient(180deg, hsl(240 24% 9%), hsl(240 28% 5%))",
 };
 
 // --- Sky & Arrows palettes (feather + arrow series) --------------------------
@@ -1076,6 +1132,41 @@ export const COVERS: Cover[] = [
     collection: "garden",
     image: dewdropPinkRose,
     palette: paletteDewdropRose,
+  },
+  {
+    id: "black-dahlia-golden-moon",
+    name: "Black Dahlia & Golden Moon",
+    collection: "black-moon",
+    image: blackDahliaGoldenMoon,
+    palette: paletteGoldenMoonNoir,
+  },
+  {
+    id: "black-rose-golden-moon",
+    name: "Black Rose & Golden Moon",
+    collection: "black-moon",
+    image: blackRoseGoldenMoon,
+    palette: paletteGoldenMoonNoir,
+  },
+  {
+    id: "midnight-iris-golden-moon",
+    name: "Midnight Iris & Golden Moon",
+    collection: "celestial-florals",
+    image: midnightIrisGoldenMoon,
+    palette: paletteGoldenMoonIris,
+  },
+  {
+    id: "black-lilies-golden-moon",
+    name: "Black Lilies & Golden Moon",
+    collection: "black-moon",
+    image: blackLiliesGoldenMoon,
+    palette: paletteGoldenMoonNoir,
+  },
+  {
+    id: "moonlit-black-butterfly",
+    name: "Moonlit Black Butterfly",
+    collection: "celestial-birds-insects",
+    image: moonlitBlackButterfly,
+    palette: paletteBlackButterflyMoon,
   },
 ];
 
