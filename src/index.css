@@ -1,96 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&family=Caveat:wght@500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Change of Life Planner — calm sage/cream palette inspired by the printed journal.
+   All colors are HSL semantic tokens. Never use raw colors in components. */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Surfaces */
+    --background: 40 30% 97%;
+    --foreground: 150 12% 18%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 40 35% 99%;
+    --card-foreground: 150 12% 18%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 40 35% 99%;
+    --popover-foreground: 150 12% 18%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Brand: sage green */
+    --primary: 145 18% 38%;
+    --primary-foreground: 40 35% 98%;
+    --primary-soft: 145 22% 88%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Warm accent: terracotta */
+    --accent: 18 45% 60%;
+    --accent-foreground: 40 35% 98%;
+    --accent-soft: 18 50% 92%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --secondary: 40 25% 92%;
+    --secondary-foreground: 150 12% 22%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --muted: 40 20% 93%;
+    --muted-foreground: 150 8% 42%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 4 60% 52%;
+    --destructive-foreground: 40 35% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 40 15% 86%;
+    --input: 40 15% 86%;
+    --ring: 145 18% 38%;
 
-    --radius: 0.5rem;
+    --radius: 1rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Custom planner tokens */
+    --paper: 40 35% 98%;
+    --paper-line: 40 12% 82%;
+    --ink: 150 14% 20%;
+    --ink-soft: 150 8% 45%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    --gradient-paper: linear-gradient(180deg, hsl(40 35% 99%), hsl(40 28% 95%));
+    --gradient-sage: linear-gradient(135deg, hsl(145 22% 70%), hsl(145 18% 38%));
+    --shadow-soft: 0 4px 20px -8px hsl(150 18% 25% / 0.15);
+    --shadow-card: 0 2px 12px -4px hsl(150 18% 25% / 0.08);
+    --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 40 30% 97%;
+    --sidebar-foreground: 150 12% 18%;
+    --sidebar-primary: 145 18% 38%;
+    --sidebar-primary-foreground: 40 35% 98%;
+    --sidebar-accent: 40 25% 92%;
+    --sidebar-accent-foreground: 150 12% 22%;
+    --sidebar-border: 40 15% 86%;
+    --sidebar-ring: 145 18% 38%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 150 14% 10%;
+    --foreground: 40 25% 92%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 150 14% 13%;
+    --card-foreground: 40 25% 92%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 150 14% 13%;
+    --popover-foreground: 40 25% 92%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 145 28% 65%;
+    --primary-foreground: 150 14% 10%;
+    --primary-soft: 145 18% 22%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --accent: 18 50% 65%;
+    --accent-foreground: 150 14% 10%;
+    --accent-soft: 18 25% 22%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --secondary: 150 10% 18%;
+    --secondary-foreground: 40 25% 92%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --muted: 150 10% 18%;
+    --muted-foreground: 40 12% 65%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 4 55% 55%;
+    --destructive-foreground: 40 25% 92%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 150 10% 22%;
+    --input: 150 10% 22%;
+    --ring: 145 28% 65%;
+
+    --paper: 150 14% 13%;
+    --paper-line: 150 10% 25%;
+    --ink: 40 25% 92%;
+    --ink-soft: 40 12% 65%;
+
+    --gradient-paper: linear-gradient(180deg, hsl(150 14% 13%), hsl(150 14% 10%));
+    --gradient-sage: linear-gradient(135deg, hsl(145 22% 35%), hsl(145 18% 22%));
+    --shadow-soft: 0 4px 20px -8px hsl(0 0% 0% / 0.4);
+    --shadow-card: 0 2px 12px -4px hsl(0 0% 0% / 0.3);
+
+    --sidebar-background: 150 14% 10%;
+    --sidebar-foreground: 40 25% 92%;
+    --sidebar-primary: 145 28% 65%;
+    --sidebar-primary-foreground: 150 14% 10%;
+    --sidebar-accent: 150 10% 18%;
+    --sidebar-accent-foreground: 40 25% 92%;
+    --sidebar-border: 150 10% 22%;
+    --sidebar-ring: 145 28% 65%;
   }
 }
 
@@ -99,7 +123,47 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html, body, #root {
+    @apply h-full;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    letter-spacing: 0.01em;
+  }
+
+  .font-script {
+    font-family: 'Caveat', cursive;
+  }
+}
+
+@layer components {
+  .planner-card {
+    @apply bg-card rounded-2xl border border-border p-5;
+    box-shadow: var(--shadow-card);
+    transition: var(--transition-smooth);
+  }
+  .planner-card:active {
+    transform: scale(0.99);
+  }
+
+  .planner-input {
+    @apply w-full bg-transparent border-b border-border pb-1 text-ink
+           focus:outline-none focus:border-primary placeholder:text-muted-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .field-label {
+    @apply text-xs uppercase tracking-wider text-muted-foreground font-medium;
+  }
+
+  .section-title {
+    @apply text-3xl font-display font-semibold text-foreground;
   }
 }
