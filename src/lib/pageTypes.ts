@@ -1,0 +1,382 @@
+/**
+ * Schema definitions for every unique page in the Change of Life Planner.
+ * Each page type maps to a configurable form rendered by PageRenderer.
+ */
+
+export type FieldType =
+  | "text"
+  | "textarea"
+  | "date"
+  | "month"
+  | "year"
+  | "number"
+  | "rating" // 1..max selectable
+  | "weekday-checkboxes" // S M T W T F S
+  | "checkbox"
+  | "checkbox-group"
+  | "ingredients-list" // dynamic list of strings
+  | "calendar-grid" // 31 day cells with notes
+  | "habit-grid" // habits x 31 days
+  | "month-tracker"; // 12 months x N items grid (Fun/Habit yearly tracker)
+
+export interface FieldDef {
+  key: string;
+  label: string;
+  type: FieldType;
+  placeholder?: string;
+  rows?: number;
+  max?: number; // for rating
+  options?: string[]; // for checkbox-group
+  defaultItems?: string[]; // for habit-grid / month-tracker
+  span?: 1 | 2; // grid span
+}
+
+export interface SectionDef {
+  title?: string;
+  description?: string;
+  columns?: 1 | 2 | 3;
+  fields: FieldDef[];
+}
+
+export interface PageTypeDef {
+  id: string;
+  name: string;
+  shortName: string;
+  description: string;
+  icon: string; // lucide icon name
+  sections: SectionDef[];
+  /** Build a short summary for entry list cards */
+  summary?: (values: Record<string, unknown>) => string;
+}
+
+const goalKeys = Array.from({ length: 12 }, (_, i) => `goal_${i + 1}`);
+
+export const PAGE_TYPES: PageTypeDef[] = [
+  {
+    id: "my-goals",
+    name: "My Goals",
+    shortName: "Goals",
+    description: "Capture up to 12 goals and the reward for achieving them.",
+    icon: "Target",
+    sections: [
+      {
+        title: "Goals",
+        columns: 2,
+        fields: goalKeys.map((k, i) => ({
+          key: k,
+          label: `Goal ${i + 1}`,
+          type: "textarea",
+          rows: 2,
+          placeholder: "What do you want to achieve?",
+        })),
+      },
+      {
+        fields: [
+          {
+            key: "reward",
+            label: "Reward for achieving all goals",
+            type: "textarea",
+            rows: 3,
+            placeholder: "How will you celebrate?",
+            span: 2,
+          },
+        ],
+      },
+    ],
+    summary: (v) => (v.goal_1 as string) || "Untitled goals",
+  },
+  {
+    id: "goals-reflection",
+    name: "Goals Reflection",
+    shortName: "Why & How",
+    description: "For each goal: why you want it, how you'll feel, and the action steps.",
+    icon: "Sparkles",
+    sections: [
+      {
+        title: "Why do I want to reach these goals",
+        fields: goalKeys.map((k, i) => ({
+          key: `why_${i + 1}`,
+          label: `Goal ${i + 1}`,
+          type: "text",
+          placeholder: "Why does this matter?",
+        })),
+      },
+      {
+        title: "How will I feel when I reach these goals",
+        fields: goalKeys.map((k, i) => ({
+          key: `feel_${i + 1}`,
+          label: `Goal ${i + 1}`,
+          type: "text",
+          placeholder: "Describe the feeling",
+        })),
+      },
+      {
+        title: "Action steps to reach these goals",
+        fields: goalKeys.map((k, i) => ({
+          key: `action_${i + 1}`,
+          label: `Goal ${i + 1}`,
+          type: "text",
+          placeholder: "First step",
+        })),
+      },
+    ],
+  },
+  {
+    id: "yearly-calendar",
+    name: "Yearly Calendar",
+    shortName: "Year",
+    description: "Notes for each month of the year.",
+    icon: "CalendarRange",
+    sections: [
+      {
+        fields: [{ key: "year", label: "Year", type: "year", placeholder: "2025" }],
+      },
+      {
+        title: "Months",
+        columns: 3,
+        fields: [
+          "January", "February", "March",
+          "April", "May", "June",
+          "July", "August", "September",
+          "October", "November", "December",
+        ].map((m) => ({
+          key: `month_${m.toLowerCase()}`,
+          label: m,
+          type: "textarea",
+          rows: 4,
+          placeholder: "Key events, plans, notes…",
+        })),
+      },
+    ],
+    summary: (v) => (v.year ? `Year ${v.year}` : "Yearly calendar"),
+  },
+  {
+    id: "monthly-calendar",
+    name: "Monthly Calendar",
+    shortName: "Month",
+    description: "Month grid with goals and notes.",
+    icon: "Calendar",
+    sections: [
+      {
+        columns: 2,
+        fields: [
+          { key: "month", label: "Month", type: "month", placeholder: "January" },
+          { key: "year", label: "Year", type: "year", placeholder: "2025" },
+        ],
+      },
+      {
+        title: "Days",
+        fields: [{ key: "calendar", label: "Calendar grid", type: "calendar-grid", span: 2 }],
+      },
+      {
+        title: "Monthly goals & notes",
+        columns: 1,
+        fields: [
+          { key: "goal_1", label: "Goal 1", type: "textarea", rows: 2 },
+          { key: "goal_2", label: "Goal 2", type: "textarea", rows: 2 },
+          { key: "notes", label: "Notes", type: "textarea", rows: 4 },
+        ],
+      },
+    ],
+    summary: (v) => [v.month, v.year].filter(Boolean).join(" ") || "Monthly calendar",
+  },
+  {
+    id: "weekly-calendar",
+    name: "Weekly Calendar",
+    shortName: "Week",
+    description: "Plan the week, set weekly goals, reflect on it.",
+    icon: "CalendarDays",
+    sections: [
+      {
+        fields: [{ key: "week_of", label: "Week of", type: "date", span: 2 }],
+      },
+      {
+        title: "Days",
+        columns: 1,
+        fields: [
+          { key: "monday", label: "Monday", type: "textarea", rows: 4 },
+          { key: "tuesday", label: "Tuesday", type: "textarea", rows: 4 },
+          { key: "wednesday", label: "Wednesday", type: "textarea", rows: 4 },
+          { key: "thursday", label: "Thursday", type: "textarea", rows: 4 },
+          { key: "friday", label: "Friday", type: "textarea", rows: 4 },
+          { key: "saturday", label: "Saturday", type: "textarea", rows: 4 },
+          { key: "sunday", label: "Sunday", type: "textarea", rows: 4 },
+        ],
+      },
+      {
+        fields: [
+          { key: "weekly_goals", label: "Weekly Goals", type: "textarea", rows: 4, span: 2 },
+          { key: "reflection", label: "How did your week go?", type: "textarea", rows: 4, span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => (v.week_of ? `Week of ${v.week_of}` : "Weekly plan"),
+  },
+  {
+    id: "daily-tracker",
+    name: "Daily Tracker",
+    shortName: "Daily",
+    description: "Meals, water, sleep, mood, and workout for the day.",
+    icon: "Sun",
+    sections: [
+      {
+        columns: 2,
+        fields: [
+          { key: "date", label: "Date", type: "date" },
+          {
+            key: "weekday",
+            label: "Day",
+            type: "checkbox-group",
+            options: ["S", "M", "T", "W", "T", "F", "S"],
+          },
+        ],
+      },
+      {
+        title: "Meals",
+        fields: [
+          { key: "breakfast", label: "Breakfast", type: "textarea", rows: 3, span: 2 },
+          { key: "lunch", label: "Lunch", type: "textarea", rows: 3, span: 2 },
+          { key: "dinner", label: "Dinner", type: "textarea", rows: 3, span: 2 },
+          { key: "snacks", label: "Snacks", type: "textarea", rows: 2, span: 2 },
+        ],
+      },
+      {
+        title: "Wellness",
+        columns: 2,
+        fields: [
+          { key: "water", label: "Water (glasses)", type: "rating", max: 8 },
+          { key: "caffeine", label: "Caffeine (cups)", type: "rating", max: 6 },
+          { key: "sweets", label: "Sweets", type: "rating", max: 5 },
+          { key: "sleep", label: "Sleep (hours)", type: "rating", max: 12 },
+          { key: "mood", label: "Mood", type: "rating", max: 5 },
+        ],
+      },
+      {
+        title: "Workout",
+        columns: 2,
+        fields: [
+          { key: "cardio", label: "Cardio", type: "text" },
+          { key: "weights", label: "Weights", type: "text" },
+          { key: "yoga", label: "Yoga", type: "text" },
+          { key: "stretch", label: "Stretch", type: "text" },
+          { key: "rest_day", label: "Rest day", type: "checkbox" },
+          { key: "best_day", label: "Best day", type: "checkbox" },
+          { key: "other", label: "Other", type: "text", span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => (v.date ? `${v.date}` : "Daily entry"),
+  },
+  {
+    id: "habit-tracker",
+    name: "Habit Tracker",
+    shortName: "Habits",
+    description: "Track up to 8 habits across 31 days.",
+    icon: "CircleCheck",
+    sections: [
+      {
+        columns: 2,
+        fields: [
+          { key: "month", label: "Month", type: "month" },
+          { key: "year", label: "Year", type: "year" },
+        ],
+      },
+      {
+        fields: [
+          {
+            key: "habits",
+            label: "Habits",
+            type: "habit-grid",
+            span: 2,
+            defaultItems: [
+              "Think Positive",
+              "Let Go of Negativity",
+              "Eat & Drink Healthy",
+              "Keep an Open Mind",
+              "Don't Compare to Others",
+            ],
+          },
+        ],
+      },
+    ],
+    summary: (v) => [v.month, v.year].filter(Boolean).join(" ") || "Habit tracker",
+  },
+  {
+    id: "fun-tracker",
+    name: "Fun Tracker",
+    shortName: "Fun",
+    description: "Track fun activities through the year.",
+    icon: "PartyPopper",
+    sections: [
+      {
+        fields: [{ key: "year", label: "Year", type: "year" }],
+      },
+      {
+        fields: [
+          {
+            key: "fun_grid",
+            label: "Fun activities by month",
+            type: "month-tracker",
+            span: 2,
+            defaultItems: [
+              "Learn New Skills",
+              "Time with Friends & Family",
+              "Find New Passion",
+              "Find New Challenges",
+              "DIY Projects",
+            ],
+          },
+        ],
+      },
+    ],
+    summary: (v) => (v.year ? `Fun ${v.year}` : "Fun tracker"),
+  },
+  {
+    id: "recipe",
+    name: "Recipe",
+    shortName: "Recipe",
+    description: "Capture a recipe with ingredients and directions.",
+    icon: "ChefHat",
+    sections: [
+      {
+        fields: [{ key: "name", label: "Recipe name", type: "text", span: 2, placeholder: "Grandma's stew" }],
+      },
+      {
+        columns: 2,
+        fields: [
+          { key: "difficulty", label: "Difficulty", type: "rating", max: 5 },
+          { key: "servings", label: "Servings", type: "rating", max: 5 },
+          { key: "prep_time", label: "Prep time (min)", type: "number" },
+          { key: "cook_time", label: "Cooking time (min)", type: "number" },
+        ],
+      },
+      {
+        fields: [{ key: "ingredients", label: "Ingredients", type: "ingredients-list", span: 2 }],
+      },
+      {
+        fields: [{ key: "directions", label: "Directions", type: "textarea", rows: 8, span: 2 }],
+      },
+    ],
+    summary: (v) => (v.name as string) || "New recipe",
+  },
+  {
+    id: "notes",
+    name: "Notes",
+    shortName: "Note",
+    description: "Free-form notes and journaling.",
+    icon: "NotebookPen",
+    sections: [
+      {
+        fields: [
+          { key: "title", label: "Title", type: "text", span: 2 },
+          { key: "body", label: "Notes", type: "textarea", rows: 16, span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => (v.title as string) || (v.body as string)?.slice(0, 60) || "Untitled note",
+  },
+];
+
+export function getPageType(id: string): PageTypeDef | undefined {
+  return PAGE_TYPES.find((p) => p.id === id);
+}
