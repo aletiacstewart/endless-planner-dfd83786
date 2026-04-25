@@ -761,6 +761,74 @@ function DailyMonthGrid({
     onChange({ ...data, notes: { ...notes, [day]: v } });
   const setRowLabel = (v: string) => onChange({ ...data, notes, rowLabel: v });
 
+  const isMobile = useIsMobile();
+
+  const renderTable = (mStart: number, mEnd: number, includeAchievedNote: boolean) => {
+    const monthSlice = MONTH_INITIALS.slice(mStart, mEnd);
+    return (
+      <table className="text-xs border-separate border-spacing-1 w-full">
+        <thead>
+          <tr>
+            <th className="font-normal text-muted-foreground pr-2 w-8">Day</th>
+            {monthSlice.map((m, idx) => (
+              <th key={mStart + idx} className="font-normal text-muted-foreground w-8">{m}</th>
+            ))}
+            {includeAchievedNote && (
+              <>
+                <th className="font-normal text-muted-foreground w-8">✓</th>
+                <th className="font-normal text-muted-foreground text-left pl-2 min-w-[6rem]">Note</th>
+              </>
+            )}
+          </tr>
+        </thead>
+        <tbody>
+          {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+            <tr key={day}>
+              <td className="pr-2 text-muted-foreground text-center">{day}</td>
+              {monthSlice.map((_, idx) => {
+                const mi = mStart + idx;
+                return (
+                  <td key={mi}>
+                    <input
+                      value={data.cells[`${day}-${mi}`] ?? ""}
+                      onChange={(e) => setCell(day, mi, e.target.value)}
+                      className="w-full min-w-0 h-7 px-1 text-[10px] text-center rounded border border-input bg-background/60 focus:outline-none focus:border-primary"
+                    />
+                  </td>
+                );
+              })}
+              {includeAchievedNote && (
+                <>
+                  <td>
+                    <button
+                      type="button"
+                      onClick={() => toggleAchieved(day)}
+                      className={cn(
+                        "w-5 h-5 rounded-sm border",
+                        data.achieved[day]
+                          ? "bg-primary border-primary"
+                          : "bg-background/60 border-input"
+                      )}
+                      aria-label={`Day ${day} achieved`}
+                    />
+                  </td>
+                  <td className="pl-2">
+                    <input
+                      value={notes[day] ?? ""}
+                      onChange={(e) => setNote(day, e.target.value)}
+                      placeholder="Note…"
+                      className="w-full min-w-0 h-7 px-2 text-[11px] rounded border border-input bg-background/60 focus:outline-none focus:border-primary"
+                    />
+                  </td>
+                </>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  };
+
   return (
     <div>
       <label className="field-label block mb-2">{label}</label>
@@ -772,66 +840,27 @@ function DailyMonthGrid({
           className="h-8 text-xs bg-background/60 max-w-md"
         />
       </div>
-      <div
-        className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full"
-        style={{ WebkitOverflowScrolling: "touch" }}
-      >
-        <table className="text-xs border-separate border-spacing-1">
-          <thead>
-            <tr>
-              <th className="font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-10 z-10 border-r border-border/40">
-                Day
-              </th>
-              {MONTH_INITIALS.map((m, i) => (
-                <th key={i} className="font-normal text-muted-foreground w-8">{m}</th>
-              ))}
-              <th className="font-normal text-muted-foreground w-8">✓</th>
-              <th className="font-normal text-muted-foreground text-left pl-2 min-w-[10rem]">
-                Note
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-              <tr key={day}>
-                <td className="sticky left-0 bg-card pr-2 text-muted-foreground text-center z-10 border-r border-border/40">
-                  {day}
-                </td>
-                {MONTH_INITIALS.map((_, mi) => (
-                  <td key={mi}>
-                    <input
-                      value={data.cells[`${day}-${mi}`] ?? ""}
-                      onChange={(e) => setCell(day, mi, e.target.value)}
-                      className="w-8 h-7 px-1 text-[10px] text-center rounded border border-input bg-background/60 focus:outline-none focus:border-primary"
-                    />
-                  </td>
-                ))}
-                <td>
-                  <button
-                    type="button"
-                    onClick={() => toggleAchieved(day)}
-                    className={cn(
-                      "w-5 h-5 rounded-sm border",
-                      data.achieved[day]
-                        ? "bg-primary border-primary"
-                        : "bg-background/60 border-input"
-                    )}
-                    aria-label={`Day ${day} achieved`}
-                  />
-                </td>
-                <td className="pl-2">
-                  <input
-                    value={notes[day] ?? ""}
-                    onChange={(e) => setNote(day, e.target.value)}
-                    placeholder="Note…"
-                    className="w-40 h-7 px-2 text-[11px] rounded border border-input bg-background/60 focus:outline-none focus:border-primary"
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {isMobile ? (
+        <div className="space-y-4">
+          <div>
+            <div className="text-[10px] text-muted-foreground mb-1">Jan – Jun</div>
+            {renderTable(0, 6, false)}
+          </div>
+          <div>
+            <div className="text-[10px] text-muted-foreground mb-1">
+              Jul – Dec · ✓ &amp; Note apply to the whole year for that day
+            </div>
+            {renderTable(6, 12, true)}
+          </div>
+        </div>
+      ) : (
+        <div
+          className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full"
+          style={{ WebkitOverflowScrolling: "touch" }}
+        >
+          {renderTable(0, 12, true)}
+        </div>
+      )}
     </div>
   );
 }
