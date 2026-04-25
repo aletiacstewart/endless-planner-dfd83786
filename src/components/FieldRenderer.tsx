@@ -581,50 +581,73 @@ function MonthTracker({
     const k = `${i}-${m}`;
     onChange({ ...data, marks: { ...data.marks, [k]: !data.marks[k] } });
   };
+  const isMobile = useIsMobile();
+
+  const renderTable = (start: number, end: number) => {
+    const slice = months.slice(start, end);
+    return (
+      <table className="text-xs border-separate border-spacing-1 w-full">
+        <thead>
+          <tr>
+            <th className="text-left font-normal text-muted-foreground pr-2">Activity</th>
+            {slice.map((m, i) => (
+              <th key={start + i} className="font-normal text-muted-foreground w-6">{m}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {data.items.map((it, i) => (
+            <tr key={i}>
+              <td className="pr-2">
+                <Input
+                  value={it}
+                  onChange={(e) => setItem(i, e.target.value)}
+                  className="h-7 text-xs min-w-[6rem] w-full sm:w-40 bg-background/60"
+                />
+              </td>
+              {slice.map((_, idx) => {
+                const mi = start + idx;
+                const k = `${i}-${mi}`;
+                const on = !!data.marks[k];
+                return (
+                  <td key={mi}>
+                    <button
+                      type="button"
+                      onClick={() => toggle(i, mi)}
+                      className={cn(
+                        "w-5 h-5 rounded-sm border",
+                        on ? "bg-accent border-accent" : "bg-background/60 border-input"
+                      )}
+                    />
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  };
+
   return (
     <div>
       <label className="field-label block mb-2">Activities by month</label>
-      <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
-        <table className="text-xs border-separate border-spacing-1">
-          <thead>
-            <tr>
-              <th className="text-left font-normal text-muted-foreground sticky left-0 bg-card pr-2 z-10 border-r border-border/40">Activity</th>
-              {months.map((m, i) => (
-                <th key={i} className="font-normal text-muted-foreground w-6">{m}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {data.items.map((it, i) => (
-              <tr key={i}>
-                <td className="sticky left-0 bg-card pr-2 z-10 border-r border-border/40">
-                  <Input
-                    value={it}
-                    onChange={(e) => setItem(i, e.target.value)}
-                    className="h-7 text-xs w-32 sm:w-40 bg-background/60"
-                  />
-                </td>
-                {months.map((_, mi) => {
-                  const k = `${i}-${mi}`;
-                  const on = !!data.marks[k];
-                  return (
-                    <td key={mi}>
-                      <button
-                        type="button"
-                        onClick={() => toggle(i, mi)}
-                        className={cn(
-                          "w-5 h-5 rounded-sm border",
-                          on ? "bg-accent border-accent" : "bg-background/60 border-input"
-                        )}
-                      />
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {isMobile ? (
+        <div className="space-y-4">
+          <div>
+            <div className="text-[10px] text-muted-foreground mb-1">Jan – Jun</div>
+            {renderTable(0, 6)}
+          </div>
+          <div>
+            <div className="text-[10px] text-muted-foreground mb-1">Jul – Dec</div>
+            {renderTable(6, 12)}
+          </div>
+        </div>
+      ) : (
+        <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
+          {renderTable(0, 12)}
+        </div>
+      )}
       <Button
         type="button"
         variant="outline"
