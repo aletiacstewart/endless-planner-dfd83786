@@ -49,10 +49,10 @@ export default function Home() {
   return (
     <div className="min-h-screen pb-24" style={{ background: "var(--gradient-paper)" }}>
       <header className="px-5 pt-10 pb-6">
-        <p className="font-script text-2xl text-primary">change of life</p>
+        <p className="font-script text-2xl text-primary">Change of Life - Wellness Journey</p>
         <h1 className="section-title">Planner & Journal</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Your private space — saved on this device.
+          Your private space — saved on your device!
         </p>
       </header>
 
