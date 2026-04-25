@@ -489,12 +489,6 @@ export const COVERS: Cover[] = [
     collection: "faith",
     image: faithStickerCollage,
     palette: paletteFaithVibrant,
-  {
-    id: "faith-sticker-collage",
-    name: "Faith Sticker Collage",
-    collection: "faith",
-    image: faithStickerCollage,
-    palette: paletteFaithVibrant,
   },
   {
     id: "affirmation-fragile-not-broken",
