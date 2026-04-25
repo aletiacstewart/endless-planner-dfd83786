@@ -737,6 +737,7 @@ export const COVERS: Cover[] = [
     image: crystalVinesBlush,
     personalized: true,
     palette: paletteCrimsonMoon,
+  },
   {
     id: "feather-arrow-crimson",
     name: "Crimson Feather & Arrow",
@@ -779,6 +780,7 @@ export const COVERS: Cover[] = [
     image: featherArrowAmethyst,
     palette: paletteSkyAmethyst,
   },
+  // --- Affirmations ---------------------------------------------------------
   {
     id: "affirmation-fragile-not-broken",
     name: "Fragile, Not Broken",
