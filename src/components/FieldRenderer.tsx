@@ -572,11 +572,11 @@ function MonthTracker({
           <tbody>
             {data.items.map((it, i) => (
               <tr key={i}>
-                <td className="sticky left-0 bg-card pr-2">
+                <td className="sticky left-0 bg-card pr-2 z-10 border-r border-border/40">
                   <Input
                     value={it}
                     onChange={(e) => setItem(i, e.target.value)}
-                    className="h-7 text-xs min-w-[8rem] bg-background/60"
+                    className="h-7 text-xs w-32 sm:w-40 bg-background/60"
                   />
                 </td>
                 {months.map((_, mi) => {
