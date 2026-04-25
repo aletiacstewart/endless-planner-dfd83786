@@ -18,8 +18,11 @@ export type FieldType =
   | "checkbox-group"
   | "ingredients-list" // dynamic list of strings
   | "calendar-grid" // 31 day cells with notes
-  | "habit-grid" // habits x 31 days
-  | "month-tracker"; // 12 months x N items grid (Fun/Habit yearly tracker)
+  | "habit-grid" // habits x 31 days (boolean marks)
+  | "month-tracker" // 12 months x N items grid (boolean marks)
+  | "measurement-grid" // fixed N rows x labelled columns of free text
+  | "daily-month-grid" // 31 days x 12 months free-text values + Achieved column
+  | "yearly-habit-grid"; // 12 month rows: Begin/Break + label + 31 check cells
 
 export interface FieldDef {
   key: string;
@@ -31,7 +34,14 @@ export interface FieldDef {
   options?: string[]; // for checkbox-group
   defaultItems?: string[]; // for habit-grid / month-tracker
   span?: 1 | 2; // grid span
+  /** For measurement-grid: column labels. */
+  columns?: string[];
+  /** For measurement-grid: number of rows (default 26). */
+  rowCount?: number;
+  /** For measurement-grid: row-label prefix (e.g. "Wk"). */
+  rowLabel?: string;
 }
+
 
 export interface SectionDef {
   title?: string;
