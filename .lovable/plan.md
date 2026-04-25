@@ -1,40 +1,77 @@
 ## Goal
-Make every cover render consistently in a **square (1:1) frame** across the app, with each piece of art shown as fully as possible, and shrink the bundle by re-encoding oversized PNGs.
 
-## Image normalization (script over `src/assets/covers/`)
+Wipe all 63 existing cover images from `src/assets/covers/` and replace them with the freshly resized versions you upload. Keep every cover the app references intact (same IDs, same file names, same palettes) so nothing else has to change.
 
-A one-time Python script will process all 63 covers:
+## How this will work
 
-1. **Smart crop to 1:1**
-   - Square covers (24 files) → already 1:1, just re-encode.
-   - Landscape covers (~26 files at ratio 1.4) → center-crop horizontally to a square, preserving full height. Focal subjects in this library are vertically centered, so center-crop keeps the art intact.
-   - Portrait covers (12 files at ratio 0.75 — botanical-spirit, chronicles, faith) → center-crop vertically to a square. These have the figure centered, so trimming top/bottom equally keeps the subject.
-2. **Resize** every output to 1200×1200.
-3. **Re-encode as optimized JPG** (quality 85, progressive). PNG sources become JPG; existing JPGs get re-saved at the smaller size. Expect ~70–80% bundle size reduction.
-4. **Filename handling**: keep the same base name, switch extension to `.jpg` for ones that were `.png`. Update `src/data/covers.ts` imports for any that change extension.
+You upload your new covers (max 10 files per chat message, 20 MB each — Lovable's upload limit). Across batches, send all 63. After each batch I'll drop them into `src/assets/covers/`, overwriting the old file of the same name.
 
-## Frame updates (3 files)
+**Critical: the file names must match exactly.** The app imports each cover by an exact path like `@/assets/covers/sparrow-lotus.jpg`. If a new file isn't named `sparrow-lotus.jpg`, the import breaks.
 
-Switch every cover frame from `aspect-[3/4]` / `aspect-[4/5]` to `aspect-square`:
+If any names don't match, I'll rename your uploads to match before saving — just tell me which uploaded file maps to which cover (or I'll guess from visual context and confirm).
 
-- **`src/components/cover/CoverPicker.tsx`** (line 100) — picker grid tiles → `aspect-square`.
-- **`src/components/SplashScreen.tsx`** (line 36) — splash hero → `aspect-square`, keep `max-w-md sm:max-w-lg`.
-- **`src/pages/Home.tsx`** (line 72) — Home hero → `aspect-square` capped at `max-w-md` so it doesn't dominate desktop. Keep `object-cover` and the bottom gradient overlay.
-- **`src/components/onboarding/OnboardingFlow.tsx`** (line 38) — onboarding preview → `aspect-square` for consistency.
+## The 63 file names you need (all `.jpg`)
 
-## Verification
+```text
+affirmation-floats-hope            faith-affirmations-sticker        garden-pink-rose-dew
+affirmation-fragile-not-broken     faith-cross-heart                 garden-sun-dragonfly
+black-dahlia-lights                faith-cross-roses                 garden-teardrop-lily
+black-dahlia-sparks                faith-sticker-rainbow-cross       garden-white-butterfly
+black-iris-glow                    feather-arrow-amber               golden-dragonfly
+black-iris-stars                   feather-arrow-amethyst            harvest-moon-butterfly
+black-lilies-sparks                feather-arrow-azure               harvest-moon-dahlia
+black-rose-chains                  feather-arrow-crimson             harvest-moon-iris
+botanical-spirit-cosmos            feather-arrow-emerald             harvest-moon-lilies
+botanical-spirit-leaves            feather-arrow-gold                harvest-moon-rose
+botanical-spirit-pond              garden-admiral-orchid             midnight-swallowtail
+botanical-spirit-river             garden-blue-butterfly-orchid      moonlit-butterflies
+chronicles-dark-light-pair         garden-coral-hummingbirds         moonlit-oak
+chronicles-dark-raven-roses        garden-dragonfly-grasses          red-rose-moon
+chronicles-light-rose-dove         garden-forget-me-nots-ladybugs    sparrow-dandelion
+classic-ivory-ribbons              garden-hummingbird-mimosa         sparrow-forget-me-nots
+classic-warm-leather               garden-hummingbirds-olive         sparrow-lotus
+crystal-vines-amber                garden-lavender-dragonflies       sparrow-moon-fairy-lights
+crystal-vines-blush                                                  sparrow-moon-lanterns
+dandelion-ladybugs-night                                             sparrow-on-moon
+ember-hummingbird                                                    sparrow-wishes
+emperor-moth                                                         vintage-scrapbook
+                                                                     white-rose-moon
+```
 
-- Run `tsc --noEmit` to confirm no broken imports.
-- Spot-check a representative sample of cropped images (one landscape, one portrait, one square) by opening them after the script runs.
-- Report final bundle-size delta for `src/assets/covers/`.
+(That's 63 total — you can always ask me for the list again.)
+
+## Image specs (reminder so nothing crops)
+
+- **1200 × 1200 pixels**, square (1:1)
+- **JPG**, sRGB
+- Keep the bottom 25% visually calm — that's where the title overlay sits
+- Under ~500 KB each is ideal
+
+## Removing covers you don't want to keep
+
+If, during the process, you decide some covers shouldn't exist anymore, tell me their names and I'll:
+1. Delete the image file
+2. Remove its `import` line + entry from `src/data/covers.ts`
+3. Drop any `pairWith` references that point at it
+
+The picker auto-hides empty collections, so removing covers won't leave gaps.
+
+## Per-batch workflow
+
+For each batch you send:
+1. Save each upload to `src/assets/covers/<exact-name>.jpg`, overwriting the old file
+2. If filenames don't match, I'll rename based on your mapping or ask
+3. After the final batch, run `tsc --noEmit` to confirm all 63 imports still resolve
+4. Confirm bundle is clean
 
 ## Out of scope
 
-- Distribution/payments work (PWA paywall, Capacitor, Electron) — deferred per your earlier choice.
-- Adding new covers.
-- Color-palette changes.
+- Adding **new** covers beyond the existing 63 (would need new IDs + palettes — separate task)
+- Palette / color changes
+- Picker layout changes
 
 ## Summary of changes
-- 63 image files re-cropped, resized, and re-encoded
-- `src/data/covers.ts` — extension fixes for any PNG→JPG renames
-- 4 component files — frame ratio switched to `aspect-square`
+
+- Up to 63 image files in `src/assets/covers/` overwritten with your new versions
+- Optional: removed covers also pruned from `src/data/covers.ts`
+- No code changes required if all 63 names match
