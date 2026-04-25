@@ -1,108 +1,66 @@
-## Goals
+# Mobile layout fix — split month grids into two halves
 
-Five fixes across mobile UX, page interactions, and data backup:
+## Problem
 
-1. Fix mobile layout issues across all tracker pages (overflow / clipped grids).
-2. Add a per-day note column to Yearly Daily-Reading grids (next to the ✓ circle).
-3. Make the Monthly Calendar day boxes tappable, opening a popup that shows the typed-in note.
-4. Replace the Mood 1–5 numbers with mood face icons.
-5. Remove the "Best day" checkbox from the Daily Tracker.
-6. Expand "Export backup" to support JSON, CSV, Excel (.xlsx), and PDF — covering everything from account start to today — plus a gentle in-app reminder to back up.
+On mobile (390px), the wide month-based grids (Daily×Month tracker, Yearly Habit grid, MonthTracker, HabitGrid 31-day, MeasurementGrid) require horizontal scrolling. The sticky left "Day"/"Month" column visually conflicts with the page title when the table scrolls vertically inside its own container, producing the artifact in the screenshot (numbers 3–24 appear on top of the page header).
 
----
+Two issues to fix:
+1. Day/row labels stay pinned via `sticky left-0` while the **page** scrolls vertically, causing the labels to bleed over the page header (because the table's overflow container creates a scroll context that is taller than the viewport).
+2. 12 month columns + label + checks + notes simply don't fit at 390px and are uncomfortable to scroll horizontally.
 
-## 1. Mobile layout pass
+## Solution
 
-Symptoms in the uploads:
-- Yearly Blood Pressure / Sugar / Oxygen / Cleaning / Self-Care grids run off the right edge on phones.
-- Yearly Habit Tracker (Fun Tracker) pill labels get clipped and the row scrolls awkwardly.
-- Monthly Calendar day boxes show a stray "js" string and the textarea spinner control overlaps the content.
+On mobile only, stack two half-year tables (Jan–Jun, then Jul–Dec) so each fits the viewport with no horizontal scroll. On `sm+` keep the current single-table layout.
 
-Changes in `src/components/FieldRenderer.tsx`:
-- `DailyMonthGrid`, `HabitGrid`, `MonthTracker`, `YearlyHabitGrid`, `MeasurementGrid`: ensure the wrapping `overflow-x-auto` container actually constrains width on mobile by adding `max-w-full` and a sticky first column with a clear right border so users see scrollable area. Reduce `min-w` on the first column on small screens.
-- Force the page-level container to not block horizontal scroll — wrap each table in a `<div className="overflow-x-auto max-w-full">` with `WebkitOverflowScrolling: touch`.
-- `CalendarGrid` (monthly): replace the textarea inside each day cell with a read-only preview snippet (no spinner controls), and move editing into the popup (item 3). Removes the "js" / spinner artifact entirely.
-- `MonthTracker` activity input: switch the activity name `<Input>` from a fixed `min-w-[8rem]` pill to `w-32 sm:w-40` with `truncate` placeholder so the long names ("Find New Challenges") don't get clipped to "Find New Challeng".
-- All tables: add `pb-2` to the scroll wrapper so the bottom shadow/scrollbar doesn't sit under the next card.
+Also remove the visual artifact by dropping `sticky left-0` on the row-label cells (no longer needed once the table fits) and switching the wrapper from `overflow-x-auto` to non-scrolling on mobile.
 
-## 2. Per-day note next to the ✓ on Yearly daily-reading grids
+### Components to update in `src/components/FieldRenderer.tsx`
 
-Affects the **Yearly Blood Sugar / Blood Pressure / Oxygen / Cleaning Check List** trackers (the `daily-month-grid` field).
+1. **`DailyMonthGrid`** (Blood Sugar, Blood Pressure, O2, Cleaning, Self-Care)
+   - Mobile (`<sm`): render two stacked tables — one with months J F M A M J, one with J A S O N D — each with the Day column, ✓ column, and Note column. Both halves share the same underlying `cells`, `achieved`, `notes` state (achieved + note shown in the second half only, or duplicated under each half — see decision below).
+   - Desktop (`sm+`): unchanged single table.
 
-In `DailyMonthGrid` (`FieldRenderer.tsx`):
-- Extend the value shape to include `notes: Record<number, string>` (keyed by day 1–31). Backward compatible — missing key defaults to `""`.
-- Add a new last column header "Note".
-- Render an `<input>` (single-line, narrow ~10rem) for each row right after the ✓ button. Saves on change.
+2. **`YearlyHabitGrid`**
+   - Mobile: split into two cards — **Jan–Jun** and **Jul–Dec**, each as its own vertical block. Each month becomes one row with its Begin/Break + Habit input and a 31-day strip below (wrapping into ~5 rows of 7 cells), instead of cramming everything into one wide table.
+   - Desktop: unchanged.
 
-No DB migration needed — `FieldValue` already accepts arbitrary records.
+3. **`MonthTracker`** (Activities by month)
+   - Mobile: split the 12 month columns into two tables (J F M A M J / J A S O N D) stacked vertically. Activity name column repeats in each.
+   - Desktop: unchanged.
 
-## 3. Monthly Calendar — tap-to-open day popup
+4. **`HabitGrid`** (31-day habit grid)
+   - Mobile: split the 31 day columns into two tables: days 1–16 and 17–31, stacked. Habit name column repeats.
+   - Desktop: unchanged.
 
-In `CalendarGrid` (`FieldRenderer.tsx`):
-- Each day cell becomes a `<button>` that opens a shadcn `<Dialog>` (already in `src/components/ui/dialog.tsx`).
-- Cell shows: day number in the corner + a 2-line truncated preview of the note (read-only).
-- Dialog shows: header "April 12, 2026" (built from selected month/year), a full `<Textarea>` for the note, and a "Done" button. Saves through the same `update(day, value)` callback already wired up.
-- Removes the per-cell textarea + spinner artifact, fixes the mobile cramped layout, and shows full content on demand.
+5. **`MeasurementGrid`** (Bi-Monthly Weight / Measurements)
+   - Already narrow enough; just remove the `sticky left-0` artifact and let it scroll horizontally cleanly. No splitting needed.
 
-## 4. Mood icons instead of 1–5 numbers
+### Decision needed for DailyMonthGrid (Achieved + Note columns)
 
-Add a new field type `mood-rating` (or extend `rating` with an `iconSet: "mood"` flag).
+When split into two halves, the Achieved checkbox and Note column belong to the **day**, not to a half-year. Plan: show Achieved + Note **only in the bottom (Jul–Dec) half**, with a small caption "Achieved & note apply to the whole year for that day". This keeps the top table compact and avoids duplicating the same input twice. Alternative would be to show them in both halves bound to the same state.
 
-- `src/lib/pageTypes.ts`: change the Daily Tracker `mood` field to the new type.
-- `src/components/FieldRenderer.tsx`: render 5 face icons from `lucide-react` (`Angry`, `Frown`, `Meh`, `Smile`, `Laugh`) as toggleable buttons. Selected = primary tint; unselected = muted. Same storage shape (number 1–5) — no migration.
+### Sticky-column artifact fix
 
-## 5. Remove "Best day"
+Remove `sticky left-0 bg-card z-10` from all grid first-column cells. Once the tables fit the viewport on mobile, sticky is unnecessary and on desktop it isn't causing the artifact (the artifact only manifests when the row is taller than the viewport because the `overflow-x-auto` wrapper still allows the inner content to be vertically taller than the page header that sits above it on mobile). On desktop tables, keep the wrapper as `overflow-x-auto` for graceful degradation but drop `sticky` since the row label fits in view.
 
-`src/lib/pageTypes.ts`: delete the `best_day` field from the Daily Tracker `Workout` section. Existing entries that have `best_day: true` simply stop rendering it; data is preserved if they ever re-add the field.
+### Implementation pattern
 
-## 6. Multi-format backup + reminder
+Add a small `useIsMobile` check (already exists at `src/hooks/use-mobile.tsx`) to each grid component, then conditionally render the half-year split layout vs. the existing single table.
 
-Two parts: export formats and a gentle reminder.
+```tsx
+const isMobile = useIsMobile();
+if (isMobile) return <SplitView ... />;
+return <FullTable ... />;
+```
 
-### Export formats (in `src/lib/db.ts` + `src/pages/Home.tsx`)
+The split view shares all state with the single table — it only changes which subset of months/days is rendered.
 
-Add helpers:
-- `exportAllJson()` — current behavior (already exists).
-- `exportAllCsv()` — one CSV per page type, bundled into a single `.zip` (uses existing browser `Blob` + a tiny zip helper, or a flat single-file CSV with a `pageType` column if we want to skip a zip dep). Plan: **single combined CSV** with columns `id,pageType,createdAt,updatedAt,fieldKey,fieldValue` (long format) — simplest, no new deps, opens in any spreadsheet.
-- `exportAllXlsx()` — uses `xlsx` (SheetJS) which is already in many shadcn projects; if not present, install `xlsx`. One sheet per page type, columns = field keys. Falls back to a single sheet if a page type has no entries.
-- `exportAllPdf()` — uses `jspdf` + `jspdf-autotable` (lightweight, ~100 KB). One section per page type, table of entries with their summary + key fields. Adds the planner name and export date in the header.
+## Files changed
 
-All four cover **every entry from the user's first `createdAt` through now** because they iterate `db.getAll("entries")` (already does).
-
-### Settings UI (`src/pages/Home.tsx` "Backup & restore" card)
-
-Replace the single "Export backup" button with a small dropdown / button group:
-- Export as JSON
-- Export as CSV
-- Export as Excel
-- Export as PDF
-- Restore (unchanged — JSON only, since that's the only round-trippable format)
-
-Add subtitle: "Download a complete copy of every entry, from your first day to today."
-
-### Reminder
-
-In `src/pages/Home.tsx`:
-- Track `lastBackupAt` in `localStorage` (set whenever any export runs).
-- If it's been > 30 days since last backup AND the user has ≥ 5 entries, show a soft amber banner above the Sections grid:
-  > "It's been a while since your last backup. Download a copy so you never lose your entries."
-  with a "Back up now" button that scrolls to the Backup card.
-- Dismissible for 7 days via `localStorage`.
-
-No server, no account — purely client-side, which matches the rest of the app.
-
----
+- `src/components/FieldRenderer.tsx` — update the five grid components above
 
 ## Out of scope
 
-- Changing the IndexedDB schema or migrating field values.
-- Adding cloud sync (separate feature).
-- Touching unrelated tracker layouts that already render cleanly on mobile.
-
-## Files touched
-
-- `src/components/FieldRenderer.tsx` — mobile overflow fixes, `DailyMonthGrid` notes column, `CalendarGrid` tap-to-edit dialog, mood icons rendering.
-- `src/lib/pageTypes.ts` — remove `best_day`, change `mood` field type.
-- `src/lib/db.ts` — add CSV / XLSX / PDF export helpers.
-- `src/pages/Home.tsx` — multi-format export UI + backup-reminder banner.
-- `package.json` — add `xlsx`, `jspdf`, `jspdf-autotable` if not already installed.
+- Monthly calendar popup grid (already mobile-friendly, uses Dialog)
+- Other field types (text, mood-rating, etc.)
+- Visual redesign — only structural split, existing styling preserved
