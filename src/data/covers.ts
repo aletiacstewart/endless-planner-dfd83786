@@ -24,6 +24,11 @@ import sparrowDandelionMeadow from "@/assets/covers/sparrow-dandelion-meadow.jpg
 import sparrowForgetMeNots from "@/assets/covers/sparrow-forget-me-nots.jpg";
 import sparrowDandelionWishes from "@/assets/covers/sparrow-dandelion-wishes.jpg";
 import sparrowDahliaDandelion from "@/assets/covers/sparrow-dahlia-dandelion.jpg";
+import sparrowDahliaDandelionStars from "@/assets/covers/sparrow-dahlia-dandelion-stars.jpg";
+import moonlitButterfliesLotus from "@/assets/covers/moonlit-butterflies-lotus.jpg";
+import blackRoseChains from "@/assets/covers/black-rose-chains.jpg";
+import redRoseMoon from "@/assets/covers/red-rose-moon.jpg";
+import whiteRoseMoon from "@/assets/covers/white-rose-moon.jpg";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
