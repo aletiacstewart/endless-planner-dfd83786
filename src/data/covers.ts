@@ -60,6 +60,7 @@ import botanicalSpiritLeaves from "@/assets/covers/botanical-spirit-leaves.jpg";
 import botanicalSpiritRiver from "@/assets/covers/botanical-spirit-river.jpg";
 import botanicalSpiritCosmos from "@/assets/covers/botanical-spirit-cosmos.jpg";
 import botanicalSpiritPond from "@/assets/covers/botanical-spirit-pond.jpg";
+import faithStickerRainbowCross from "@/assets/covers/faith-sticker-rainbow-cross.jpg";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
