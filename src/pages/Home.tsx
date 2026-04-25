@@ -55,33 +55,43 @@ export default function Home() {
 
   return (
     <div className="min-h-screen pb-24" style={{ background: "var(--gradient-paper)" }}>
-      {/* Cover hero */}
-      <div className="relative h-56 sm:h-72 overflow-hidden">
-        <CoverImage
-          cover={cover}
-          plannerName={plannerName}
-          ownerName={settings?.ownerName}
-          className="absolute inset-0"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-background" />
+      {/* Cover hero — show the full artwork, no aggressive cropping. */}
+      <div className="relative w-full">
+        {/* Settings cog floats over the cover, top-right. */}
         <Link
           to="/settings"
           aria-label="Settings"
-          className="absolute top-4 right-4 w-10 h-10 rounded-full bg-card/80 backdrop-blur flex items-center justify-center shadow-lg hover:bg-card transition-colors"
+          className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-card/80 backdrop-blur flex items-center justify-center shadow-lg hover:bg-card transition-colors"
         >
           <Icons.Settings className="w-5 h-5" />
         </Link>
-        <div className="absolute inset-x-0 bottom-0 px-5 pb-4">
-          <h1 className="font-display text-3xl sm:text-4xl font-semibold text-white drop-shadow-lg">
-            {plannerName}
-          </h1>
-          {settings?.ownerName && (
-            <p className="font-script text-xl text-white/90 drop-shadow">
-              {settings.ownerName}
-            </p>
-          )}
+
+        {/* Mobile: full portrait, edge-to-edge.
+            Tablet+: cap height and letterbox the painting against the
+            themed paper background so nothing gets sliced. */}
+        <div className="relative mx-auto w-full aspect-[3/4] sm:aspect-auto sm:h-[min(70vh,720px)] max-w-screen-md overflow-hidden">
+          <CoverImage
+            cover={cover}
+            plannerName={plannerName}
+            ownerName={settings?.ownerName}
+            className="absolute inset-0 w-full h-full object-cover sm:object-contain"
+          />
+          {/* Bottom gradient — strong enough to keep the title readable on
+              any cover, but transparent at the top so artwork breathes. */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-b from-transparent via-black/30 to-black/70" />
+          <div className="absolute inset-x-0 bottom-0 px-5 pb-5">
+            <h1 className="font-display text-3xl sm:text-4xl font-semibold text-white drop-shadow-lg">
+              {plannerName}
+            </h1>
+            {settings?.ownerName && (
+              <p className="font-script text-xl text-white/90 drop-shadow">
+                {settings.ownerName}
+              </p>
+            )}
+          </div>
         </div>
       </div>
+
 
       <main className="px-5 pt-6 space-y-6">
         {recent.length > 0 && (
