@@ -4,7 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Change of Life Planner — calm sage/cream palette inspired by the printed journal.
+/* Change of Life - Wellness Journey — calm sage/cream palette inspired by the printed journal.
    All colors are HSL semantic tokens. Never use raw colors in components. */
 
 @layer base {
