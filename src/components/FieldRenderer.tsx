@@ -473,47 +473,49 @@ function HabitGrid({
     onChange({ habits, marks });
   };
 
-  return (
-    <div>
-      <label className="field-label block mb-2">Habits — tap to mark</label>
-      <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
-        <table className="text-xs border-separate border-spacing-1">
-          <thead>
-            <tr>
-              <th className="text-left font-normal text-muted-foreground sticky left-0 bg-card pr-2 z-10 border-r border-border/40">Habit</th>
-              {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
-                <th key={d} className="font-normal text-muted-foreground w-6">{d}</th>
-              ))}
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {data.habits.map((h, i) => (
-              <tr key={i}>
-                <td className="sticky left-0 bg-card pr-2 z-10 border-r border-border/40">
-                  <Input
-                    value={h}
-                    onChange={(e) => setHabit(i, e.target.value)}
-                    className="h-7 text-xs min-w-[7rem] bg-background/60"
-                  />
-                </td>
-                {Array.from({ length: 31 }, (_, di) => di + 1).map((d) => {
-                  const k = `${i}-${d}`;
-                  const on = !!data.marks[k];
-                  return (
-                    <td key={d}>
-                      <button
-                        type="button"
-                        onClick={() => toggle(i, d)}
-                        className={cn(
-                          "w-5 h-5 rounded-sm border",
-                          on ? "bg-primary border-primary" : "bg-background/60 border-input"
-                        )}
-                        aria-label={`Day ${d}`}
-                      />
-                    </td>
-                  );
-                })}
+  const isMobile = useIsMobile();
+
+  const renderTable = (dayStart: number, dayEnd: number, showRemove: boolean) => {
+    const days = Array.from({ length: dayEnd - dayStart + 1 }, (_, i) => i + dayStart);
+    return (
+      <table className="text-xs border-separate border-spacing-1 w-full">
+        <thead>
+          <tr>
+            <th className="text-left font-normal text-muted-foreground pr-2">Habit</th>
+            {days.map((d) => (
+              <th key={d} className="font-normal text-muted-foreground w-6">{d}</th>
+            ))}
+            {showRemove && <th />}
+          </tr>
+        </thead>
+        <tbody>
+          {data.habits.map((h, i) => (
+            <tr key={i}>
+              <td className="pr-2">
+                <Input
+                  value={h}
+                  onChange={(e) => setHabit(i, e.target.value)}
+                  className="h-7 text-xs min-w-[6rem] bg-background/60"
+                />
+              </td>
+              {days.map((d) => {
+                const k = `${i}-${d}`;
+                const on = !!data.marks[k];
+                return (
+                  <td key={d}>
+                    <button
+                      type="button"
+                      onClick={() => toggle(i, d)}
+                      className={cn(
+                        "w-5 h-5 rounded-sm border",
+                        on ? "bg-primary border-primary" : "bg-background/60 border-input"
+                      )}
+                      aria-label={`Day ${d}`}
+                    />
+                  </td>
+                );
+              })}
+              {showRemove && (
                 <td>
                   <Button
                     type="button"
@@ -525,11 +527,33 @@ function HabitGrid({
                     <X className="w-3.5 h-3.5" />
                   </Button>
                 </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  };
+
+  return (
+    <div>
+      <label className="field-label block mb-2">Habits — tap to mark</label>
+      {isMobile ? (
+        <div className="space-y-4">
+          <div>
+            <div className="text-[10px] text-muted-foreground mb-1">Days 1–16</div>
+            {renderTable(1, 16, false)}
+          </div>
+          <div>
+            <div className="text-[10px] text-muted-foreground mb-1">Days 17–31</div>
+            {renderTable(17, 31, true)}
+          </div>
+        </div>
+      ) : (
+        <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
+          {renderTable(1, 31, true)}
+        </div>
+      )}
       <Button type="button" variant="outline" size="sm" onClick={addHabit} className="mt-2">
         <Plus className="w-4 h-4 mr-1" /> Add habit
       </Button>
