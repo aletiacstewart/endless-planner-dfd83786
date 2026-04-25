@@ -18,6 +18,8 @@ import chroniclesDarkRavenRoses from "@/assets/covers/chronicles-dark-raven-rose
 import faithStickerRainbowCross from "@/assets/covers/faith-sticker-rainbow-cross.jpg";
 import faithCrossRoses from "@/assets/covers/faith-cross-roses.jpg";
 import faithCrossHeart from "@/assets/covers/faith-cross-heart.jpg";
+import emperorMothWildflowers from "@/assets/covers/emperor-moth-wildflowers.jpg";
+import sparrowLotus from "@/assets/covers/sparrow-lotus.jpg";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
@@ -606,6 +608,20 @@ export const COVERS: Cover[] = [
     collection: "faith",
     image: faithCrossHeart,
     palette: paletteMonochromeFaith,
+  },
+  {
+    id: "emperor-moth-wildflowers",
+    name: "Emperor Moth & Wildflowers",
+    collection: "celestial-birds-insects",
+    image: emperorMothWildflowers,
+    palette: paletteMoonlitButterflies,
+  },
+  {
+    id: "sparrow-lotus",
+    name: "Sparrow on Lotus",
+    collection: "sparrow",
+    image: sparrowLotus,
+    palette: paletteSparrowLotus,
   },
 ];
 
