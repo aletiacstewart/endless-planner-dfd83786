@@ -3,6 +3,11 @@ import faithStickerCollage from "@/assets/covers/faith-sticker-collage.jpg";
 import dandelionLadybugsNight from "@/assets/covers/dandelion-ladybugs-night.jpg";
 import classicWarmLeather from "@/assets/covers/classic-warm-leather.jpg";
 import crystalVinesBranch from "@/assets/covers/crystal-vines-branch.jpg";
+import affirmationFragileNotBroken from "@/assets/covers/affirmation-fragile-not-broken.jpg";
+import classicIvoryRibbons from "@/assets/covers/classic-ivory-ribbons.jpg";
+import crystalVinesBlush from "@/assets/covers/crystal-vines-blush.jpg";
+import featherEmeraldSky from "@/assets/covers/feather-emerald-sky.jpg";
+import featherAmberSky from "@/assets/covers/feather-amber-sky.jpg";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
@@ -484,6 +489,43 @@ export const COVERS: Cover[] = [
     collection: "faith",
     image: faithStickerCollage,
     palette: paletteFaithVibrant,
+  },
+  {
+    id: "affirmation-fragile-not-broken",
+    name: "Fragile, Not Broken",
+    collection: "affirmations",
+    image: affirmationFragileNotBroken,
+    palette: paletteLightChronicle,
+  },
+  {
+    id: "classic-ivory-ribbons",
+    name: "Ivory Ribbons",
+    collection: "classic",
+    image: classicIvoryRibbons,
+    personalized: true,
+    palette: paletteSparrowWishes,
+  },
+  {
+    id: "crystal-vines-blush",
+    name: "Blush Crystal Vines",
+    collection: "sky-wings-arrows",
+    image: crystalVinesBlush,
+    personalized: true,
+    palette: paletteCrimsonMoon,
+  },
+  {
+    id: "feather-emerald-sky",
+    name: "Emerald Feather in Sky",
+    collection: "sky-wings-arrows",
+    image: featherEmeraldSky,
+    palette: paletteSkyEmerald,
+  },
+  {
+    id: "feather-amber-sky",
+    name: "Amber Feather in Sky",
+    collection: "sky-wings-arrows",
+    image: featherAmberSky,
+    palette: paletteSkyAmber,
   },
 ];
 
