@@ -1,38 +1,40 @@
-# Fix cover cropping + make splash user-dismissed
+## Goal
+Make every cover render consistently in a **square (1:1) frame** across the app, with each piece of art shown as fully as possible, and shrink the bundle by re-encoding oversized PNGs.
 
-## What you'll see after
+## Image normalization (script over `src/assets/covers/`)
 
-**1. Home hero shows the full cover.** Today the hero is a short letterbox (~h-72) using `object-cover`, so portrait covers like *Ember Hummingbird* get the head, top, and most of the wings cropped away. After the fix the hero matches the cover's natural 3:4 portrait shape on phones, scaling sensibly on larger screens — the whole artwork is visible, with the planner name + Settings cog still floating on top in readable contrast.
+A one-time Python script will process all 63 covers:
 
-**2. Splash stays until you tap it.** Today the splash auto-disappears after 1.2 seconds. After the fix it stays as long as you want, like opening the front cover of a real journal. You dismiss it by either tapping the cover anywhere or pressing a soft "Open planner" pill button at the bottom. A subtle "Tap to open" hint appears after a moment so first-time users know what to do.
+1. **Smart crop to 1:1**
+   - Square covers (24 files) → already 1:1, just re-encode.
+   - Landscape covers (~26 files at ratio 1.4) → center-crop horizontally to a square, preserving full height. Focal subjects in this library are vertically centered, so center-crop keeps the art intact.
+   - Portrait covers (12 files at ratio 0.75 — botanical-spirit, chronicles, faith) → center-crop vertically to a square. These have the figure centered, so trimming top/bottom equally keeps the subject.
+2. **Resize** every output to 1200×1200.
+3. **Re-encode as optimized JPG** (quality 85, progressive). PNG sources become JPG; existing JPGs get re-saved at the smaller size. Expect ~70–80% bundle size reduction.
+4. **Filename handling**: keep the same base name, switch extension to `.jpg` for ones that were `.png`. Update `src/data/covers.ts` imports for any that change extension.
 
----
+## Frame updates (3 files)
 
-## Files & changes
+Switch every cover frame from `aspect-[3/4]` / `aspect-[4/5]` to `aspect-square`:
 
-### `src/pages/Home.tsx` — uncropped cover hero
-- Replace the fixed-height letterbox (`h-56 sm:h-72` + `object-cover`) with a proper portrait container:
-  - Mobile: `aspect-[3/4]` so the full portrait artwork fits edge-to-edge with no crop.
-  - Tablet/desktop (`sm:` and up): cap at a max height (e.g. `sm:max-h-[60vh]`) and use `object-contain` so wider screens letterbox the artwork against the themed paper background instead of zooming in and slicing it.
-- Keep the existing Settings cog (top-right) and the planner-name overlay (bottom). Strengthen the bottom gradient so the title remains legible regardless of cover.
-- No change to data flow or theming.
+- **`src/components/cover/CoverPicker.tsx`** (line 100) — picker grid tiles → `aspect-square`.
+- **`src/components/SplashScreen.tsx`** (line 36) — splash hero → `aspect-square`, keep `max-w-md sm:max-w-lg`.
+- **`src/pages/Home.tsx`** (line 72) — Home hero → `aspect-square` capped at `max-w-md` so it doesn't dominate desktop. Keep `object-cover` and the bottom gradient overlay.
+- **`src/components/onboarding/OnboardingFlow.tsx`** (line 38) — onboarding preview → `aspect-square` for consistency.
 
-### `src/App.tsx` — splash dismissal
-- Remove the `setTimeout(..., 1200)` auto-dismiss.
-- `SplashScreen` now receives an `onOpen` callback; `AppShell` passes `() => setSplashed(true)`.
-- The splash stays mounted until the user opens it. Re-shows on full reload (existing behavior — splash is one-shot per session).
+## Verification
 
-### `src/components/SplashScreen.tsx` — interactive cover
-- Wrap the whole splash in a `<button>` so tapping anywhere dismisses it. Add `aria-label="Open planner"` and proper focus styles.
-- Add a centered "Open planner" pill near the bottom that visually says "tap me" — same click handler as the wrapper.
-- Add a small "Tap to open" hint that fades in after ~1.5s for discoverability (purely visual, doesn't auto-dismiss).
-- Keep the cover artwork centered and uncropped here too: switch the inner `CoverImage` wrapper from filling the viewport to a centered `aspect-[3/4]` block so the full painting shows on tall and wide screens.
-
-### No other files touched
-- Section/Entry headers are unaffected — the user's screenshot of "Change of Life Wellness" is the **Home hero**, not a section header. The fix to Home covers that case.
-- Cover manifest, theming, onboarding, and routing are unchanged.
+- Run `tsc --noEmit` to confirm no broken imports.
+- Spot-check a representative sample of cropped images (one landscape, one portrait, one square) by opening them after the script runs.
+- Report final bundle-size delta for `src/assets/covers/`.
 
 ## Out of scope
-- No new "tap-anywhere" behavior on Section/Entry pages.
-- No new cover assets in this change.
-- Splash still appears once per session after onboarding; we are not adding a "show splash on every navigation" mode.
+
+- Distribution/payments work (PWA paywall, Capacitor, Electron) — deferred per your earlier choice.
+- Adding new covers.
+- Color-palette changes.
+
+## Summary of changes
+- 63 image files re-cropped, resized, and re-encoded
+- `src/data/covers.ts` — extension fixes for any PNG→JPG renames
+- 4 component files — frame ratio switched to `aspect-square`

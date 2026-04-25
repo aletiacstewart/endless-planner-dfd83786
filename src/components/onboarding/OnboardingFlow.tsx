@@ -35,7 +35,7 @@ export function OnboardingFlow() {
       <div className="min-h-screen flex flex-col" style={{ background: "var(--gradient-paper)" }}>
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="max-w-sm w-full text-center">
-            <div className="aspect-[4/5] rounded-3xl overflow-hidden mb-8 shadow-2xl mx-auto">
+            <div className="aspect-square rounded-3xl overflow-hidden mb-8 shadow-2xl mx-auto">
               <CoverImage cover={hero} className="w-full h-full" />
             </div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-soft mb-3">
