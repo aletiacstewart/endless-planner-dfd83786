@@ -479,7 +479,7 @@ function HabitGrid({
         <table className="text-xs border-separate border-spacing-1">
           <thead>
             <tr>
-              <th className="text-left font-normal text-muted-foreground sticky left-0 bg-card pr-2">Habit</th>
+              <th className="text-left font-normal text-muted-foreground sticky left-0 bg-card pr-2 z-10 border-r border-border/40">Habit</th>
               {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
                 <th key={d} className="font-normal text-muted-foreground w-6">{d}</th>
               ))}
@@ -489,7 +489,7 @@ function HabitGrid({
           <tbody>
             {data.habits.map((h, i) => (
               <tr key={i}>
-                <td className="sticky left-0 bg-card pr-2">
+                <td className="sticky left-0 bg-card pr-2 z-10 border-r border-border/40">
                   <Input
                     value={h}
                     onChange={(e) => setHabit(i, e.target.value)}
@@ -563,7 +563,7 @@ function MonthTracker({
         <table className="text-xs border-separate border-spacing-1">
           <thead>
             <tr>
-              <th className="text-left font-normal text-muted-foreground sticky left-0 bg-card pr-2">Activity</th>
+              <th className="text-left font-normal text-muted-foreground sticky left-0 bg-card pr-2 z-10 border-r border-border/40">Activity</th>
               {months.map((m, i) => (
                 <th key={i} className="font-normal text-muted-foreground w-6">{m}</th>
               ))}
@@ -644,7 +644,7 @@ function MeasurementGrid({
         <table className="text-xs border-separate border-spacing-1 min-w-full">
           <thead>
             <tr>
-              <th className="text-left font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-10">
+              <th className="text-left font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-10 z-10 border-r border-border/40">
                 {rowLabel}
               </th>
               {columns.map((c) => (
@@ -657,7 +657,7 @@ function MeasurementGrid({
           <tbody>
             {Array.from({ length: rowCount }, (_, i) => i + 1).map((row) => (
               <tr key={row}>
-                <td className="sticky left-0 bg-card pr-2 text-muted-foreground text-center">
+                <td className="sticky left-0 bg-card pr-2 text-muted-foreground text-center z-10 border-r border-border/40">
                   {row}
                 </td>
                 {columns.map((c) => (
@@ -833,7 +833,7 @@ function YearlyHabitGrid({
         <table className="text-xs border-separate border-spacing-1">
           <thead>
             <tr>
-              <th className="font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-12">Month</th>
+              <th className="font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-12 z-10 border-r border-border/40">Month</th>
               <th className="font-normal text-muted-foreground pr-2 w-32">Begin / Break + Habit</th>
               {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
                 <th key={d} className="font-normal text-muted-foreground w-6">{d}</th>
@@ -843,7 +843,7 @@ function YearlyHabitGrid({
           <tbody>
             {rows.map((row, i) => (
               <tr key={i}>
-                <td className="sticky left-0 bg-card pr-2 text-muted-foreground">
+                <td className="sticky left-0 bg-card pr-2 text-muted-foreground z-10 border-r border-border/40">
                   {FULL_MONTHS[i].slice(0, 3)}
                 </td>
                 <td className="pr-2">
