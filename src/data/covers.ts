@@ -20,6 +20,10 @@ import faithCrossRoses from "@/assets/covers/faith-cross-roses.jpg";
 import faithCrossHeart from "@/assets/covers/faith-cross-heart.jpg";
 import emperorMothWildflowers from "@/assets/covers/emperor-moth-wildflowers.jpg";
 import sparrowLotus from "@/assets/covers/sparrow-lotus.jpg";
+import sparrowDandelionMeadow from "@/assets/covers/sparrow-dandelion-meadow.jpg";
+import sparrowForgetMeNots from "@/assets/covers/sparrow-forget-me-nots.jpg";
+import sparrowDandelionWishes from "@/assets/covers/sparrow-dandelion-wishes.jpg";
+import sparrowDahliaDandelion from "@/assets/covers/sparrow-dahlia-dandelion.jpg";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
@@ -622,6 +626,34 @@ export const COVERS: Cover[] = [
     collection: "sparrow",
     image: sparrowLotus,
     palette: paletteSparrowLotus,
+  },
+  {
+    id: "sparrow-dandelion-meadow",
+    name: "Fledgling on a Dandelion",
+    collection: "sparrow",
+    image: sparrowDandelionMeadow,
+    palette: paletteSparrowDandelion,
+  },
+  {
+    id: "sparrow-forget-me-nots",
+    name: "Sparrow & Forget-Me-Nots",
+    collection: "sparrow",
+    image: sparrowForgetMeNots,
+    palette: paletteSparrowForgetMeNots,
+  },
+  {
+    id: "sparrow-dandelion-wishes",
+    name: "Dandelion Wishes",
+    collection: "sparrow",
+    image: sparrowDandelionWishes,
+    palette: paletteSparrowWishes,
+  },
+  {
+    id: "sparrow-dahlia-dandelion",
+    name: "Sparrow with Dahlias",
+    collection: "sparrow",
+    image: sparrowDahliaDandelion,
+    palette: paletteVintageScrapbook,
   },
 ];
 
