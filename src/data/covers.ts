@@ -39,6 +39,11 @@ import sparrowMoonFairyLights from "@/assets/covers/sparrow-moon-fairy-lights.jp
 import midnightSwallowtailStars from "@/assets/covers/midnight-swallowtail-stars.jpg";
 import hummingbirdFairyLights from "@/assets/covers/hummingbird-fairy-lights.jpg";
 import dragonflyFairyLights from "@/assets/covers/dragonfly-fairy-lights.jpg";
+import hummingbirdOliveBotanical from "@/assets/covers/hummingbird-olive-botanical.jpg";
+import whiteButterflyTrumpetFlowers from "@/assets/covers/white-butterfly-trumpet-flowers.jpg";
+import angelTrumpetButterfly from "@/assets/covers/angel-trumpet-butterfly.jpg";
+import hummingbirdCrimsonCosmos from "@/assets/covers/hummingbird-crimson-cosmos.jpg";
+import dragonflySalviaBokeh from "@/assets/covers/dragonfly-salvia-bokeh.jpg";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
@@ -341,6 +346,91 @@ const paletteMoonlitButterflies: CoverPalette = {
   mutedForeground: "40 15% 65%",
   border: "260 15% 22%",
   paperGradient: "linear-gradient(180deg, hsl(260 25% 10%), hsl(260 30% 6%))",
+};
+
+const paletteBotanicalOlive: CoverPalette = {
+  mode: "light",
+  background: "60 25% 94%",
+  foreground: "150 20% 22%",
+  card: "60 35% 98%",
+  cardForeground: "150 20% 22%",
+  primary: "150 35% 40%",
+  primaryForeground: "60 35% 98%",
+  primarySoft: "60 22% 88%",
+  accent: "15 55% 65%",
+  accentForeground: "60 35% 98%",
+  muted: "60 18% 90%",
+  mutedForeground: "150 12% 42%",
+  border: "60 18% 84%",
+  paperGradient: "linear-gradient(180deg, hsl(60 35% 96%), hsl(80 25% 90%))",
+};
+
+const paletteGoldenStardust: CoverPalette = {
+  mode: "light",
+  background: "40 50% 92%",
+  foreground: "25 35% 22%",
+  card: "40 60% 97%",
+  cardForeground: "25 35% 22%",
+  primary: "15 70% 55%",
+  primaryForeground: "40 60% 97%",
+  primarySoft: "40 40% 88%",
+  accent: "30 80% 60%",
+  accentForeground: "40 60% 97%",
+  muted: "40 28% 89%",
+  mutedForeground: "25 15% 45%",
+  border: "40 22% 83%",
+  paperGradient: "linear-gradient(180deg, hsl(40 60% 95%), hsl(35 45% 88%))",
+};
+
+const paletteAngelTrumpet: CoverPalette = {
+  mode: "dark",
+  background: "190 40% 10%",
+  foreground: "180 30% 92%",
+  card: "190 35% 14%",
+  cardForeground: "180 30% 92%",
+  primary: "175 50% 60%",
+  primaryForeground: "190 40% 10%",
+  primarySoft: "190 28% 20%",
+  accent: "90 35% 65%",
+  accentForeground: "190 40% 10%",
+  muted: "190 22% 18%",
+  mutedForeground: "180 18% 65%",
+  border: "190 22% 24%",
+  paperGradient: "linear-gradient(180deg, hsl(190 40% 12%), hsl(195 45% 8%))",
+};
+
+const paletteCrimsonCosmos: CoverPalette = {
+  mode: "dark",
+  background: "330 35% 10%",
+  foreground: "30 40% 94%",
+  card: "330 30% 14%",
+  cardForeground: "30 40% 94%",
+  primary: "10 75% 60%",
+  primaryForeground: "30 40% 94%",
+  primarySoft: "330 22% 20%",
+  accent: "180 55% 55%",
+  accentForeground: "330 35% 10%",
+  muted: "330 18% 18%",
+  mutedForeground: "30 22% 68%",
+  border: "330 18% 24%",
+  paperGradient: "linear-gradient(180deg, hsl(330 35% 12%), hsl(340 40% 8%))",
+};
+
+const paletteDragonflyMeadow: CoverPalette = {
+  mode: "light",
+  background: "30 40% 93%",
+  foreground: "270 25% 25%",
+  card: "30 50% 98%",
+  cardForeground: "270 25% 25%",
+  primary: "275 45% 55%",
+  primaryForeground: "30 50% 98%",
+  primarySoft: "30 32% 88%",
+  accent: "190 50% 55%",
+  accentForeground: "30 50% 98%",
+  muted: "30 22% 90%",
+  mutedForeground: "270 12% 45%",
+  border: "30 20% 84%",
+  paperGradient: "linear-gradient(180deg, hsl(30 50% 96%), hsl(280 30% 90%))",
 };
 
 // --- Sky & Arrows palettes (feather + arrow series) --------------------------
@@ -826,6 +916,41 @@ export const COVERS: Cover[] = [
     collection: "celestial-birds-insects",
     image: dragonflyFairyLights,
     palette: paletteFairyLightOak,
+  },
+  {
+    id: "hummingbird-olive-botanical",
+    name: "Hummingbird & Olive Botanical",
+    collection: "garden",
+    image: hummingbirdOliveBotanical,
+    palette: paletteBotanicalOlive,
+  },
+  {
+    id: "white-butterfly-trumpet-flowers",
+    name: "White Butterfly & Trumpet Flowers",
+    collection: "garden",
+    image: whiteButterflyTrumpetFlowers,
+    palette: paletteGoldenStardust,
+  },
+  {
+    id: "angel-trumpet-butterfly",
+    name: "Angel's Trumpet & Butterfly",
+    collection: "garden",
+    image: angelTrumpetButterfly,
+    palette: paletteAngelTrumpet,
+  },
+  {
+    id: "hummingbird-crimson-cosmos",
+    name: "Hummingbird & Crimson Cosmos",
+    collection: "celestial-birds-insects",
+    image: hummingbirdCrimsonCosmos,
+    palette: paletteCrimsonCosmos,
+  },
+  {
+    id: "dragonfly-salvia-bokeh",
+    name: "Dragonfly on Salvia",
+    collection: "garden",
+    image: dragonflySalviaBokeh,
+    palette: paletteDragonflyMeadow,
   },
 ];
 
