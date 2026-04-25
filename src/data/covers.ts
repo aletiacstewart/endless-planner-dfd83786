@@ -494,6 +494,83 @@ export const COVERS: Cover[] = [
     image: sparrowMoonFairyLights,
     palette: paletteSparrowWishes,
   },
+  // --- Garden additions -----------------------------------------------------
+  {
+    id: "garden-pink-rose-dew",
+    name: "Pink Rose & Dew",
+    collection: "garden",
+    image: gardenPinkRoseDew,
+    palette: paletteGardenRose,
+  },
+  {
+    id: "garden-blue-butterfly-orchid",
+    name: "Blue Butterfly on Orchid",
+    collection: "garden",
+    image: gardenBlueButterflyOrchid,
+    palette: paletteGardenWarm,
+  },
+  {
+    id: "garden-hummingbird-mimosa",
+    name: "Hummingbird & Pink Mimosa",
+    collection: "garden",
+    image: gardenHummingbirdMimosa,
+    palette: paletteGardenRose,
+  },
+  {
+    id: "garden-admiral-orchid",
+    name: "Red Admiral & White Orchid",
+    collection: "garden",
+    image: gardenAdmiralOrchid,
+    palette: paletteSparrowForgetMeNots,
+  },
+  {
+    id: "garden-dragonfly-grasses",
+    name: "Dragonfly in Plume Grasses",
+    collection: "garden",
+    image: gardenDragonflyGrasses,
+    palette: paletteGardenWarm,
+  },
+  // --- Harvest Moon (Black Moon) -------------------------------------------
+  {
+    id: "harvest-moon-rose",
+    name: "Harvest Moon & Black Rose",
+    collection: "black-moon",
+    image: harvestMoonRose,
+    personalized: true,
+    palette: paletteHarvestMoon,
+  },
+  {
+    id: "harvest-moon-dahlia",
+    name: "Harvest Moon & Black Dahlia",
+    collection: "black-moon",
+    image: harvestMoonDahlia,
+    personalized: true,
+    palette: paletteHarvestMoon,
+  },
+  {
+    id: "harvest-moon-iris",
+    name: "Harvest Moon & Black Iris",
+    collection: "black-moon",
+    image: harvestMoonIris,
+    personalized: true,
+    palette: paletteHarvestMoon,
+  },
+  {
+    id: "harvest-moon-lilies",
+    name: "Harvest Moon & Black Lilies",
+    collection: "black-moon",
+    image: harvestMoonLilies,
+    personalized: true,
+    palette: paletteHarvestMoon,
+  },
+  {
+    id: "harvest-moon-butterfly",
+    name: "Harvest Moon & Black Butterfly",
+    collection: "black-moon",
+    image: harvestMoonButterfly,
+    personalized: true,
+    palette: paletteHarvestMoon,
+  },
 ];
 
 export const DEFAULT_COVER_ID = "sparrow-forget-me-nots";
