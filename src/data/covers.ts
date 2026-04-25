@@ -16,6 +16,16 @@ import gardenSunDragonfly from "@/assets/covers/garden-sun-dragonfly.png";
 import gardenTeardropLily from "@/assets/covers/garden-teardrop-lily.png";
 import gardenCoralHummingbirds from "@/assets/covers/garden-coral-hummingbirds.png";
 import gardenLavenderDragonflies from "@/assets/covers/garden-lavender-dragonflies.png";
+import blackRoseChains from "@/assets/covers/black-rose-chains.png";
+import blackDahliaSparks from "@/assets/covers/black-dahlia-sparks.jpg";
+import blackDahliaLights from "@/assets/covers/black-dahlia-lights.jpg";
+import blackIrisStars from "@/assets/covers/black-iris-stars.jpg";
+import blackIrisGlow from "@/assets/covers/black-iris-glow.jpg";
+import redRoseMoon from "@/assets/covers/red-rose-moon.jpg";
+import whiteRoseMoon from "@/assets/covers/white-rose-moon.jpg";
+import blackLiliesSparks from "@/assets/covers/black-lilies-sparks.jpg";
+import moonlitOak from "@/assets/covers/moonlit-oak.jpg";
+import sparrowMoonFairyLights from "@/assets/covers/sparrow-moon-fairy-lights.jpg";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
@@ -184,6 +194,23 @@ const paletteVintageScrapbook: CoverPalette = {
   paperGradient: "linear-gradient(180deg, hsl(30 40% 96%), hsl(30 28% 90%))",
 };
 
+const paletteCrimsonMoon: CoverPalette = {
+  mode: "dark",
+  background: "220 35% 8%",
+  foreground: "30 30% 92%",
+  card: "220 30% 13%",
+  cardForeground: "30 30% 92%",
+  primary: "350 65% 55%",
+  primaryForeground: "30 30% 96%",
+  primarySoft: "220 25% 18%",
+  accent: "40 75% 60%",
+  accentForeground: "220 35% 8%",
+  muted: "220 18% 16%",
+  mutedForeground: "30 15% 65%",
+  border: "220 18% 22%",
+  paperGradient: "linear-gradient(180deg, hsl(220 35% 10%), hsl(220 40% 6%))",
+};
+
 const paletteMoonlitButterflies: CoverPalette = {
   mode: "dark",
   background: "260 25% 8%",
@@ -330,6 +357,81 @@ export const COVERS: Cover[] = [
     image: vintageScrapbook,
     personalized: true,
     palette: paletteVintageScrapbook,
+  },
+  // --- Black Moon additions --------------------------------------------------
+  {
+    id: "black-rose-chains",
+    name: "Black Rose & Gold Chains",
+    collection: "black-moon",
+    image: blackRoseChains,
+    personalized: true,
+    palette: paletteMoonlitButterflies,
+  },
+  {
+    id: "black-dahlia-sparks",
+    name: "Black Dahlia & Sparks",
+    collection: "black-moon",
+    image: blackDahliaSparks,
+    palette: paletteMoonlitButterflies,
+  },
+  {
+    id: "black-dahlia-lights",
+    name: "Black Dahlia & Fairy Lights",
+    collection: "black-moon",
+    image: blackDahliaLights,
+    palette: paletteMoonlitButterflies,
+  },
+  {
+    id: "black-iris-stars",
+    name: "Black Iris & Stars",
+    collection: "black-moon",
+    image: blackIrisStars,
+    palette: paletteMoonlitButterflies,
+  },
+  {
+    id: "black-iris-glow",
+    name: "Black Iris Glow",
+    collection: "black-moon",
+    image: blackIrisGlow,
+    palette: paletteMoonlitButterflies,
+  },
+  // --- Celestial Florals ----------------------------------------------------
+  {
+    id: "red-rose-moon",
+    name: "Red Rose Under Moon",
+    collection: "celestial-florals",
+    image: redRoseMoon,
+    palette: paletteCrimsonMoon,
+  },
+  {
+    id: "white-rose-moon",
+    name: "White Rose Under Moon",
+    collection: "celestial-florals",
+    image: whiteRoseMoon,
+    palette: paletteSparrowForgetMeNots,
+  },
+  {
+    id: "black-lilies-sparks",
+    name: "Black Lilies & Sparks",
+    collection: "celestial-florals",
+    image: blackLiliesSparks,
+    palette: paletteMoonlitButterflies,
+  },
+  // --- Garden ---------------------------------------------------------------
+  {
+    id: "moonlit-oak",
+    name: "Moonlit Oak & Lanterns",
+    collection: "garden",
+    image: moonlitOak,
+    palette: paletteJewelDark,
+  },
+  // --- Sparrow Series -------------------------------------------------------
+  {
+    id: "sparrow-moon-fairy-lights",
+    name: "Sparrow, Moon & Fairy Lights",
+    collection: "sparrow",
+    image: sparrowMoonFairyLights,
+    palette: paletteSparrowWishes,
   },
 ];
 
