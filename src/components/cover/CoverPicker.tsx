@@ -97,7 +97,7 @@ export function CoverPicker({
                 key={c.id}
                 onClick={() => onSelect(c.id)}
                 className={cn(
-                  "relative aspect-[3/4] rounded-xl overflow-hidden border-2 transition-all",
+                  "relative aspect-square rounded-xl overflow-hidden border-2 transition-all",
                   isSelected
                     ? "border-primary shadow-[0_0_0_4px_hsl(var(--primary)/0.2)]"
                     : "border-transparent hover:border-border"

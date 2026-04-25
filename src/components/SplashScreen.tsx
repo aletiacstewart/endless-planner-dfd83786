@@ -33,7 +33,7 @@ export function SplashScreen({ cover, plannerName, ownerName, onOpen }: Props) {
     >
       {/* Cover artwork — centered and unsliced. Portrait on phones,
           letterboxed against the themed paper on wider screens. */}
-      <div className="relative w-full max-w-md aspect-[3/4] sm:max-w-lg shadow-2xl rounded-2xl overflow-hidden">
+      <div className="relative w-full max-w-md aspect-square sm:max-w-lg shadow-2xl rounded-2xl overflow-hidden">
         <CoverImage
           cover={cover}
           plannerName={plannerName}

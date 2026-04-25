@@ -66,15 +66,15 @@ export default function Home() {
           <Icons.Settings className="w-5 h-5" />
         </Link>
 
-        {/* Mobile: full portrait, edge-to-edge.
-            Tablet+: cap height and letterbox the painting against the
-            themed paper background so nothing gets sliced. */}
-        <div className="relative mx-auto w-full aspect-[3/4] sm:aspect-auto sm:h-[min(70vh,720px)] max-w-screen-md overflow-hidden">
+        {/* Square hero — every cover is normalized to 1:1 so it shows
+            fully on every device without cropping. Capped width on desktop
+            so it doesn't dominate the page. */}
+        <div className="relative mx-auto w-full aspect-square max-w-md overflow-hidden rounded-2xl shadow-xl">
           <CoverImage
             cover={cover}
             plannerName={plannerName}
             ownerName={settings?.ownerName}
-            className="absolute inset-0 w-full h-full object-cover sm:object-contain"
+            className="absolute inset-0 w-full h-full object-cover"
           />
           {/* Bottom gradient — strong enough to keep the title readable on
               any cover, but transparent at the top so artwork breathes. */}
