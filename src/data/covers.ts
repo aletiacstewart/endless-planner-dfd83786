@@ -413,6 +413,57 @@ const paletteSkyAmethyst: CoverPalette = {
   paperGradient: "linear-gradient(180deg, hsl(270 45% 97%), hsl(280 35% 91%))",
 };
 
+const paletteLightChronicle: CoverPalette = {
+  mode: "light",
+  background: "210 20% 96%",
+  foreground: "215 25% 22%",
+  card: "210 25% 99%",
+  cardForeground: "215 25% 22%",
+  primary: "215 30% 40%",
+  primaryForeground: "210 25% 99%",
+  primarySoft: "210 18% 90%",
+  accent: "200 35% 55%",
+  accentForeground: "210 25% 99%",
+  muted: "210 12% 92%",
+  mutedForeground: "215 10% 45%",
+  border: "210 12% 86%",
+  paperGradient: "linear-gradient(180deg, hsl(210 25% 98%), hsl(215 18% 92%))",
+};
+
+const paletteMonochromeFaith: CoverPalette = {
+  mode: "dark",
+  background: "0 0% 6%",
+  foreground: "0 0% 95%",
+  card: "0 0% 11%",
+  cardForeground: "0 0% 95%",
+  primary: "0 0% 88%",
+  primaryForeground: "0 0% 6%",
+  primarySoft: "0 0% 16%",
+  accent: "45 25% 70%",
+  accentForeground: "0 0% 6%",
+  muted: "0 0% 14%",
+  mutedForeground: "0 0% 65%",
+  border: "0 0% 20%",
+  paperGradient: "linear-gradient(180deg, hsl(0 0% 8%), hsl(0 0% 4%))",
+};
+
+const paletteFaithVibrant: CoverPalette = {
+  mode: "dark",
+  background: "215 40% 8%",
+  foreground: "40 30% 95%",
+  card: "215 35% 13%",
+  cardForeground: "40 30% 95%",
+  primary: "150 55% 50%",
+  primaryForeground: "215 40% 8%",
+  primarySoft: "215 25% 18%",
+  accent: "350 70% 60%",
+  accentForeground: "215 40% 8%",
+  muted: "215 22% 16%",
+  mutedForeground: "40 15% 65%",
+  border: "215 20% 22%",
+  paperGradient: "linear-gradient(180deg, hsl(215 40% 10%), hsl(215 45% 6%))",
+};
+
 // --- Cover catalog ------------------------------------------------------------
 
 export const COVERS: Cover[] = [
