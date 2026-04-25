@@ -5,6 +5,17 @@ import sparrowForgetMeNots from "@/assets/covers/sparrow-forget-me-nots.png";
 import sparrowWishes from "@/assets/covers/sparrow-wishes.png";
 import vintageScrapbook from "@/assets/covers/vintage-scrapbook.png";
 import moonlitButterflies from "@/assets/covers/moonlit-butterflies.png";
+import sparrowOnMoon from "@/assets/covers/sparrow-on-moon.jpg";
+import sparrowMoonLanterns from "@/assets/covers/sparrow-moon-lanterns.jpg";
+import midnightSwallowtail from "@/assets/covers/midnight-swallowtail.jpg";
+import emberHummingbird from "@/assets/covers/ember-hummingbird.jpg";
+import goldenDragonfly from "@/assets/covers/golden-dragonfly.jpg";
+import gardenHummingbirdsOlive from "@/assets/covers/garden-hummingbirds-olive.png";
+import gardenWhiteButterfly from "@/assets/covers/garden-white-butterfly.png";
+import gardenSunDragonfly from "@/assets/covers/garden-sun-dragonfly.png";
+import gardenTeardropLily from "@/assets/covers/garden-teardrop-lily.png";
+import gardenCoralHummingbirds from "@/assets/covers/garden-coral-hummingbirds.png";
+import gardenLavenderDragonflies from "@/assets/covers/garden-lavender-dragonflies.png";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
@@ -191,8 +202,6 @@ const paletteMoonlitButterflies: CoverPalette = {
 };
 
 // --- Cover catalog ------------------------------------------------------------
-// Currently includes the 7 covers actually uploaded. Add more entries here as
-// additional cover images are dropped into src/assets/covers/.
 
 export const COVERS: Cover[] = [
   {
@@ -203,10 +212,45 @@ export const COVERS: Cover[] = [
     palette: paletteJewelDark,
   },
   {
+    id: "midnight-swallowtail",
+    name: "Midnight Swallowtail",
+    collection: "celestial-birds-insects",
+    image: midnightSwallowtail,
+    palette: paletteMoonlitButterflies,
+  },
+  {
+    id: "ember-hummingbird",
+    name: "Ember Hummingbird",
+    collection: "celestial-birds-insects",
+    image: emberHummingbird,
+    palette: paletteJewelDark,
+  },
+  {
+    id: "golden-dragonfly",
+    name: "Golden Dragonfly",
+    collection: "celestial-birds-insects",
+    image: goldenDragonfly,
+    palette: paletteSparrowForgetMeNots,
+  },
+  {
     id: "moonlit-butterflies",
     name: "Moonlit Butterflies & Lotus",
     collection: "black-moon",
     image: moonlitButterflies,
+    palette: paletteMoonlitButterflies,
+  },
+  {
+    id: "sparrow-on-moon",
+    name: "Sparrow on Moon",
+    collection: "black-moon",
+    image: sparrowOnMoon,
+    palette: paletteMoonlitButterflies,
+  },
+  {
+    id: "sparrow-moon-lanterns",
+    name: "Sparrow & Moon Lanterns",
+    collection: "black-moon",
+    image: sparrowMoonLanterns,
     palette: paletteMoonlitButterflies,
   },
   {
@@ -235,6 +279,48 @@ export const COVERS: Cover[] = [
     name: "Sparrow & Wishes",
     collection: "sparrow",
     image: sparrowWishes,
+    palette: paletteSparrowWishes,
+  },
+  {
+    id: "garden-hummingbirds-olive",
+    name: "Olive Hummingbirds",
+    collection: "garden",
+    image: gardenHummingbirdsOlive,
+    palette: paletteSparrowLotus,
+  },
+  {
+    id: "garden-white-butterfly",
+    name: "White Butterfly Bloom",
+    collection: "garden",
+    image: gardenWhiteButterfly,
+    palette: paletteSparrowDandelion,
+  },
+  {
+    id: "garden-sun-dragonfly",
+    name: "Sunburst Dragonfly",
+    collection: "garden",
+    image: gardenSunDragonfly,
+    palette: paletteSparrowLotus,
+  },
+  {
+    id: "garden-teardrop-lily",
+    name: "Teardrop Lily",
+    collection: "garden",
+    image: gardenTeardropLily,
+    palette: paletteSparrowForgetMeNots,
+  },
+  {
+    id: "garden-coral-hummingbirds",
+    name: "Coral Hummingbirds",
+    collection: "garden",
+    image: gardenCoralHummingbirds,
+    palette: paletteSparrowWishes,
+  },
+  {
+    id: "garden-lavender-dragonflies",
+    name: "Lavender Dragonflies",
+    collection: "garden",
+    image: gardenLavenderDragonflies,
     palette: paletteSparrowWishes,
   },
   {
