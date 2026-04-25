@@ -516,6 +516,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
     summary: (v) => (v.year ? `Cleaning ${v.year}` : "Cleaning check list"),
   },
   {
+    id: "fun-tracker",
     name: "Fun Tracker",
     shortName: "Fun",
     description: "Track fun activities through the year.",
