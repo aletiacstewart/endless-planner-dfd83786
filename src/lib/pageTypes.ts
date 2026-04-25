@@ -3,6 +3,8 @@
  * Each page type maps to a configurable form rendered by PageRenderer.
  */
 
+export type { FieldValue } from "./db";
+
 export type FieldType =
   | "text"
   | "textarea"
