@@ -852,6 +852,50 @@ export const COVERS: Cover[] = [
     image: affirmationFloatsHope,
     palette: paletteMoonlitButterflies,
   },
+  // --- Chronicles -----------------------------------------------------------
+  {
+    id: "chronicles-light-rose-dove",
+    name: "The Light Chronicles",
+    collection: "chronicles",
+    image: chroniclesLightRoseDove,
+    palette: paletteLightChronicle,
+  },
+  {
+    id: "chronicles-dark-raven-roses",
+    name: "The Dark Chronicles",
+    collection: "chronicles",
+    image: chroniclesDarkRavenRoses,
+    palette: paletteCrimsonMoon,
+  },
+  {
+    id: "chronicles-dark-light-pair",
+    name: "Dark & Light Chronicles",
+    collection: "chronicles",
+    image: chroniclesDarkLightPair,
+    palette: paletteCrimsonMoon,
+  },
+  // --- Faith ----------------------------------------------------------------
+  {
+    id: "faith-cross-roses",
+    name: "Cross & Roses",
+    collection: "faith",
+    image: faithCrossRoses,
+    palette: paletteMonochromeFaith,
+  },
+  {
+    id: "faith-cross-heart",
+    name: "Cross & Woven Heart",
+    collection: "faith",
+    image: faithCrossHeart,
+    palette: paletteMonochromeFaith,
+  },
+  {
+    id: "faith-affirmations-sticker",
+    name: "Faith Sticker Collage",
+    collection: "faith",
+    image: faithAffirmationsSticker,
+    palette: paletteFaithVibrant,
+  },
 ];
 
 export const DEFAULT_COVER_ID = "sparrow-forget-me-nots";
