@@ -660,6 +660,42 @@ export const COVERS: Cover[] = [
     image: sparrowDahliaDandelion,
     palette: paletteVintageScrapbook,
   },
+  {
+    id: "sparrow-dahlia-dandelion-stars",
+    name: "Sparrow, Dahlias & Dandelions",
+    collection: "sparrow",
+    image: sparrowDahliaDandelionStars,
+    palette: paletteVintageScrapbook,
+  },
+  {
+    id: "moonlit-butterflies-lotus",
+    name: "Moonlit Butterflies & Lotus",
+    collection: "celestial-birds-insects",
+    image: moonlitButterfliesLotus,
+    palette: paletteMoonlitButterflies,
+  },
+  {
+    id: "black-rose-chains",
+    name: "Black Rose & Chains",
+    collection: "black-moon",
+    image: blackRoseChains,
+    personalized: true,
+    palette: paletteCrimsonMoon,
+  },
+  {
+    id: "red-rose-moon",
+    name: "Red Rose Moon",
+    collection: "black-moon",
+    image: redRoseMoon,
+    palette: paletteCrimsonMoon,
+  },
+  {
+    id: "white-rose-moon",
+    name: "White Rose Moon",
+    collection: "black-moon",
+    image: whiteRoseMoon,
+    palette: paletteLightChronicle,
+  },
 ];
 
 // Neutral fallback used when no cover matches (e.g., stale saved coverId).
