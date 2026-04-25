@@ -94,6 +94,11 @@ export async function exportAll(): Promise<string> {
   return JSON.stringify({ version: 1, exportedAt: Date.now(), entries }, null, 2);
 }
 
+export async function getAllEntries(): Promise<PlannerEntry[]> {
+  const db = await getDB();
+  return db.getAll("entries");
+}
+
 export async function importAll(json: string, mode: "merge" | "replace" = "merge"): Promise<number> {
   const data = JSON.parse(json) as { entries?: PlannerEntry[] };
   if (!data?.entries || !Array.isArray(data.entries)) throw new Error("Invalid backup file");
@@ -111,4 +116,14 @@ export async function importAll(json: string, mode: "merge" | "replace" = "merge
   }
   await tx.done;
   return count;
+}
+
+/**
+ * First-entry timestamp — used to show the user the date range their backup covers.
+ */
+export async function getFirstEntryDate(): Promise<number | null> {
+  const db = await getDB();
+  const all = await db.getAll("entries");
+  if (!all.length) return null;
+  return all.reduce((min, e) => Math.min(min, e.createdAt), Infinity);
 }
