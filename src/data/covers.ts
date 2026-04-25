@@ -34,6 +34,11 @@ import darkDahliaSparks from "@/assets/covers/dark-dahlia-sparks.jpg";
 import blackDahliaFairyLights from "@/assets/covers/black-dahlia-fairy-lights.jpg";
 import midnightIrisStars from "@/assets/covers/midnight-iris-stars.jpg";
 import indigoIrisGlow from "@/assets/covers/indigo-iris-glow.jpg";
+import blackLiliesSparks from "@/assets/covers/black-lilies-sparks.jpg";
+import sparrowMoonFairyLights from "@/assets/covers/sparrow-moon-fairy-lights.jpg";
+import midnightSwallowtailStars from "@/assets/covers/midnight-swallowtail-stars.jpg";
+import hummingbirdFairyLights from "@/assets/covers/hummingbird-fairy-lights.jpg";
+import dragonflyFairyLights from "@/assets/covers/dragonfly-fairy-lights.jpg";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
@@ -302,6 +307,23 @@ const paletteMidnightIris: CoverPalette = {
   mutedForeground: "40 18% 65%",
   border: "240 18% 22%",
   paperGradient: "linear-gradient(180deg, hsl(240 35% 9%), hsl(245 40% 5%))",
+};
+
+const paletteHummingbirdJewel: CoverPalette = {
+  mode: "dark",
+  background: "200 45% 8%",
+  foreground: "180 40% 92%",
+  card: "200 40% 13%",
+  cardForeground: "180 40% 92%",
+  primary: "175 70% 50%",
+  primaryForeground: "200 45% 8%",
+  primarySoft: "200 30% 18%",
+  accent: "40 80% 60%",
+  accentForeground: "200 45% 8%",
+  muted: "200 22% 16%",
+  mutedForeground: "180 18% 65%",
+  border: "200 22% 22%",
+  paperGradient: "linear-gradient(180deg, hsl(200 45% 10%), hsl(210 50% 6%))",
 };
 
 const paletteMoonlitButterflies: CoverPalette = {
@@ -769,6 +791,41 @@ export const COVERS: Cover[] = [
     collection: "celestial-florals",
     image: indigoIrisGlow,
     palette: paletteMidnightIris,
+  },
+  {
+    id: "black-lilies-sparks",
+    name: "Black Lilies & Sparks",
+    collection: "black-moon",
+    image: blackLiliesSparks,
+    palette: paletteCrimsonMoon,
+  },
+  {
+    id: "sparrow-moon-fairy-lights",
+    name: "Sparrow, Moon & Fairy Lights",
+    collection: "sparrow",
+    image: sparrowMoonFairyLights,
+    palette: paletteFairyLightOak,
+  },
+  {
+    id: "midnight-swallowtail-stars",
+    name: "Midnight Swallowtail & Stars",
+    collection: "celestial-birds-insects",
+    image: midnightSwallowtailStars,
+    palette: paletteMidnightIris,
+  },
+  {
+    id: "hummingbird-fairy-lights",
+    name: "Hummingbird & Fairy Lights",
+    collection: "celestial-birds-insects",
+    image: hummingbirdFairyLights,
+    palette: paletteHummingbirdJewel,
+  },
+  {
+    id: "dragonfly-fairy-lights",
+    name: "Dragonfly & Fairy Lights",
+    collection: "celestial-birds-insects",
+    image: dragonflyFairyLights,
+    palette: paletteFairyLightOak,
   },
 ];
 
