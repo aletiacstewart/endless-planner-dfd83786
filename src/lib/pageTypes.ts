@@ -314,7 +314,208 @@ export const PAGE_TYPES: PageTypeDef[] = [
     summary: (v) => [v.month, v.year].filter(Boolean).join(" ") || "Habit tracker",
   },
   {
-    id: "fun-tracker",
+    id: "yearly-habit-tracker",
+    name: "Yearly Habit Tracker",
+    shortName: "Year Habits",
+    description: "12 months of habits to begin or break, with daily check-ins.",
+    icon: "CalendarCheck",
+    sections: [
+      {
+        fields: [{ key: "year", label: "Year", type: "year" }],
+      },
+      {
+        fields: [
+          {
+            key: "yearly_habits",
+            label: "Habits by month",
+            type: "yearly-habit-grid",
+            span: 2,
+          },
+        ],
+      },
+    ],
+    summary: (v) => (v.year ? `Yearly habits ${v.year}` : "Yearly habit tracker"),
+  },
+  {
+    id: "weight-tracker",
+    name: "Bi-Monthly Weight Tracker",
+    shortName: "Weight",
+    description: "Track your weight every week for 26 weeks.",
+    icon: "Scale",
+    sections: [
+      {
+        columns: 2,
+        fields: [
+          { key: "start_date", label: "Start date", type: "date" },
+          { key: "goal_weight", label: "Goal weight", type: "text" },
+        ],
+      },
+      {
+        fields: [
+          {
+            key: "weight_log",
+            label: "Weekly weight log",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 26,
+            rowLabel: "Wk",
+            columns: ["Date", "Weight", "Difference", "Notes"],
+          },
+        ],
+      },
+    ],
+    summary: (v) => (v.start_date ? `Weight from ${v.start_date}` : "Weight tracker"),
+  },
+  {
+    id: "measurement-tracker",
+    name: "Bi-Monthly Measurement Tracker",
+    shortName: "Measure",
+    description: "Body measurements every week for 26 weeks.",
+    icon: "Ruler",
+    sections: [
+      {
+        fields: [{ key: "start_date", label: "Start date", type: "date" }],
+      },
+      {
+        fields: [
+          {
+            key: "measurements",
+            label: "Measurements",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 26,
+            rowLabel: "Wk",
+            columns: ["Fat %", "Neck", "Chest", "Bicep", "Waist", "Hips", "Thigh", "Calf"],
+          },
+        ],
+      },
+    ],
+    summary: (v) => (v.start_date ? `Measurements from ${v.start_date}` : "Measurement tracker"),
+  },
+  {
+    id: "blood-sugar-tracker",
+    name: "Yearly Blood Sugar Tracker",
+    shortName: "Sugar",
+    description: "Daily blood sugar readings for the whole year.",
+    icon: "Droplet",
+    sections: [
+      {
+        fields: [{ key: "year", label: "Year", type: "year" }],
+      },
+      {
+        fields: [
+          {
+            key: "blood_sugar",
+            label: "Daily readings",
+            type: "daily-month-grid",
+            span: 2,
+          },
+        ],
+      },
+    ],
+    summary: (v) => (v.year ? `Blood sugar ${v.year}` : "Blood sugar tracker"),
+  },
+  {
+    id: "blood-pressure-tracker",
+    name: "Yearly Blood Pressure Tracker",
+    shortName: "BP",
+    description: "Daily blood pressure readings for the whole year.",
+    icon: "HeartPulse",
+    sections: [
+      {
+        fields: [{ key: "year", label: "Year", type: "year" }],
+      },
+      {
+        fields: [
+          {
+            key: "blood_pressure",
+            label: "Daily readings",
+            type: "daily-month-grid",
+            span: 2,
+          },
+        ],
+      },
+    ],
+    summary: (v) => (v.year ? `Blood pressure ${v.year}` : "Blood pressure tracker"),
+  },
+  {
+    id: "oxygen-tracker",
+    name: "Yearly Oxygen (O₂) Tracker",
+    shortName: "Oxygen",
+    description: "Daily oxygen (O₂) readings for the whole year.",
+    icon: "Activity",
+    sections: [
+      {
+        fields: [{ key: "year", label: "Year", type: "year" }],
+      },
+      {
+        fields: [
+          {
+            key: "oxygen",
+            label: "Daily readings",
+            type: "daily-month-grid",
+            span: 2,
+          },
+        ],
+      },
+    ],
+    summary: (v) => (v.year ? `Oxygen ${v.year}` : "Oxygen tracker"),
+  },
+  {
+    id: "self-care-checklist",
+    name: "Self-Care Check List",
+    shortName: "Self-Care",
+    description: "Physical, emotional, and spiritual self-care across the year.",
+    icon: "HeartHandshake",
+    sections: [
+      {
+        fields: [{ key: "year", label: "Year", type: "year" }],
+      },
+      {
+        title: "Physical Self-Care",
+        fields: [
+          { key: "physical", label: "Physical", type: "daily-month-grid", span: 2 },
+        ],
+      },
+      {
+        title: "Emotional Self-Care",
+        fields: [
+          { key: "emotional", label: "Emotional", type: "daily-month-grid", span: 2 },
+        ],
+      },
+      {
+        title: "Spiritual Self-Care",
+        fields: [
+          { key: "spiritual", label: "Spiritual", type: "daily-month-grid", span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => (v.year ? `Self-care ${v.year}` : "Self-care check list"),
+  },
+  {
+    id: "cleaning-checklist",
+    name: "Cleaning Check List",
+    shortName: "Cleaning",
+    description: "Household chores tracked daily across the year.",
+    icon: "Sparkle",
+    sections: [
+      {
+        fields: [{ key: "year", label: "Year", type: "year" }],
+      },
+      {
+        fields: [
+          {
+            key: "cleaning",
+            label: "Daily chores",
+            type: "daily-month-grid",
+            span: 2,
+          },
+        ],
+      },
+    ],
+    summary: (v) => (v.year ? `Cleaning ${v.year}` : "Cleaning check list"),
+  },
+  {
     name: "Fun Tracker",
     shortName: "Fun",
     description: "Track fun activities through the year.",
