@@ -56,6 +56,8 @@ import chroniclesDarkRavenRoses from "@/assets/covers/chronicles-dark-raven-rose
 import faithAffirmationsSticker from "@/assets/covers/faith-affirmations-sticker.jpg";
 import faithCrossRoses from "@/assets/covers/faith-cross-roses.jpg";
 import faithCrossHeart from "@/assets/covers/faith-cross-heart.jpg";
+import botanicalSpiritLeaves from "@/assets/covers/botanical-spirit-leaves.jpg";
+import botanicalSpiritRiver from "@/assets/covers/botanical-spirit-river.jpg";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
@@ -462,6 +464,23 @@ const paletteFaithVibrant: CoverPalette = {
   mutedForeground: "40 15% 65%",
   border: "215 20% 22%",
   paperGradient: "linear-gradient(180deg, hsl(215 40% 10%), hsl(215 45% 6%))",
+};
+
+const paletteBotanicalSpirit: CoverPalette = {
+  mode: "light",
+  background: "100 18% 93%",
+  foreground: "175 22% 20%",
+  card: "90 25% 97%",
+  cardForeground: "175 22% 20%",
+  primary: "155 28% 38%",
+  primaryForeground: "90 25% 97%",
+  primarySoft: "100 18% 88%",
+  accent: "30 55% 60%",
+  accentForeground: "90 25% 97%",
+  muted: "100 12% 90%",
+  mutedForeground: "175 12% 42%",
+  border: "100 14% 84%",
+  paperGradient: "linear-gradient(180deg, hsl(90 25% 96%), hsl(175 18% 90%))",
 };
 
 // --- Cover catalog ------------------------------------------------------------
@@ -895,6 +914,21 @@ export const COVERS: Cover[] = [
     collection: "faith",
     image: faithAffirmationsSticker,
     palette: paletteFaithVibrant,
+  },
+  // --- Botanical Spirit (Garden) -------------------------------------------
+  {
+    id: "botanical-spirit-leaves",
+    name: "Botanical Spirit & Leaves",
+    collection: "garden",
+    image: botanicalSpiritLeaves,
+    palette: paletteBotanicalSpirit,
+  },
+  {
+    id: "botanical-spirit-river",
+    name: "Botanical Spirit at the River",
+    collection: "garden",
+    image: botanicalSpiritRiver,
+    palette: paletteBotanicalSpirit,
   },
 ];
 
