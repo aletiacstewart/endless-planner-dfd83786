@@ -5,8 +5,12 @@ import { PAGE_TYPES } from "@/lib/pageTypes";
 import { listEntries, exportAll, importAll, type PlannerEntry } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useUserSettings } from "@/hooks/useUserSettings";
+import { getCover } from "@/data/covers";
+import { CoverImage } from "@/components/cover/CoverImage";
 
 export default function Home() {
+  const { settings } = useUserSettings();
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [recent, setRecent] = useState<PlannerEntry[]>([]);
 
@@ -39,24 +43,47 @@ export default function Home() {
         const n = await importAll(String(reader.result), "merge");
         toast.success(`Restored ${n} entries`);
         location.reload();
-      } catch (e) {
+      } catch {
         toast.error("Couldn't read backup file");
       }
     };
     reader.readAsText(file);
   };
 
+  const cover = getCover(settings?.coverId);
+  const plannerName = settings?.plannerName || "My Planner";
+
   return (
     <div className="min-h-screen pb-24" style={{ background: "var(--gradient-paper)" }}>
-      <header className="px-5 pt-10 pb-6">
-        <p className="font-script text-2xl text-primary">Change of Life - Wellness Journey</p>
-        <h1 className="section-title">Planner & Journal</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Your private space — saved on your device!
-        </p>
-      </header>
+      {/* Cover hero */}
+      <div className="relative h-56 sm:h-72 overflow-hidden">
+        <CoverImage
+          cover={cover}
+          plannerName={plannerName}
+          ownerName={settings?.ownerName}
+          className="absolute inset-0"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-background" />
+        <Link
+          to="/settings"
+          aria-label="Settings"
+          className="absolute top-4 right-4 w-10 h-10 rounded-full bg-card/80 backdrop-blur flex items-center justify-center shadow-lg hover:bg-card transition-colors"
+        >
+          <Icons.Settings className="w-5 h-5" />
+        </Link>
+        <div className="absolute inset-x-0 bottom-0 px-5 pb-4">
+          <h1 className="font-display text-3xl sm:text-4xl font-semibold text-white drop-shadow-lg">
+            {plannerName}
+          </h1>
+          {settings?.ownerName && (
+            <p className="font-script text-xl text-white/90 drop-shadow">
+              {settings.ownerName}
+            </p>
+          )}
+        </div>
+      </div>
 
-      <main className="px-5 space-y-6">
+      <main className="px-5 pt-6 space-y-6">
         {recent.length > 0 && (
           <section>
             <h2 className="font-display text-xl mb-3">Recent entries</h2>
