@@ -13,6 +13,7 @@ export type FieldType =
   | "year"
   | "number"
   | "rating" // 1..max selectable
+  | "mood-rating" // 1..5 selectable rendered as face icons
   | "weekday-checkboxes" // S M T W T F S
   | "checkbox"
   | "checkbox-group"
@@ -260,7 +261,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
           { key: "caffeine", label: "Caffeine (cups)", type: "rating", max: 6 },
           { key: "sweets", label: "Sweets", type: "rating", max: 5 },
           { key: "sleep", label: "Sleep (hours)", type: "rating", max: 12 },
-          { key: "mood", label: "Mood", type: "rating", max: 5 },
+          { key: "mood", label: "Mood", type: "mood-rating", max: 5 },
         ],
       },
       {
@@ -272,7 +273,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
           { key: "yoga", label: "Yoga", type: "text" },
           { key: "stretch", label: "Stretch", type: "text" },
           { key: "rest_day", label: "Rest day", type: "checkbox" },
-          { key: "best_day", label: "Best day", type: "checkbox" },
           { key: "other", label: "Other", type: "text", span: 2 },
         ],
       },
