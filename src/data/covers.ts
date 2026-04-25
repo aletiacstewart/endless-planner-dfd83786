@@ -13,6 +13,11 @@ import featherAmethystSky from "@/assets/covers/feather-amethyst-sky.jpg";
 import featherGoldSky from "@/assets/covers/feather-gold-sky.jpg";
 import featherCrimsonSky from "@/assets/covers/feather-crimson-sky.jpg";
 import chroniclesLightRoseDove from "@/assets/covers/chronicles-light-rose-dove.jpg";
+import chroniclesDarkLightPair from "@/assets/covers/chronicles-dark-light-pair.jpg";
+import chroniclesDarkRavenRoses from "@/assets/covers/chronicles-dark-raven-roses.jpg";
+import faithStickerRainbowCross from "@/assets/covers/faith-sticker-rainbow-cross.jpg";
+import faithCrossRoses from "@/assets/covers/faith-cross-roses.jpg";
+import faithCrossHeart from "@/assets/covers/faith-cross-heart.jpg";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
@@ -566,6 +571,41 @@ export const COVERS: Cover[] = [
     collection: "chronicles",
     image: chroniclesLightRoseDove,
     palette: paletteLightChronicle,
+  },
+  {
+    id: "chronicles-dark-light-pair",
+    name: "Dark & Light Chronicles",
+    collection: "chronicles",
+    image: chroniclesDarkLightPair,
+    palette: paletteCrimsonMoon,
+  },
+  {
+    id: "chronicles-dark-raven-roses",
+    name: "The Dark Chronicles",
+    collection: "chronicles",
+    image: chroniclesDarkRavenRoses,
+    palette: paletteCrimsonMoon,
+  },
+  {
+    id: "faith-sticker-rainbow-cross",
+    name: "Rainbow Cross Stickers",
+    collection: "faith",
+    image: faithStickerRainbowCross,
+    palette: paletteFaithRainbow,
+  },
+  {
+    id: "faith-cross-roses",
+    name: "Cross & Roses",
+    collection: "faith",
+    image: faithCrossRoses,
+    palette: paletteMonochromeFaith,
+  },
+  {
+    id: "faith-cross-heart",
+    name: "Cross & Woven Heart",
+    collection: "faith",
+    image: faithCrossHeart,
+    palette: paletteMonochromeFaith,
   },
 ];
 
