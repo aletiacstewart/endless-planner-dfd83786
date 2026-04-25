@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -6,24 +7,66 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import Section from "./pages/Section.tsx";
 import Entry from "./pages/Entry.tsx";
+import Settings from "./pages/Settings.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import { OnboardingFlow } from "./components/onboarding/OnboardingFlow";
+import { SplashScreen } from "./components/SplashScreen";
+import { useUserSettings } from "./hooks/useUserSettings";
+import { useCoverTheme } from "./hooks/useCoverTheme";
+import { getCover } from "./data/covers";
 
 const queryClient = new QueryClient();
+
+function AppShell() {
+  const { settings, loading } = useUserSettings();
+  const [splashed, setSplashed] = useState(false);
+
+  // Apply cover theme whenever cover changes (also during onboarding the
+  // OnboardingFlow has its own preview hook).
+  useCoverTheme(settings?.coverId);
+
+  // Show splash for ~1.2s after the user has been onboarded.
+  useEffect(() => {
+    if (!settings?.onboarded) return;
+    const t = setTimeout(() => setSplashed(true), 1200);
+    return () => clearTimeout(t);
+  }, [settings?.onboarded]);
+
+  if (loading || !settings) return null;
+
+  if (!settings.onboarded) {
+    return <OnboardingFlow />;
+  }
+
+  return (
+    <>
+      {!splashed && (
+        <SplashScreen
+          cover={getCover(settings.coverId)}
+          plannerName={settings.plannerName}
+          ownerName={settings.ownerName}
+        />
+      )}
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/section/:pageTypeId" element={<Section />} />
+          <Route path="/entry/:entryId" element={<Entry />} />
+          <Route path="/settings" element={<Settings />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </>
+  );
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/section/:pageTypeId" element={<Section />} />
-          <Route path="/entry/:entryId" element={<Entry />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AppShell />
     </TooltipProvider>
   </QueryClientProvider>
 );
