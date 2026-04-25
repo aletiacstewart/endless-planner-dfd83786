@@ -5,6 +5,17 @@ import sparrowForgetMeNots from "@/assets/covers/sparrow-forget-me-nots.png";
 import sparrowWishes from "@/assets/covers/sparrow-wishes.png";
 import vintageScrapbook from "@/assets/covers/vintage-scrapbook.png";
 import moonlitButterflies from "@/assets/covers/moonlit-butterflies.png";
+import sparrowOnMoon from "@/assets/covers/sparrow-on-moon.jpg";
+import sparrowMoonLanterns from "@/assets/covers/sparrow-moon-lanterns.jpg";
+import midnightSwallowtail from "@/assets/covers/midnight-swallowtail.jpg";
+import emberHummingbird from "@/assets/covers/ember-hummingbird.jpg";
+import goldenDragonfly from "@/assets/covers/golden-dragonfly.jpg";
+import gardenHummingbirdsOlive from "@/assets/covers/garden-hummingbirds-olive.png";
+import gardenWhiteButterfly from "@/assets/covers/garden-white-butterfly.png";
+import gardenSunDragonfly from "@/assets/covers/garden-sun-dragonfly.png";
+import gardenTeardropLily from "@/assets/covers/garden-teardrop-lily.png";
+import gardenCoralHummingbirds from "@/assets/covers/garden-coral-hummingbirds.png";
+import gardenLavenderDragonflies from "@/assets/covers/garden-lavender-dragonflies.png";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
