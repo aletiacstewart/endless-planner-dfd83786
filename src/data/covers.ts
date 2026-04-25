@@ -303,6 +303,110 @@ const paletteMoonlitButterflies: CoverPalette = {
   paperGradient: "linear-gradient(180deg, hsl(260 25% 10%), hsl(260 30% 6%))",
 };
 
+// --- Sky & Arrows palettes (feather + arrow series) --------------------------
+
+const paletteSkyCrimson: CoverPalette = {
+  mode: "light",
+  background: "350 35% 95%",
+  foreground: "350 30% 22%",
+  card: "350 50% 98%",
+  cardForeground: "350 30% 22%",
+  primary: "350 65% 50%",
+  primaryForeground: "350 50% 98%",
+  primarySoft: "350 40% 90%",
+  accent: "260 30% 55%",
+  accentForeground: "350 50% 98%",
+  muted: "350 20% 91%",
+  mutedForeground: "350 12% 45%",
+  border: "350 20% 85%",
+  paperGradient: "linear-gradient(180deg, hsl(350 50% 97%), hsl(260 25% 92%))",
+};
+
+const paletteSkyAmber: CoverPalette = {
+  mode: "light",
+  background: "30 45% 94%",
+  foreground: "20 30% 22%",
+  card: "30 55% 98%",
+  cardForeground: "20 30% 22%",
+  primary: "25 80% 55%",
+  primaryForeground: "30 55% 98%",
+  primarySoft: "30 40% 90%",
+  accent: "215 45% 50%",
+  accentForeground: "30 55% 98%",
+  muted: "30 25% 90%",
+  mutedForeground: "20 12% 45%",
+  border: "30 22% 84%",
+  paperGradient: "linear-gradient(180deg, hsl(30 55% 97%), hsl(25 40% 90%))",
+};
+
+const paletteSkyGold: CoverPalette = {
+  mode: "light",
+  background: "45 50% 95%",
+  foreground: "35 30% 22%",
+  card: "45 60% 98%",
+  cardForeground: "35 30% 22%",
+  primary: "42 75% 50%",
+  primaryForeground: "45 60% 98%",
+  primarySoft: "45 45% 90%",
+  accent: "200 35% 55%",
+  accentForeground: "45 60% 98%",
+  muted: "45 28% 91%",
+  mutedForeground: "35 12% 45%",
+  border: "45 24% 85%",
+  paperGradient: "linear-gradient(180deg, hsl(45 60% 97%), hsl(40 40% 90%))",
+};
+
+const paletteSkyEmerald: CoverPalette = {
+  mode: "light",
+  background: "165 30% 94%",
+  foreground: "160 30% 20%",
+  card: "165 40% 98%",
+  cardForeground: "160 30% 20%",
+  primary: "150 55% 40%",
+  primaryForeground: "165 40% 98%",
+  primarySoft: "150 30% 88%",
+  accent: "190 50% 50%",
+  accentForeground: "165 40% 98%",
+  muted: "165 18% 90%",
+  mutedForeground: "160 12% 42%",
+  border: "165 18% 84%",
+  paperGradient: "linear-gradient(180deg, hsl(165 40% 97%), hsl(180 30% 91%))",
+};
+
+const paletteSkyAzure: CoverPalette = {
+  mode: "light",
+  background: "200 45% 95%",
+  foreground: "215 35% 22%",
+  card: "200 55% 98%",
+  cardForeground: "215 35% 22%",
+  primary: "210 70% 50%",
+  primaryForeground: "200 55% 98%",
+  primarySoft: "200 40% 90%",
+  accent: "190 60% 55%",
+  accentForeground: "200 55% 98%",
+  muted: "200 25% 91%",
+  mutedForeground: "215 12% 45%",
+  border: "200 22% 85%",
+  paperGradient: "linear-gradient(180deg, hsl(200 55% 97%), hsl(210 40% 91%))",
+};
+
+const paletteSkyAmethyst: CoverPalette = {
+  mode: "light",
+  background: "270 35% 95%",
+  foreground: "275 30% 25%",
+  card: "270 45% 98%",
+  cardForeground: "275 30% 25%",
+  primary: "280 55% 55%",
+  primaryForeground: "270 45% 98%",
+  primarySoft: "270 35% 90%",
+  accent: "320 45% 60%",
+  accentForeground: "270 45% 98%",
+  muted: "270 22% 91%",
+  mutedForeground: "275 12% 45%",
+  border: "270 20% 85%",
+  paperGradient: "linear-gradient(180deg, hsl(270 45% 97%), hsl(280 35% 91%))",
+};
+
 // --- Cover catalog ------------------------------------------------------------
 
 export const COVERS: Cover[] = [
