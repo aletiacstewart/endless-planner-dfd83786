@@ -475,7 +475,7 @@ function HabitGrid({
   return (
     <div>
       <label className="field-label block mb-2">Habits — tap to mark</label>
-      <div className="overflow-x-auto -mx-2 px-2">
+      <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
         <table className="text-xs border-separate border-spacing-1">
           <thead>
             <tr>
@@ -559,7 +559,7 @@ function MonthTracker({
   return (
     <div>
       <label className="field-label block mb-2">Activities by month</label>
-      <div className="overflow-x-auto -mx-2 px-2">
+      <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
         <table className="text-xs border-separate border-spacing-1">
           <thead>
             <tr>
@@ -640,7 +640,7 @@ function MeasurementGrid({
   return (
     <div>
       <label className="field-label block mb-2">{label}</label>
-      <div className="overflow-x-auto -mx-2 px-2">
+      <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
         <table className="text-xs border-separate border-spacing-1 min-w-full">
           <thead>
             <tr>
@@ -829,7 +829,7 @@ function YearlyHabitGrid({
   return (
     <div>
       <label className="field-label block mb-2">Monthly habit to begin or break</label>
-      <div className="overflow-x-auto -mx-2 px-2">
+      <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
         <table className="text-xs border-separate border-spacing-1">
           <thead>
             <tr>
