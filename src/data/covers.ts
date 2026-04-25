@@ -54,6 +54,11 @@ import blackRoseGoldenMoon from "@/assets/covers/black-rose-golden-moon.jpg";
 import midnightIrisGoldenMoon from "@/assets/covers/midnight-iris-golden-moon.jpg";
 import blackLiliesGoldenMoon from "@/assets/covers/black-lilies-golden-moon.jpg";
 import moonlitBlackButterfly from "@/assets/covers/moonlit-black-butterfly.jpg";
+import botanicalDancerLeaves from "@/assets/covers/botanical-dancer-leaves.jpg";
+import botanicalDancerLake from "@/assets/covers/botanical-dancer-lake.jpg";
+import botanicalDancerCosmos from "@/assets/covers/botanical-dancer-cosmos.jpg";
+import botanicalDancerPond from "@/assets/covers/botanical-dancer-pond.jpg";
+import shepherdLambWolf from "@/assets/covers/shepherd-lamb-wolf.jpg";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
@@ -577,6 +582,95 @@ const paletteBlackButterflyMoon: CoverPalette = {
   mutedForeground: "0 0% 70%",
   border: "240 12% 21%",
   paperGradient: "linear-gradient(180deg, hsl(240 24% 9%), hsl(240 28% 5%))",
+};
+
+// --- Botanical Dancer (sage watercolor) --------------------------------------
+
+const paletteBotanicalSage: CoverPalette = {
+  mode: "light",
+  background: "80 18% 92%",
+  foreground: "150 22% 20%",
+  card: "70 25% 96%",
+  cardForeground: "150 22% 20%",
+  primary: "150 28% 32%",
+  primaryForeground: "70 25% 96%",
+  primarySoft: "90 20% 86%",
+  accent: "25 55% 60%",
+  accentForeground: "70 25% 96%",
+  muted: "85 14% 88%",
+  mutedForeground: "150 12% 42%",
+  border: "90 15% 80%",
+  paperGradient: "linear-gradient(180deg, hsl(75 24% 95%), hsl(150 18% 86%))",
+};
+
+const paletteBotanicalMist: CoverPalette = {
+  mode: "light",
+  background: "200 20% 90%",
+  foreground: "200 28% 22%",
+  card: "200 28% 95%",
+  cardForeground: "200 28% 22%",
+  primary: "200 35% 38%",
+  primaryForeground: "200 28% 95%",
+  primarySoft: "200 22% 84%",
+  accent: "35 50% 62%",
+  accentForeground: "200 28% 95%",
+  muted: "200 15% 86%",
+  mutedForeground: "200 14% 44%",
+  border: "200 16% 78%",
+  paperGradient: "linear-gradient(180deg, hsl(200 28% 94%), hsl(200 22% 84%))",
+};
+
+const paletteBotanicalEmber: CoverPalette = {
+  mode: "light",
+  background: "190 20% 88%",
+  foreground: "200 30% 20%",
+  card: "180 22% 94%",
+  cardForeground: "200 30% 20%",
+  primary: "20 65% 55%",
+  primaryForeground: "180 22% 96%",
+  primarySoft: "190 18% 82%",
+  accent: "150 24% 38%",
+  accentForeground: "180 22% 96%",
+  muted: "190 14% 84%",
+  mutedForeground: "200 14% 44%",
+  border: "190 14% 76%",
+  paperGradient: "linear-gradient(180deg, hsl(180 22% 94%), hsl(200 24% 80%))",
+};
+
+const paletteBotanicalPond: CoverPalette = {
+  mode: "light",
+  background: "55 22% 90%",
+  foreground: "195 30% 22%",
+  card: "55 30% 95%",
+  cardForeground: "195 30% 22%",
+  primary: "195 38% 38%",
+  primaryForeground: "55 30% 95%",
+  primarySoft: "55 18% 84%",
+  accent: "30 55% 60%",
+  accentForeground: "55 30% 95%",
+  muted: "55 14% 86%",
+  mutedForeground: "195 14% 44%",
+  border: "55 16% 78%",
+  paperGradient: "linear-gradient(180deg, hsl(55 30% 94%), hsl(195 22% 82%))",
+};
+
+// --- Shepherd (dramatic stormy faith) ----------------------------------------
+
+const paletteShepherdStorm: CoverPalette = {
+  mode: "dark",
+  background: "210 22% 12%",
+  foreground: "40 25% 92%",
+  card: "210 20% 16%",
+  cardForeground: "40 25% 92%",
+  primary: "40 60% 70%",
+  primaryForeground: "210 22% 12%",
+  primarySoft: "210 14% 22%",
+  accent: "30 45% 55%",
+  accentForeground: "210 22% 12%",
+  muted: "210 12% 20%",
+  mutedForeground: "40 15% 70%",
+  border: "210 12% 26%",
+  paperGradient: "linear-gradient(180deg, hsl(210 24% 14%), hsl(215 28% 8%))",
 };
 
 // --- Sky & Arrows palettes (feather + arrow series) --------------------------
@@ -1167,6 +1261,41 @@ export const COVERS: Cover[] = [
     collection: "celestial-birds-insects",
     image: moonlitBlackButterfly,
     palette: paletteBlackButterflyMoon,
+  },
+  {
+    id: "botanical-dancer-leaves",
+    name: "Botanical Dancer & Leaves",
+    collection: "garden",
+    image: botanicalDancerLeaves,
+    palette: paletteBotanicalSage,
+  },
+  {
+    id: "botanical-dancer-lake",
+    name: "Botanical Dancer by the Lake",
+    collection: "garden",
+    image: botanicalDancerLake,
+    palette: paletteBotanicalMist,
+  },
+  {
+    id: "botanical-dancer-cosmos",
+    name: "Botanical Dancer & Cosmos",
+    collection: "garden",
+    image: botanicalDancerCosmos,
+    palette: paletteBotanicalEmber,
+  },
+  {
+    id: "botanical-dancer-pond",
+    name: "Botanical Dancer at the Pond",
+    collection: "garden",
+    image: botanicalDancerPond,
+    palette: paletteBotanicalPond,
+  },
+  {
+    id: "shepherd-lamb-wolf",
+    name: "The Good Shepherd",
+    collection: "faith",
+    image: shepherdLambWolf,
+    palette: paletteShepherdStorm,
   },
 ];
 
