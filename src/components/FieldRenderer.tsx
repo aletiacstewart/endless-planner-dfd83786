@@ -690,16 +690,28 @@ function DailyMonthGrid({
   label,
   onChange,
 }: {
-  value: { rowLabel?: string; cells: Record<string, string>; achieved: Record<string, boolean> } | null;
+  value: {
+    rowLabel?: string;
+    cells: Record<string, string>;
+    achieved: Record<string, boolean>;
+    notes?: Record<string, string>;
+  } | null;
   label: string;
   onChange: (v: FieldValue) => void;
 }) {
-  const data = value ?? { rowLabel: "", cells: {}, achieved: {} };
+  const data = value ?? { rowLabel: "", cells: {}, achieved: {}, notes: {} };
+  const notes = data.notes ?? {};
   const setCell = (day: number, month: number, v: string) =>
-    onChange({ ...data, cells: { ...data.cells, [`${day}-${month}`]: v } });
+    onChange({ ...data, notes, cells: { ...data.cells, [`${day}-${month}`]: v } });
   const toggleAchieved = (day: number) =>
-    onChange({ ...data, achieved: { ...data.achieved, [day]: !data.achieved[day] } });
-  const setRowLabel = (v: string) => onChange({ ...data, rowLabel: v });
+    onChange({
+      ...data,
+      notes,
+      achieved: { ...data.achieved, [day]: !data.achieved[day] },
+    });
+  const setNote = (day: number, v: string) =>
+    onChange({ ...data, notes: { ...notes, [day]: v } });
+  const setRowLabel = (v: string) => onChange({ ...data, notes, rowLabel: v });
 
   return (
     <div>
@@ -712,21 +724,31 @@ function DailyMonthGrid({
           className="h-8 text-xs bg-background/60 max-w-md"
         />
       </div>
-      <div className="overflow-x-auto -mx-2 px-2">
+      <div
+        className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full"
+        style={{ WebkitOverflowScrolling: "touch" }}
+      >
         <table className="text-xs border-separate border-spacing-1">
           <thead>
             <tr>
-              <th className="font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-10">Day</th>
+              <th className="font-normal text-muted-foreground sticky left-0 bg-card pr-2 w-10 z-10 border-r border-border/40">
+                Day
+              </th>
               {MONTH_INITIALS.map((m, i) => (
                 <th key={i} className="font-normal text-muted-foreground w-8">{m}</th>
               ))}
               <th className="font-normal text-muted-foreground w-8">✓</th>
+              <th className="font-normal text-muted-foreground text-left pl-2 min-w-[10rem]">
+                Note
+              </th>
             </tr>
           </thead>
           <tbody>
             {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
               <tr key={day}>
-                <td className="sticky left-0 bg-card pr-2 text-muted-foreground text-center">{day}</td>
+                <td className="sticky left-0 bg-card pr-2 text-muted-foreground text-center z-10 border-r border-border/40">
+                  {day}
+                </td>
                 {MONTH_INITIALS.map((_, mi) => (
                   <td key={mi}>
                     <input
@@ -747,6 +769,14 @@ function DailyMonthGrid({
                         : "bg-background/60 border-input"
                     )}
                     aria-label={`Day ${day} achieved`}
+                  />
+                </td>
+                <td className="pl-2">
+                  <input
+                    value={notes[day] ?? ""}
+                    onChange={(e) => setNote(day, e.target.value)}
+                    placeholder="Note…"
+                    className="w-40 h-7 px-2 text-[11px] rounded border border-input bg-background/60 focus:outline-none focus:border-primary"
                   />
                 </td>
               </tr>
