@@ -24,6 +24,11 @@ import sparrowDandelionMeadow from "@/assets/covers/sparrow-dandelion-meadow.jpg
 import sparrowForgetMeNots from "@/assets/covers/sparrow-forget-me-nots.jpg";
 import sparrowDandelionWishes from "@/assets/covers/sparrow-dandelion-wishes.jpg";
 import sparrowDahliaDandelion from "@/assets/covers/sparrow-dahlia-dandelion.jpg";
+import sparrowDahliaDandelionStars from "@/assets/covers/sparrow-dahlia-dandelion-stars.jpg";
+import moonlitButterfliesLotus from "@/assets/covers/moonlit-butterflies-lotus.jpg";
+import blackRoseChains from "@/assets/covers/black-rose-chains.jpg";
+import redRoseMoon from "@/assets/covers/red-rose-moon.jpg";
+import whiteRoseMoon from "@/assets/covers/white-rose-moon.jpg";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
@@ -654,6 +659,42 @@ export const COVERS: Cover[] = [
     collection: "sparrow",
     image: sparrowDahliaDandelion,
     palette: paletteVintageScrapbook,
+  },
+  {
+    id: "sparrow-dahlia-dandelion-stars",
+    name: "Sparrow, Dahlias & Dandelions",
+    collection: "sparrow",
+    image: sparrowDahliaDandelionStars,
+    palette: paletteVintageScrapbook,
+  },
+  {
+    id: "moonlit-butterflies-lotus",
+    name: "Moonlit Butterflies & Lotus",
+    collection: "celestial-birds-insects",
+    image: moonlitButterfliesLotus,
+    palette: paletteMoonlitButterflies,
+  },
+  {
+    id: "black-rose-chains",
+    name: "Black Rose & Chains",
+    collection: "black-moon",
+    image: blackRoseChains,
+    personalized: true,
+    palette: paletteCrimsonMoon,
+  },
+  {
+    id: "red-rose-moon",
+    name: "Red Rose Moon",
+    collection: "black-moon",
+    image: redRoseMoon,
+    palette: paletteCrimsonMoon,
+  },
+  {
+    id: "white-rose-moon",
+    name: "White Rose Moon",
+    collection: "black-moon",
+    image: whiteRoseMoon,
+    palette: paletteLightChronicle,
   },
 ];
 
