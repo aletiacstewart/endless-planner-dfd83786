@@ -44,6 +44,12 @@ import crystalVinesAmber from "@/assets/covers/crystal-vines-amber.png";
 import crystalVinesBlush from "@/assets/covers/crystal-vines-blush.png";
 import affirmationFragileNotBroken from "@/assets/covers/affirmation-fragile-not-broken.png";
 import affirmationFloatsHope from "@/assets/covers/affirmation-floats-hope.png";
+import featherArrowCrimson from "@/assets/covers/feather-arrow-crimson.png";
+import featherArrowAmber from "@/assets/covers/feather-arrow-amber.png";
+import featherArrowGold from "@/assets/covers/feather-arrow-gold.png";
+import featherArrowEmerald from "@/assets/covers/feather-arrow-emerald.png";
+import featherArrowAzure from "@/assets/covers/feather-arrow-azure.png";
+import featherArrowAmethyst from "@/assets/covers/feather-arrow-amethyst.png";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
