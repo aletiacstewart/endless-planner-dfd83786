@@ -8,6 +8,11 @@ import classicIvoryRibbons from "@/assets/covers/classic-ivory-ribbons.jpg";
 import crystalVinesBlush from "@/assets/covers/crystal-vines-blush.jpg";
 import featherEmeraldSky from "@/assets/covers/feather-emerald-sky.jpg";
 import featherAmberSky from "@/assets/covers/feather-amber-sky.jpg";
+import featherAzureSky from "@/assets/covers/feather-azure-sky.jpg";
+import featherAmethystSky from "@/assets/covers/feather-amethyst-sky.jpg";
+import featherGoldSky from "@/assets/covers/feather-gold-sky.jpg";
+import featherCrimsonSky from "@/assets/covers/feather-crimson-sky.jpg";
+import chroniclesLightRoseDove from "@/assets/covers/chronicles-light-rose-dove.jpg";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
@@ -526,6 +531,41 @@ export const COVERS: Cover[] = [
     collection: "sky-wings-arrows",
     image: featherAmberSky,
     palette: paletteSkyAmber,
+  },
+  {
+    id: "feather-azure-sky",
+    name: "Azure Feather in Sky",
+    collection: "sky-wings-arrows",
+    image: featherAzureSky,
+    palette: paletteSkyAzure,
+  },
+  {
+    id: "feather-amethyst-sky",
+    name: "Amethyst Feather in Sky",
+    collection: "sky-wings-arrows",
+    image: featherAmethystSky,
+    palette: paletteSkyAmethyst,
+  },
+  {
+    id: "feather-gold-sky",
+    name: "Gilded Feather in Sky",
+    collection: "sky-wings-arrows",
+    image: featherGoldSky,
+    palette: paletteSkyGold,
+  },
+  {
+    id: "feather-crimson-sky",
+    name: "Crimson Feather in Sky",
+    collection: "sky-wings-arrows",
+    image: featherCrimsonSky,
+    palette: paletteSkyCrimson,
+  },
+  {
+    id: "chronicles-light-rose-dove",
+    name: "The Light Chronicles",
+    collection: "chronicles",
+    image: chroniclesLightRoseDove,
+    palette: paletteLightChronicle,
   },
 ];
 
