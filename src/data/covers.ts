@@ -29,6 +29,11 @@ import moonlitButterfliesLotus from "@/assets/covers/moonlit-butterflies-lotus.j
 import blackRoseChains from "@/assets/covers/black-rose-chains.jpg";
 import redRoseMoon from "@/assets/covers/red-rose-moon.jpg";
 import whiteRoseMoon from "@/assets/covers/white-rose-moon.jpg";
+import oakTreeFairyLights from "@/assets/covers/oak-tree-fairy-lights.jpg";
+import darkDahliaSparks from "@/assets/covers/dark-dahlia-sparks.jpg";
+import blackDahliaFairyLights from "@/assets/covers/black-dahlia-fairy-lights.jpg";
+import midnightIrisStars from "@/assets/covers/midnight-iris-stars.jpg";
+import indigoIrisGlow from "@/assets/covers/indigo-iris-glow.jpg";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
@@ -263,6 +268,40 @@ const paletteGardenWarm: CoverPalette = {
   mutedForeground: "15 12% 45%",
   border: "20 18% 84%",
   paperGradient: "linear-gradient(180deg, hsl(25 45% 96%), hsl(20 30% 90%))",
+};
+
+const paletteFairyLightOak: CoverPalette = {
+  mode: "dark",
+  background: "210 40% 8%",
+  foreground: "40 50% 92%",
+  card: "210 35% 12%",
+  cardForeground: "40 50% 92%",
+  primary: "40 80% 65%",
+  primaryForeground: "210 40% 8%",
+  primarySoft: "210 28% 18%",
+  accent: "190 50% 55%",
+  accentForeground: "210 40% 8%",
+  muted: "210 22% 16%",
+  mutedForeground: "40 20% 65%",
+  border: "210 22% 22%",
+  paperGradient: "linear-gradient(180deg, hsl(210 40% 10%), hsl(220 45% 6%))",
+};
+
+const paletteMidnightIris: CoverPalette = {
+  mode: "dark",
+  background: "240 35% 7%",
+  foreground: "40 35% 92%",
+  card: "240 30% 12%",
+  cardForeground: "40 35% 92%",
+  primary: "260 50% 65%",
+  primaryForeground: "240 35% 7%",
+  primarySoft: "240 25% 18%",
+  accent: "40 75% 60%",
+  accentForeground: "240 35% 7%",
+  muted: "240 18% 16%",
+  mutedForeground: "40 18% 65%",
+  border: "240 18% 22%",
+  paperGradient: "linear-gradient(180deg, hsl(240 35% 9%), hsl(245 40% 5%))",
 };
 
 const paletteMoonlitButterflies: CoverPalette = {
@@ -695,6 +734,41 @@ export const COVERS: Cover[] = [
     collection: "black-moon",
     image: whiteRoseMoon,
     palette: paletteLightChronicle,
+  },
+  {
+    id: "oak-tree-fairy-lights",
+    name: "Oak Tree & Fairy Lights",
+    collection: "garden",
+    image: oakTreeFairyLights,
+    palette: paletteFairyLightOak,
+  },
+  {
+    id: "dark-dahlia-sparks",
+    name: "Dark Dahlia & Sparks",
+    collection: "black-moon",
+    image: darkDahliaSparks,
+    palette: paletteCrimsonMoon,
+  },
+  {
+    id: "black-dahlia-fairy-lights",
+    name: "Black Dahlia & Fairy Lights",
+    collection: "black-moon",
+    image: blackDahliaFairyLights,
+    palette: paletteCrimsonMoon,
+  },
+  {
+    id: "midnight-iris-stars",
+    name: "Midnight Iris & Stars",
+    collection: "celestial-florals",
+    image: midnightIrisStars,
+    palette: paletteMidnightIris,
+  },
+  {
+    id: "indigo-iris-glow",
+    name: "Indigo Iris Glow",
+    collection: "celestial-florals",
+    image: indigoIrisGlow,
+    palette: paletteMidnightIris,
   },
 ];
 
