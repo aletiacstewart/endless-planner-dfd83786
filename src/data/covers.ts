@@ -58,6 +58,8 @@ import faithCrossRoses from "@/assets/covers/faith-cross-roses.jpg";
 import faithCrossHeart from "@/assets/covers/faith-cross-heart.jpg";
 import botanicalSpiritLeaves from "@/assets/covers/botanical-spirit-leaves.jpg";
 import botanicalSpiritRiver from "@/assets/covers/botanical-spirit-river.jpg";
+import botanicalSpiritCosmos from "@/assets/covers/botanical-spirit-cosmos.jpg";
+import botanicalSpiritPond from "@/assets/covers/botanical-spirit-pond.jpg";
 
 /**
  * Each cover declares a self-contained palette in HSL "H S% L%" format.
@@ -928,6 +930,20 @@ export const COVERS: Cover[] = [
     name: "Botanical Spirit at the River",
     collection: "garden",
     image: botanicalSpiritRiver,
+    palette: paletteBotanicalSpirit,
+  },
+  {
+    id: "botanical-spirit-cosmos",
+    name: "Botanical Spirit & Cosmos",
+    collection: "garden",
+    image: botanicalSpiritCosmos,
+    palette: paletteBotanicalSpirit,
+  },
+  {
+    id: "botanical-spirit-pond",
+    name: "Botanical Spirit at the Pond",
+    collection: "garden",
+    image: botanicalSpiritPond,
     palette: paletteBotanicalSpirit,
   },
 ];
