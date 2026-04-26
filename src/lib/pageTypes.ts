@@ -328,14 +328,12 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "Daily Chores",
-        fields: [
-          { key: "chore_1", label: "Chore 1", type: "text", span: 2 },
-          { key: "chore_2", label: "Chore 2", type: "text", span: 2 },
-          { key: "chore_3", label: "Chore 3", type: "text", span: 2 },
-          { key: "chore_4", label: "Chore 4", type: "text", span: 2 },
-          { key: "chore_5", label: "Chore 5", type: "text", span: 2 },
-        ],
+        columns: 2,
+        columnTitles: ["Daily Chores", "Daily Errands / Appointments"],
+        fields: Array.from({ length: 5 }, (_, i) => i + 1).flatMap((n) => [
+          { key: `chore_${n}`, label: `Chore ${n}`, type: "text" as const },
+          { key: `errand_${n}`, label: `Errand ${n}`, type: "text" as const },
+        ]),
       },
       {
         title: "Measurements",
