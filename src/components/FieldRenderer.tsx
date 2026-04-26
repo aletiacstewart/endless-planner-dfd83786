@@ -206,6 +206,38 @@ export function FieldRenderer({ field, value, allValues, onChange }: Props) {
         </div>
       );
     }
+    case "success-fail": {
+      const current = (value as string) ?? "";
+      const opts: { v: "success" | "failed"; label: string }[] = [
+        { v: "success", label: "Success" },
+        { v: "failed", label: "Failed" },
+      ];
+      return (
+        <div>
+          {label}
+          <div className="flex gap-2 flex-wrap">
+            {opts.map(({ v, label: l }) => {
+              const active = current === v;
+              return (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => onChange(active ? "" : v)}
+                  className={cn(
+                    "px-4 h-9 rounded-full border text-sm font-medium transition-colors",
+                    active
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background/60 border-input text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {l}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
     case "ingredients-list":
       return <IngredientsList value={value as string[]} onChange={onChange} />;
     case "calendar-grid":
