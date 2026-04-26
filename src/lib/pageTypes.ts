@@ -57,6 +57,8 @@ export interface SectionDef {
   title?: string;
   description?: string;
   columns?: 1 | 2 | 3;
+  /** Optional column headings displayed above each column of the grid (length should match `columns`). */
+  columnTitles?: string[];
   fields: FieldDef[];
 }
 
