@@ -817,19 +817,24 @@ function CalendarGrid({
   };
 
   return (
-    <div>
-      <label className="field-label block mb-2">Days of the month — tap to add a note</label>
-      <div className="grid grid-cols-7 gap-1.5 mb-1.5">
+    <div className={cn(compact && "max-w-xs mx-auto")}>
+      <label className="field-label block mb-2">
+        {compact ? `${monthName} ${yearNum} — tap a day` : "Days of the month — tap to add a note"}
+      </label>
+      <div className={cn("grid grid-cols-7 mb-1.5", compact ? "gap-0.5" : "gap-1.5")}>
         {WEEKDAYS.map((w) => (
           <div
             key={w}
-            className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground text-center"
+            className={cn(
+              "font-medium uppercase tracking-wide text-muted-foreground text-center",
+              compact ? "text-[9px]" : "text-[10px]"
+            )}
           >
-            {w}
+            {compact ? w[0] : w}
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-7 gap-1.5">
+      <div className={cn("grid grid-cols-7", compact ? "gap-0.5" : "gap-1.5")}>
         {Array.from({ length: startWeekday }).map((_, i) => (
           <div key={`pad-${i}`} className="aspect-square" aria-hidden="true" />
         ))}
@@ -843,17 +848,28 @@ function CalendarGrid({
               onClick={() => openCell(d)}
               aria-label={`${monthName} ${d}${filled ? " — has note" : ""}`}
               className={cn(
-                "aspect-square rounded-md border p-1 flex flex-col items-stretch text-left transition-colors hover:border-primary/60 focus:outline-none focus:ring-2 focus:ring-ring",
+                "aspect-square rounded-md border flex flex-col items-stretch text-left transition-colors hover:border-primary/60 focus:outline-none focus:ring-2 focus:ring-ring",
+                compact ? "p-0.5 items-center justify-center" : "p-1",
                 filled
                   ? "bg-primary-soft/40 border-primary/40"
                   : "bg-background/60 border-border"
               )}
             >
-              <span className="text-[10px] text-muted-foreground leading-none">{d}</span>
-              {filled && (
+              <span
+                className={cn(
+                  "text-muted-foreground leading-none",
+                  compact ? "text-[10px] text-foreground/80" : "text-[10px]"
+                )}
+              >
+                {d}
+              </span>
+              {filled && !compact && (
                 <span className="mt-0.5 text-[9px] leading-tight text-foreground/80 line-clamp-2 break-words">
                   {note}
                 </span>
+              )}
+              {filled && compact && (
+                <span className="mt-0.5 h-1 w-1 rounded-full bg-primary" aria-hidden="true" />
               )}
             </button>
           );
