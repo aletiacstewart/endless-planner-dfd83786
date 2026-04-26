@@ -33,7 +33,14 @@ export function PageRenderer({ pageType, values, onChange }: Props) {
             </div>
           )}
           {section.groups && section.groups.length > 0 ? (
-            <div className="grid gap-6 mt-3 sm:grid-cols-2">
+            <div
+              className={cn(
+                "grid gap-6 mt-3",
+                section.groups.length === 2 && "sm:grid-cols-2",
+                section.groups.length === 3 && "sm:grid-cols-2 lg:grid-cols-3",
+                section.groups.length >= 4 && "sm:grid-cols-2 lg:grid-cols-4"
+              )}
+            >
               {section.groups.map((group, gi) => (
                 <div key={gi} className="space-y-4">
                   {group.title && (
