@@ -49,7 +49,8 @@ export default function Section() {
 
       <main className="px-5 space-y-3">
         <Button onClick={addNew} className="w-full" size="lg">
-          <Plus className="w-4 h-4 mr-1" /> Add another {pageType.shortName}
+          <Plus className="w-4 h-4 mr-1" />
+          {pageType.id === "daily-tracker" ? "Add a daily" : `Add another ${pageType.shortName}`}
         </Button>
 
         {entries.length === 0 ? (

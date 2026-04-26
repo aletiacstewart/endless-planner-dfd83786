@@ -248,8 +248,55 @@ export const PAGE_TYPES: PageTypeDef[] = [
     id: "daily-tracker",
     name: "Daily Tracker",
     shortName: "Daily",
-    description: "Goal, meals, vitals, wellness, self-care, workout and chores for the day.",
+    description: "A simple daily log — date, goal, meals, and wellness notes.",
     icon: "Sun",
+    sections: [
+      {
+        columns: 2,
+        fields: [
+          { key: "date", label: "Date", type: "date" },
+          {
+            key: "weekday",
+            label: "Day",
+            type: "checkbox-group",
+            options: ["S", "M", "T", "W", "T", "F", "S"],
+          },
+        ],
+      },
+      {
+        columns: 2,
+        fields: [
+          { key: "daily_goal", label: "Daily Goal", type: "textarea", rows: 3 },
+          { key: "daily_habit", label: "Daily Habit Tracker", type: "success-fail" },
+        ],
+      },
+      {
+        title: "Meals",
+        fields: [
+          { key: "breakfast", label: "Breakfast", type: "text", span: 2 },
+          { key: "breakfast_notes", label: "Breakfast — Notes", type: "textarea", rows: 2, span: 2 },
+          { key: "lunch", label: "Lunch", type: "text", span: 2 },
+          { key: "lunch_notes", label: "Lunch — Notes", type: "textarea", rows: 2, span: 2 },
+          { key: "dinner", label: "Dinner", type: "text", span: 2 },
+          { key: "dinner_notes", label: "Dinner — Notes", type: "textarea", rows: 2, span: 2 },
+          { key: "snacks", label: "Snacks", type: "text", span: 2 },
+          { key: "snacks_notes", label: "Snacks — Notes", type: "textarea", rows: 2, span: 2 },
+        ],
+      },
+      {
+        fields: [
+          { key: "daily_notes", label: "Wellness Notes", type: "textarea", rows: 5, span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => (v.date ? `${v.date}` : "Daily entry"),
+  },
+  {
+    id: "complete-tracker",
+    name: "Complete Tracker",
+    shortName: "Complete",
+    description: "All-in-one daily log — meals, vitals, wellness, meds, measurements, monthly calendar and more. Auto-syncs to your individual trackers.",
+    icon: "LayoutGrid",
     sections: [
       {
         columns: 2,
