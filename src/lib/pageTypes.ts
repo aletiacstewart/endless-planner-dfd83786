@@ -24,7 +24,8 @@ export type FieldType =
   | "month-tracker" // 12 months x N items grid (boolean marks)
   | "measurement-grid" // fixed N rows x labelled columns of free text
   | "daily-month-grid" // 31 days x 12 months free-text values + Achieved column
-  | "yearly-habit-grid"; // 12 month rows: Begin/Break + label + 31 check cells
+  | "yearly-habit-grid" // 12 month rows: Begin/Break + label + 31 check cells
+  | "med-list"; // compact medication list: # + Name + Reason + Doctor rows
 
 export interface FieldDef {
   key: string;
@@ -60,6 +61,8 @@ export interface SectionDef {
   /** Optional column headings displayed above each column of the grid (length should match `columns`). */
   columnTitles?: string[];
   fields: FieldDef[];
+  /** Optional side-by-side groups rendered inside the same card. When provided, each group becomes its own column with its own title and stacked fields. */
+  groups?: { title?: string; fields: FieldDef[] }[];
 }
 
 export interface PageTypeDef {
@@ -291,24 +294,29 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "Wellness",
-        columns: 2,
-        fields: [
-          { key: "water", label: "Water (glasses)", type: "rating", max: 8, otherKey: "water_other", span: 2 },
-          { key: "caffeine", label: "Caffeine / Other (cups)", type: "rating", max: 6, otherKey: "caffeine_other", span: 2 },
-          { key: "sweets", label: "Sweets", type: "rating", max: 4, otherKey: "sweets_other", span: 2 },
-          { key: "sleep", label: "Sleep (hours)", type: "rating", max: 12, otherKey: "sleep_other", span: 2 },
-          { key: "smoking", label: "Smoking / Vaping", type: "rating", max: 12, otherKey: "smoking_other", span: 2 },
-          { key: "mood", label: "Mood", type: "mood-rating", max: 5, span: 2 },
+        title: "Wellness & Self-Care",
+        groups: [
+          {
+            title: "Wellness",
+            fields: [
+              { key: "water", label: "Water (glasses)", type: "rating", max: 8, otherKey: "water_other" },
+              { key: "caffeine", label: "Caffeine / Other (cups)", type: "rating", max: 6, otherKey: "caffeine_other" },
+              { key: "sweets", label: "Sweets", type: "rating", max: 4, otherKey: "sweets_other" },
+              { key: "sleep", label: "Sleep (hours)", type: "rating", max: 12, otherKey: "sleep_other" },
+              { key: "smoking", label: "Smoking / Vaping", type: "rating", max: 12, otherKey: "smoking_other" },
+              { key: "mood", label: "Mood", type: "mood-rating", max: 5 },
+            ],
+          },
+          {
+            title: "Self-Care",
+            fields: [
+              { key: "self_physical", label: "Physical Self-Care", type: "textarea", rows: 5 },
+              { key: "self_emotional", label: "Emotional Self-Care", type: "textarea", rows: 5 },
+              { key: "self_spiritual", label: "Spiritual Self-Care", type: "textarea", rows: 5 },
+            ],
+          },
         ],
-      },
-      {
-        title: "Self-Care",
-        fields: [
-          { key: "self_physical", label: "Physical Self-Care", type: "textarea", rows: 2, span: 2 },
-          { key: "self_emotional", label: "Emotional Self-Care", type: "textarea", rows: 2, span: 2 },
-          { key: "self_spiritual", label: "Spiritual Self-Care", type: "textarea", rows: 2, span: 2 },
-        ],
+        fields: [],
       },
       {
         fields: [
@@ -370,14 +378,8 @@ export const PAGE_TYPES: PageTypeDef[] = [
             : "Night Medications";
         return {
           title,
-          columns: 3 as const,
           fields: [
-            ...Array.from({ length: 12 }, (_, i) => i + 1).flatMap((n) => [
-              { key: `med_${slot}_${n}_name`, label: `Med ${n} — Name`, type: "text" as const },
-              { key: `med_${slot}_${n}_reason`, label: `Med ${n} — Reason`, type: "text" as const },
-              { key: `med_${slot}_${n}_doctor`, label: `Med ${n} — Prescribing Doctor`, type: "text" as const },
-            ]),
-            { key: `med_${slot}_more`, label: "More / Other", type: "textarea" as const, rows: 3, span: 2 as const },
+            { key: `med_${slot}`, label: title, type: "med-list" as const, rowCount: 12, span: 2 as const },
           ],
         };
       }),
