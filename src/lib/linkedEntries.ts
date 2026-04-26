@@ -391,7 +391,139 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       synced.push(`Fun Tracker (${yearStr})`);
     }
 
-  } catch (err) {
+    // Cleaning Check List → mirror per-day cell into matching Complete entries.
+    if (entry.pageType === "cleaning-checklist") {
+      const year = Number(v.year ?? "");
+      if (!year) return [];
+      const grid = (v.cleaning as { cells?: Record<string, string> } | undefined)?.cells ?? {};
+      let touched = 0;
+      for (const [cellKey, cellVal] of Object.entries(grid)) {
+        const m = /^(\d+)-(\d+)$/.exec(cellKey);
+        if (!m) continue;
+        const day = Number(m[1]);
+        const monthIndex = Number(m[2]);
+        const iso = `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        touched += await updateCompleteForDate(iso, (dst) => {
+          if (cellVal && cellVal.trim()) dst.cleaning_today = cellVal;
+          else delete dst.cleaning_today;
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (cleaning)");
+      return synced;
+    }
+
+    // Yearly Calendar → push month note into Complete entries on dates in that month/year.
+    if (entry.pageType === "yearly-calendar") {
+      const year = Number(v.year ?? "");
+      if (!year) return [];
+      const completes = (await listEntries("complete-tracker")).filter((e) => {
+        const d = parseDate(e.values.date);
+        return d && d.year === year;
+      });
+      let touched = 0;
+      for (const c of completes) {
+        const d = parseDate(c.values.date);
+        if (!d) continue;
+        const monthName = new Date(year, d.monthIndex, 1)
+          .toLocaleString("en-US", { month: "long" })
+          .toLowerCase();
+        const note = (v[`month_${monthName}`] as string | undefined) ?? "";
+        await persist(c, (dst) => {
+          if (note.trim()) dst.month_note_today = note;
+          else delete dst.month_note_today;
+        });
+        touched++;
+      }
+      if (touched > 0) synced.push("Complete Tracker (month notes)");
+      return synced;
+    }
+
+    // Weekly Calendar → push weekday note into Complete entries in that week.
+    if (entry.pageType === "weekly-calendar") {
+      const weekOf = parseDate(v.week_of);
+      if (!weekOf) return [];
+      const start = mondayOf(weekOf.year, weekOf.monthIndex, weekOf.day);
+      const days = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"];
+      let touched = 0;
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(start);
+        d.setDate(d.getDate() + i);
+        const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+        const note = (v[days[i]] as string | undefined) ?? "";
+        touched += await updateCompleteForDate(iso, (dst) => {
+          if (note.trim()) dst.week_note_today = note;
+          else delete dst.week_note_today;
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (week notes)");
+      return synced;
+    }
+
+    // Habit Tracker (monthly grid) → set habit_1..3 + label + success on each marked day.
+    if (entry.pageType === "habit-tracker") {
+      const year = Number(v.year ?? "");
+      const monthName = String(v.month ?? "").toLowerCase();
+      if (!year || !monthName) return [];
+      const monthIndex = new Date(`${monthName} 1, 2000`).getMonth();
+      if (Number.isNaN(monthIndex)) return [];
+      const grid = (v.habits as { habits?: string[]; marks?: Record<string, boolean> } | undefined) ?? {};
+      const habits = grid.habits ?? [];
+      const marks = grid.marks ?? {};
+      // Build day → list of habit indexes ticked.
+      const byDay = new Map<number, number[]>();
+      for (const [k, on] of Object.entries(marks)) {
+        if (!on) continue;
+        const m = /^(\d+)-(\d+)$/.exec(k);
+        if (!m) continue;
+        const hi = Number(m[1]);
+        const day = Number(m[2]);
+        if (!byDay.has(day)) byDay.set(day, []);
+        byDay.get(day)!.push(hi);
+      }
+      let touched = 0;
+      for (const [day, his] of byDay) {
+        const iso = `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        touched += await updateCompleteForDate(iso, (dst) => {
+          his.slice(0, 3).forEach((hi, slot) => {
+            const n = slot + 1;
+            const label = habits[hi] ?? "";
+            if (label.trim()) dst[`habit_${n}_label`] = label;
+            dst[`habit_${n}`] = "success";
+          });
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (habits)");
+      return synced;
+    }
+
+    // Yearly Habit Tracker → for each marked day, set first habit slot's mode/label/success.
+    if (entry.pageType === "yearly-habit-tracker") {
+      const year = Number(v.year ?? "");
+      if (!year) return [];
+      const data = (v.yearly_habits as { rows?: { mode: "begin"|"break"|""; label: string }[]; marks?: Record<string, boolean> } | undefined) ?? {};
+      const rows = data.rows ?? [];
+      const marks = data.marks ?? {};
+      let touched = 0;
+      for (const [k, on] of Object.entries(marks)) {
+        if (!on) continue;
+        const m = /^(\d+)-(\d+)$/.exec(k);
+        if (!m) continue;
+        const monthIndex = Number(m[1]);
+        const day = Number(m[2]);
+        const iso = `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        const row = rows[monthIndex] ?? { mode: "" as const, label: "" };
+        touched += await updateCompleteForDate(iso, (dst) => {
+          if (row.label.trim()) dst.habit_1_label = row.label;
+          if (row.mode) dst.habit_1_mode = row.mode;
+          dst.habit_1 = "success";
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (yearly habits)");
+      return synced;
+    }
+
+    // Fun Tracker → can't pin to a specific day; it's a month-tracker. Skip reverse.
+
     console.error("[syncLinkedEntries] failed:", err);
   }
   return synced;
