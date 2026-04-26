@@ -224,6 +224,9 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
         // Replace whole calendar with the source (Complete Tracker is the source of truth here).
         dst.calendar = { ...cal };
       });
+      const monthCap = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+      synced.push(`Monthly Calendar (${monthCap} ${yearStr})`);
+    }
 
     // 7. Cleaning Check List — daily-month-grid `cleaning`, year-scoped.
     const cleaningToday = (v.cleaning_today as string | undefined) ?? "";
