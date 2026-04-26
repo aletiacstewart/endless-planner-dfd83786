@@ -25,7 +25,8 @@ export type FieldType =
   | "measurement-grid" // fixed N rows x labelled columns of free text
   | "daily-month-grid" // 31 days x 12 months free-text values + Achieved column
   | "yearly-habit-grid" // 12 month rows: Begin/Break + label + 31 check cells
-  | "med-list"; // compact medication list: # + Name + Reason + Doctor rows
+  | "med-list" // compact medication list: # + Name + Reason + Doctor rows
+  | "paired-compact"; // single label with two small Start/Finish inputs side-by-side
 
 export interface FieldDef {
   key: string;
@@ -53,8 +54,10 @@ export interface FieldDef {
   modeKey?: string;
   /** For text/number: render a narrow input sized for ~3 characters. */
   compact?: boolean;
+  /** For paired-compact: keys + sub-labels for the two inputs. */
+  pairKeys?: [string, string];
+  pairLabels?: [string, string];
 }
-
 
 export interface SectionDef {
   title?: string;
@@ -330,7 +333,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
           },
           {
             title: "Measurements",
-            columns: 2,
+            columns: 3,
             fields: [
               ...([
                 ["body_fat", "Body Fat %"],
@@ -341,12 +344,20 @@ export const PAGE_TYPES: PageTypeDef[] = [
                 ["hips", "Hips"],
                 ["thigh", "Thigh"],
                 ["calf", "Calf"],
-              ] as const).flatMap(([k, label]) => [
-                { key: `m_${k}_start`, label: `${label} — Start`, type: "text" as const, compact: true },
-                { key: `m_${k}_finish`, label: `${label} — Finish`, type: "text" as const, compact: true },
-              ]),
-              { key: "weight_start", label: "Starting Weight", type: "text", compact: true },
-              { key: "weight_goal", label: "Goal Weight", type: "text", compact: true },
+              ] as const).map(([k, label]) => ({
+                key: `m_${k}`,
+                label,
+                type: "paired-compact" as const,
+                pairKeys: [`m_${k}_start`, `m_${k}_finish`] as [string, string],
+                pairLabels: ["Start", "Finish"] as [string, string],
+              })),
+              {
+                key: "weight",
+                label: "Weight",
+                type: "paired-compact" as const,
+                pairKeys: ["weight_start", "weight_goal"] as [string, string],
+                pairLabels: ["Start", "Goal"] as [string, string],
+              },
               { key: "weight_result", label: "Result Weight", type: "text", compact: true },
             ],
           },
