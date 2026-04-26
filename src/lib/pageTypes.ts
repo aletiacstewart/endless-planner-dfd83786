@@ -366,7 +366,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         fields: [
-          { key: "daily_notes", label: "Daily Notes", type: "textarea", rows: 5, span: 2 },
+          { key: "daily_notes", label: "Wellness Notes", type: "textarea", rows: 5, span: 2 },
         ],
       },
       {
