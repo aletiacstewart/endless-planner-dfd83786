@@ -44,6 +44,10 @@ export interface FieldDef {
   rowLabel?: string;
   /** For rating: render a small companion text input on the same row, bound to this other field key. */
   otherKey?: string;
+  /** For success-fail: render a blank text input alongside the buttons (user-typed label) bound to this key. Hides the field's own label. */
+  inputKey?: string;
+  /** Placeholder for the companion input (used with inputKey). */
+  inputPlaceholder?: string;
 }
 
 
@@ -378,29 +382,22 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "Fun Tracker",
-        description: "Mark today's fun activities.",
+        title: "Fun & Habit Tracker",
+        description: "Write in your own items, then mark Success or Failed for the day.",
         columns: 2,
         fields: [
-          { key: "fun_learn_skills", label: "Learn New Skills", type: "success-fail", span: 2 },
-          { key: "fun_friends_family", label: "Spend Time with Friends & Family", type: "success-fail", span: 2 },
-          { key: "fun_new_passion", label: "Find New Passion in Life", type: "success-fail", span: 2 },
-          { key: "fun_new_challenges", label: "Find New Challenges", type: "success-fail", span: 2 },
-          { key: "fun_diy_projects", label: "DIY Projects", type: "success-fail", span: 2 },
-          { key: "fun_other", label: "Other", type: "text", span: 2 },
-        ],
-      },
-      {
-        title: "Habit Tracker",
-        description: "Mark today's habits.",
-        columns: 2,
-        fields: [
-          { key: "habit_think_positive", label: "Think Positive", type: "success-fail", span: 2 },
-          { key: "habit_let_go_negativity", label: "Let Go of Negativity", type: "success-fail", span: 2 },
-          { key: "habit_eat_drink_healthy", label: "Eat & Drink Healthy", type: "success-fail", span: 2 },
-          { key: "habit_open_mind", label: "Keep an Open Mind", type: "success-fail", span: 2 },
-          { key: "habit_no_compare", label: "Do Not Compare Yourself to Others", type: "success-fail", span: 2 },
-          { key: "habit_other", label: "Other", type: "text", span: 2 },
+          { key: "fun_1", label: "Fun 1", type: "success-fail", inputKey: "fun_1_label", inputPlaceholder: "Fun activity…" },
+          { key: "habit_1", label: "Habit 1", type: "success-fail", inputKey: "habit_1_label", inputPlaceholder: "Habit…" },
+          { key: "fun_2", label: "Fun 2", type: "success-fail", inputKey: "fun_2_label", inputPlaceholder: "Fun activity…" },
+          { key: "habit_2", label: "Habit 2", type: "success-fail", inputKey: "habit_2_label", inputPlaceholder: "Habit…" },
+          { key: "fun_3", label: "Fun 3", type: "success-fail", inputKey: "fun_3_label", inputPlaceholder: "Fun activity…" },
+          { key: "habit_3", label: "Habit 3", type: "success-fail", inputKey: "habit_3_label", inputPlaceholder: "Habit…" },
+          { key: "fun_4", label: "Fun 4", type: "success-fail", inputKey: "fun_4_label", inputPlaceholder: "Fun activity…" },
+          { key: "habit_4", label: "Habit 4", type: "success-fail", inputKey: "habit_4_label", inputPlaceholder: "Habit…" },
+          { key: "fun_5", label: "Fun 5", type: "success-fail", inputKey: "fun_5_label", inputPlaceholder: "Fun activity…" },
+          { key: "habit_5", label: "Habit 5", type: "success-fail", inputKey: "habit_5_label", inputPlaceholder: "Habit…" },
+          { key: "fun_6", label: "Fun 6", type: "success-fail", inputKey: "fun_6_label", inputPlaceholder: "Fun activity…" },
+          { key: "habit_6", label: "Habit 6", type: "success-fail", inputKey: "habit_6_label", inputPlaceholder: "Habit…" },
         ],
       },
     ],
