@@ -20,9 +20,10 @@ interface Props {
   value: FieldValue;
   allValues?: Record<string, FieldValue>;
   onChange: (v: FieldValue) => void;
+  onChangeAny?: (key: string, v: FieldValue) => void;
 }
 
-export function FieldRenderer({ field, value, allValues, onChange }: Props) {
+export function FieldRenderer({ field, value, allValues, onChange, onChangeAny }: Props) {
   const label = (
     <label className="field-label block mb-1.5" htmlFor={field.key}>
       {field.label}
