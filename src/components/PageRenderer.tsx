@@ -38,11 +38,12 @@ export function PageRenderer({ pageType, values, onChange }: Props) {
                 "grid gap-6 mt-3",
                 section.groups.length === 2 && "sm:grid-cols-2",
                 section.groups.length === 3 && "sm:grid-cols-2 lg:grid-cols-3",
-                section.groups.length >= 4 && "sm:grid-cols-2 lg:grid-cols-4"
+                section.groups.length === 4 && "sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1.2fr]",
+                section.groups.length >= 5 && "sm:grid-cols-2 lg:grid-cols-5"
               )}
             >
               {section.groups.map((group, gi) => (
-                <div key={gi} className="space-y-4">
+                <div key={gi} className="space-y-4 min-w-0">
                   {group.title && (
                     <h3 className="font-display text-lg">{group.title}</h3>
                   )}
@@ -58,6 +59,7 @@ export function PageRenderer({ pageType, values, onChange }: Props) {
                       <div
                         key={field.key}
                         className={cn(
+                          "min-w-0",
                           field.span === 2 && group.columns === 2 && "col-span-2",
                           field.span === 2 && group.columns === 3 && "col-span-3"
                         )}
