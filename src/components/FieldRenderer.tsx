@@ -416,7 +416,63 @@ function IngredientsList({
   );
 }
 
-const MONTH_NAMES = [
+function MedList({
+  value,
+  rowCount,
+  onChange,
+}: {
+  value: Record<string, string> | null;
+  rowCount: number;
+  onChange: (v: FieldValue) => void;
+}) {
+  const data = value ?? {};
+  const update = (key: string, v: string) => onChange({ ...data, [key]: v });
+  return (
+    <div>
+      <div className="grid grid-cols-[1.5rem_2fr_2fr_1.5fr] gap-x-2 gap-y-1 items-center mb-1">
+        <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground" />
+        <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground px-1">Name</span>
+        <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground px-1">Reason</span>
+        <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground px-1">Doctor</span>
+      </div>
+      <div className="space-y-1">
+        {Array.from({ length: rowCount }, (_, i) => i + 1).map((n) => (
+          <div key={n} className="grid grid-cols-[1.5rem_2fr_2fr_1.5fr] gap-x-2 items-center">
+            <span className="text-xs text-muted-foreground text-right pr-1">{n}.</span>
+            <Input
+              value={data[`${n}_name`] ?? ""}
+              onChange={(e) => update(`${n}_name`, e.target.value)}
+              className="bg-background/60 h-8 px-2 text-sm"
+              aria-label={`Med ${n} name`}
+            />
+            <Input
+              value={data[`${n}_reason`] ?? ""}
+              onChange={(e) => update(`${n}_reason`, e.target.value)}
+              className="bg-background/60 h-8 px-2 text-sm"
+              aria-label={`Med ${n} reason`}
+            />
+            <Input
+              value={data[`${n}_doctor`] ?? ""}
+              onChange={(e) => update(`${n}_doctor`, e.target.value)}
+              className="bg-background/60 h-8 px-2 text-sm"
+              aria-label={`Med ${n} doctor`}
+            />
+          </div>
+        ))}
+      </div>
+      <div className="mt-3">
+        <label className="field-label block mb-1.5">More / Other</label>
+        <Textarea
+          value={data.more ?? ""}
+          rows={2}
+          onChange={(e) => update("more", e.target.value)}
+          className="bg-background/60 resize-none"
+        />
+      </div>
+    </div>
+  );
+}
+
   "january", "february", "march", "april", "may", "june",
   "july", "august", "september", "october", "november", "december",
 ];
