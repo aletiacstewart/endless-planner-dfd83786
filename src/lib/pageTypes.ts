@@ -64,7 +64,7 @@ export interface SectionDef {
   columnTitles?: string[];
   fields: FieldDef[];
   /** Optional side-by-side groups rendered inside the same card. When provided, each group becomes its own column with its own title and stacked fields. */
-  groups?: { title?: string; fields: FieldDef[] }[];
+  groups?: { title?: string; columns?: 1 | 2 | 3; fields: FieldDef[] }[];
 }
 
 export interface PageTypeDef {
