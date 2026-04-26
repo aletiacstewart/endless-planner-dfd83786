@@ -57,7 +57,7 @@ export interface FieldDef {
   /** For paired-compact: keys + sub-labels for the two inputs. */
   pairKeys?: [string, string];
   pairLabels?: [string, string];
-
+}
 
 export interface SectionDef {
   title?: string;
