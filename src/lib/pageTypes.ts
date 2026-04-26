@@ -42,6 +42,8 @@ export interface FieldDef {
   rowCount?: number;
   /** For measurement-grid: row-label prefix (e.g. "Wk"). */
   rowLabel?: string;
+  /** For rating: render a small companion text input on the same row, bound to this other field key. */
+  otherKey?: string;
 }
 
 
@@ -259,41 +261,36 @@ export const PAGE_TYPES: PageTypeDef[] = [
           { key: "breakfast_bs", label: "Breakfast — Blood Sugar", type: "text" },
           { key: "breakfast_bp", label: "Breakfast — Blood Pressure", type: "text" },
           { key: "breakfast_o2", label: "Breakfast — O₂ Levels", type: "text" },
-          { key: "breakfast_notes", label: "Breakfast — Notes", type: "text" },
+          { key: "breakfast_notes", label: "Breakfast — Notes", type: "text", span: 2 },
 
           { key: "lunch", label: "Lunch", type: "textarea", rows: 3, span: 2 },
           { key: "lunch_bs", label: "Lunch — Blood Sugar", type: "text" },
           { key: "lunch_bp", label: "Lunch — Blood Pressure", type: "text" },
           { key: "lunch_o2", label: "Lunch — O₂ Levels", type: "text" },
-          { key: "lunch_notes", label: "Lunch — Notes", type: "text" },
+          { key: "lunch_notes", label: "Lunch — Notes", type: "text", span: 2 },
 
           { key: "dinner", label: "Dinner", type: "textarea", rows: 3, span: 2 },
           { key: "dinner_bs", label: "Dinner — Blood Sugar", type: "text" },
           { key: "dinner_bp", label: "Dinner — Blood Pressure", type: "text" },
           { key: "dinner_o2", label: "Dinner — O₂ Levels", type: "text" },
-          { key: "dinner_notes", label: "Dinner — Notes", type: "text" },
+          { key: "dinner_notes", label: "Dinner — Notes", type: "text", span: 2 },
 
           { key: "snacks", label: "Snacks", type: "textarea", rows: 2, span: 2 },
           { key: "snacks_bs", label: "Snacks — Blood Sugar", type: "text" },
           { key: "snacks_bp", label: "Snacks — Blood Pressure", type: "text" },
           { key: "snacks_o2", label: "Snacks — O₂ Levels", type: "text" },
-          { key: "snacks_notes", label: "Snacks — Notes", type: "text" },
+          { key: "snacks_notes", label: "Snacks — Notes", type: "text", span: 2 },
         ],
       },
       {
         title: "Wellness",
         columns: 2,
         fields: [
-          { key: "water", label: "Water (glasses)", type: "rating", max: 8 },
-          { key: "water_other", label: "Water — Other", type: "text" },
-          { key: "caffeine", label: "Caffeine (cups)", type: "rating", max: 6 },
-          { key: "caffeine_other", label: "Caffeine — Other", type: "text" },
-          { key: "sweets", label: "Sweets", type: "rating", max: 5 },
-          { key: "sweets_other", label: "Sweets — Other", type: "text" },
-          { key: "sleep", label: "Sleep (hours)", type: "rating", max: 12 },
-          { key: "sleep_other", label: "Sleep — Other", type: "text" },
-          { key: "smoking", label: "Smoking / Vaping", type: "rating", max: 12 },
-          { key: "smoking_other", label: "Smoking / Vaping — Other", type: "text" },
+          { key: "water", label: "Water (glasses)", type: "rating", max: 8, otherKey: "water_other", span: 2 },
+          { key: "caffeine", label: "Caffeine (cups)", type: "rating", max: 6, otherKey: "caffeine_other", span: 2 },
+          { key: "sweets", label: "Sweets", type: "rating", max: 5, otherKey: "sweets_other", span: 2 },
+          { key: "sleep", label: "Sleep (hours)", type: "rating", max: 12, otherKey: "sleep_other", span: 2 },
+          { key: "smoking", label: "Smoking / Vaping", type: "rating", max: 12, otherKey: "smoking_other", span: 2 },
           { key: "mood", label: "Mood", type: "mood-rating", max: 5, span: 2 },
         ],
       },

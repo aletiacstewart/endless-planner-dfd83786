@@ -20,9 +20,10 @@ interface Props {
   value: FieldValue;
   allValues?: Record<string, FieldValue>;
   onChange: (v: FieldValue) => void;
+  onChangeAny?: (key: string, v: FieldValue) => void;
 }
 
-export function FieldRenderer({ field, value, allValues, onChange }: Props) {
+export function FieldRenderer({ field, value, allValues, onChange, onChangeAny }: Props) {
   const label = (
     <label className="field-label block mb-1.5" htmlFor={field.key}>
       {field.label}
@@ -146,25 +147,41 @@ export function FieldRenderer({ field, value, allValues, onChange }: Props) {
     case "rating": {
       const max = field.max ?? 5;
       const current = Number(value) || 0;
+      const otherKey = field.otherKey;
+      const otherVal = otherKey ? ((allValues?.[otherKey] as string) ?? "") : "";
       return (
         <div>
           {label}
-          <div className="flex gap-1 flex-wrap">
-            {Array.from({ length: max }, (_, i) => i + 1).map((n) => (
-              <button
-                key={n}
-                type="button"
-                onClick={() => onChange(current === n ? 0 : n)}
-                className={cn(
-                  "w-8 h-8 rounded-full border text-xs font-medium transition-colors",
-                  n <= current
-                    ? "bg-accent text-accent-foreground border-accent"
-                    : "bg-background/60 border-input text-muted-foreground"
-                )}
-              >
-                {n}
-              </button>
-            ))}
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex gap-1 flex-wrap">
+              {Array.from({ length: max }, (_, i) => i + 1).map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => onChange(current === n ? 0 : n)}
+                  className={cn(
+                    "w-8 h-8 rounded-full border text-xs font-medium transition-colors",
+                    n <= current
+                      ? "bg-accent text-accent-foreground border-accent"
+                      : "bg-background/60 border-input text-muted-foreground"
+                  )}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+            {otherKey && onChangeAny && (
+              <Input
+                type="text"
+                inputMode="numeric"
+                maxLength={3}
+                value={otherVal}
+                onChange={(e) => onChangeAny(otherKey, e.target.value)}
+                placeholder="Other"
+                aria-label={`${field.label} — Other`}
+                className="bg-background/60 h-8 w-14 px-2 text-center text-xs"
+              />
+            )}
           </div>
         </div>
       );

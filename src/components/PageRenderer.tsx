@@ -36,6 +36,7 @@ export function PageRenderer({ pageType, values, onChange }: Props) {
                   value={values[field.key] ?? null}
                   allValues={values}
                   onChange={(v) => onChange(field.key, v)}
+                  onChangeAny={onChange}
                 />
               </div>
             ))}
