@@ -14,6 +14,7 @@ export type FieldType =
   | "number"
   | "rating" // 1..max selectable
   | "mood-rating" // 1..5 selectable rendered as face icons
+  | "success-fail" // pair of pill buttons (Success / Failed)
   | "weekday-checkboxes" // S M T W T F S
   | "checkbox"
   | "checkbox-group"

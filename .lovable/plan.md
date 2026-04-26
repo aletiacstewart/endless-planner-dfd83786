@@ -1,66 +1,69 @@
-# Mobile layout fix — split month grids into two halves
+## Goal
 
-## Problem
+Expand the **Daily Tracker** to include every item shown in the uploaded PDF (page 2). Keep the current visual design exactly as-is — same card style, same typography, same cover-driven theme colors. No layout overhaul; just additional fields plugged into the existing renderer.
 
-On mobile (390px), the wide month-based grids (Daily×Month tracker, Yearly Habit grid, MonthTracker, HabitGrid 31-day, MeasurementGrid) require horizontal scrolling. The sticky left "Day"/"Month" column visually conflicts with the page title when the table scrolls vertically inside its own container, producing the artifact in the screenshot (numbers 3–24 appear on top of the page header).
+After you've reviewed and approved the new Daily Tracker, you'll tell me which separate pages to remove (Self-Care Check List, Cleaning Check List, Blood Sugar Tracker, Blood Pressure Tracker, Oxygen Tracker, etc.) and I'll remove them in a follow-up step. Nothing is removed in this round.
 
-Two issues to fix:
-1. Day/row labels stay pinned via `sticky left-0` while the **page** scrolls vertically, causing the labels to bleed over the page header (because the table's overflow container creates a scroll context that is taller than the viewport).
-2. 12 month columns + label + checks + notes simply don't fit at 390px and are uncomfortable to scroll horizontally.
+## What gets added to the Daily Tracker
 
-## Solution
+In the order they appear on page 2 of your PDF:
 
-On mobile only, stack two half-year tables (Jan–Jun, then Jul–Dec) so each fits the viewport with no horizontal scroll. On `sm+` keep the current single-table layout.
+1. **Daily Goal** — single textarea at the top (under Date / Day).
+2. **Daily Habit** — Success / Failed toggle pair (right next to Daily Goal).
+3. **Meals → per-meal health readings** — under each of Breakfast / Lunch / Dinner / Snacks, three small inputs + a notes field:
+   - Blood Sugar
+   - Blood Pressure
+   - O₂ Levels
+   - Notes
+4. **Wellness → "Other" input** appended to each rating row:
+   - Water (1–8 + Other)
+   - Caffeine (1–6 + Other)
+   - Sweets (1–5 + Other)
+   - Sleep (1–12 + Other)
+5. **Wellness → Smoking / Vaping** — new 1–12 rating + Other.
+6. **Self-Care** (new section) — three textareas:
+   - Physical Self-Care
+   - Emotional Self-Care
+   - Spiritual Self-Care
+7. **Daily Notes** — large textarea below Self-Care.
+8. **Workout** — keep existing Cardio / Weights / Yoga / Stretch / Rest day / Other (already matches the PDF).
+9. **Daily Chores** (new section) — 5 short text inputs (one chore per line).
 
-Also remove the visual artifact by dropping `sticky left-0` on the row-label cells (no longer needed once the table fits) and switching the wrapper from `overflow-x-auto` to non-scrolling on mobile.
+## Visual / theme consistency
 
-### Components to update in `src/components/FieldRenderer.tsx`
+- Reuses the existing `planner-card`, `field-label`, and `bg-background/60` classes — same look as today.
+- All new ratings use the existing rating button style (so they pick up the cover-selected theme automatically).
+- Section titles use the same `font-display text-xl` heading as Meals / Wellness / Workout today.
+- No new colors, no new fonts, no new spacing tokens.
 
-1. **`DailyMonthGrid`** (Blood Sugar, Blood Pressure, O2, Cleaning, Self-Care)
-   - Mobile (`<sm`): render two stacked tables — one with months J F M A M J, one with J A S O N D — each with the Day column, ✓ column, and Note column. Both halves share the same underlying `cells`, `achieved`, `notes` state (achieved + note shown in the second half only, or duplicated under each half — see decision below).
-   - Desktop (`sm+`): unchanged single table.
+## Technical changes
 
-2. **`YearlyHabitGrid`**
-   - Mobile: split into two cards — **Jan–Jun** and **Jul–Dec**, each as its own vertical block. Each month becomes one row with its Begin/Break + Habit input and a 31-day strip below (wrapping into ~5 rows of 7 cells), instead of cramming everything into one wide table.
-   - Desktop: unchanged.
+**`src/lib/pageTypes.ts`** — extend the `daily-tracker` page schema only:
 
-3. **`MonthTracker`** (Activities by month)
-   - Mobile: split the 12 month columns into two tables (J F M A M J / J A S O N D) stacked vertically. Activity name column repeats in each.
-   - Desktop: unchanged.
+- Add `daily_goal` (textarea) + `daily_habit` (new `success-fail` field) to a new top section.
+- Add 4 new fields per meal: `breakfast_bs`, `breakfast_bp`, `breakfast_o2`, `breakfast_notes` (and same for lunch/dinner/snacks).
+- Add `*_other` text field next to each existing rating: `water_other`, `caffeine_other`, `sweets_other`, `sleep_other`.
+- Add `smoking` (rating, max 12) + `smoking_other`.
+- Add Self-Care section with `self_physical`, `self_emotional`, `self_spiritual` textareas.
+- Add `daily_notes` textarea.
+- Add Daily Chores section with `chore_1`…`chore_5` text fields.
 
-4. **`HabitGrid`** (31-day habit grid)
-   - Mobile: split the 31 day columns into two tables: days 1–16 and 17–31, stacked. Habit name column repeats.
-   - Desktop: unchanged.
+**`src/lib/pageTypes.ts` — `FieldType`** — add one new type:
+- `"success-fail"` — pair of pill buttons (Success / Failed), single-select, third click clears.
 
-5. **`MeasurementGrid`** (Bi-Monthly Weight / Measurements)
-   - Already narrow enough; just remove the `sticky left-0` artifact and let it scroll horizontally cleanly. No splitting needed.
+**`src/components/FieldRenderer.tsx`** — add render case for `success-fail` only (everything else is already supported). Reuses existing button styles so theme follows the cover.
 
-### Decision needed for DailyMonthGrid (Achieved + Note columns)
+**No changes to**:
+- `db.ts` (values are stored as a generic record, new keys auto-persist)
+- exporters (CSV/PDF/Excel iterate all keys, will pick up new ones automatically)
+- routing, navigation, or any other page
 
-When split into two halves, the Achieved checkbox and Note column belong to the **day**, not to a half-year. Plan: show Achieved + Note **only in the bottom (Jul–Dec) half**, with a small caption "Achieved & note apply to the whole year for that day". This keeps the top table compact and avoids duplicating the same input twice. Alternative would be to show them in both halves bound to the same state.
+## Out of scope (for this round)
 
-### Sticky-column artifact fix
+- Removing the Self-Care, Cleaning, Blood Sugar, Blood Pressure, Oxygen, etc. pages — done after you confirm the new Daily Tracker.
+- Page 3 (Measurements / Medications), Page 4 (Fun Tracker), Page 5 (Habit Tracker) of the PDF — those already exist as separate pages and aren't being merged into Daily Tracker.
 
-Remove `sticky left-0 bg-card z-10` from all grid first-column cells. Once the tables fit the viewport on mobile, sticky is unnecessary and on desktop it isn't causing the artifact (the artifact only manifests when the row is taller than the viewport because the `overflow-x-auto` wrapper still allows the inner content to be vertically taller than the page header that sits above it on mobile). On desktop tables, keep the wrapper as `overflow-x-auto` for graceful degradation but drop `sticky` since the row label fits in view.
+## Files touched
 
-### Implementation pattern
-
-Add a small `useIsMobile` check (already exists at `src/hooks/use-mobile.tsx`) to each grid component, then conditionally render the half-year split layout vs. the existing single table.
-
-```tsx
-const isMobile = useIsMobile();
-if (isMobile) return <SplitView ... />;
-return <FullTable ... />;
-```
-
-The split view shares all state with the single table — it only changes which subset of months/days is rendered.
-
-## Files changed
-
-- `src/components/FieldRenderer.tsx` — update the five grid components above
-
-## Out of scope
-
-- Monthly calendar popup grid (already mobile-friendly, uses Dialog)
-- Other field types (text, mood-rating, etc.)
-- Visual redesign — only structural split, existing styling preserved
+- `src/lib/pageTypes.ts` — schema extension + new `FieldType`.
+- `src/components/FieldRenderer.tsx` — one new render case (`success-fail`).
