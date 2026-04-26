@@ -333,7 +333,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
           },
           {
             title: "Measurements",
-            columns: 2,
+            columns: 3,
             fields: [
               ...([
                 ["body_fat", "Body Fat %"],
@@ -344,13 +344,27 @@ export const PAGE_TYPES: PageTypeDef[] = [
                 ["hips", "Hips"],
                 ["thigh", "Thigh"],
                 ["calf", "Calf"],
-              ] as const).flatMap(([k, label]) => [
-                { key: `m_${k}_start`, label: `${label} — Start`, type: "text" as const, compact: true },
-                { key: `m_${k}_finish`, label: `${label} — Finish`, type: "text" as const, compact: true },
-              ]),
-              { key: "weight_start", label: "Starting Weight", type: "text", compact: true },
-              { key: "weight_goal", label: "Goal Weight", type: "text", compact: true },
-              { key: "weight_result", label: "Result Weight", type: "text", compact: true },
+              ] as const).map(([k, label]) => ({
+                key: `m_${k}`,
+                label,
+                type: "paired-compact" as const,
+                pairKeys: [`m_${k}_start`, `m_${k}_finish`] as [string, string],
+                pairLabels: ["Start", "Finish"] as [string, string],
+              })),
+              {
+                key: "weight",
+                label: "Weight",
+                type: "paired-compact" as const,
+                pairKeys: ["weight_start", "weight_goal"] as [string, string],
+                pairLabels: ["Start", "Goal"] as [string, string],
+              },
+              {
+                key: "weight_r",
+                label: "Result Weight",
+                type: "paired-compact" as const,
+                pairKeys: ["weight_result", "weight_result_2"] as [string, string],
+                pairLabels: ["Result", ""] as [string, string],
+              },
             ],
           },
         ],
