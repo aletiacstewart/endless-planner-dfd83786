@@ -811,6 +811,93 @@ export const PAGE_TYPES: PageTypeDef[] = [
     ],
     summary: (v) => (v.title as string) || (v.body as string)?.slice(0, 60) || "Untitled note",
   },
+  {
+    id: "wellness-tracker",
+    name: "Yearly Wellness Tracker",
+    shortName: "Wellness",
+    description: "Daily water, caffeine, sweets, sleep, smoking and mood — across the whole year.",
+    icon: "HeartPulse",
+    sections: [
+      { fields: [{ key: "year", label: "Year", type: "year" }] },
+      { title: "Water (glasses)", fields: [{ key: "water", label: "Water", type: "daily-month-grid", span: 2 }] },
+      { title: "Caffeine / Other (cups)", fields: [{ key: "caffeine", label: "Caffeine", type: "daily-month-grid", span: 2 }] },
+      { title: "Sweets", fields: [{ key: "sweets", label: "Sweets", type: "daily-month-grid", span: 2 }] },
+      { title: "Sleep (hours)", fields: [{ key: "sleep", label: "Sleep", type: "daily-month-grid", span: 2 }] },
+      { title: "Smoking / Vaping", fields: [{ key: "smoking", label: "Smoking", type: "daily-month-grid", span: 2 }] },
+      { title: "Mood (1–5)", fields: [{ key: "mood", label: "Mood", type: "daily-month-grid", span: 2 }] },
+    ],
+    summary: (v) => (v.year ? `Wellness ${v.year}` : "Yearly wellness"),
+  },
+  {
+    id: "workout-tracker",
+    name: "Yearly Workout Tracker",
+    shortName: "Workout",
+    description: "Daily cardio, weights, yoga, stretch and rest days across the year.",
+    icon: "Dumbbell",
+    sections: [
+      { fields: [{ key: "year", label: "Year", type: "year" }] },
+      { title: "Cardio", fields: [{ key: "cardio", label: "Cardio", type: "daily-month-grid", span: 2 }] },
+      { title: "Weights", fields: [{ key: "weights", label: "Weights", type: "daily-month-grid", span: 2 }] },
+      { title: "Yoga", fields: [{ key: "yoga", label: "Yoga", type: "daily-month-grid", span: 2 }] },
+      { title: "Stretch", fields: [{ key: "stretch", label: "Stretch", type: "daily-month-grid", span: 2 }] },
+      { title: "Rest day", fields: [{ key: "rest_day", label: "Rest day", type: "daily-month-grid", span: 2 }] },
+      { title: "Other", fields: [{ key: "other", label: "Other", type: "daily-month-grid", span: 2 }] },
+    ],
+    summary: (v) => (v.year ? `Workout ${v.year}` : "Yearly workout"),
+  },
+  {
+    id: "medications",
+    name: "Medications",
+    shortName: "Meds",
+    description: "Master list of medications — name, reason, doctor and timing. Reference for the Complete Tracker.",
+    icon: "Pill",
+    sections: [
+      {
+        title: "Medications",
+        description: "Tick M (Morning), A (Afternoon), or N (Night) for each medication.",
+        fields: [
+          { key: "med_list", label: "Medications", type: "med-list", rowCount: 20, span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => {
+      const list = (v.med_list as Record<string, string> | undefined) ?? {};
+      const first = Object.entries(list).find(([k, val]) => k.endsWith("-name") && val)?.[1];
+      return first ? `${first}…` : "Medications";
+    },
+  },
+  {
+    id: "medical-records",
+    name: "Medical Records",
+    shortName: "Medical",
+    description: "Per-visit log of appointment notes, test results and lab notes.",
+    icon: "Stethoscope",
+    sections: [
+      { fields: [{ key: "date", label: "Date", type: "date" }] },
+      {
+        columns: 1,
+        fields: [
+          { key: "medical_appointment_notes", label: "Medical Appointment Notes", type: "textarea", rows: 6, span: 2 },
+          { key: "test_results", label: "Test Results", type: "textarea", rows: 6, span: 2 },
+          { key: "lab_result_notes", label: "Lab Result Notes", type: "textarea", rows: 6, span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => (v.date as string) || "Medical record",
+  },
+  {
+    id: "daily-goal-tracker",
+    name: "Yearly Daily Goal Tracker",
+    shortName: "Goals/Day",
+    description: "A year-long view of your daily goals and the daily habit success/fail.",
+    icon: "Target",
+    sections: [
+      { fields: [{ key: "year", label: "Year", type: "year" }] },
+      { title: "Daily Goal", fields: [{ key: "daily_goal", label: "Daily Goal", type: "daily-month-grid", span: 2 }] },
+      { title: "Daily Habit (success ✓ / fail ✗)", fields: [{ key: "daily_habit", label: "Daily Habit", type: "daily-month-grid", span: 2 }] },
+    ],
+    summary: (v) => (v.year ? `Daily goals ${v.year}` : "Daily goal tracker"),
+  },
 ];
 
 export function getPageType(id: string): PageTypeDef | undefined {
