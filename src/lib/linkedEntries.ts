@@ -92,6 +92,51 @@ function mergeCalendarCell(
   dst[field] = next;
 }
 
+/** Body parts that have per-day "today" fields on the Complete Tracker. */
+const BODY_PARTS = ["body_fat", "neck", "chest", "bicep", "waist", "hips", "thigh", "calf"] as const;
+const BODY_PART_COLUMNS: Record<string, string> = {
+  body_fat: "Fat %",
+  neck: "Neck",
+  chest: "Chest",
+  bicep: "Bicep",
+  waist: "Waist",
+  hips: "Hips",
+  thigh: "Thigh",
+  calf: "Calf",
+};
+
+/** Compute 1..26 week index from a start date to today; null if out of range. */
+function weekIndexFromStart(startIso: string | undefined, target: ParsedDate): number | null {
+  if (!startIso) return null;
+  const start = new Date(startIso);
+  if (Number.isNaN(start.getTime())) return null;
+  const t = new Date(target.year, target.monthIndex, target.day);
+  const days = Math.floor((t.getTime() - start.getTime()) / 86_400_000);
+  if (days < 0) return null;
+  const wk = Math.floor(days / 7) + 1;
+  if (wk < 1 || wk > 26) return null;
+  return wk;
+}
+
+/** Merge a single cell into a measurement-grid value (Record<string,string>, key `${row}-${col}`). */
+function mergeMeasurementCell(
+  dst: Record<string, FieldValue>,
+  field: string,
+  row: number,
+  col: string,
+  value: string,
+) {
+  const existing = (dst[field] as Record<string, string> | undefined) ?? {};
+  const next = { ...existing };
+  if (value && value.trim()) next[`${row}-${col}`] = value;
+  else delete next[`${row}-${col}`];
+  dst[field] = next;
+}
+
+/** Pad date as YYYY-MM-DD. */
+function isoOf(year: number, monthIndex: number, day: number) {
+  return `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
 /** Merge into a daily-month-grid value: `{ cells: { [day-monthIndex]: string }, achieved, notes }`. */
 function mergeDailyMonthCell(
   dst: Record<string, FieldValue>,
