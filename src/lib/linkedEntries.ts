@@ -223,3 +223,150 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
   }
   return synced;
 }
+
+// ---------------------------------------------------------------------------
+// Reverse sync: when an individual tracker entry is saved, mirror its values
+// back into matching Complete Tracker entries.
+//
+// Daily Tracker (per-day) → creates/updates the Complete Tracker for that
+// exact date. Per-year / per-month grids only update Complete Tracker
+// entries that already exist for affected dates (never create new ones).
+// ---------------------------------------------------------------------------
+
+const DAILY_KEYS = [
+  "date", "weekday", "daily_goal", "daily_habit",
+  "breakfast", "breakfast_notes",
+  "lunch", "lunch_notes",
+  "dinner", "dinner_notes",
+  "snacks", "snacks_notes",
+  "daily_notes",
+];
+
+/** Split "B 110 / L 130 / D 120 / S 90" back into the four meal-prefix keys. */
+function splitMealCell(value: string, prefixes: [string, string, string, string], dst: Record<string, FieldValue>) {
+  const labelToIdx: Record<string, number> = { B: 0, L: 1, D: 2, S: 3 };
+  prefixes.forEach((k) => delete dst[k]);
+  if (!value) return;
+  for (const part of value.split("/")) {
+    const trimmed = part.trim();
+    if (!trimmed) continue;
+    const m = /^([BLDS])\s+(.*)$/.exec(trimmed);
+    if (!m) continue;
+    const idx = labelToIdx[m[1]];
+    if (idx == null) continue;
+    dst[prefixes[idx]] = m[2].trim();
+  }
+}
+
+async function listCompleteByDate(iso: string): Promise<PlannerEntry[]> {
+  const all = await listEntries("complete-tracker");
+  return all.filter((e) => (e.values.date as string | undefined)?.slice(0, 10) === iso);
+}
+
+async function updateCompleteForDate(iso: string, mutate: (vals: Record<string, FieldValue>) => void) {
+  const matches = await listCompleteByDate(iso);
+  for (const c of matches) await persist(c, mutate);
+  return matches.length;
+}
+
+export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]> {
+  const synced: string[] = [];
+  try {
+    const v = entry.values;
+
+    // Daily Tracker → Complete Tracker (create if missing for that date).
+    if (entry.pageType === "daily-tracker") {
+      const date = parseDate(v.date);
+      if (!date) return [];
+      const complete = await findOrCreate(
+        "complete-tracker",
+        (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
+        { date: date.iso },
+      );
+      await persist(complete, (dst) => copyKeys(v, dst, DAILY_KEYS));
+      synced.push("Complete Tracker");
+      return synced;
+    }
+
+    // Yearly daily-month grids — vitals.
+    type Vital = { id: string; field: string; prefixes: [string, string, string, string]; label: string };
+    const vitals: Vital[] = [
+      { id: "blood-sugar-tracker", field: "blood_sugar", prefixes: ["breakfast_bs", "lunch_bs", "dinner_bs", "snacks_bs"], label: "Complete Tracker (blood sugar)" },
+      { id: "blood-pressure-tracker", field: "blood_pressure", prefixes: ["breakfast_bp", "lunch_bp", "dinner_bp", "snacks_bp"], label: "Complete Tracker (blood pressure)" },
+      { id: "oxygen-tracker", field: "oxygen", prefixes: ["breakfast_o2", "lunch_o2", "dinner_o2", "snacks_o2"], label: "Complete Tracker (oxygen)" },
+    ];
+    const vital = vitals.find((x) => x.id === entry.pageType);
+    if (vital) {
+      const year = Number(v.year ?? "");
+      if (!year) return [];
+      const grid = (v[vital.field] as { cells?: Record<string, string> } | undefined)?.cells ?? {};
+      let touched = 0;
+      for (const [cellKey, cellVal] of Object.entries(grid)) {
+        const m = /^(\d+)-(\d+)$/.exec(cellKey);
+        if (!m) continue;
+        const day = Number(m[1]);
+        const monthIndex = Number(m[2]);
+        const iso = `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        touched += await updateCompleteForDate(iso, (dst) => splitMealCell(cellVal, vital.prefixes, dst));
+      }
+      if (touched > 0) synced.push(vital.label);
+      return synced;
+    }
+
+    // Self-Care Checklist.
+    if (entry.pageType === "self-care-checklist") {
+      const year = Number(v.year ?? "");
+      if (!year) return [];
+      const fields: { src: string; field: string }[] = [
+        { src: "self_physical", field: "physical" },
+        { src: "self_emotional", field: "emotional" },
+        { src: "self_spiritual", field: "spiritual" },
+      ];
+      const cellSet = new Set<string>();
+      for (const f of fields) {
+        const grid = (v[f.field] as { cells?: Record<string, string> } | undefined)?.cells ?? {};
+        for (const k of Object.keys(grid)) cellSet.add(k);
+      }
+      let touched = 0;
+      for (const cellKey of cellSet) {
+        const m = /^(\d+)-(\d+)$/.exec(cellKey);
+        if (!m) continue;
+        const day = Number(m[1]);
+        const monthIndex = Number(m[2]);
+        const iso = `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        touched += await updateCompleteForDate(iso, (dst) => {
+          for (const f of fields) {
+            const grid = (v[f.field] as { cells?: Record<string, string> } | undefined)?.cells ?? {};
+            const cellVal = grid[cellKey];
+            if (cellVal && cellVal.trim()) dst[f.src] = cellVal;
+            else delete dst[f.src];
+          }
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (self-care)");
+      return synced;
+    }
+
+    // Monthly Calendar → mirror calendar into Complete entries in that month.
+    if (entry.pageType === "monthly-calendar") {
+      const year = Number(v.year ?? "");
+      const monthName = String(v.month ?? "").toLowerCase();
+      if (!year || !monthName) return [];
+      const monthIndex = new Date(`${monthName} 1, 2000`).getMonth();
+      if (Number.isNaN(monthIndex)) return [];
+      const cal = (v.calendar as Record<string, string> | undefined) ?? {};
+      const completes = (await listEntries("complete-tracker")).filter((e) => {
+        const d = parseDate(e.values.date);
+        return d && d.year === year && d.monthIndex === monthIndex;
+      });
+      for (const c of completes) {
+        await persist(c, (dst) => { dst.month_calendar = { ...cal }; });
+      }
+      if (completes.length > 0) synced.push("Complete Tracker (calendar)");
+      return synced;
+    }
+  } catch (err) {
+    console.error("[syncFromIndividual] failed:", err);
+  }
+  return synced;
+}
