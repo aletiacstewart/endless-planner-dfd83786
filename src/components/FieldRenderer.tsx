@@ -41,7 +41,12 @@ export function FieldRenderer({ field, value, allValues, onChange, onChangeAny }
             value={(value as string) ?? ""}
             placeholder={field.placeholder}
             onChange={(e) => onChange(e.target.value)}
-            className="bg-background/60"
+            className={cn(
+              "bg-background/60",
+              field.compact && "h-9 w-20 px-2 text-center"
+            )}
+            inputMode={field.compact ? "numeric" : undefined}
+            maxLength={field.compact ? 4 : undefined}
           />
         </div>
       );
