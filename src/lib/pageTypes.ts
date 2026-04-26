@@ -48,6 +48,8 @@ export interface FieldDef {
   inputKey?: string;
   /** Placeholder for the companion input (used with inputKey). */
   inputPlaceholder?: string;
+  /** For success-fail: render a small Begin/Break toggle before the input, bound to this key. */
+  modeKey?: string;
 }
 
 
