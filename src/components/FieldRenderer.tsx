@@ -231,10 +231,38 @@ export function FieldRenderer({ field, value, allValues, onChange, onChangeAny }
       ];
       const inputKey = field.inputKey;
       const inputVal = inputKey ? ((allValues?.[inputKey] as string) ?? "") : "";
+      const modeKey = field.modeKey;
+      const modeVal = modeKey ? ((allValues?.[modeKey] as string) ?? "") : "";
+      const modeOpts: { v: "begin" | "break"; label: string }[] = [
+        { v: "begin", label: "Begin" },
+        { v: "break", label: "Break" },
+      ];
       return (
         <div>
           {!inputKey && label}
           <div className="flex items-center gap-2 flex-wrap">
+            {modeKey && onChangeAny && (
+              <div className="flex gap-1">
+                {modeOpts.map(({ v, label: l }) => {
+                  const active = modeVal === v;
+                  return (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => onChangeAny(modeKey, active ? "" : v)}
+                      className={cn(
+                        "px-2.5 h-9 rounded-full border text-xs font-medium transition-colors",
+                        active
+                          ? "bg-accent text-accent-foreground border-accent"
+                          : "bg-background/60 border-input text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      {l}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
             {inputKey && onChangeAny && (
               <Input
                 type="text"
@@ -242,7 +270,7 @@ export function FieldRenderer({ field, value, allValues, onChange, onChangeAny }
                 onChange={(e) => onChangeAny(inputKey, e.target.value)}
                 placeholder={field.inputPlaceholder ?? ""}
                 aria-label={field.label}
-                className="bg-background/60 h-9 flex-1 min-w-[140px]"
+                className="bg-background/60 h-9 flex-1 min-w-[120px]"
               />
             )}
             <div className="flex gap-2 flex-wrap">
