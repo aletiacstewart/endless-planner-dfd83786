@@ -1,8 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { saveEntry, type PlannerEntry } from "@/lib/db";
-import { syncLinkedEntries } from "@/lib/linkedEntries";
+import { syncFromIndividual, syncLinkedEntries } from "@/lib/linkedEntries";
 
 type SaveState = "idle" | "saving" | "saved";
+
+const REVERSE_SYNC_TYPES = new Set([
+  "daily-tracker",
+  "blood-sugar-tracker",
+  "blood-pressure-tracker",
+  "oxygen-tracker",
+  "self-care-checklist",
+  "monthly-calendar",
+]);
 
 export function useAutoSave(entry: PlannerEntry | null, debounceMs = 500) {
   const [state, setState] = useState<SaveState>("idle");
@@ -24,6 +33,9 @@ export function useAutoSave(entry: PlannerEntry | null, debounceMs = 500) {
       if (next.pageType === "complete-tracker") {
         const synced = await syncLinkedEntries(next);
         setLinkedSummary(synced);
+      } else if (REVERSE_SYNC_TYPES.has(next.pageType)) {
+        const synced = await syncFromIndividual(next);
+        setLinkedSummary(synced);
       }
       setState("saved");
       window.setTimeout(() => setState("idle"), 1200);
@@ -36,3 +48,4 @@ export function useAutoSave(entry: PlannerEntry | null, debounceMs = 500) {
 
   return { state, linkedSummary } as const;
 }
+
