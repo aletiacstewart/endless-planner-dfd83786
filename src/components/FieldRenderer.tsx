@@ -158,14 +158,14 @@ export function FieldRenderer({ field, value, allValues, onChange, onChangeAny }
         <div>
           {label}
           <div className="flex items-center gap-2 flex-wrap">
-            <div className="flex gap-1 flex-wrap">
+            <div className="flex gap-0.5 flex-nowrap">
               {Array.from({ length: max }, (_, i) => i + 1).map((n) => (
                 <button
                   key={n}
                   type="button"
                   onClick={() => onChange(current === n ? 0 : n)}
                   className={cn(
-                    "w-8 h-8 rounded-full border text-xs font-medium transition-colors",
+                    "w-6 h-6 rounded-full border text-[11px] font-medium transition-colors flex items-center justify-center shrink-0",
                     n <= current
                       ? "bg-accent text-accent-foreground border-accent"
                       : "bg-background/60 border-input text-muted-foreground"
