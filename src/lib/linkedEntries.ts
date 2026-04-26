@@ -894,6 +894,176 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
       return synced;
     }
 
+    // Wellness Tracker → numeric ratings on Complete Tracker for each marked day.
+    if (entry.pageType === "wellness-tracker") {
+      const year = Number(v.year ?? "");
+      if (!year) return [];
+      const fields = ["water", "caffeine", "sweets", "sleep", "smoking", "mood"];
+      const cellSet = new Set<string>();
+      for (const f of fields) {
+        const grid = (v[f] as { cells?: Record<string, string> } | undefined)?.cells ?? {};
+        for (const k of Object.keys(grid)) cellSet.add(k);
+      }
+      let touched = 0;
+      for (const cellKey of cellSet) {
+        const m = /^(\d+)-(\d+)$/.exec(cellKey);
+        if (!m) continue;
+        const day = Number(m[1]);
+        const monthIndex = Number(m[2]);
+        const iso = isoOf(year, monthIndex, day);
+        touched += await updateCompleteForDate(iso, (dst) => {
+          for (const f of fields) {
+            const grid = (v[f] as { cells?: Record<string, string> } | undefined)?.cells ?? {};
+            const cellVal = grid[cellKey];
+            if (cellVal && String(cellVal).trim()) {
+              const n = Number(cellVal);
+              dst[f] = Number.isNaN(n) ? cellVal : n;
+            } else {
+              delete dst[f];
+            }
+          }
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (wellness)");
+      return synced;
+    }
+
+    // Workout Tracker → category text on Complete Tracker for each marked day.
+    if (entry.pageType === "workout-tracker") {
+      const year = Number(v.year ?? "");
+      if (!year) return [];
+      const fields = ["cardio", "weights", "yoga", "stretch", "rest_day", "other"];
+      const cellSet = new Set<string>();
+      for (const f of fields) {
+        const grid = (v[f] as { cells?: Record<string, string> } | undefined)?.cells ?? {};
+        for (const k of Object.keys(grid)) cellSet.add(k);
+      }
+      let touched = 0;
+      for (const cellKey of cellSet) {
+        const m = /^(\d+)-(\d+)$/.exec(cellKey);
+        if (!m) continue;
+        const day = Number(m[1]);
+        const monthIndex = Number(m[2]);
+        const iso = isoOf(year, monthIndex, day);
+        touched += await updateCompleteForDate(iso, (dst) => {
+          for (const f of fields) {
+            const grid = (v[f] as { cells?: Record<string, string> } | undefined)?.cells ?? {};
+            const cellVal = grid[cellKey];
+            if (cellVal && String(cellVal).trim()) {
+              if (f === "rest_day") dst[f] = cellVal === "✓" || cellVal === "true" || cellVal === "1";
+              else dst[f] = cellVal;
+            } else {
+              delete dst[f];
+            }
+          }
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (workout)");
+      return synced;
+    }
+
+    // Daily Goal Tracker → daily_goal text + daily_habit success/fail.
+    if (entry.pageType === "daily-goal-tracker") {
+      const year = Number(v.year ?? "");
+      if (!year) return [];
+      const goalGrid = (v.daily_goal as { cells?: Record<string, string> } | undefined)?.cells ?? {};
+      const habitGrid = (v.daily_habit as { cells?: Record<string, string> } | undefined)?.cells ?? {};
+      const cellSet = new Set<string>([...Object.keys(goalGrid), ...Object.keys(habitGrid)]);
+      let touched = 0;
+      for (const cellKey of cellSet) {
+        const m = /^(\d+)-(\d+)$/.exec(cellKey);
+        if (!m) continue;
+        const day = Number(m[1]);
+        const monthIndex = Number(m[2]);
+        const iso = isoOf(year, monthIndex, day);
+        touched += await updateCompleteForDate(iso, (dst) => {
+          const g = goalGrid[cellKey];
+          if (g && g.trim()) dst.daily_goal = g; else delete dst.daily_goal;
+          const h = habitGrid[cellKey];
+          if (h === "✓") dst.daily_habit = "success";
+          else if (h === "✗") dst.daily_habit = "failed";
+          else delete dst.daily_habit;
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (daily goal)");
+      return synced;
+    }
+
+    // Medical Records → mirror three textareas into Complete Tracker for that date.
+    if (entry.pageType === "medical-records") {
+      const date = parseDate(v.date);
+      if (!date) return [];
+      const touched = await updateCompleteForDate(date.iso, (dst) => {
+        copyKeys(v, dst, ["medical_appointment_notes", "test_results", "lab_result_notes"]);
+      });
+      if (touched > 0) synced.push("Complete Tracker (medical)");
+      return synced;
+    }
+
+    // Weight Tracker → for each filled row, push Date+Weight+Notes back to that day's Complete Tracker.
+    if (entry.pageType === "weight-tracker") {
+      const grid = (v.weight_log as Record<string, string> | undefined) ?? {};
+      // Group by row.
+      const byRow = new Map<number, Record<string, string>>();
+      for (const [k, val] of Object.entries(grid)) {
+        const m = /^(\d+)-(.+)$/.exec(k);
+        if (!m) continue;
+        const row = Number(m[1]);
+        if (!byRow.has(row)) byRow.set(row, {});
+        byRow.get(row)![m[2]] = val;
+      }
+      let touched = 0;
+      for (const [, row] of byRow) {
+        const iso = (row.Date ?? "").slice(0, 10);
+        const weight = row.Weight ?? "";
+        if (!iso || !weight.trim()) continue;
+        touched += await updateCompleteForDate(iso, (dst) => {
+          dst.weight_today = weight;
+          if (row.Notes && row.Notes.trim()) dst.weight_today_notes = row.Notes;
+          else delete dst.weight_today_notes;
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (weight)");
+      return synced;
+    }
+
+    // Measurement Tracker → push per-part values back to that day's Complete Tracker
+    // (only when the matching weight-tracker has a Date for that row, since this grid has no Date col).
+    if (entry.pageType === "measurement-tracker") {
+      const startIso = (v.start_date as string | undefined) ?? "";
+      if (!startIso) return [];
+      const start = new Date(startIso);
+      if (Number.isNaN(start.getTime())) return [];
+      const grid = (v.measurements as Record<string, string> | undefined) ?? {};
+      const byRow = new Map<number, Record<string, string>>();
+      for (const [k, val] of Object.entries(grid)) {
+        const m = /^(\d+)-(.+)$/.exec(k);
+        if (!m) continue;
+        const row = Number(m[1]);
+        if (!byRow.has(row)) byRow.set(row, {});
+        byRow.get(row)![m[2]] = val;
+      }
+      const colToPart: Record<string, string> = Object.fromEntries(
+        Object.entries(BODY_PART_COLUMNS).map(([p, c]) => [c, p]),
+      );
+      let touched = 0;
+      for (const [row, cols] of byRow) {
+        const d = new Date(start);
+        d.setDate(d.getDate() + (row - 1) * 7);
+        const iso = isoOf(d.getFullYear(), d.getMonth(), d.getDate());
+        touched += await updateCompleteForDate(iso, (dst) => {
+          for (const [col, val] of Object.entries(cols)) {
+            const part = colToPart[col];
+            if (!part) continue;
+            if (val && val.trim()) dst[`m_${part}_today`] = val;
+            else delete dst[`m_${part}_today`];
+          }
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (measurements)");
+      return synced;
+    }
+
     // Fun Tracker uses month-level marks (no specific day) — skip reverse sync.
   } catch (err) {
     console.error("[syncFromIndividual] failed:", err);
