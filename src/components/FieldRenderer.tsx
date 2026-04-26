@@ -354,6 +354,14 @@ export function FieldRenderer({ field, value, allValues, onChange, onChangeAny }
           onChange={onChange}
         />
       );
+    case "med-list":
+      return (
+        <MedList
+          value={value as Record<string, string>}
+          rowCount={field.rowCount ?? 12}
+          onChange={onChange}
+        />
+      );
     default:
       return null;
   }
