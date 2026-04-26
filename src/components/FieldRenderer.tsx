@@ -24,6 +24,7 @@ interface Props {
 }
 
 export function FieldRenderer({ field, value, allValues, onChange, onChangeAny }: Props) {
+  const isMobile = useIsMobile();
   const label = (
     <label className="field-label block mb-1.5" htmlFor={field.key}>
       {field.label}
