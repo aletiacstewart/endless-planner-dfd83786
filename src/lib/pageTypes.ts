@@ -42,6 +42,8 @@ export interface FieldDef {
   rowCount?: number;
   /** For measurement-grid: row-label prefix (e.g. "Wk"). */
   rowLabel?: string;
+  /** For rating: render a small companion text input on the same row, bound to this other field key. */
+  otherKey?: string;
 }
 
 
