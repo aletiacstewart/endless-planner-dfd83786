@@ -337,17 +337,21 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Measurements",
+        description: "Record a Start and Finish value for each measurement.",
         columns: 2,
-        fields: [
-          { key: "m_body_fat", label: "Body Fat %", type: "text" },
-          { key: "m_neck", label: "Neck", type: "text" },
-          { key: "m_chest", label: "Chest", type: "text" },
-          { key: "m_bicep", label: "Bicep", type: "text" },
-          { key: "m_waist", label: "Waist", type: "text" },
-          { key: "m_hips", label: "Hips", type: "text" },
-          { key: "m_thigh", label: "Thigh", type: "text" },
-          { key: "m_calf", label: "Calf", type: "text" },
-        ],
+        fields: ([
+          ["body_fat", "Body Fat %"],
+          ["neck", "Neck"],
+          ["chest", "Chest"],
+          ["bicep", "Bicep"],
+          ["waist", "Waist"],
+          ["hips", "Hips"],
+          ["thigh", "Thigh"],
+          ["calf", "Calf"],
+        ] as const).flatMap(([k, label]) => [
+          { key: `m_${k}_start`, label: `${label} — Start`, type: "text" as const },
+          { key: `m_${k}_finish`, label: `${label} — Finish`, type: "text" as const },
+        ]),
       },
       {
         columns: 3,
