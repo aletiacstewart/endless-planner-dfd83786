@@ -378,14 +378,8 @@ export const PAGE_TYPES: PageTypeDef[] = [
             : "Night Medications";
         return {
           title,
-          columns: 3 as const,
           fields: [
-            ...Array.from({ length: 12 }, (_, i) => i + 1).flatMap((n) => [
-              { key: `med_${slot}_${n}_name`, label: `Med ${n} — Name`, type: "text" as const },
-              { key: `med_${slot}_${n}_reason`, label: `Med ${n} — Reason`, type: "text" as const },
-              { key: `med_${slot}_${n}_doctor`, label: `Med ${n} — Prescribing Doctor`, type: "text" as const },
-            ]),
-            { key: `med_${slot}_more`, label: "More / Other", type: "textarea" as const, rows: 3, span: 2 as const },
+            { key: `med_${slot}`, label: title, type: "med-list" as const, rowCount: 12, span: 2 as const },
           ],
         };
       }),
