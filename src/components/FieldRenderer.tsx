@@ -373,31 +373,30 @@ export function FieldRenderer({ field, value, allValues, onChange, onChangeAny }
       const v1 = (allValues?.[k1] as string) ?? "";
       const v2 = (allValues?.[k2] as string) ?? "";
       return (
-        <div>
-          {label}
-          <div className="flex gap-2">
-            <div className="flex flex-col items-center">
-              <Input
-                value={v1}
-                onChange={(e) => onChangeAny?.(k1, e.target.value)}
-                className="bg-background/60 h-9 w-16 px-2 text-center"
-                inputMode="numeric"
-                maxLength={5}
-                aria-label={`${field.label} ${l1}`}
-              />
-              <span className="text-[10px] uppercase tracking-wide text-muted-foreground mt-0.5">{l1}</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <Input
-                value={v2}
-                onChange={(e) => onChangeAny?.(k2, e.target.value)}
-                className="bg-background/60 h-9 w-16 px-2 text-center"
-                inputMode="numeric"
-                maxLength={5}
-                aria-label={`${field.label} ${l2}`}
-              />
-              <span className="text-[10px] uppercase tracking-wide text-muted-foreground mt-0.5">{l2}</span>
-            </div>
+        <div className="flex items-center justify-between gap-2">
+          <span className="field-label whitespace-nowrap">{field.label}</span>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <Input
+              value={v1}
+              onChange={(e) => onChangeAny?.(k1, e.target.value)}
+              className="bg-background/60 h-8 w-12 px-1 text-center text-sm"
+              inputMode="numeric"
+              maxLength={5}
+              placeholder={l1.charAt(0)}
+              aria-label={`${field.label} ${l1}`}
+              title={l1}
+            />
+            <span className="text-muted-foreground text-xs">/</span>
+            <Input
+              value={v2}
+              onChange={(e) => onChangeAny?.(k2, e.target.value)}
+              className="bg-background/60 h-8 w-12 px-1 text-center text-sm"
+              inputMode="numeric"
+              maxLength={5}
+              placeholder={l2.charAt(0)}
+              aria-label={`${field.label} ${l2}`}
+              title={l2}
+            />
           </div>
         </div>
       );

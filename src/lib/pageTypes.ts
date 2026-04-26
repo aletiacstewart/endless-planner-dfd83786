@@ -333,7 +333,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
           },
           {
             title: "Measurements",
-            columns: 3,
+            columns: 1,
             fields: [
               ...([
                 ["body_fat", "Body Fat %"],
