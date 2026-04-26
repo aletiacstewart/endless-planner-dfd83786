@@ -37,6 +37,15 @@ function parseDate(raw: unknown): ParsedDate | null {
   };
 }
 
+/** Returns the Monday on or before the given local date. */
+function mondayOf(year: number, monthIndex: number, day: number): Date {
+  const d = new Date(year, monthIndex, day);
+  const dow = d.getDay(); // Sun=0..Sat=6
+  const diff = (dow + 6) % 7; // days since Monday
+  d.setDate(d.getDate() - diff);
+  return d;
+}
+
 async function findOrCreate(
   pageType: string,
   match: (e: PlannerEntry) => boolean,
