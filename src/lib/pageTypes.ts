@@ -387,6 +387,13 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
+        title: "Monthly Calendar",
+        description: "Quick reference for the month — tap a day to add or view a note.",
+        fields: [
+          { key: "month_calendar", label: "Monthly calendar", type: "calendar-grid", compact: true, span: 2 },
+        ],
+      },
+      {
         title: "Fun & Habit Tracker",
         description: "Write in your own items, then mark Success or Failed for the day. For habits, choose Begin or Break.",
         columns: 2,
