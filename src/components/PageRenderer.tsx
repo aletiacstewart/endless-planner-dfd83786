@@ -38,7 +38,7 @@ export function PageRenderer({ pageType, values, onChange }: Props) {
                 "grid gap-6 mt-3",
                 section.groups.length === 2 && "sm:grid-cols-2",
                 section.groups.length === 3 && "sm:grid-cols-2 lg:grid-cols-3",
-                section.groups.length === 4 && "sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1.2fr]",
+                section.groups.length === 4 && "sm:grid-cols-2 lg:grid-cols-[2.2fr_0.9fr_0.8fr_1.4fr]",
                 section.groups.length >= 5 && "sm:grid-cols-2 lg:grid-cols-5"
               )}
             >
