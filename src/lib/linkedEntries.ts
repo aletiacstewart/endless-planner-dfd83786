@@ -805,12 +805,14 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
       return synced;
     }
 
-    // Weekly Calendar → push weekday note into Complete entries in that week.
+    // Weekly Calendar → push weekday note + weekly goals/reflection into Complete entries in that week.
     if (entry.pageType === "weekly-calendar") {
       const weekOf = parseDate(v.week_of);
       if (!weekOf) return [];
       const start = mondayOf(weekOf.year, weekOf.monthIndex, weekOf.day);
       const days = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"];
+      const wGoals = (v.weekly_goals as string | undefined) ?? "";
+      const wReflect = (v.reflection as string | undefined) ?? "";
       let touched = 0;
       for (let i = 0; i < 7; i++) {
         const d = new Date(start);
@@ -820,9 +822,13 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
         touched += await updateCompleteForDate(iso, (dst) => {
           if (note.trim()) dst.week_note_today = note;
           else delete dst.week_note_today;
+          if (wGoals.trim()) dst.weekly_goals = wGoals;
+          else delete dst.weekly_goals;
+          if (wReflect.trim()) dst.weekly_reflection = wReflect;
+          else delete dst.weekly_reflection;
         });
       }
-      if (touched > 0) synced.push("Complete Tracker (week notes)");
+      if (touched > 0) synced.push("Complete Tracker (week)");
       return synced;
     }
 
