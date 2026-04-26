@@ -664,6 +664,7 @@ function MedList({
   rowCount: number;
   onChange: (v: FieldValue) => void;
 }) {
+  const isMobile = useIsMobile();
   const data = value ?? {};
   const update = (key: string, v: string) => onChange({ ...data, [key]: v });
   const cols = "grid-cols-[1.5rem_2fr_2fr_1.5fr_5.25rem]";
@@ -672,6 +673,30 @@ function MedList({
     { k: "a", label: "A" },
     { k: "n", label: "N" },
   ];
+  const renderTextCell = (n: number, key: "name" | "reason" | "doctor", title: string) => {
+    const k = `${n}_${key}`;
+    const v = data[k] ?? "";
+    if (isMobile) {
+      return (
+        <MobileEditButton
+          value={v}
+          onSave={(nv) => update(k, nv)}
+          title={`Med ${n} · ${title}`}
+          placeholder="—"
+          className="h-8 text-xs"
+          ariaLabel={`Med ${n} ${title}`}
+        />
+      );
+    }
+    return (
+      <Input
+        value={v}
+        onChange={(e) => update(k, e.target.value)}
+        className="bg-background/60 h-8 px-2 text-sm"
+        aria-label={`Med ${n} ${title}`}
+      />
+    );
+  };
   return (
     <div>
       <div className={cn("grid gap-x-2 gap-y-1 items-end mb-1", cols)}>
