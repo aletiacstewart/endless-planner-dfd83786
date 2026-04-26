@@ -380,7 +380,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Fun & Habit Tracker",
         description: "Write in your own items, then mark Success or Failed for the day. For habits, choose Begin or Break.",
         columns: 2,
-        fields: Array.from({ length: 12 }, (_, i) => i + 1).flatMap((n) => [
+        fields: Array.from({ length: 3 }, (_, i) => i + 1).flatMap((n) => [
           {
             key: `fun_${n}`,
             label: `Fun ${n}`,
