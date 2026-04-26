@@ -46,16 +46,32 @@ export function PageRenderer({ pageType, values, onChange }: Props) {
                   {group.title && (
                     <h3 className="font-display text-lg">{group.title}</h3>
                   )}
-                  {group.fields.map((field) => (
-                    <FieldRenderer
-                      key={field.key}
-                      field={field}
-                      value={values[field.key] ?? null}
-                      allValues={values}
-                      onChange={(v) => onChange(field.key, v)}
-                      onChangeAny={onChange}
-                    />
-                  ))}
+                  <div
+                    className={cn(
+                      "grid gap-3",
+                      (!group.columns || group.columns === 1) && "grid-cols-1",
+                      group.columns === 2 && "grid-cols-2",
+                      group.columns === 3 && "grid-cols-3"
+                    )}
+                  >
+                    {group.fields.map((field) => (
+                      <div
+                        key={field.key}
+                        className={cn(
+                          field.span === 2 && group.columns === 2 && "col-span-2",
+                          field.span === 2 && group.columns === 3 && "col-span-3"
+                        )}
+                      >
+                        <FieldRenderer
+                          field={field}
+                          value={values[field.key] ?? null}
+                          allValues={values}
+                          onChange={(v) => onChange(field.key, v)}
+                          onChangeAny={onChange}
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
