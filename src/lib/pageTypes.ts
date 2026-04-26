@@ -398,13 +398,21 @@ export const PAGE_TYPES: PageTypeDef[] = [
                 ["hips", "Hips"],
                 ["thigh", "Thigh"],
                 ["calf", "Calf"],
-              ] as const).map(([k, label]) => ({
-                key: `m_${k}`,
-                label,
-                type: "paired-compact" as const,
-                pairKeys: [`m_${k}_start`, `m_${k}_finish`] as [string, string],
-                pairLabels: ["Start", "Finish"] as [string, string],
-              })),
+              ] as const).flatMap(([k, label]) => ([
+                {
+                  key: `m_${k}`,
+                  label,
+                  type: "paired-compact" as const,
+                  pairKeys: [`m_${k}_start`, `m_${k}_finish`] as [string, string],
+                  pairLabels: ["Start", "Finish"] as [string, string],
+                },
+                {
+                  key: `m_${k}_today`,
+                  label: `${label} — today`,
+                  type: "text" as const,
+                  compact: true,
+                },
+              ])),
               {
                 key: "weight",
                 label: "Weight",
@@ -412,6 +420,8 @@ export const PAGE_TYPES: PageTypeDef[] = [
                 pairKeys: ["weight_start", "weight_goal"] as [string, string],
                 pairLabels: ["Start", "Goal"] as [string, string],
               },
+              { key: "weight_today", label: "Weight — today", type: "text", compact: true },
+              { key: "weight_today_notes", label: "Weight — notes", type: "text" },
               { key: "weight_result", label: "Result Weight", type: "text", compact: true },
             ],
           },
