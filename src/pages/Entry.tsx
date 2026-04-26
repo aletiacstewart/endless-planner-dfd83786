@@ -14,10 +14,24 @@ export default function Entry() {
   const [entry, setEntry] = useState<PlannerEntry | null>(null);
 
   useEffect(() => {
-    getEntry(entryId).then((e) => setEntry(e ?? null));
+    getEntry(entryId).then((e) => {
+      if (!e) {
+        setEntry(null);
+        return;
+      }
+      // Migrate legacy entries: anything saved as "daily-tracker" that contains
+      // Complete-Tracker-only fields belongs to the new "complete-tracker" page.
+      const looksComplete =
+        e.pageType === "daily-tracker" &&
+        ("med_list" in e.values ||
+          "m_weight_start" in e.values ||
+          "self_physical" in e.values ||
+          "month_calendar" in e.values);
+      setEntry(looksComplete ? { ...e, pageType: "complete-tracker" } : e);
+    });
   }, [entryId]);
 
-  const saveState = useAutoSave(entry);
+  const { state: saveState, linkedSummary } = useAutoSave(entry);
 
   if (!entry) {
     return (
@@ -63,6 +77,11 @@ export default function Entry() {
           </div>
         </div>
         <h1 className="section-title mt-2">{pageType.name}</h1>
+        {pageType.id === "complete-tracker" && linkedSummary.length > 0 && (
+          <p className="text-xs text-muted-foreground mt-1">
+            Auto-synced to: {linkedSummary.join(", ")}
+          </p>
+        )}
       </header>
 
       <main className="px-5 mt-4">
