@@ -34,6 +34,22 @@ export function FieldRenderer({ field, value, allValues, onChange, onChangeAny }
   switch (field.type) {
     case "text":
     case "year":
+      if (field.compact && isMobile) {
+        return (
+          <div>
+            {label}
+            <MobileEditButton
+              value={(value as string) ?? ""}
+              onSave={(v) => onChange(v)}
+              title={field.label}
+              placeholder={field.placeholder ?? "—"}
+              inputMode="numeric"
+              className="w-24 text-center"
+              ariaLabel={field.label}
+            />
+          </div>
+        );
+      }
       return (
         <div>
           {label}
