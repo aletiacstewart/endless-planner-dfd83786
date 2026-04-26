@@ -51,6 +51,8 @@ export interface FieldDef {
   inputPlaceholder?: string;
   /** For success-fail: render a small Begin/Break toggle before the input, bound to this key. */
   modeKey?: string;
+  /** For text/number: render a narrow input sized for ~3 characters. */
+  compact?: boolean;
 }
 
 
