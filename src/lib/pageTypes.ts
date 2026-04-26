@@ -369,20 +369,13 @@ export const PAGE_TYPES: PageTypeDef[] = [
           { key: "weight_result", label: "Result Weight", type: "text" },
         ],
       },
-      ...(["morning", "aft", "night"] as const).map((slot) => {
-        const title =
-          slot === "morning"
-            ? "Morning Medications"
-            : slot === "aft"
-            ? "Afternoon Medications"
-            : "Night Medications";
-        return {
-          title,
-          fields: [
-            { key: `med_${slot}`, label: title, type: "med-list" as const, rowCount: 12, span: 2 as const },
-          ],
-        };
-      }),
+      {
+        title: "Medications",
+        description: "Tick M (Morning), A (Afternoon), or N (Night) for each medication.",
+        fields: [
+          { key: "med_list", label: "Medications", type: "med-list", rowCount: 12, span: 2 },
+        ],
+      },
       {
         title: "Fun & Habit Tracker",
         description: "Write in your own items, then mark Success or Failed for the day. For habits, choose Begin or Break.",
