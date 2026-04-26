@@ -16,6 +16,12 @@ const REVERSE_SYNC_TYPES = new Set([
   "weekly-calendar",
   "habit-tracker",
   "yearly-habit-tracker",
+  "wellness-tracker",
+  "workout-tracker",
+  "daily-goal-tracker",
+  "medical-records",
+  "weight-tracker",
+  "measurement-tracker",
 ]);
 
 export function useAutoSave(entry: PlannerEntry | null, debounceMs = 500) {
