@@ -470,12 +470,22 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "Calendar Notes",
-        description: "Quick notes for this month and week — sync to your Yearly and Weekly calendars.",
-        columns: 2,
+        title: "This Week",
+        description: "Today's note plus the week's goals & reflection — sync to your Weekly Calendar.",
+        columns: 1,
         fields: [
-          { key: "month_note_today", label: "Note for this month", type: "textarea", rows: 3 },
-          { key: "week_note_today", label: "Note for this week", type: "textarea", rows: 3 },
+          { key: "week_note_today", label: "Note for today's weekday", type: "textarea", rows: 3, span: 2 },
+          { key: "weekly_goals", label: "Weekly Goals", type: "textarea", rows: 3, span: 2 },
+          { key: "weekly_reflection", label: "How is your week going?", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+      {
+        title: "This Year",
+        description: "A note for this month plus a yearly focus — sync to your Yearly Calendar.",
+        columns: 1,
+        fields: [
+          { key: "month_note_today", label: "Note for this month", type: "textarea", rows: 3, span: 2 },
+          { key: "yearly_focus", label: "Yearly Focus / Word of the Year", type: "textarea", rows: 2, span: 2 },
         ],
       },
     ],
