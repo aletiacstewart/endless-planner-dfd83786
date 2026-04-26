@@ -437,6 +437,179 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       synced.push(`Fun Tracker (${yearStr})`);
     }
 
+    // 13. Weekly Calendar — also push weekly goals + reflection to that week's entry.
+    const weeklyGoals = (v.weekly_goals as string | undefined) ?? "";
+    const weeklyReflection = (v.weekly_reflection as string | undefined) ?? "";
+    if (weeklyGoals.trim() || weeklyReflection.trim()) {
+      const weekStart = mondayOf(date.year, date.monthIndex, date.day);
+      const weekIso = isoOf(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate());
+      const entry = await findOrCreate(
+        "weekly-calendar",
+        (e) => (e.values.week_of as string | undefined)?.slice(0, 10) === weekIso,
+        { week_of: weekIso },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.week_of) dst.week_of = weekIso;
+        if (weeklyGoals.trim()) dst.weekly_goals = weeklyGoals;
+        if (weeklyReflection.trim()) dst.reflection = weeklyReflection;
+      });
+      synced.push(`Weekly Calendar — goals/reflection`);
+    }
+
+    // 14. Yearly Calendar — yearly_focus prefixes the matching month note ("Focus: …").
+    const yearlyFocus = (v.yearly_focus as string | undefined) ?? "";
+    if (yearlyFocus.trim()) {
+      const monthName = new Date(date.year, date.monthIndex, 1)
+        .toLocaleString("en-US", { month: "long" })
+        .toLowerCase();
+      const entry = await findOrCreate(
+        "yearly-calendar",
+        (e) => String(e.values.year ?? "") === yearStr,
+        { year: yearStr },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.year) dst.year = yearStr;
+        const focusLine = `Focus: ${yearlyFocus.trim()}`;
+        const cur = (dst[`month_${monthName}`] as string | undefined) ?? "";
+        // Replace any existing leading "Focus:" line; otherwise prepend.
+        const stripped = cur.replace(/^Focus:[^\n]*\n?/i, "").trimStart();
+        dst[`month_${monthName}`] = stripped ? `${focusLine}\n${stripped}` : focusLine;
+      });
+      synced.push(`Yearly Calendar focus`);
+    }
+
+    // 15. Wellness Tracker — six daily-month-grids of numeric ratings.
+    const wellnessFields = ["water", "caffeine", "sweets", "sleep", "smoking", "mood"];
+    if (wellnessFields.some((k) => v[k] != null && v[k] !== "")) {
+      const entry = await findOrCreate(
+        "wellness-tracker",
+        (e) => String(e.values.year ?? "") === yearStr,
+        { year: yearStr },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.year) dst.year = yearStr;
+        for (const k of wellnessFields) {
+          const raw = v[k];
+          const txt = raw == null || raw === "" ? "" : String(raw);
+          mergeDailyMonthCell(dst, k, date.day, date.monthIndex, txt);
+        }
+      });
+      synced.push(`Wellness Tracker (${yearStr})`);
+    }
+
+    // 16. Workout Tracker — daily-month-grid per category.
+    const workoutFields = ["cardio", "weights", "yoga", "stretch", "rest_day", "other"];
+    if (workoutFields.some((k) => v[k] != null && v[k] !== "" && v[k] !== false)) {
+      const entry = await findOrCreate(
+        "workout-tracker",
+        (e) => String(e.values.year ?? "") === yearStr,
+        { year: yearStr },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.year) dst.year = yearStr;
+        for (const k of workoutFields) {
+          const raw = v[k];
+          let txt = "";
+          if (typeof raw === "boolean") txt = raw ? "✓" : "";
+          else if (raw != null) txt = String(raw);
+          mergeDailyMonthCell(dst, k, date.day, date.monthIndex, txt);
+        }
+      });
+      synced.push(`Workout Tracker (${yearStr})`);
+    }
+
+    // 17. Daily Goal Tracker — yearly grid of daily goals + habit success.
+    const dGoal = (v.daily_goal as string | undefined) ?? "";
+    const dHabit = (v.daily_habit as string | undefined) ?? "";
+    if (dGoal.trim() || dHabit) {
+      const entry = await findOrCreate(
+        "daily-goal-tracker",
+        (e) => String(e.values.year ?? "") === yearStr,
+        { year: yearStr },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.year) dst.year = yearStr;
+        mergeDailyMonthCell(dst, "daily_goal", date.day, date.monthIndex, dGoal);
+        const mark = dHabit === "success" ? "✓" : dHabit === "failed" ? "✗" : "";
+        mergeDailyMonthCell(dst, "daily_habit", date.day, date.monthIndex, mark);
+      });
+      synced.push(`Daily Goal Tracker (${yearStr})`);
+    }
+
+    // 18. Medical Records — per-date entry mirroring the three textareas.
+    const medicalFields = ["medical_appointment_notes", "test_results", "lab_result_notes"];
+    if (medicalFields.some((k) => typeof v[k] === "string" && (v[k] as string).trim())) {
+      const entry = await findOrCreate(
+        "medical-records",
+        (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
+        { date: date.iso },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.date) dst.date = date.iso;
+        copyKeys(v, dst, medicalFields);
+      });
+      synced.push(`Medical Records (${date.iso})`);
+    }
+
+    // 19. Weight Tracker — write today's weight into the active 26-week log.
+    const weightToday = (v.weight_today as string | undefined) ?? "";
+    if (weightToday.trim()) {
+      const all = await listEntries("weight-tracker");
+      // Pick the most recent entry whose start_date is on/before today.
+      const candidates = all
+        .map((e) => ({ e, start: (e.values.start_date as string | undefined) ?? "" }))
+        .filter((x) => x.start && new Date(x.start).getTime() <= new Date(date.iso).getTime())
+        .sort((a, b) => b.start.localeCompare(a.start));
+      const wt = candidates[0]?.e ?? await createEntry("weight-tracker", { start_date: date.iso });
+      const startIso = (wt.values.start_date as string | undefined) ?? date.iso;
+      const wk = weekIndexFromStart(startIso, date);
+      if (wk != null) {
+        await persist(wt, (dst) => {
+          if (!dst.start_date) dst.start_date = startIso;
+          mergeMeasurementCell(dst, "weight_log", wk, "Date", date.iso);
+          mergeMeasurementCell(dst, "weight_log", wk, "Weight", weightToday);
+          const notes = (v.weight_today_notes as string | undefined) ?? "";
+          mergeMeasurementCell(dst, "weight_log", wk, "Notes", notes);
+          // Compute Difference vs previous week if numeric.
+          const prev = (dst.weight_log as Record<string, string> | undefined)?.[`${wk - 1}-Weight`];
+          const a = parseFloat(weightToday);
+          const b = parseFloat(prev ?? "");
+          if (!Number.isNaN(a) && !Number.isNaN(b)) {
+            const diff = (a - b).toFixed(1);
+            mergeMeasurementCell(dst, "weight_log", wk, "Difference", diff);
+          }
+        });
+        synced.push(`Weight Tracker (wk ${wk})`);
+      }
+    }
+
+    // 20. Measurement Tracker — per-body-part `m_<part>_today` → 26-week grid.
+    const partTodays = BODY_PARTS.filter((p) => {
+      const x = v[`m_${p}_today`];
+      return typeof x === "string" && x.trim();
+    });
+    if (partTodays.length > 0) {
+      const all = await listEntries("measurement-tracker");
+      const candidates = all
+        .map((e) => ({ e, start: (e.values.start_date as string | undefined) ?? "" }))
+        .filter((x) => x.start && new Date(x.start).getTime() <= new Date(date.iso).getTime())
+        .sort((a, b) => b.start.localeCompare(a.start));
+      const mt = candidates[0]?.e ?? await createEntry("measurement-tracker", { start_date: date.iso });
+      const startIso = (mt.values.start_date as string | undefined) ?? date.iso;
+      const wk = weekIndexFromStart(startIso, date);
+      if (wk != null) {
+        await persist(mt, (dst) => {
+          if (!dst.start_date) dst.start_date = startIso;
+          for (const p of partTodays) {
+            const col = BODY_PART_COLUMNS[p];
+            const val = String(v[`m_${p}_today`] ?? "");
+            mergeMeasurementCell(dst, "measurements", wk, col, val);
+          }
+        });
+        synced.push(`Measurement Tracker (wk ${wk})`);
+      }
+    }
+
   } catch (err) {
     console.error("[syncLinkedEntries] failed:", err);
   }
