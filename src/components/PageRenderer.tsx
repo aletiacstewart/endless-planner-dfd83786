@@ -55,24 +55,28 @@ export function PageRenderer({ pageType, values, onChange }: Props) {
                       group.columns === 3 && "grid-cols-3"
                     )}
                   >
-                    {group.fields.map((field) => (
-                      <div
-                        key={field.key}
-                        className={cn(
-                          "min-w-0",
-                          field.span === 2 && group.columns === 2 && "col-span-2",
-                          field.span === 2 && group.columns === 3 && "col-span-3"
-                        )}
-                      >
-                        <FieldRenderer
-                          field={field}
-                          value={values[field.key] ?? null}
-                          allValues={values}
-                          onChange={(v) => onChange(field.key, v)}
-                          onChangeAny={onChange}
-                        />
-                      </div>
-                    ))}
+                    {(() => {
+                      const firstPairedKey = group.fields.find(f => f.type === "paired-compact")?.key;
+                      return group.fields.map((field) => (
+                        <div
+                          key={field.key}
+                          className={cn(
+                            "min-w-0",
+                            field.span === 2 && group.columns === 2 && "col-span-2",
+                            field.span === 2 && group.columns === 3 && "col-span-3"
+                          )}
+                        >
+                          <FieldRenderer
+                            field={field}
+                            value={values[field.key] ?? null}
+                            allValues={values}
+                            onChange={(v) => onChange(field.key, v)}
+                            onChangeAny={onChange}
+                            showPairHeaders={field.key === firstPairedKey}
+                          />
+                        </div>
+                      ));
+                    })()}
                   </div>
                 </div>
               ))}
@@ -85,20 +89,24 @@ export function PageRenderer({ pageType, values, onChange }: Props) {
                 section.columns === 3 && "sm:grid-cols-2 md:grid-cols-3"
               )}
             >
-              {section.fields.map((field) => (
-                <div
-                  key={field.key}
-                  className={cn(field.span === 2 && "sm:col-span-2 md:col-span-3")}
-                >
-                  <FieldRenderer
-                    field={field}
-                    value={values[field.key] ?? null}
-                    allValues={values}
-                    onChange={(v) => onChange(field.key, v)}
-                    onChangeAny={onChange}
-                  />
-                </div>
-              ))}
+              {(() => {
+                const firstPairedKey = section.fields.find(f => f.type === "paired-compact")?.key;
+                return section.fields.map((field) => (
+                  <div
+                    key={field.key}
+                    className={cn(field.span === 2 && "sm:col-span-2 md:col-span-3")}
+                  >
+                    <FieldRenderer
+                      field={field}
+                      value={values[field.key] ?? null}
+                      allValues={values}
+                      onChange={(v) => onChange(field.key, v)}
+                      onChangeAny={onChange}
+                      showPairHeaders={field.key === firstPairedKey}
+                    />
+                  </div>
+                ));
+              })()}
             </div>
           )}
         </section>
