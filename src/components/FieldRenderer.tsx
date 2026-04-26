@@ -406,6 +406,92 @@ export function FieldRenderer({ field, value, allValues, onChange, onChangeAny }
   }
 }
 
+/* -------------------------------------------------------------------------- */
+/*  MobileEditButton — tap-to-edit cell that opens a focused dialog.          */
+/* -------------------------------------------------------------------------- */
+
+function MobileEditButton({
+  value,
+  onSave,
+  title,
+  placeholder,
+  className,
+  inputMode,
+  inputType,
+  rows,
+  ariaLabel,
+}: {
+  value: string;
+  onSave: (v: string) => void;
+  title: string;
+  placeholder?: string;
+  className?: string;
+  inputMode?: "text" | "numeric" | "decimal" | "tel";
+  inputType?: "input" | "textarea";
+  rows?: number;
+  ariaLabel?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState(value);
+  const filled = (value ?? "").trim().length > 0;
+  const handleOpen = () => {
+    setDraft(value ?? "");
+    setOpen(true);
+  };
+  const handleSave = () => {
+    onSave(draft);
+    setOpen(false);
+  };
+  return (
+    <>
+      <button
+        type="button"
+        onClick={handleOpen}
+        aria-label={ariaLabel ?? title}
+        className={cn(
+          "h-9 w-full rounded-md border px-2 text-sm text-left truncate transition-colors",
+          filled
+            ? "bg-primary-soft/40 border-primary/40 text-foreground"
+            : "bg-background/60 border-input text-muted-foreground/70 hover:border-primary/60",
+          className
+        )}
+      >
+        {filled ? value : (placeholder ?? "Tap to edit")}
+      </button>
+      <Dialog open={open} onOpenChange={(o) => !o && setOpen(false)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+          </DialogHeader>
+          {inputType === "textarea" ? (
+            <Textarea
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              rows={rows ?? 4}
+              placeholder={placeholder}
+              className="bg-background/60 resize-none"
+              autoFocus
+            />
+          ) : (
+            <Input
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              placeholder={placeholder}
+              inputMode={inputMode}
+              className="bg-background/60 h-11 text-base"
+              autoFocus
+            />
+          )}
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button onClick={handleSave}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
 function IngredientsList({
   value,
   onChange,
