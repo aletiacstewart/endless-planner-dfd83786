@@ -716,24 +716,9 @@ function MedList({
         {Array.from({ length: rowCount }, (_, i) => i + 1).map((n) => (
           <div key={n} className={cn("grid gap-x-2 items-center", cols)}>
             <span className="text-xs text-muted-foreground text-right pr-1">{n}.</span>
-            <Input
-              value={data[`${n}_name`] ?? ""}
-              onChange={(e) => update(`${n}_name`, e.target.value)}
-              className="bg-background/60 h-8 px-2 text-sm"
-              aria-label={`Med ${n} name`}
-            />
-            <Input
-              value={data[`${n}_reason`] ?? ""}
-              onChange={(e) => update(`${n}_reason`, e.target.value)}
-              className="bg-background/60 h-8 px-2 text-sm"
-              aria-label={`Med ${n} reason`}
-            />
-            <Input
-              value={data[`${n}_doctor`] ?? ""}
-              onChange={(e) => update(`${n}_doctor`, e.target.value)}
-              className="bg-background/60 h-8 px-2 text-sm"
-              aria-label={`Med ${n} doctor`}
-            />
+            {renderTextCell(n, "name", "Name")}
+            {renderTextCell(n, "reason", "Reason")}
+            {renderTextCell(n, "doctor", "Doctor")}
             <div className="grid grid-cols-3 gap-1 justify-items-center">
               {slots.map((s) => {
                 const key = `${n}_${s.k}`;
