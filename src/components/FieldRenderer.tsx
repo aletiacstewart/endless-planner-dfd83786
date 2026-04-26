@@ -806,6 +806,7 @@ function CalendarGrid({
   // Open day in a popup so the cell stays clean and notes are fully visible.
   const [openDay, setOpenDay] = useState<number | null>(null);
   const [draft, setDraft] = useState("");
+  const isMobile = useIsMobile();
 
   const openCell = (d: number) => {
     setDraft(data[d] ?? "");
