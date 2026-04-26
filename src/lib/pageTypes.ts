@@ -355,32 +355,23 @@ export const PAGE_TYPES: PageTypeDef[] = [
           { key: "weight_result", label: "Result Weight", type: "text" },
         ],
       },
-      {
-        title: "Medications",
-        columns: 2,
-        fields: [
-          { key: "med_1_name", label: "Med 1 — Name", type: "text" },
-          { key: "med_1_reason", label: "Med 1 — Reason", type: "text" },
-          { key: "med_2_name", label: "Med 2 — Name", type: "text" },
-          { key: "med_2_reason", label: "Med 2 — Reason", type: "text" },
-          { key: "med_3_name", label: "Med 3 — Name", type: "text" },
-          { key: "med_3_reason", label: "Med 3 — Reason", type: "text" },
-          { key: "med_4_name", label: "Med 4 — Name", type: "text" },
-          { key: "med_4_reason", label: "Med 4 — Reason", type: "text" },
-          { key: "med_5_name", label: "Med 5 — Name", type: "text" },
-          { key: "med_5_reason", label: "Med 5 — Reason", type: "text" },
-          { key: "med_6_name", label: "Med 6 — Name", type: "text" },
-          { key: "med_6_reason", label: "Med 6 — Reason", type: "text" },
-          { key: "med_7_name", label: "Med 7 — Name", type: "text" },
-          { key: "med_7_reason", label: "Med 7 — Reason", type: "text" },
-          { key: "med_8_name", label: "Med 8 — Name", type: "text" },
-          { key: "med_8_reason", label: "Med 8 — Reason", type: "text" },
-          { key: "med_9_name", label: "Med 9 — Name", type: "text" },
-          { key: "med_9_reason", label: "Med 9 — Reason", type: "text" },
-          { key: "med_10_name", label: "Med 10 — Name", type: "text" },
-          { key: "med_10_reason", label: "Med 10 — Reason", type: "text" },
-        ],
-      },
+      ...(["day", "aft", "night"] as const).map((slot) => {
+        const title =
+          slot === "day"
+            ? "Daily Medications"
+            : slot === "aft"
+            ? "Afternoon Medications"
+            : "Night Medications";
+        return {
+          title,
+          columns: 3 as const,
+          fields: Array.from({ length: 12 }, (_, i) => i + 1).flatMap((n) => [
+            { key: `med_${slot}_${n}_name`, label: `Med ${n} — Name`, type: "text" as const },
+            { key: `med_${slot}_${n}_reason`, label: `Med ${n} — Reason`, type: "text" as const },
+            { key: `med_${slot}_${n}_doctor`, label: `Med ${n} — Prescribing Doctor`, type: "text" as const },
+          ]),
+        };
+      }),
       {
         title: "Fun & Habit Tracker",
         description: "Write in your own items, then mark Success or Failed for the day.",
