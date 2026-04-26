@@ -321,19 +321,31 @@ export function FieldRenderer({ field, value, allValues, onChange, onChangeAny }
     }
     case "ingredients-list":
       return <IngredientsList value={value as string[]} onChange={onChange} />;
-    case "calendar-grid":
+    case "calendar-grid": {
+      // Prefer explicit month/year fields, otherwise derive from a date field (e.g. daily tracker).
+      let derivedMonth = typeof allValues?.month === "string" ? (allValues.month as string) : "";
+      let derivedYear =
+        typeof allValues?.year === "string" || typeof allValues?.year === "number"
+          ? String(allValues.year)
+          : "";
+      if ((!derivedMonth || !derivedYear) && typeof allValues?.date === "string" && allValues.date) {
+        const d = new Date(allValues.date as string);
+        if (!Number.isNaN(d.getTime())) {
+          if (!derivedMonth) derivedMonth = String(d.getMonth() + 1);
+          if (!derivedYear) derivedYear = String(d.getFullYear());
+        }
+      }
       return (
         <CalendarGrid
           value={value as Record<string, string>}
-          month={typeof allValues?.month === "string" ? (allValues.month as string) : ""}
-          year={
-            typeof allValues?.year === "string" || typeof allValues?.year === "number"
-              ? String(allValues.year)
-              : ""
-          }
+          month={derivedMonth}
+          year={derivedYear}
+          compact={field.compact}
           onChange={onChange}
         />
       );
+    }
+
     case "habit-grid":
       return (
         <HabitGrid
