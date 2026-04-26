@@ -185,26 +185,43 @@ export default function Home() {
         )}
 
         <section>
-          <h2 className="font-display text-xl mb-3">Sections</h2>
+          <div className="mb-4">
+            <h2 className="font-display text-xl">Sections</h2>
+            <p className="font-script text-base text-muted-foreground mt-1">
+              "Small steps every day add up to a beautiful life. Begin where you are."
+            </p>
+          </div>
           <div className="grid grid-cols-2 gap-3">
-            {PAGE_TYPES.map((pt) => {
-              const Icon = (Icons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[pt.icon] ?? Icons.FileText;
-              return (
-                <Link
-                  key={pt.id}
-                  to={`/section/${pt.id}`}
-                  className="planner-card flex flex-col gap-2"
-                >
-                  <div className="w-10 h-10 rounded-full bg-primary-soft flex items-center justify-center">
-                    <Icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <p className="font-medium text-sm">{pt.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {counts[pt.id] || 0} {counts[pt.id] === 1 ? "entry" : "entries"}
-                  </p>
-                </Link>
-              );
-            })}
+            {[...PAGE_TYPES]
+              .sort((a, b) => {
+                if (a.id === "complete-tracker") return -1;
+                if (b.id === "complete-tracker") return 1;
+                return 0;
+              })
+              .map((pt) => {
+                const Icon = (Icons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[pt.icon] ?? Icons.FileText;
+                const isFeatured = pt.id === "complete-tracker";
+                return (
+                  <Link
+                    key={pt.id}
+                    to={`/section/${pt.id}`}
+                    className={`planner-card flex flex-col gap-2 ${isFeatured ? "col-span-2 border-primary/40 bg-primary-soft/40" : ""}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="w-10 h-10 rounded-full bg-primary-soft flex items-center justify-center shrink-0">
+                        <Icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <p className="font-medium text-sm">{pt.name}</p>
+                    </div>
+                    <p className="text-xs text-muted-foreground line-clamp-3">
+                      {pt.description}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground/80 mt-auto">
+                      {counts[pt.id] || 0} {counts[pt.id] === 1 ? "entry" : "entries"}
+                    </p>
+                  </Link>
+                );
+              })}
           </div>
         </section>
 
