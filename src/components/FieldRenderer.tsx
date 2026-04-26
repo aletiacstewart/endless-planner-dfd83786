@@ -427,17 +427,30 @@ function MedList({
 }) {
   const data = value ?? {};
   const update = (key: string, v: string) => onChange({ ...data, [key]: v });
+  const cols = "grid-cols-[1.5rem_2fr_2fr_1.5fr_5.25rem]";
+  const slots: { k: "m" | "a" | "n"; label: string }[] = [
+    { k: "m", label: "M" },
+    { k: "a", label: "A" },
+    { k: "n", label: "N" },
+  ];
   return (
     <div>
-      <div className="grid grid-cols-[1.5rem_2fr_2fr_1.5fr] gap-x-2 gap-y-1 items-center mb-1">
+      <div className={cn("grid gap-x-2 gap-y-1 items-end mb-1", cols)}>
         <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground" />
         <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground px-1">Name</span>
         <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground px-1">Reason</span>
         <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground px-1">Doctor</span>
+        <div className="grid grid-cols-3 gap-1 text-center">
+          {slots.map((s) => (
+            <span key={s.k} className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground" title={s.k === "m" ? "Morning" : s.k === "a" ? "Afternoon" : "Night"}>
+              {s.label}
+            </span>
+          ))}
+        </div>
       </div>
       <div className="space-y-1">
         {Array.from({ length: rowCount }, (_, i) => i + 1).map((n) => (
-          <div key={n} className="grid grid-cols-[1.5rem_2fr_2fr_1.5fr] gap-x-2 items-center">
+          <div key={n} className={cn("grid gap-x-2 items-center", cols)}>
             <span className="text-xs text-muted-foreground text-right pr-1">{n}.</span>
             <Input
               value={data[`${n}_name`] ?? ""}
@@ -457,6 +470,20 @@ function MedList({
               className="bg-background/60 h-8 px-2 text-sm"
               aria-label={`Med ${n} doctor`}
             />
+            <div className="grid grid-cols-3 gap-1 justify-items-center">
+              {slots.map((s) => {
+                const key = `${n}_${s.k}`;
+                const checked = data[key] === "1";
+                return (
+                  <Checkbox
+                    key={s.k}
+                    checked={checked}
+                    onCheckedChange={(c) => update(key, c ? "1" : "")}
+                    aria-label={`Med ${n} ${s.label}`}
+                  />
+                );
+              })}
+            </div>
           </div>
         ))}
       </div>
