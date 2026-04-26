@@ -1113,6 +1113,7 @@ function MeasurementGrid({
   label: string;
   onChange: (v: FieldValue) => void;
 }) {
+  const isMobile = useIsMobile();
   const data = value ?? {};
   const set = (row: number, col: string, v: string) =>
     onChange({ ...data, [`${row}-${col}`]: v });
@@ -1142,11 +1143,22 @@ function MeasurementGrid({
                 </td>
                 {columns.map((c) => (
                   <td key={c}>
-                    <Input
-                      value={data[`${row}-${c}`] ?? ""}
-                      onChange={(e) => set(row, c, e.target.value)}
-                      className="h-7 text-xs min-w-[5rem] bg-background/60"
-                    />
+                    {isMobile ? (
+                      <MobileEditButton
+                        value={data[`${row}-${c}`] ?? ""}
+                        onSave={(nv) => set(row, c, nv)}
+                        title={`${rowLabel} ${row} · ${c}`}
+                        placeholder="—"
+                        className="h-7 text-xs min-w-[4rem]"
+                        ariaLabel={`${rowLabel} ${row} ${c}`}
+                      />
+                    ) : (
+                      <Input
+                        value={data[`${row}-${c}`] ?? ""}
+                        onChange={(e) => set(row, c, e.target.value)}
+                        className="h-7 text-xs min-w-[5rem] bg-background/60"
+                      />
+                    )}
                   </td>
                 ))}
               </tr>
