@@ -44,6 +44,10 @@ export interface FieldDef {
   rowLabel?: string;
   /** For rating: render a small companion text input on the same row, bound to this other field key. */
   otherKey?: string;
+  /** For success-fail: render a blank text input alongside the buttons (user-typed label) bound to this key. Hides the field's own label. */
+  inputKey?: string;
+  /** Placeholder for the companion input (used with inputKey). */
+  inputPlaceholder?: string;
 }
 
 
