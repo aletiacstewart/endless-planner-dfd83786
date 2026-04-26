@@ -11,6 +11,11 @@ const REVERSE_SYNC_TYPES = new Set([
   "oxygen-tracker",
   "self-care-checklist",
   "monthly-calendar",
+  "cleaning-checklist",
+  "yearly-calendar",
+  "weekly-calendar",
+  "habit-tracker",
+  "yearly-habit-tracker",
 ]);
 
 export function useAutoSave(entry: PlannerEntry | null, debounceMs = 500) {

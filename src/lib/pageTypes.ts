@@ -462,6 +462,22 @@ export const PAGE_TYPES: PageTypeDef[] = [
           },
         ]),
       },
+      {
+        title: "Cleaning",
+        description: "What you cleaned today — syncs to your yearly Cleaning Check List.",
+        fields: [
+          { key: "cleaning_today", label: "Cleaning today", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+      {
+        title: "Calendar Notes",
+        description: "Quick notes for this month and week — sync to your Yearly and Weekly calendars.",
+        columns: 2,
+        fields: [
+          { key: "month_note_today", label: "Note for this month", type: "textarea", rows: 3 },
+          { key: "week_note_today", label: "Note for this week", type: "textarea", rows: 3 },
+        ],
+      },
     ],
     summary: (v) => (v.date ? `${v.date}` : "Daily entry"),
   },
