@@ -132,9 +132,9 @@ export default function Home() {
 
       <main className="px-5 pt-6 space-y-6">
         {showReminder && (
-          <section className="rounded-xl border border-amber-300/60 bg-amber-50 dark:bg-amber-950/20 p-4">
+          <section className="rounded-xl border border-accent/40 bg-accent-soft/60 p-4">
             <div className="flex items-start gap-3">
-              <Icons.AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <Icons.AlertTriangle className="w-5 h-5 text-accent shrink-0 mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm font-medium text-foreground">
                   Time to back up your planner

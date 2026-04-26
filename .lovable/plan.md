@@ -1,99 +1,141 @@
 ## Goal
+Deep-audit the Complete Tracker ↔ individual tracker connections, ensure every individual tracker has a place on the Complete Tracker (the Weekly and Yearly sections are very thin today), **add new individual tracker pages for any Complete-Tracker items that don't yet have a dedicated tracker**, and tighten cover-theme contrast so all text stays readable.
 
-Split the consolidated tracker into two page types:
+---
 
-1. **Complete Tracker** (renamed from current "Daily Tracker") — keeps every section (date, meals, vitals, wellness, self-care, workout, measurements, meds, medical records, fun/habits, monthly calendar, recipe, notes).
-2. **Daily Tracker** (re-added, lightweight) — the original simple page: date, daily goal, meals, wellness notes.
+## Findings
 
-Re-add the section types that were removed in the previous task so users can also use them standalone. When a user fills out a **Complete Tracker** entry, the app automatically creates/updates matching entries in **Daily Tracker** and the other related trackers, keyed by date so the same day always updates the same linked entry.
+### What already syncs both ways (verified in `src/lib/linkedEntries.ts`)
+| Individual Tracker | On Complete Tracker | Bi-directional |
+|---|---|---|
+| Daily Tracker | Date, weekday, daily goal/habit, all 4 meals + notes, wellness notes | Yes |
+| Blood Sugar (yearly) | `breakfast/lunch/dinner/snacks_bs` | Yes |
+| Blood Pressure (yearly) | `..._bp` | Yes |
+| Oxygen (yearly) | `..._o2` | Yes |
+| Self-Care Check List | Physical / Emotional / Spiritual textareas | Yes |
+| Monthly Calendar | `month_calendar` grid | Yes |
+| Cleaning Check List | `cleaning_today` | Yes |
+| Habit Tracker (monthly) | `habit_1..3` (success/fail) | Yes |
+| Yearly Habit Tracker | `habit_N_label` + `habit_N_mode` + success | Yes |
+| Fun Tracker | `fun_1..3` | Forward only (intentional — month-level marks) |
+| Yearly Calendar | Single `month_note_today` textarea | Yes, but cramped |
+| Weekly Calendar | Single `week_note_today` textarea | Yes, but cramped |
+| Weight Tracker (26-week) | Only one-shot `weight_start`/`weight_goal`/`weight_result` | No recurring sync |
+| Measurement Tracker (26-week) | Only one-shot Start/Finish per body part | No recurring sync |
 
-## What the user will see
+### Items on the Complete Tracker that do NOT have an individual tracker yet
+These are real fields on the Complete Tracker that have nowhere to roll up to:
+1. **Wellness ratings** — Water, Caffeine, Sweets, Sleep, Smoking/Vaping, Mood. No yearly view.
+2. **Workout** — Cardio, Weights, Yoga, Stretch, Rest day, Other. No yearly view.
+3. **Medications** — `med_list` (12 rows: name, reason, doctor, M/A/N times). No standalone reference page.
+4. **Medical Records** — appointment notes, test results, lab notes. No standalone log.
+5. **Daily Goal / Daily Habit** roll-up — a yearly view of daily goals & habit successes doesn't exist.
 
-**Home grid sections (restored):**
-- Complete Tracker (was Daily Tracker)
-- Daily Tracker (lightweight original)
-- Monthly Calendar
-- Habit Tracker
-- Bi-Monthly Weight Tracker
-- Bi-Monthly Measurement Tracker
-- Yearly Blood Sugar / Blood Pressure / Oxygen Trackers
-- Self-Care Check List
-- Fun Tracker
-- Recipe
-- Notes
-- (plus the ones already kept: Goals, Goals Reflection, Yearly Calendar, Weekly Calendar, Yearly Habit Tracker, Cleaning Check List)
+### Theme / contrast issues
+- `src/pages/Home.tsx:135` — Backup-reminder card uses hard-coded `bg-amber-50 / border-amber-300/60`; on dark covers (Crimson Moon, Midnight Iris, Monochrome Faith, etc.) the border + icon pop too hard and the text reads inconsistently. Switch to semantic tokens.
+- `text-amber-600 dark:text-amber-400` icon — same fix; use `text-accent-foreground` over an `accent-soft` chip.
+- All other components already use semantic tokens (`bg-background`, `text-foreground`, `bg-primary-soft`, …) and recolor correctly with each cover. Audit of `FieldRenderer`, `PageRenderer`, `Section`, `Entry` found no other contrast bugs.
+- `text-white` over the cover hero (Home, SplashScreen, CoverPicker) is fine — it sits on a dark gradient overlay regardless of palette.
 
-**On a Complete Tracker entry:**
-- Same layout as today (top section nav, date, meals, wellness, etc.)
-- A small status line under the header: "Linked entries auto-saved: Daily Tracker, Monthly Calendar (Apr 2026), Blood Sugar (2026), Blood Pressure (2026), Oxygen (2026), Self-Care (2026), Habit Tracker (Apr 2026), Weight Tracker, Measurement Tracker, Fun Tracker (2026)."
-- Each time the user edits a field, the matching field in the linked entries is updated in the background.
+---
 
-**On the lightweight Daily Tracker:** date, day-of-week pills, daily goal, daily habit success/fail, meals (breakfast/lunch/dinner/snacks with one notes box each), and a wellness notes textarea. No vitals, meds, measurements, etc. — those live in dedicated trackers or in Complete Tracker.
+## Plan
 
-## Linking rules (which Complete Tracker fields fan out where)
+### 1. Add NEW individual tracker pages (so every Complete-Tracker item has a home)
 
-Linked entries are looked up / created using a deterministic key based on the entry's `date` field:
+Add these page types in `src/lib/pageTypes.ts`:
 
-| Complete Tracker fields | Target page type | Key | Field mapping |
-|---|---|---|---|
-| date, weekday, daily_goal, daily_habit, breakfast/lunch/dinner/snacks (+ notes), daily_notes | `daily-tracker` | `date` (YYYY-MM-DD) | same field keys |
-| breakfast_bs, lunch_bs, dinner_bs, snacks_bs | `blood-sugar-tracker` | `year` of date | writes into `blood_sugar` grid cell `[month][day]` (concatenated `B/L/D/S` values) |
-| breakfast_bp, lunch_bp, dinner_bp, snacks_bp | `blood-pressure-tracker` | `year` of date | same pattern into `blood_pressure` |
-| breakfast_o2, lunch_o2, dinner_o2, snacks_o2 | `oxygen-tracker` | `year` of date | same pattern into `oxygen` |
-| self_physical, self_emotional, self_spiritual | `self-care-checklist` | `year` of date | writes into `physical` / `emotional` / `spiritual` grid cell `[month][day]` |
-| month_calendar (per-day notes) | `monthly-calendar` | `month + year` of date | writes into `calendar` grid cells |
-| habits (fun_1..3, habit_1..3 + labels + modes) | (kept inside Complete Tracker only — no fan-out target) | — | — |
-| Weight (m_weight pair, weight_result) | `weight-tracker` | most recent open entry, else create new | appends/updates the row matching the date |
-| Measurements (m_*_start/_finish) | `measurement-tracker` | most recent open entry, else create new | appends/updates the row matching the date |
+- **`wellness-tracker`** — "Yearly Wellness Tracker"
+  Year-scoped. Six `daily-month-grid`s: water, caffeine, sweets, sleep, smoking, mood (numeric per day).
+- **`workout-tracker`** — "Yearly Workout Tracker"
+  Year-scoped. `daily-month-grid` per category (cardio, weights, yoga, stretch, rest_day, other) — each cell stores the day's value/duration.
+- **`medications`** — "Medications"
+  One-shot reference page with the same `med-list` widget (rowCount 20). Acts as the master list.
+- **`medical-records`** — "Medical Records"
+  Per-entry log (date + appointment notes + test results + lab notes).
+- **`daily-goal-tracker`** — "Yearly Daily Goal Tracker"
+  Year-scoped. `daily-month-grid` of one-line daily goals + a success/fail mark per day.
 
-For grids (`daily-month-grid`, `calendar-grid`), the field value is an object the existing FieldRenderer already understands; the link helper just merges into the right inner cell.
+Each page gets:
+- `id`, `name`, `shortName`, `description`, `icon`, sections, and a `summary()`.
+- An auto-generated home-screen card (already handled by `Home.tsx`'s `PAGE_TYPES.map`).
 
-If the user clears a field in Complete Tracker, the linked field is also cleared.
+### 2. Expand Complete Tracker so every individual tracker has matching daily fields
 
-Linked entries are **never deleted automatically** — deleting a Complete Tracker entry leaves the linked daily/monthly/yearly entries intact (they may also contain manual edits).
+In `src/lib/pageTypes.ts`, on `complete-tracker`:
 
-## Other small changes the user asked for previously (still in scope)
+- **Weekly section** (new dedicated card)
+  - `week_note_today` (already exists)
+  - `weekly_goals` textarea
+  - `weekly_reflection` textarea
+- **Yearly section** (new dedicated card)
+  - `month_note_today` (already exists)
+  - `yearly_focus` textarea
+- **Weight & Measurements** (extend the existing Measurements card)
+  - `weight_today` (number) + `weight_today_notes` (text)
+  - `m_<part>_today` compact text per body part (8 parts)
+- (Wellness ratings, Workout, Medications, Medical Records — already on the Complete Tracker; no new fields needed, just the new sync below.)
 
-- "Add a daily" button label on the Daily Tracker section list (instead of "Add another daily").
-- Sticky in-page section nav at top of Complete Tracker that scrolls to each section.
-- Both trackers auto-save (already wired through `useAutoSave`).
+### 3. Forward sync — `syncLinkedEntries` (Complete → Individual)
 
-## Technical changes
+In `src/lib/linkedEntries.ts`, extend the engine:
 
-### `src/lib/pageTypes.ts`
-- Rename current daily-tracker entry: `id: "complete-tracker"`, `name: "Complete Tracker"`, `shortName: "Complete"`, updated description ("All-in-one daily log — meals, vitals, wellness, meds, measurements, calendar and more. Auto-syncs to your individual trackers.").
-- Add a new lightweight `daily-tracker` page type with sections: date+weekday, daily goal + daily habit, meals (4 meals each with `*_notes` textarea), wellness notes. Same field keys used by Complete Tracker so the cross-write helper can copy values 1:1.
-- Re-add the page types that were removed in the previous task: `monthly-calendar`, `habit-tracker`, `weight-tracker`, `measurement-tracker`, `blood-sugar-tracker`, `blood-pressure-tracker`, `oxygen-tracker`, `self-care-checklist`, `fun-tracker`, `recipe`, `notes` (definitions already exist in the current file based on the current view — confirm during edit and restore any that were dropped).
+- **Weekly Calendar:** also write `weekly_goals` and `reflection`.
+- **Yearly Calendar:** if `yearly_focus` is filled, merge as a leading line in `month_<name>` (de-duped on re-save).
+- **Weight Tracker:** find/create the active `weight-tracker` (latest `start_date` ≤ today). Compute the week index `floor((today − start_date) / 7d)` clamped 0–25. Merge `{Date, Weight, Difference, Notes}` into that week row of the `weight_log` measurement-grid.
+- **Measurement Tracker:** same logic — write per-part `m_<part>_today` values into the right week row.
+- **Wellness Tracker:** for each rating field, write the numeric value into the matching `daily-month-grid` cell `${day}-${monthIndex}`.
+- **Workout Tracker:** for each category, write the day's value (or "✓" for `rest_day`) into the matching grid cell.
+- **Medical Records:** if appointment/test/lab fields are filled, find/create a per-day `medical-records` entry by date and copy the three textareas.
+- **Daily Goal Tracker:** write `daily_goal` into the day cell, plus the success/fail of `daily_habit` into a separate "achieved" map.
+- **Medications:** keep this one-way "reference only" — Complete Tracker reads from a single `medications` master entry. Plan: when a Complete Tracker is opened with no `med_list` yet, prefill from the master `medications` entry (read-only seed; user can still edit per-day).
 
-### `src/lib/linkedEntries.ts` (new)
-- Export `LINK_RULES`: an array describing each fan-out rule (target pageType, key strategy, field copier function).
-- Export `syncLinkedEntries(completeEntry: PlannerEntry)`:
-  1. For each rule, compute the lookup key from `completeEntry.values.date`.
-  2. `listEntries(targetPageType)` and find the matching entry; create one with `createEntry` if none.
-  3. Apply the rule's copier to merge fields into the target entry's `values`.
-  4. `saveEntry(targetEntry)` with bumped `updatedAt`.
-- Helpers:
-  - `simpleCopy(keys: string[])` — copies same-named fields.
-  - `gridCopy(targetField: string, srcKeys: Record<string,string>)` — writes into `values[targetField][monthIndex][dayIndex]`.
-  - `calendarCopy(targetField: string, srcKey: string)` — for `month_calendar` → `monthly-calendar.calendar`.
+### 4. Reverse sync — `syncFromIndividual` (Individual → Complete)
 
-### `src/hooks/useAutoSave.ts`
-- After `saveEntry(...)` of a Complete Tracker entry, call `syncLinkedEntries(entry)` (gated on `entry.pageType === "complete-tracker"`).
-- Surface a brief toast or status string ("Synced 5 linked entries") — small text under the existing "Saved" indicator. Failure is logged, not blocking.
+- **Weekly Calendar:** when `weekly_goals` / `reflection` change, mirror back into every Complete Tracker entry whose date is in that Mon–Sun window.
+- **Weight Tracker:** when a row's `Date` + `Weight` is edited, update the matching Complete Tracker entry's `weight_today` / `weight_today_notes`.
+- **Measurement Tracker:** when a row is edited, update the matching Complete Tracker's `m_<part>_today` values.
+- **Wellness / Workout / Daily Goal Tracker:** when a cell changes, update only existing Complete Tracker entries for that date (never create new ones).
+- **Medical Records:** when a per-day entry is edited, update the matching Complete Tracker entry's three medical textareas.
 
-### `src/pages/Entry.tsx`
-- Show a small "Linked entries" line under the page title when `pageType.id === "complete-tracker"` listing the targets that will sync.
+Update `REVERSE_SYNC_TYPES` in `src/hooks/useAutoSave.ts` to include `weight-tracker`, `measurement-tracker`, `wellness-tracker`, `workout-tracker`, `medical-records`, `daily-goal-tracker`.
 
-### `src/pages/Section.tsx`
-- Change CTA copy: when `pageType.id === "daily-tracker"`, render "Add a daily" instead of "Add another {shortName}". Other sections keep existing copy (or change to plain "Add {shortName}" — TBD, leaving as-is unless requested).
+### 5. Theme/contrast fixes
 
-### `src/lib/exporters.ts`
-- No change required — exporter walks all entries and reads each pageType's name from `PAGE_TYPES`. New IDs (`complete-tracker`, restored trackers) work automatically.
+In `src/pages/Home.tsx`:
+- Replace `border-amber-300/60 bg-amber-50 dark:bg-amber-950/20` with `border-accent/40 bg-accent-soft/60`.
+- Replace `text-amber-600 dark:text-amber-400` with `text-accent-foreground` over a small `bg-accent` chip so the warning icon adapts to every palette.
 
-### Backwards compatibility
-- Existing entries already saved with `pageType: "daily-tracker"` will become orphaned (their schema matches Complete Tracker). Add a one-time migration in `src/lib/db.ts` `upgrade` (or a lazy fix in `getEntry`) that rewrites `pageType` from `"daily-tracker"` → `"complete-tracker"` for any entry that contains keys unique to the consolidated layout (e.g. `med_list` or `m_weight_start`).
+In `src/hooks/useCoverTheme.ts`:
+- Derive and set `--accent-soft` from each cover's `accent` (drop saturation, raise lightness in light mode / lower in dark mode) so we don't have to add the field to all ~70 palettes.
 
-## Out of scope
+### 6. UX polish on the Complete Tracker
 
-- No backend changes — everything stays in IndexedDB.
-- No UI for "unlinking" a synced entry — sync is one-way (Complete → individual). Editing an individual tracker does not push back into Complete Tracker for the same date.
+- Add a brief italic hint under each new section naming the individual tracker it syncs to (matches the existing pattern on Cleaning / Calendar Notes).
+- Reorder Complete Tracker sections so the flow reads: Date → Daily Goal → Monthly Calendar → Meals → Wellness → Self-Care → Workout → Measurements (incl. weekly weigh-in) → Wellness Notes → Medications → Medical Records → Fun & Habits → Cleaning → Weekly → Yearly.
+
+### 7. Manual QA after build
+
+Spot-check on three palettes representing worst contrast risks:
+- **paletteMonochromeFaith** (pure dark) — reminder card and field labels readable.
+- **paletteSparrowDandelion** (warm light) — primary/accent buttons keep contrast.
+- **paletteCrimsonMoon** (dark with red primary) — focus rings on inputs stay visible.
+
+---
+
+## Technical details
+
+- New helpers in `linkedEntries.ts`:
+  - `weekIndexFromStart(startIso, todayIso): number | null` — clamp 0..25.
+  - `mergeMeasurementGridRow(value, rowIdx, partial): newValue` — preserves other rows/cols of the `measurement-grid` shape (verify exact shape from `FieldRenderer`).
+  - `mergeDailyMonthCell` already exists — reused for Wellness/Workout/Daily Goal grids.
+- New field keys on `complete-tracker`: `weekly_goals`, `weekly_reflection`, `yearly_focus`, `weight_today`, `weight_today_notes`, `m_<part>_today` × 8.
+- No DB migration needed — `PlannerEntry.values` is a free-form record; new pages just appear via `PAGE_TYPES`.
+- Auto-save debounce stays at 500 ms; new sync work is constant-time per entry.
+
+## Files to change
+- `src/lib/pageTypes.ts` — 5 new page types + Complete Tracker schema additions/reordering.
+- `src/lib/linkedEntries.ts` — forward + reverse sync for the new trackers, weekly extras, yearly focus, weight, measurements.
+- `src/hooks/useAutoSave.ts` — extend `REVERSE_SYNC_TYPES`.
+- `src/hooks/useCoverTheme.ts` — derive and set `--accent-soft` per cover.
+- `src/pages/Home.tsx` — replace hard-coded amber tokens on the backup-reminder card.

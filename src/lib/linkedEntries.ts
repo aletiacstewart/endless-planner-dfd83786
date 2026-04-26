@@ -92,6 +92,52 @@ function mergeCalendarCell(
   dst[field] = next;
 }
 
+/** Body parts that have per-day "today" fields on the Complete Tracker. */
+const BODY_PARTS = ["body_fat", "neck", "chest", "bicep", "waist", "hips", "thigh", "calf"] as const;
+const BODY_PART_COLUMNS: Record<string, string> = {
+  body_fat: "Fat %",
+  neck: "Neck",
+  chest: "Chest",
+  bicep: "Bicep",
+  waist: "Waist",
+  hips: "Hips",
+  thigh: "Thigh",
+  calf: "Calf",
+};
+
+/** Compute 1..26 week index from a start date to today; null if out of range. */
+function weekIndexFromStart(startIso: string | undefined, target: ParsedDate): number | null {
+  if (!startIso) return null;
+  const start = new Date(startIso);
+  if (Number.isNaN(start.getTime())) return null;
+  const t = new Date(target.year, target.monthIndex, target.day);
+  const days = Math.floor((t.getTime() - start.getTime()) / 86_400_000);
+  if (days < 0) return null;
+  const wk = Math.floor(days / 7) + 1;
+  if (wk < 1 || wk > 26) return null;
+  return wk;
+}
+
+/** Merge a single cell into a measurement-grid value (Record<string,string>, key `${row}-${col}`). */
+function mergeMeasurementCell(
+  dst: Record<string, FieldValue>,
+  field: string,
+  row: number,
+  col: string,
+  value: string,
+) {
+  const existing = (dst[field] as Record<string, string> | undefined) ?? {};
+  const next = { ...existing };
+  if (value && value.trim()) next[`${row}-${col}`] = value;
+  else delete next[`${row}-${col}`];
+  dst[field] = next;
+}
+
+/** Pad date as YYYY-MM-DD. */
+function isoOf(year: number, monthIndex: number, day: number) {
+  return `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
 /** Merge into a daily-month-grid value: `{ cells: { [day-monthIndex]: string }, achieved, notes }`. */
 function mergeDailyMonthCell(
   dst: Record<string, FieldValue>,
@@ -391,6 +437,179 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       synced.push(`Fun Tracker (${yearStr})`);
     }
 
+    // 13. Weekly Calendar — also push weekly goals + reflection to that week's entry.
+    const weeklyGoals = (v.weekly_goals as string | undefined) ?? "";
+    const weeklyReflection = (v.weekly_reflection as string | undefined) ?? "";
+    if (weeklyGoals.trim() || weeklyReflection.trim()) {
+      const weekStart = mondayOf(date.year, date.monthIndex, date.day);
+      const weekIso = isoOf(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate());
+      const entry = await findOrCreate(
+        "weekly-calendar",
+        (e) => (e.values.week_of as string | undefined)?.slice(0, 10) === weekIso,
+        { week_of: weekIso },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.week_of) dst.week_of = weekIso;
+        if (weeklyGoals.trim()) dst.weekly_goals = weeklyGoals;
+        if (weeklyReflection.trim()) dst.reflection = weeklyReflection;
+      });
+      synced.push(`Weekly Calendar — goals/reflection`);
+    }
+
+    // 14. Yearly Calendar — yearly_focus prefixes the matching month note ("Focus: …").
+    const yearlyFocus = (v.yearly_focus as string | undefined) ?? "";
+    if (yearlyFocus.trim()) {
+      const monthName = new Date(date.year, date.monthIndex, 1)
+        .toLocaleString("en-US", { month: "long" })
+        .toLowerCase();
+      const entry = await findOrCreate(
+        "yearly-calendar",
+        (e) => String(e.values.year ?? "") === yearStr,
+        { year: yearStr },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.year) dst.year = yearStr;
+        const focusLine = `Focus: ${yearlyFocus.trim()}`;
+        const cur = (dst[`month_${monthName}`] as string | undefined) ?? "";
+        // Replace any existing leading "Focus:" line; otherwise prepend.
+        const stripped = cur.replace(/^Focus:[^\n]*\n?/i, "").trimStart();
+        dst[`month_${monthName}`] = stripped ? `${focusLine}\n${stripped}` : focusLine;
+      });
+      synced.push(`Yearly Calendar focus`);
+    }
+
+    // 15. Wellness Tracker — six daily-month-grids of numeric ratings.
+    const wellnessFields = ["water", "caffeine", "sweets", "sleep", "smoking", "mood"];
+    if (wellnessFields.some((k) => v[k] != null && v[k] !== "")) {
+      const entry = await findOrCreate(
+        "wellness-tracker",
+        (e) => String(e.values.year ?? "") === yearStr,
+        { year: yearStr },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.year) dst.year = yearStr;
+        for (const k of wellnessFields) {
+          const raw = v[k];
+          const txt = raw == null || raw === "" ? "" : String(raw);
+          mergeDailyMonthCell(dst, k, date.day, date.monthIndex, txt);
+        }
+      });
+      synced.push(`Wellness Tracker (${yearStr})`);
+    }
+
+    // 16. Workout Tracker — daily-month-grid per category.
+    const workoutFields = ["cardio", "weights", "yoga", "stretch", "rest_day", "other"];
+    if (workoutFields.some((k) => v[k] != null && v[k] !== "" && v[k] !== false)) {
+      const entry = await findOrCreate(
+        "workout-tracker",
+        (e) => String(e.values.year ?? "") === yearStr,
+        { year: yearStr },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.year) dst.year = yearStr;
+        for (const k of workoutFields) {
+          const raw = v[k];
+          let txt = "";
+          if (typeof raw === "boolean") txt = raw ? "✓" : "";
+          else if (raw != null) txt = String(raw);
+          mergeDailyMonthCell(dst, k, date.day, date.monthIndex, txt);
+        }
+      });
+      synced.push(`Workout Tracker (${yearStr})`);
+    }
+
+    // 17. Daily Goal Tracker — yearly grid of daily goals + habit success.
+    const dGoal = (v.daily_goal as string | undefined) ?? "";
+    const dHabit = (v.daily_habit as string | undefined) ?? "";
+    if (dGoal.trim() || dHabit) {
+      const entry = await findOrCreate(
+        "daily-goal-tracker",
+        (e) => String(e.values.year ?? "") === yearStr,
+        { year: yearStr },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.year) dst.year = yearStr;
+        mergeDailyMonthCell(dst, "daily_goal", date.day, date.monthIndex, dGoal);
+        const mark = dHabit === "success" ? "✓" : dHabit === "failed" ? "✗" : "";
+        mergeDailyMonthCell(dst, "daily_habit", date.day, date.monthIndex, mark);
+      });
+      synced.push(`Daily Goal Tracker (${yearStr})`);
+    }
+
+    // 18. Medical Records — per-date entry mirroring the three textareas.
+    const medicalFields = ["medical_appointment_notes", "test_results", "lab_result_notes"];
+    if (medicalFields.some((k) => typeof v[k] === "string" && (v[k] as string).trim())) {
+      const entry = await findOrCreate(
+        "medical-records",
+        (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
+        { date: date.iso },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.date) dst.date = date.iso;
+        copyKeys(v, dst, medicalFields);
+      });
+      synced.push(`Medical Records (${date.iso})`);
+    }
+
+    // 19. Weight Tracker — write today's weight into the active 26-week log.
+    const weightToday = (v.weight_today as string | undefined) ?? "";
+    if (weightToday.trim()) {
+      const all = await listEntries("weight-tracker");
+      // Pick the most recent entry whose start_date is on/before today.
+      const candidates = all
+        .map((e) => ({ e, start: (e.values.start_date as string | undefined) ?? "" }))
+        .filter((x) => x.start && new Date(x.start).getTime() <= new Date(date.iso).getTime())
+        .sort((a, b) => b.start.localeCompare(a.start));
+      const wt = candidates[0]?.e ?? await createEntry("weight-tracker", { start_date: date.iso });
+      const startIso = (wt.values.start_date as string | undefined) ?? date.iso;
+      const wk = weekIndexFromStart(startIso, date);
+      if (wk != null) {
+        await persist(wt, (dst) => {
+          if (!dst.start_date) dst.start_date = startIso;
+          mergeMeasurementCell(dst, "weight_log", wk, "Date", date.iso);
+          mergeMeasurementCell(dst, "weight_log", wk, "Weight", weightToday);
+          const notes = (v.weight_today_notes as string | undefined) ?? "";
+          mergeMeasurementCell(dst, "weight_log", wk, "Notes", notes);
+          // Compute Difference vs previous week if numeric.
+          const prev = (dst.weight_log as Record<string, string> | undefined)?.[`${wk - 1}-Weight`];
+          const a = parseFloat(weightToday);
+          const b = parseFloat(prev ?? "");
+          if (!Number.isNaN(a) && !Number.isNaN(b)) {
+            const diff = (a - b).toFixed(1);
+            mergeMeasurementCell(dst, "weight_log", wk, "Difference", diff);
+          }
+        });
+        synced.push(`Weight Tracker (wk ${wk})`);
+      }
+    }
+
+    // 20. Measurement Tracker — per-body-part `m_<part>_today` → 26-week grid.
+    const partTodays = BODY_PARTS.filter((p) => {
+      const x = v[`m_${p}_today`];
+      return typeof x === "string" && x.trim();
+    });
+    if (partTodays.length > 0) {
+      const all = await listEntries("measurement-tracker");
+      const candidates = all
+        .map((e) => ({ e, start: (e.values.start_date as string | undefined) ?? "" }))
+        .filter((x) => x.start && new Date(x.start).getTime() <= new Date(date.iso).getTime())
+        .sort((a, b) => b.start.localeCompare(a.start));
+      const mt = candidates[0]?.e ?? await createEntry("measurement-tracker", { start_date: date.iso });
+      const startIso = (mt.values.start_date as string | undefined) ?? date.iso;
+      const wk = weekIndexFromStart(startIso, date);
+      if (wk != null) {
+        await persist(mt, (dst) => {
+          if (!dst.start_date) dst.start_date = startIso;
+          for (const p of partTodays) {
+            const col = BODY_PART_COLUMNS[p];
+            const val = String(v[`m_${p}_today`] ?? "");
+            mergeMeasurementCell(dst, "measurements", wk, col, val);
+          }
+        });
+        synced.push(`Measurement Tracker (wk ${wk})`);
+      }
+    }
+
   } catch (err) {
     console.error("[syncLinkedEntries] failed:", err);
   }
@@ -586,12 +805,14 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
       return synced;
     }
 
-    // Weekly Calendar → push weekday note into Complete entries in that week.
+    // Weekly Calendar → push weekday note + weekly goals/reflection into Complete entries in that week.
     if (entry.pageType === "weekly-calendar") {
       const weekOf = parseDate(v.week_of);
       if (!weekOf) return [];
       const start = mondayOf(weekOf.year, weekOf.monthIndex, weekOf.day);
       const days = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"];
+      const wGoals = (v.weekly_goals as string | undefined) ?? "";
+      const wReflect = (v.reflection as string | undefined) ?? "";
       let touched = 0;
       for (let i = 0; i < 7; i++) {
         const d = new Date(start);
@@ -601,9 +822,13 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
         touched += await updateCompleteForDate(iso, (dst) => {
           if (note.trim()) dst.week_note_today = note;
           else delete dst.week_note_today;
+          if (wGoals.trim()) dst.weekly_goals = wGoals;
+          else delete dst.weekly_goals;
+          if (wReflect.trim()) dst.weekly_reflection = wReflect;
+          else delete dst.weekly_reflection;
         });
       }
-      if (touched > 0) synced.push("Complete Tracker (week notes)");
+      if (touched > 0) synced.push("Complete Tracker (week)");
       return synced;
     }
 
@@ -666,6 +891,176 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
         });
       }
       if (touched > 0) synced.push("Complete Tracker (yearly habits)");
+      return synced;
+    }
+
+    // Wellness Tracker → numeric ratings on Complete Tracker for each marked day.
+    if (entry.pageType === "wellness-tracker") {
+      const year = Number(v.year ?? "");
+      if (!year) return [];
+      const fields = ["water", "caffeine", "sweets", "sleep", "smoking", "mood"];
+      const cellSet = new Set<string>();
+      for (const f of fields) {
+        const grid = (v[f] as { cells?: Record<string, string> } | undefined)?.cells ?? {};
+        for (const k of Object.keys(grid)) cellSet.add(k);
+      }
+      let touched = 0;
+      for (const cellKey of cellSet) {
+        const m = /^(\d+)-(\d+)$/.exec(cellKey);
+        if (!m) continue;
+        const day = Number(m[1]);
+        const monthIndex = Number(m[2]);
+        const iso = isoOf(year, monthIndex, day);
+        touched += await updateCompleteForDate(iso, (dst) => {
+          for (const f of fields) {
+            const grid = (v[f] as { cells?: Record<string, string> } | undefined)?.cells ?? {};
+            const cellVal = grid[cellKey];
+            if (cellVal && String(cellVal).trim()) {
+              const n = Number(cellVal);
+              dst[f] = Number.isNaN(n) ? cellVal : n;
+            } else {
+              delete dst[f];
+            }
+          }
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (wellness)");
+      return synced;
+    }
+
+    // Workout Tracker → category text on Complete Tracker for each marked day.
+    if (entry.pageType === "workout-tracker") {
+      const year = Number(v.year ?? "");
+      if (!year) return [];
+      const fields = ["cardio", "weights", "yoga", "stretch", "rest_day", "other"];
+      const cellSet = new Set<string>();
+      for (const f of fields) {
+        const grid = (v[f] as { cells?: Record<string, string> } | undefined)?.cells ?? {};
+        for (const k of Object.keys(grid)) cellSet.add(k);
+      }
+      let touched = 0;
+      for (const cellKey of cellSet) {
+        const m = /^(\d+)-(\d+)$/.exec(cellKey);
+        if (!m) continue;
+        const day = Number(m[1]);
+        const monthIndex = Number(m[2]);
+        const iso = isoOf(year, monthIndex, day);
+        touched += await updateCompleteForDate(iso, (dst) => {
+          for (const f of fields) {
+            const grid = (v[f] as { cells?: Record<string, string> } | undefined)?.cells ?? {};
+            const cellVal = grid[cellKey];
+            if (cellVal && String(cellVal).trim()) {
+              if (f === "rest_day") dst[f] = cellVal === "✓" || cellVal === "true" || cellVal === "1";
+              else dst[f] = cellVal;
+            } else {
+              delete dst[f];
+            }
+          }
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (workout)");
+      return synced;
+    }
+
+    // Daily Goal Tracker → daily_goal text + daily_habit success/fail.
+    if (entry.pageType === "daily-goal-tracker") {
+      const year = Number(v.year ?? "");
+      if (!year) return [];
+      const goalGrid = (v.daily_goal as { cells?: Record<string, string> } | undefined)?.cells ?? {};
+      const habitGrid = (v.daily_habit as { cells?: Record<string, string> } | undefined)?.cells ?? {};
+      const cellSet = new Set<string>([...Object.keys(goalGrid), ...Object.keys(habitGrid)]);
+      let touched = 0;
+      for (const cellKey of cellSet) {
+        const m = /^(\d+)-(\d+)$/.exec(cellKey);
+        if (!m) continue;
+        const day = Number(m[1]);
+        const monthIndex = Number(m[2]);
+        const iso = isoOf(year, monthIndex, day);
+        touched += await updateCompleteForDate(iso, (dst) => {
+          const g = goalGrid[cellKey];
+          if (g && g.trim()) dst.daily_goal = g; else delete dst.daily_goal;
+          const h = habitGrid[cellKey];
+          if (h === "✓") dst.daily_habit = "success";
+          else if (h === "✗") dst.daily_habit = "failed";
+          else delete dst.daily_habit;
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (daily goal)");
+      return synced;
+    }
+
+    // Medical Records → mirror three textareas into Complete Tracker for that date.
+    if (entry.pageType === "medical-records") {
+      const date = parseDate(v.date);
+      if (!date) return [];
+      const touched = await updateCompleteForDate(date.iso, (dst) => {
+        copyKeys(v, dst, ["medical_appointment_notes", "test_results", "lab_result_notes"]);
+      });
+      if (touched > 0) synced.push("Complete Tracker (medical)");
+      return synced;
+    }
+
+    // Weight Tracker → for each filled row, push Date+Weight+Notes back to that day's Complete Tracker.
+    if (entry.pageType === "weight-tracker") {
+      const grid = (v.weight_log as Record<string, string> | undefined) ?? {};
+      // Group by row.
+      const byRow = new Map<number, Record<string, string>>();
+      for (const [k, val] of Object.entries(grid)) {
+        const m = /^(\d+)-(.+)$/.exec(k);
+        if (!m) continue;
+        const row = Number(m[1]);
+        if (!byRow.has(row)) byRow.set(row, {});
+        byRow.get(row)![m[2]] = val;
+      }
+      let touched = 0;
+      for (const [, row] of byRow) {
+        const iso = (row.Date ?? "").slice(0, 10);
+        const weight = row.Weight ?? "";
+        if (!iso || !weight.trim()) continue;
+        touched += await updateCompleteForDate(iso, (dst) => {
+          dst.weight_today = weight;
+          if (row.Notes && row.Notes.trim()) dst.weight_today_notes = row.Notes;
+          else delete dst.weight_today_notes;
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (weight)");
+      return synced;
+    }
+
+    // Measurement Tracker → push per-part values back to that day's Complete Tracker
+    // (only when the matching weight-tracker has a Date for that row, since this grid has no Date col).
+    if (entry.pageType === "measurement-tracker") {
+      const startIso = (v.start_date as string | undefined) ?? "";
+      if (!startIso) return [];
+      const start = new Date(startIso);
+      if (Number.isNaN(start.getTime())) return [];
+      const grid = (v.measurements as Record<string, string> | undefined) ?? {};
+      const byRow = new Map<number, Record<string, string>>();
+      for (const [k, val] of Object.entries(grid)) {
+        const m = /^(\d+)-(.+)$/.exec(k);
+        if (!m) continue;
+        const row = Number(m[1]);
+        if (!byRow.has(row)) byRow.set(row, {});
+        byRow.get(row)![m[2]] = val;
+      }
+      const colToPart: Record<string, string> = Object.fromEntries(
+        Object.entries(BODY_PART_COLUMNS).map(([p, c]) => [c, p]),
+      );
+      let touched = 0;
+      for (const [row, cols] of byRow) {
+        const d = new Date(start);
+        d.setDate(d.getDate() + (row - 1) * 7);
+        const iso = isoOf(d.getFullYear(), d.getMonth(), d.getDate());
+        touched += await updateCompleteForDate(iso, (dst) => {
+          for (const [col, val] of Object.entries(cols)) {
+            const part = colToPart[col];
+            if (!part) continue;
+            if (val && val.trim()) dst[`m_${part}_today`] = val;
+            else delete dst[`m_${part}_today`];
+          }
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (measurements)");
       return synced;
     }
 
