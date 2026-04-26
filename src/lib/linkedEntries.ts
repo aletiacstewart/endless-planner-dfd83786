@@ -230,20 +230,17 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
 
     // 7. Cleaning Check List — daily-month-grid `cleaning`, year-scoped.
     const cleaningToday = (v.cleaning_today as string | undefined) ?? "";
-    if (cleaningToday !== "" || (await listEntries("cleaning-checklist")).some((e) => String(e.values.year ?? "") === yearStr)) {
-      // Only act when there's a value or an existing entry to clear from.
-      if (cleaningToday.trim() || true) {
-        const entry = await findOrCreate(
-          "cleaning-checklist",
-          (e) => String(e.values.year ?? "") === yearStr,
-          { year: yearStr },
-        );
-        await persist(entry, (dst) => {
-          if (!dst.year) dst.year = yearStr;
-          mergeDailyMonthCell(dst, "cleaning", date.day, date.monthIndex, cleaningToday);
-        });
-        if (cleaningToday.trim()) synced.push(`Cleaning (${yearStr})`);
-      }
+    if (cleaningToday.trim()) {
+      const entry = await findOrCreate(
+        "cleaning-checklist",
+        (e) => String(e.values.year ?? "") === yearStr,
+        { year: yearStr },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.year) dst.year = yearStr;
+        mergeDailyMonthCell(dst, "cleaning", date.day, date.monthIndex, cleaningToday);
+      });
+      synced.push(`Cleaning (${yearStr})`);
     }
 
     // 8. Yearly Calendar — month_<name> textarea per year.
