@@ -771,11 +771,13 @@ function CalendarGrid({
   value,
   month,
   year,
+  compact,
   onChange,
 }: {
   value: Record<string, string> | null;
   month?: string;
   year?: string;
+  compact?: boolean;
   onChange: (v: FieldValue) => void;
 }) {
   const data = value ?? {};
