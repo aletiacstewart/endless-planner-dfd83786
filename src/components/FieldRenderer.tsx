@@ -21,9 +21,10 @@ interface Props {
   allValues?: Record<string, FieldValue>;
   onChange: (v: FieldValue) => void;
   onChangeAny?: (key: string, v: FieldValue) => void;
+  showPairHeaders?: boolean;
 }
 
-export function FieldRenderer({ field, value, allValues, onChange, onChangeAny }: Props) {
+export function FieldRenderer({ field, value, allValues, onChange, onChangeAny, showPairHeaders }: Props) {
   const isMobile = useIsMobile();
   const label = (
     <label className="field-label block mb-1.5" htmlFor={field.key}>
