@@ -54,7 +54,9 @@ export interface FieldDef {
   modeKey?: string;
   /** For text/number: render a narrow input sized for ~3 characters. */
   compact?: boolean;
-}
+  /** For paired-compact: keys + sub-labels for the two inputs. */
+  pairKeys?: [string, string];
+  pairLabels?: [string, string];
 
 
 export interface SectionDef {
