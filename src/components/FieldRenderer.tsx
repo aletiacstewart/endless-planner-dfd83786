@@ -229,28 +229,42 @@ export function FieldRenderer({ field, value, allValues, onChange, onChangeAny }
         { v: "success", label: "Success" },
         { v: "failed", label: "Failed" },
       ];
+      const inputKey = field.inputKey;
+      const inputVal = inputKey ? ((allValues?.[inputKey] as string) ?? "") : "";
       return (
         <div>
-          {label}
-          <div className="flex gap-2 flex-wrap">
-            {opts.map(({ v, label: l }) => {
-              const active = current === v;
-              return (
-                <button
-                  key={v}
-                  type="button"
-                  onClick={() => onChange(active ? "" : v)}
-                  className={cn(
-                    "px-4 h-9 rounded-full border text-sm font-medium transition-colors",
-                    active
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-background/60 border-input text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {l}
-                </button>
-              );
-            })}
+          {!inputKey && label}
+          <div className="flex items-center gap-2 flex-wrap">
+            {inputKey && onChangeAny && (
+              <Input
+                type="text"
+                value={inputVal}
+                onChange={(e) => onChangeAny(inputKey, e.target.value)}
+                placeholder={field.inputPlaceholder ?? ""}
+                aria-label={field.label}
+                className="bg-background/60 h-9 flex-1 min-w-[140px]"
+              />
+            )}
+            <div className="flex gap-2 flex-wrap">
+              {opts.map(({ v, label: l }) => {
+                const active = current === v;
+                return (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => onChange(active ? "" : v)}
+                    className={cn(
+                      "px-4 h-9 rounded-full border text-sm font-medium transition-colors",
+                      active
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background/60 border-input text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {l}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       );
