@@ -523,6 +523,89 @@ function MobileEditButton({
   );
 }
 
+/* -------------------------------------------------------------------------- */
+/*  PairedCompactMobile — single button, opens dialog with two inputs.        */
+/* -------------------------------------------------------------------------- */
+
+function PairedCompactMobile({
+  label,
+  keys,
+  subLabels,
+  values,
+  onSave,
+}: {
+  label: string;
+  keys: [string, string];
+  subLabels: [string, string];
+  values: [string, string];
+  onSave: (a: string, b: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [d1, setD1] = useState(values[0]);
+  const [d2, setD2] = useState(values[1]);
+  const filled1 = (values[0] ?? "").trim().length > 0;
+  const filled2 = (values[1] ?? "").trim().length > 0;
+  const filled = filled1 || filled2;
+  const summary = `${values[0] || "—"} / ${values[1] || "—"}`;
+  const handleOpen = () => {
+    setD1(values[0] ?? "");
+    setD2(values[1] ?? "");
+    setOpen(true);
+  };
+  return (
+    <div className="flex items-center justify-between gap-2">
+      <span className="field-label whitespace-nowrap">{label}</span>
+      <button
+        type="button"
+        onClick={handleOpen}
+        aria-label={`${label} ${subLabels[0]} / ${subLabels[1]}`}
+        className={cn(
+          "h-9 min-w-[6rem] rounded-md border px-3 text-sm transition-colors",
+          filled
+            ? "bg-primary-soft/40 border-primary/40 text-foreground"
+            : "bg-background/60 border-input text-muted-foreground/70 hover:border-primary/60"
+        )}
+      >
+        {summary}
+      </button>
+      <Dialog open={open} onOpenChange={(o) => !o && setOpen(false)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{label}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <label className="field-label block mb-1.5" htmlFor={`${keys[0]}-edit`}>{subLabels[0]}</label>
+              <Input
+                id={`${keys[0]}-edit`}
+                value={d1}
+                onChange={(e) => setD1(e.target.value)}
+                inputMode="numeric"
+                className="bg-background/60 h-11 text-base"
+                autoFocus
+              />
+            </div>
+            <div>
+              <label className="field-label block mb-1.5" htmlFor={`${keys[1]}-edit`}>{subLabels[1]}</label>
+              <Input
+                id={`${keys[1]}-edit`}
+                value={d2}
+                onChange={(e) => setD2(e.target.value)}
+                inputMode="numeric"
+                className="bg-background/60 h-11 text-base"
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button onClick={() => { onSave(d1, d2); setOpen(false); }}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
 function IngredientsList({
   value,
   onChange,
