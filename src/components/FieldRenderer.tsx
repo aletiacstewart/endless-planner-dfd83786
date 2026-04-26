@@ -816,8 +816,14 @@ function CalendarGrid({
     setOpenDay(null);
   };
 
-  return (
-    <div className={cn(compact && "max-w-xs mx-auto")}>
+  // Auto-save the draft as the user types so the inline panel feels seamless.
+  const updateDraft = (v: string) => {
+    setDraft(v);
+    if (openDay !== null) update(openDay, v);
+  };
+
+  const calendar = (
+    <div className={cn("min-w-0", compact && "max-w-xs")}>
       <label className="field-label block mb-2">
         {compact ? `${monthName} ${yearNum} — tap a day` : "Days of the month — tap to add a note"}
       </label>
@@ -841,16 +847,20 @@ function CalendarGrid({
         {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => {
           const note = data[d] ?? "";
           const filled = note.trim().length > 0;
+          const isOpen = openDay === d;
           return (
             <button
               type="button"
               key={d}
               onClick={() => openCell(d)}
               aria-label={`${monthName} ${d}${filled ? " — has note" : ""}`}
+              aria-pressed={isOpen}
               className={cn(
                 "aspect-square rounded-md border flex flex-col items-stretch text-left transition-colors hover:border-primary/60 focus:outline-none focus:ring-2 focus:ring-ring",
                 compact ? "p-0.5 items-center justify-center" : "p-1",
-                filled
+                isOpen
+                  ? "bg-primary/15 border-primary ring-2 ring-primary/40"
+                  : filled
                   ? "bg-primary-soft/40 border-primary/40"
                   : "bg-background/60 border-border"
               )}
@@ -875,30 +885,83 @@ function CalendarGrid({
           );
         })}
       </div>
+    </div>
+  );
 
-      <Dialog open={openDay !== null} onOpenChange={(o) => !o && setOpenDay(null)}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle>
-              {openDay !== null ? `${monthName} ${openDay}, ${yearNum}` : ""}
-            </DialogTitle>
-          </DialogHeader>
+  // Inline editor panel shown next to the calendar on >= md screens.
+  const inlinePanel = (
+    <div className="min-w-0 hidden md:flex md:flex-col rounded-lg border border-border bg-background/60 p-3">
+      {openDay !== null ? (
+        <>
+          <div className="flex items-center justify-between mb-2">
+            <div className="font-display text-base">
+              {monthName} {openDay}, {yearNum}
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setOpenDay(null)}
+              aria-label="Close note"
+            >
+              Close
+            </Button>
+          </div>
           <Textarea
             value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            rows={6}
+            onChange={(e) => updateDraft(e.target.value)}
+            rows={8}
             placeholder="Add a note for this day…"
-            className="bg-background/60 resize-none"
+            className="bg-background/60 resize-none flex-1"
             autoFocus
           />
-          <DialogFooter className="gap-2 sm:gap-2">
-            <Button variant="ghost" onClick={() => setOpenDay(null)}>
-              Cancel
-            </Button>
-            <Button onClick={saveCell}>Save</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </>
+      ) : (
+        <div className="flex-1 flex items-center justify-center text-center text-sm text-muted-foreground p-4">
+          Tap a day to add or view a note.
+        </div>
+      )}
+    </div>
+  );
+
+  // Mobile dialog so small screens still get a full-size editor.
+  const mobileDialog = (
+    <Dialog
+      open={openDay !== null}
+      onOpenChange={(o) => {
+        if (!o) setOpenDay(null);
+      }}
+    >
+      <DialogContent className="max-w-sm md:hidden">
+        <DialogHeader>
+          <DialogTitle>
+            {openDay !== null ? `${monthName} ${openDay}, ${yearNum}` : ""}
+          </DialogTitle>
+        </DialogHeader>
+        <Textarea
+          value={draft}
+          onChange={(e) => updateDraft(e.target.value)}
+          rows={6}
+          placeholder="Add a note for this day…"
+          className="bg-background/60 resize-none"
+          autoFocus
+        />
+        <DialogFooter className="gap-2 sm:gap-2">
+          <Button variant="ghost" onClick={() => setOpenDay(null)}>
+            Close
+          </Button>
+          <Button onClick={saveCell}>Done</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+
+  return (
+    <div>
+      <div className="grid gap-4 md:grid-cols-[auto_1fr] md:items-start">
+        {calendar}
+        {inlinePanel}
+      </div>
+      {mobileDialog}
     </div>
   );
 }
