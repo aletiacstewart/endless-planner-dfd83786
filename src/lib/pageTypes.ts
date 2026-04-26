@@ -296,7 +296,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "Wellness & Self-Care",
+        title: "Wellness, Self-Care & Workout",
         groups: [
           {
             title: "Wellness",
@@ -312,9 +312,20 @@ export const PAGE_TYPES: PageTypeDef[] = [
           {
             title: "Self-Care",
             fields: [
-              { key: "self_physical", label: "Physical Self-Care", type: "textarea", rows: 5 },
-              { key: "self_emotional", label: "Emotional Self-Care", type: "textarea", rows: 5 },
-              { key: "self_spiritual", label: "Spiritual Self-Care", type: "textarea", rows: 5 },
+              { key: "self_physical", label: "Physical Self-Care", type: "textarea", rows: 3 },
+              { key: "self_emotional", label: "Emotional Self-Care", type: "textarea", rows: 3 },
+              { key: "self_spiritual", label: "Spiritual Self-Care", type: "textarea", rows: 3 },
+            ],
+          },
+          {
+            title: "Workout",
+            fields: [
+              { key: "cardio", label: "Cardio", type: "text" },
+              { key: "weights", label: "Weights", type: "text" },
+              { key: "yoga", label: "Yoga", type: "text" },
+              { key: "stretch", label: "Stretch", type: "text" },
+              { key: "rest_day", label: "Rest day", type: "checkbox" },
+              { key: "other", label: "Other", type: "text" },
             ],
           },
         ],
@@ -323,18 +334,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         fields: [
           { key: "daily_notes", label: "Daily Notes", type: "textarea", rows: 5, span: 2 },
-        ],
-      },
-      {
-        title: "Workout",
-        columns: 2,
-        fields: [
-          { key: "cardio", label: "Cardio", type: "text" },
-          { key: "weights", label: "Weights", type: "text" },
-          { key: "yoga", label: "Yoga", type: "text" },
-          { key: "stretch", label: "Stretch", type: "text" },
-          { key: "rest_day", label: "Rest day", type: "checkbox" },
-          { key: "other", label: "Other", type: "text", span: 2 },
         ],
       },
       {
