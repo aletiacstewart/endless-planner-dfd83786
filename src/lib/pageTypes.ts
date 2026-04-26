@@ -60,6 +60,8 @@ export interface SectionDef {
   /** Optional column headings displayed above each column of the grid (length should match `columns`). */
   columnTitles?: string[];
   fields: FieldDef[];
+  /** Optional side-by-side groups rendered inside the same card. When provided, each group becomes its own column with its own title and stacked fields. */
+  groups?: { title?: string; fields: FieldDef[] }[];
 }
 
 export interface PageTypeDef {
