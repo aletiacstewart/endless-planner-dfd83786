@@ -19,6 +19,19 @@ export function PageRenderer({ pageType, values, onChange }: Props) {
           {section.description && (
             <p className="text-sm text-muted-foreground mb-3">{section.description}</p>
           )}
+          {section.columnTitles && section.columnTitles.length > 0 && (
+            <div
+              className={cn(
+                "grid gap-4 mt-3",
+                section.columns === 2 && "sm:grid-cols-2",
+                section.columns === 3 && "sm:grid-cols-2 md:grid-cols-3"
+              )}
+            >
+              {section.columnTitles.map((t, i) => (
+                <h3 key={i} className="font-display text-lg">{t}</h3>
+              ))}
+            </div>
+          )}
           <div
             className={cn(
               "grid gap-4 mt-3",
