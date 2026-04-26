@@ -349,20 +349,23 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Measurements",
         description: "Record a Start and Finish value for each measurement.",
         columns: 2,
+        fields: ([
+          ["body_fat", "Body Fat %"],
+          ["neck", "Neck"],
+          ["chest", "Chest"],
+          ["bicep", "Bicep"],
+          ["waist", "Waist"],
+          ["hips", "Hips"],
+          ["thigh", "Thigh"],
+          ["calf", "Calf"],
+        ] as const).flatMap(([k, label]) => [
+          { key: `m_${k}_start`, label: `${label} — Start`, type: "text" as const, compact: true },
+          { key: `m_${k}_finish`, label: `${label} — Finish`, type: "text" as const, compact: true },
+        ]),
+      },
+      {
+        columns: 3,
         fields: [
-          ...([
-            ["body_fat", "Body Fat %"],
-            ["neck", "Neck"],
-            ["chest", "Chest"],
-            ["bicep", "Bicep"],
-            ["waist", "Waist"],
-            ["hips", "Hips"],
-            ["thigh", "Thigh"],
-            ["calf", "Calf"],
-          ] as const).flatMap(([k, label]) => [
-            { key: `m_${k}_start`, label: `${label} — Start`, type: "text" as const, compact: true },
-            { key: `m_${k}_finish`, label: `${label} — Finish`, type: "text" as const, compact: true },
-          ]),
           { key: "weight_start", label: "Starting Weight", type: "text", compact: true },
           { key: "weight_goal", label: "Goal Weight", type: "text", compact: true },
           { key: "weight_result", label: "Result Weight", type: "text", compact: true },
