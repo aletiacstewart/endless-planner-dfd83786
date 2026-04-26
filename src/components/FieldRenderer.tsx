@@ -925,14 +925,15 @@ function CalendarGrid({
   );
 
   // Mobile dialog so small screens still get a full-size editor.
-  const mobileDialog = (
+  // IMPORTANT: only mount the Dialog on mobile so the backdrop doesn't dim desktop.
+  const mobileDialog = isMobile ? (
     <Dialog
       open={openDay !== null}
       onOpenChange={(o) => {
         if (!o) setOpenDay(null);
       }}
     >
-      <DialogContent className="max-w-sm md:hidden">
+      <DialogContent className="max-w-sm">
         <DialogHeader>
           <DialogTitle>
             {openDay !== null ? `${monthName} ${openDay}, ${yearNum}` : ""}
@@ -954,7 +955,7 @@ function CalendarGrid({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  ) : null;
 
   return (
     <div>
