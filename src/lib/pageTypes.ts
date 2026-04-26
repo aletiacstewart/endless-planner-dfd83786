@@ -293,24 +293,29 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "Wellness",
-        columns: 2,
-        fields: [
-          { key: "water", label: "Water (glasses)", type: "rating", max: 8, otherKey: "water_other", span: 2 },
-          { key: "caffeine", label: "Caffeine / Other (cups)", type: "rating", max: 6, otherKey: "caffeine_other", span: 2 },
-          { key: "sweets", label: "Sweets", type: "rating", max: 4, otherKey: "sweets_other", span: 2 },
-          { key: "sleep", label: "Sleep (hours)", type: "rating", max: 12, otherKey: "sleep_other", span: 2 },
-          { key: "smoking", label: "Smoking / Vaping", type: "rating", max: 12, otherKey: "smoking_other", span: 2 },
-          { key: "mood", label: "Mood", type: "mood-rating", max: 5, span: 2 },
+        title: "Wellness & Self-Care",
+        groups: [
+          {
+            title: "Wellness",
+            fields: [
+              { key: "water", label: "Water (glasses)", type: "rating", max: 8, otherKey: "water_other" },
+              { key: "caffeine", label: "Caffeine / Other (cups)", type: "rating", max: 6, otherKey: "caffeine_other" },
+              { key: "sweets", label: "Sweets", type: "rating", max: 4, otherKey: "sweets_other" },
+              { key: "sleep", label: "Sleep (hours)", type: "rating", max: 12, otherKey: "sleep_other" },
+              { key: "smoking", label: "Smoking / Vaping", type: "rating", max: 12, otherKey: "smoking_other" },
+              { key: "mood", label: "Mood", type: "mood-rating", max: 5 },
+            ],
+          },
+          {
+            title: "Self-Care",
+            fields: [
+              { key: "self_physical", label: "Physical Self-Care", type: "textarea", rows: 5 },
+              { key: "self_emotional", label: "Emotional Self-Care", type: "textarea", rows: 5 },
+              { key: "self_spiritual", label: "Spiritual Self-Care", type: "textarea", rows: 5 },
+            ],
+          },
         ],
-      },
-      {
-        title: "Self-Care",
-        fields: [
-          { key: "self_physical", label: "Physical Self-Care", type: "textarea", rows: 2, span: 2 },
-          { key: "self_emotional", label: "Emotional Self-Care", type: "textarea", rows: 2, span: 2 },
-          { key: "self_spiritual", label: "Spiritual Self-Care", type: "textarea", rows: 2, span: 2 },
-        ],
+        fields: [],
       },
       {
         fields: [
