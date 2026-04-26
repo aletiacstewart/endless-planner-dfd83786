@@ -377,6 +377,16 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
+        title: "Medical Records",
+        description: "Track appointment notes, test results, and lab notes.",
+        columns: 3,
+        fields: [
+          { key: "medical_appointment_notes", label: "Medical Appointment Notes", type: "textarea", rows: 5 },
+          { key: "test_results", label: "Test Results", type: "textarea", rows: 5 },
+          { key: "lab_result_notes", label: "Lab Result Notes", type: "textarea", rows: 5 },
+        ],
+      },
+      {
         title: "Fun & Habit Tracker",
         description: "Write in your own items, then mark Success or Failed for the day. For habits, choose Begin or Break.",
         columns: 2,
