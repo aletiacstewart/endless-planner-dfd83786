@@ -24,6 +24,7 @@ interface Props {
 }
 
 export function FieldRenderer({ field, value, allValues, onChange, onChangeAny }: Props) {
+  const isMobile = useIsMobile();
   const label = (
     <label className="field-label block mb-1.5" htmlFor={field.key}>
       {field.label}
@@ -33,6 +34,22 @@ export function FieldRenderer({ field, value, allValues, onChange, onChangeAny }
   switch (field.type) {
     case "text":
     case "year":
+      if (field.compact && isMobile) {
+        return (
+          <div>
+            {label}
+            <MobileEditButton
+              value={(value as string) ?? ""}
+              onSave={(v) => onChange(v)}
+              title={field.label}
+              placeholder={field.placeholder ?? "—"}
+              inputMode="numeric"
+              className="w-24 text-center"
+              ariaLabel={field.label}
+            />
+          </div>
+        );
+      }
       return (
         <div>
           {label}
@@ -372,6 +389,20 @@ export function FieldRenderer({ field, value, allValues, onChange, onChangeAny }
       const [l1, l2] = field.pairLabels ?? ["Start", "Finish"];
       const v1 = (allValues?.[k1] as string) ?? "";
       const v2 = (allValues?.[k2] as string) ?? "";
+      if (isMobile) {
+        return (
+          <PairedCompactMobile
+            label={field.label}
+            keys={[k1, k2]}
+            subLabels={[l1, l2]}
+            values={[v1, v2]}
+            onSave={(a, b) => {
+              onChangeAny?.(k1, a);
+              onChangeAny?.(k2, b);
+            }}
+          />
+        );
+      }
       return (
         <div className="flex items-center justify-between gap-2">
           <span className="field-label whitespace-nowrap">{field.label}</span>
@@ -404,6 +435,175 @@ export function FieldRenderer({ field, value, allValues, onChange, onChangeAny }
     default:
       return null;
   }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  MobileEditButton — tap-to-edit cell that opens a focused dialog.          */
+/* -------------------------------------------------------------------------- */
+
+function MobileEditButton({
+  value,
+  onSave,
+  title,
+  placeholder,
+  className,
+  inputMode,
+  inputType,
+  rows,
+  ariaLabel,
+}: {
+  value: string;
+  onSave: (v: string) => void;
+  title: string;
+  placeholder?: string;
+  className?: string;
+  inputMode?: "text" | "numeric" | "decimal" | "tel";
+  inputType?: "input" | "textarea";
+  rows?: number;
+  ariaLabel?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState(value);
+  const filled = (value ?? "").trim().length > 0;
+  const handleOpen = () => {
+    setDraft(value ?? "");
+    setOpen(true);
+  };
+  const handleSave = () => {
+    onSave(draft);
+    setOpen(false);
+  };
+  return (
+    <>
+      <button
+        type="button"
+        onClick={handleOpen}
+        aria-label={ariaLabel ?? title}
+        className={cn(
+          "h-9 w-full rounded-md border px-2 text-sm text-left truncate transition-colors",
+          filled
+            ? "bg-primary-soft/40 border-primary/40 text-foreground"
+            : "bg-background/60 border-input text-muted-foreground/70 hover:border-primary/60",
+          className
+        )}
+      >
+        {filled ? value : (placeholder ?? "Tap to edit")}
+      </button>
+      <Dialog open={open} onOpenChange={(o) => !o && setOpen(false)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+          </DialogHeader>
+          {inputType === "textarea" ? (
+            <Textarea
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              rows={rows ?? 4}
+              placeholder={placeholder}
+              className="bg-background/60 resize-none"
+              autoFocus
+            />
+          ) : (
+            <Input
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              placeholder={placeholder}
+              inputMode={inputMode}
+              className="bg-background/60 h-11 text-base"
+              autoFocus
+            />
+          )}
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button onClick={handleSave}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  PairedCompactMobile — single button, opens dialog with two inputs.        */
+/* -------------------------------------------------------------------------- */
+
+function PairedCompactMobile({
+  label,
+  keys,
+  subLabels,
+  values,
+  onSave,
+}: {
+  label: string;
+  keys: [string, string];
+  subLabels: [string, string];
+  values: [string, string];
+  onSave: (a: string, b: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [d1, setD1] = useState(values[0]);
+  const [d2, setD2] = useState(values[1]);
+  const filled1 = (values[0] ?? "").trim().length > 0;
+  const filled2 = (values[1] ?? "").trim().length > 0;
+  const filled = filled1 || filled2;
+  const summary = `${values[0] || "—"} / ${values[1] || "—"}`;
+  const handleOpen = () => {
+    setD1(values[0] ?? "");
+    setD2(values[1] ?? "");
+    setOpen(true);
+  };
+  return (
+    <div className="flex items-center justify-between gap-2">
+      <span className="field-label whitespace-nowrap">{label}</span>
+      <button
+        type="button"
+        onClick={handleOpen}
+        aria-label={`${label} ${subLabels[0]} / ${subLabels[1]}`}
+        className={cn(
+          "h-9 min-w-[6rem] rounded-md border px-3 text-sm transition-colors",
+          filled
+            ? "bg-primary-soft/40 border-primary/40 text-foreground"
+            : "bg-background/60 border-input text-muted-foreground/70 hover:border-primary/60"
+        )}
+      >
+        {summary}
+      </button>
+      <Dialog open={open} onOpenChange={(o) => !o && setOpen(false)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{label}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <label className="field-label block mb-1.5" htmlFor={`${keys[0]}-edit`}>{subLabels[0]}</label>
+              <Input
+                id={`${keys[0]}-edit`}
+                value={d1}
+                onChange={(e) => setD1(e.target.value)}
+                inputMode="numeric"
+                className="bg-background/60 h-11 text-base"
+                autoFocus
+              />
+            </div>
+            <div>
+              <label className="field-label block mb-1.5" htmlFor={`${keys[1]}-edit`}>{subLabels[1]}</label>
+              <Input
+                id={`${keys[1]}-edit`}
+                value={d2}
+                onChange={(e) => setD2(e.target.value)}
+                inputMode="numeric"
+                className="bg-background/60 h-11 text-base"
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button onClick={() => { onSave(d1, d2); setOpen(false); }}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
 }
 
 function IngredientsList({
@@ -464,6 +664,7 @@ function MedList({
   rowCount: number;
   onChange: (v: FieldValue) => void;
 }) {
+  const isMobile = useIsMobile();
   const data = value ?? {};
   const update = (key: string, v: string) => onChange({ ...data, [key]: v });
   const cols = "grid-cols-[1.5rem_2fr_2fr_1.5fr_5.25rem]";
@@ -472,6 +673,30 @@ function MedList({
     { k: "a", label: "A" },
     { k: "n", label: "N" },
   ];
+  const renderTextCell = (n: number, key: "name" | "reason" | "doctor", title: string) => {
+    const k = `${n}_${key}`;
+    const v = data[k] ?? "";
+    if (isMobile) {
+      return (
+        <MobileEditButton
+          value={v}
+          onSave={(nv) => update(k, nv)}
+          title={`Med ${n} · ${title}`}
+          placeholder="—"
+          className="h-8 text-xs"
+          ariaLabel={`Med ${n} ${title}`}
+        />
+      );
+    }
+    return (
+      <Input
+        value={v}
+        onChange={(e) => update(k, e.target.value)}
+        className="bg-background/60 h-8 px-2 text-sm"
+        aria-label={`Med ${n} ${title}`}
+      />
+    );
+  };
   return (
     <div>
       <div className={cn("grid gap-x-2 gap-y-1 items-end mb-1", cols)}>
@@ -491,24 +716,9 @@ function MedList({
         {Array.from({ length: rowCount }, (_, i) => i + 1).map((n) => (
           <div key={n} className={cn("grid gap-x-2 items-center", cols)}>
             <span className="text-xs text-muted-foreground text-right pr-1">{n}.</span>
-            <Input
-              value={data[`${n}_name`] ?? ""}
-              onChange={(e) => update(`${n}_name`, e.target.value)}
-              className="bg-background/60 h-8 px-2 text-sm"
-              aria-label={`Med ${n} name`}
-            />
-            <Input
-              value={data[`${n}_reason`] ?? ""}
-              onChange={(e) => update(`${n}_reason`, e.target.value)}
-              className="bg-background/60 h-8 px-2 text-sm"
-              aria-label={`Med ${n} reason`}
-            />
-            <Input
-              value={data[`${n}_doctor`] ?? ""}
-              onChange={(e) => update(`${n}_doctor`, e.target.value)}
-              className="bg-background/60 h-8 px-2 text-sm"
-              aria-label={`Med ${n} doctor`}
-            />
+            {renderTextCell(n, "name", "Name")}
+            {renderTextCell(n, "reason", "Reason")}
+            {renderTextCell(n, "doctor", "Doctor")}
             <div className="grid grid-cols-3 gap-1 justify-items-center">
               {slots.map((s) => {
                 const key = `${n}_${s.k}`;
@@ -903,6 +1113,7 @@ function MeasurementGrid({
   label: string;
   onChange: (v: FieldValue) => void;
 }) {
+  const isMobile = useIsMobile();
   const data = value ?? {};
   const set = (row: number, col: string, v: string) =>
     onChange({ ...data, [`${row}-${col}`]: v });
@@ -932,11 +1143,22 @@ function MeasurementGrid({
                 </td>
                 {columns.map((c) => (
                   <td key={c}>
-                    <Input
-                      value={data[`${row}-${c}`] ?? ""}
-                      onChange={(e) => set(row, c, e.target.value)}
-                      className="h-7 text-xs min-w-[5rem] bg-background/60"
-                    />
+                    {isMobile ? (
+                      <MobileEditButton
+                        value={data[`${row}-${c}`] ?? ""}
+                        onSave={(nv) => set(row, c, nv)}
+                        title={`${rowLabel} ${row} · ${c}`}
+                        placeholder="—"
+                        className="h-7 text-xs min-w-[4rem]"
+                        ariaLabel={`${rowLabel} ${row} ${c}`}
+                      />
+                    ) : (
+                      <Input
+                        value={data[`${row}-${c}`] ?? ""}
+                        onChange={(e) => set(row, c, e.target.value)}
+                        className="h-7 text-xs min-w-[5rem] bg-background/60"
+                      />
+                    )}
                   </td>
                 ))}
               </tr>
