@@ -25,7 +25,8 @@ export type FieldType =
   | "measurement-grid" // fixed N rows x labelled columns of free text
   | "daily-month-grid" // 31 days x 12 months free-text values + Achieved column
   | "yearly-habit-grid" // 12 month rows: Begin/Break + label + 31 check cells
-  | "med-list"; // compact medication list: # + Name + Reason + Doctor rows
+  | "med-list" // compact medication list: # + Name + Reason + Doctor rows
+  | "paired-compact"; // single label with two small Start/Finish inputs side-by-side
 
 export interface FieldDef {
   key: string;
