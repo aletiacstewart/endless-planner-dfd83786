@@ -271,6 +271,13 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
+        title: "Monthly Calendar",
+        description: "Quick reference for the month — tap a day to add or view a note.",
+        fields: [
+          { key: "month_calendar", label: "Monthly calendar", type: "calendar-grid", compact: true, span: 2 },
+        ],
+      },
+      {
         title: "Meals",
         fields: [
           { key: "breakfast", label: "Breakfast", type: "text", span: 2 },
@@ -384,13 +391,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
           { key: "medical_appointment_notes", label: "Medical Appointment Notes", type: "textarea", rows: 5 },
           { key: "test_results", label: "Test Results", type: "textarea", rows: 5 },
           { key: "lab_result_notes", label: "Lab Result Notes", type: "textarea", rows: 5 },
-        ],
-      },
-      {
-        title: "Monthly Calendar",
-        description: "Quick reference for the month — tap a day to add or view a note.",
-        fields: [
-          { key: "month_calendar", label: "Monthly calendar", type: "calendar-grid", compact: true, span: 2 },
         ],
       },
       {
