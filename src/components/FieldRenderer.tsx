@@ -389,6 +389,20 @@ export function FieldRenderer({ field, value, allValues, onChange, onChangeAny }
       const [l1, l2] = field.pairLabels ?? ["Start", "Finish"];
       const v1 = (allValues?.[k1] as string) ?? "";
       const v2 = (allValues?.[k2] as string) ?? "";
+      if (isMobile) {
+        return (
+          <PairedCompactMobile
+            label={field.label}
+            keys={[k1, k2]}
+            subLabels={[l1, l2]}
+            values={[v1, v2]}
+            onSave={(a, b) => {
+              onChangeAny?.(k1, a);
+              onChangeAny?.(k2, b);
+            }}
+          />
+        );
+      }
       return (
         <div className="flex items-center justify-between gap-2">
           <span className="field-label whitespace-nowrap">{field.label}</span>
