@@ -901,6 +901,29 @@ export const PAGE_TYPES: PageTypeDef[] = [
     ],
     summary: (v) => (v.year ? `Daily goals ${v.year}` : "Daily goal tracker"),
   },
+  {
+    id: "yearly-focus",
+    name: "Yearly Focus",
+    shortName: "Focus",
+    description: "Your word of the year — a single guiding focus that syncs with the Complete Tracker.",
+    icon: "Compass",
+    sections: [
+      { fields: [{ key: "year", label: "Year", type: "year" }] },
+      {
+        fields: [
+          {
+            key: "yearly_focus",
+            label: "Yearly Focus / Word of the Year",
+            type: "textarea",
+            rows: 4,
+            span: 2,
+            placeholder: "What's your word or theme this year?",
+          },
+        ],
+      },
+    ],
+    summary: (v) => ((v.yearly_focus as string) || "").slice(0, 60) || (v.year ? `Focus ${v.year}` : "Yearly focus"),
+  },
 ];
 
 export function getPageType(id: string): PageTypeDef | undefined {
