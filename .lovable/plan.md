@@ -1,59 +1,77 @@
 ## Goal
 
-1. Create a shared **Doctors** directory (name, practice, contact info) that both **Medical Records** and **Medications** trackers (individual + Complete Tracker) can pull from via a dropdown + "Add doctor" button.
-2. On **Medical Records**: add a doctor picker above the Medical Appointment Notes so each visit can be tagged with the doctor seen.
-3. On **Medications**: replace the free-text Doctor cell in the medication list with a per-row dropdown that selects from the shared Doctors list.
-4. Replace the row-label placeholder text on grids that say `"Row label (e.g. chore name, self-care item)"` with `"Label name (Title)"`.
+Close the two remaining sync gaps in the planner:
 
-## Approach
+1. **Fun Tracker** — currently Complete → Fun only. Add reverse sync.
+2. **Yearly Focus / Word of the Year** — currently lives only as a field on Complete Tracker. Promote it to a standalone page with two-way sync.
 
-### Shared Doctors store
+Goals, Goals Reflection, Recipe and Notes stay standalone (no Complete Tracker linkage).
 
-- Add a new `pageType` definition `doctors-directory` (single shared entry, auto-created on first use) holding `doctors: { id, name, practice, phone, email, notes }[]` in its `values`. Stored in the same IndexedDB `entries` store — no schema change needed.
-- New helpers in `src/lib/doctors.ts`:
-  - `listDoctors()` — returns the array (creates the directory entry on demand).
-  - `addDoctor(input)` — appends a new doctor with a generated id, persists, returns the doctor.
-  - `getDoctor(id)` — convenience lookup.
-- Doctors are referenced by id everywhere (so renaming a doctor updates all entries automatically).
+---
 
-### New `doctor-picker` field type
+## Changes
 
-- Extend `FieldType` and `FieldRenderer` with a `"doctor-picker"` type:
-  - Renders a `Select` of existing doctors (label = `Name — Practice`).
-  - Trailing **+ Add doctor** button opens a dialog with inputs: Name (required), Practice, Phone, Email, Notes. On save, the new doctor is added to the shared list and auto-selected for the field.
-  - Loads doctors via a small `useDoctors()` hook (re-fetches after add).
-- Stores selected doctor id (string) as the field value.
+### 1. Fun Tracker — reverse sync
 
-### Wire-in points
+**File:** `src/lib/linkedEntries.ts`
 
-- `src/lib/pageTypes.ts`
-  - **Medical Records** tracker: insert a `doctor-picker` field `doctor_id` ("Doctor seen") above `medical_appointment_notes`.
-  - **Complete Tracker → Medical Records section**: same `doctor_id` field added before the existing notes (kept in the existing 3-column section as a full-width row above).
-- **Medications list (`MedList` in `FieldRenderer.tsx`)** — used by both the Medications individual tracker and the Complete Tracker:
-  - Replace the free-text Doctor input cell with a compact dropdown bound to the shared Doctors list.
-  - Inline **+** icon next to the dropdown opens the same Add-Doctor dialog and auto-selects the new doctor for that row.
-  - Stores `${n}_doctor_id` (new key) instead of/in addition to the legacy `${n}_doctor` text key. Existing string values in `${n}_doctor` are shown as a fallback label so prior data isn't lost.
+In `syncFromIndividual`, add a branch for `entry.pageType === "fun-tracker"`:
 
-### Sync (linkedEntries)
+- Read `fun_grid = { items, marks }` and `year`.
+- For each marked cell `${itemIdx}-${monthIndex}` that is `true`:
+  - Compute the first day of that month as ISO (`year-monthIndex-01`).
+  - Find Complete Tracker entries in that month (any day). Use the earliest by `date`.
+  - If none exists, skip (don't create new Complete entries from a month-level mark).
+  - Assign the item label into the next free `fun_N_label` slot (1–3) on that Complete entry, and set `fun_N = "success"`. If the same label is already present in a slot, just reaffirm `success`.
 
-- Update `src/lib/linkedEntries.ts` so that:
-  - Forward sync (Complete → Medical Records) carries `doctor_id`.
-  - MedList reverse/forward sync includes the new `${n}_doctor_id` keys alongside the existing fields.
-- No new sync types needed — these slot into existing Medical Records and Medications sync paths.
+This mirrors the forward direction's design: marking a fun item in a given month reflects on the user's primary Complete Tracker day for that month.
 
-### Row-label placeholder rename
+### 2. Yearly Focus — standalone page
 
-- In `src/components/FieldRenderer.tsx` (the `daily-month-grid` row-label input, line ~1438), change the placeholder from `"Row label (e.g. chore name, self-care item)"` to `"Label name (Title)"`.
-- No other component currently shows that placeholder string.
+**File:** `src/lib/pageTypes.ts`
 
-## Files to change
+Append a new page type at the end of `PAGE_TYPES`:
 
-- `src/lib/doctors.ts` (new) — shared doctor CRUD on top of IndexedDB.
-- `src/lib/pageTypes.ts` — add `"doctor-picker"` to `FieldType`; add `doctor_id` field to Medical Records (individual) and Complete Tracker; register a hidden `doctors-directory` page type.
-- `src/components/FieldRenderer.tsx` — implement `DoctorPicker` + Add-Doctor dialog; update `MedList` doctor column to a dropdown with inline add; update row-label placeholder.
-- `src/lib/linkedEntries.ts` — propagate `doctor_id` and per-row `${n}_doctor_id` between Complete Tracker and individual Medical Records / Medications entries.
+```ts
+{
+  id: "yearly-focus",
+  name: "Yearly Focus",
+  shortName: "Focus",
+  description: "Your word of the year — a single guiding focus that syncs with the Complete Tracker.",
+  icon: "Compass",
+  sections: [
+    { fields: [{ key: "year", label: "Year", type: "year" }] },
+    { fields: [{
+        key: "yearly_focus",
+        label: "Yearly Focus / Word of the Year",
+        type: "textarea", rows: 4, span: 2,
+        placeholder: "What's your word or theme this year?",
+    }] },
+  ],
+  summary: (v) => (v.yearly_focus as string)?.slice(0, 60) || (v.year ? `Focus ${v.year}` : "Yearly focus"),
+}
+```
+
+### 3. Yearly Focus — two-way sync
+
+**File:** `src/lib/linkedEntries.ts`
+
+- **Forward (Complete → Yearly Focus):** in `syncLinkedEntries`, in addition to the existing logic that prepends `Focus: …` into the matching month note on Yearly Calendar, also `findOrCreate("yearly-focus", year)` and write `yearly_focus` directly. Source of truth for the standalone page is the latest non-empty value.
+- **Reverse (Yearly Focus → Complete):** in `syncFromIndividual`, branch on `entry.pageType === "yearly-focus"`. For all Complete Tracker entries with the same year, set `dst.yearly_focus = v.yearly_focus` (or delete when blank).
+
+### 4. Auto-save registration
+
+**File:** `src/hooks/useAutoSave.ts`
+
+Add `"fun-tracker"` and `"yearly-focus"` to `REVERSE_SYNC_TYPES` so edits on those pages trigger `syncFromIndividual`.
+
+### 5. Page hero image (optional)
+
+`src/lib/pageImages.ts` — no entry yet for `yearly-focus`. The page will simply render without a hero image (Compass lucide icon shows on the Sections grid). When the user uploads a Focus image, we'll wire it in.
+
+---
 
 ## Out of scope
 
-- A dedicated "Doctors" page in navigation — doctors are managed inline from the picker dialog (lighter UX, matches the user's request). Can add later if desired.
-- Migrating historical free-text doctor strings into the structured directory (existing values remain visible as fallback labels).
+- My Goals, Goals Reflection, Recipe, Notes remain standalone — no Complete Tracker fields exist for them and merging them would dilute the daily log.
+- No data migration needed: existing Complete Tracker entries with `yearly_focus` will be picked up the next time they're saved (or on first edit of the new page).

@@ -457,6 +457,7 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
     }
 
     // 14. Yearly Calendar — yearly_focus prefixes the matching month note ("Focus: …").
+    //     Also mirror to standalone Yearly Focus page.
     const yearlyFocus = (v.yearly_focus as string | undefined) ?? "";
     if (yearlyFocus.trim()) {
       const monthName = new Date(date.year, date.monthIndex, 1)
@@ -476,6 +477,18 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
         dst[`month_${monthName}`] = stripped ? `${focusLine}\n${stripped}` : focusLine;
       });
       synced.push(`Yearly Calendar focus`);
+
+      // Standalone Yearly Focus page (one per year).
+      const focusEntry = await findOrCreate(
+        "yearly-focus",
+        (e) => String(e.values.year ?? "") === yearStr,
+        { year: yearStr },
+      );
+      await persist(focusEntry, (dst) => {
+        if (!dst.year) dst.year = yearStr;
+        dst.yearly_focus = yearlyFocus.trim();
+      });
+      synced.push(`Yearly Focus (${yearStr})`);
     }
 
     // 15. Wellness Tracker — six daily-month-grids of numeric ratings.
@@ -1094,7 +1107,105 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
       return synced;
     }
 
-    // Fun Tracker uses month-level marks (no specific day) — skip reverse sync.
+    // Fun Tracker → for each marked (item, month) cell, write into the earliest
+    // existing Complete Tracker entry of that month (never creates new entries).
+    if (entry.pageType === "fun-tracker") {
+      const year = Number(v.year ?? "");
+      if (!year) return synced;
+      const grid = (v.fun_grid as { items?: string[]; marks?: Record<string, boolean> } | undefined) ?? {};
+      const items = grid.items ?? [];
+      const marks = grid.marks ?? {};
+      // Group marked items by month.
+      const byMonth = new Map<number, string[]>();
+      for (const [k, on] of Object.entries(marks)) {
+        if (!on) continue;
+        const m = /^(\d+)-(\d+)$/.exec(k);
+        if (!m) continue;
+        const itemIdx = Number(m[1]);
+        const monthIndex = Number(m[2]);
+        const label = (items[itemIdx] ?? "").trim();
+        if (!label) continue;
+        if (!byMonth.has(monthIndex)) byMonth.set(monthIndex, []);
+        byMonth.get(monthIndex)!.push(label);
+      }
+      const completes = await listEntries("complete-tracker");
+      let touched = 0;
+      for (const [monthIndex, labels] of byMonth) {
+        // Earliest Complete Tracker entry in that month.
+        const inMonth = completes
+          .map((e) => ({ e, d: parseDate(e.values.date) }))
+          .filter((x) => x.d && x.d.year === year && x.d.monthIndex === monthIndex)
+          .sort((a, b) => (a.d!.iso < b.d!.iso ? -1 : 1));
+        const target = inMonth[0]?.e;
+        if (!target) continue;
+        await persist(target, (dst) => {
+          // Reuse existing slots when label matches, else fill next free.
+          for (const label of labels) {
+            let placed = false;
+            for (let n = 1; n <= 3; n++) {
+              const cur = (dst[`fun_${n}_label`] as string | undefined) ?? "";
+              if (cur.trim().toLowerCase() === label.toLowerCase()) {
+                dst[`fun_${n}`] = "success";
+                placed = true;
+                break;
+              }
+            }
+            if (placed) continue;
+            for (let n = 1; n <= 3; n++) {
+              const cur = (dst[`fun_${n}_label`] as string | undefined) ?? "";
+              if (!cur.trim()) {
+                dst[`fun_${n}_label`] = label;
+                dst[`fun_${n}`] = "success";
+                placed = true;
+                break;
+              }
+            }
+          }
+        });
+        touched++;
+      }
+      if (touched > 0) synced.push("Complete Tracker (fun)");
+      return synced;
+    }
+
+    // Yearly Focus → mirror yearly_focus into all Complete Tracker entries of that year.
+    if (entry.pageType === "yearly-focus") {
+      const year = Number(v.year ?? "");
+      if (!year) return synced;
+      const focus = ((v.yearly_focus as string | undefined) ?? "").trim();
+      const completes = (await listEntries("complete-tracker")).filter((e) => {
+        const d = parseDate(e.values.date);
+        return d && d.year === year;
+      });
+      for (const c of completes) {
+        await persist(c, (dst) => {
+          if (focus) dst.yearly_focus = focus;
+          else delete dst.yearly_focus;
+        });
+      }
+      // Also mirror into Yearly Calendar month notes for visibility.
+      if (focus) {
+        const yc = await findOrCreate(
+          "yearly-calendar",
+          (e) => String(e.values.year ?? "") === String(year),
+          { year: String(year) },
+        );
+        await persist(yc, (dst) => {
+          if (!dst.year) dst.year = String(year);
+          // Refresh "Focus:" prefix on every month note.
+          const months = ["january","february","march","april","may","june","july","august","september","october","november","december"];
+          for (const mn of months) {
+            const cur = (dst[`month_${mn}`] as string | undefined) ?? "";
+            const stripped = cur.replace(/^Focus:[^\n]*\n?/i, "").trimStart();
+            const focusLine = `Focus: ${focus}`;
+            dst[`month_${mn}`] = stripped ? `${focusLine}\n${stripped}` : focusLine;
+          }
+        });
+      }
+      if (completes.length > 0 || focus) synced.push("Complete Tracker (focus)");
+      return synced;
+    }
+
   } catch (err) {
     console.error("[syncFromIndividual] failed:", err);
   }

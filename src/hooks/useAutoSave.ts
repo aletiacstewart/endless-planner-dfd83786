@@ -23,6 +23,8 @@ const REVERSE_SYNC_TYPES = new Set([
   "weight-tracker",
   "measurement-tracker",
   "medications",
+  "fun-tracker",
+  "yearly-focus",
 ]);
 
 export function useAutoSave(entry: PlannerEntry | null, debounceMs = 500) {
