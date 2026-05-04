@@ -2,6 +2,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react";
 import { getPageType } from "@/lib/pageTypes";
+import { getPageImage } from "@/lib/pageImages";
 import { createEntry, deleteEntry, listEntries, type PlannerEntry } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -43,6 +44,13 @@ export default function Section() {
         <Link to="/" className="inline-flex items-center text-sm text-muted-foreground mb-3">
           <ChevronLeft className="w-4 h-4" /> Home
         </Link>
+        {getPageImage(pageType.id) && (
+          <img
+            src={getPageImage(pageType.id)}
+            alt={pageType.name}
+            className="w-full max-w-md mx-auto rounded-2xl shadow-lg mb-4 aspect-square object-cover"
+          />
+        )}
         <h1 className="section-title">{pageType.name}</h1>
         <p className="text-sm text-muted-foreground mt-1">{pageType.description}</p>
       </header>
