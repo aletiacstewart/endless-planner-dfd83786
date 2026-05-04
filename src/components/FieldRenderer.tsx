@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState, useCallback } from "react";
 import { Plus, X, Angry, Frown, Meh, Smile, Laugh } from "lucide-react";
 import type { FieldDef, FieldValue } from "@/lib/pageTypes";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { listDoctors, addDoctor, type Doctor } from "@/lib/doctors";
 
 interface Props {
   field: FieldDef;
