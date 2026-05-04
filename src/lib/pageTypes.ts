@@ -26,6 +26,7 @@ export type FieldType =
   | "daily-month-grid" // 31 days x 12 months free-text values + Achieved column
   | "yearly-habit-grid" // 12 month rows: Begin/Break + label + 31 check cells
   | "med-list" // compact medication list: # + Name + Reason + Doctor rows
+  | "doctor-picker" // dropdown bound to the shared Doctors directory + add-new dialog
   | "paired-compact"; // single label with two small Start/Finish inputs side-by-side
 
 export interface FieldDef {
@@ -434,6 +435,11 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Medical Records",
         description: "Track appointment notes, test results, and lab notes.",
+        fields: [
+          { key: "doctor_id", label: "Doctor seen", type: "doctor-picker", span: 2 },
+        ],
+      },
+      {
         columns: 3,
         fields: [
           { key: "medical_appointment_notes", label: "Medical Appointment Notes", type: "textarea", rows: 5 },
@@ -864,7 +870,13 @@ export const PAGE_TYPES: PageTypeDef[] = [
     description: "Per-visit log of appointment notes, test results and lab notes.",
     icon: "Stethoscope",
     sections: [
-      { fields: [{ key: "date", label: "Date", type: "date" }] },
+      {
+        columns: 2,
+        fields: [
+          { key: "date", label: "Date", type: "date" },
+          { key: "doctor_id", label: "Doctor seen", type: "doctor-picker" },
+        ],
+      },
       {
         columns: 1,
         fields: [

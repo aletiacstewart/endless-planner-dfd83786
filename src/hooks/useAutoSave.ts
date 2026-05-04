@@ -22,6 +22,7 @@ const REVERSE_SYNC_TYPES = new Set([
   "medical-records",
   "weight-tracker",
   "measurement-tracker",
+  "medications",
 ]);
 
 export function useAutoSave(entry: PlannerEntry | null, debounceMs = 500) {

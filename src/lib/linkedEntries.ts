@@ -537,7 +537,7 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
     }
 
     // 18. Medical Records — per-date entry mirroring the three textareas.
-    const medicalFields = ["medical_appointment_notes", "test_results", "lab_result_notes"];
+    const medicalFields = ["medical_appointment_notes", "test_results", "lab_result_notes", "doctor_id"];
     if (medicalFields.some((k) => typeof v[k] === "string" && (v[k] as string).trim())) {
       const entry = await findOrCreate(
         "medical-records",
@@ -608,6 +608,17 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
         });
         synced.push(`Measurement Tracker (wk ${wk})`);
       }
+    }
+
+    // 21. Medications — mirror the med_list grid into the master Medications entry.
+    const completeMedList = v.med_list as Record<string, string> | undefined;
+    if (completeMedList && Object.values(completeMedList).some((x) => typeof x === "string" && x.trim())) {
+      const all = await listEntries("medications");
+      const meds = all[0] ?? await createEntry("medications", {});
+      await persist(meds, (dst) => {
+        dst.med_list = { ...completeMedList };
+      });
+      synced.push("Medications");
     }
 
   } catch (err) {
@@ -994,7 +1005,7 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
       const date = parseDate(v.date);
       if (!date) return [];
       const touched = await updateCompleteForDate(date.iso, (dst) => {
-        copyKeys(v, dst, ["medical_appointment_notes", "test_results", "lab_result_notes"]);
+        copyKeys(v, dst, ["medical_appointment_notes", "test_results", "lab_result_notes", "doctor_id"]);
       });
       if (touched > 0) synced.push("Complete Tracker (medical)");
       return synced;
@@ -1061,6 +1072,25 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
         });
       }
       if (touched > 0) synced.push("Complete Tracker (measurements)");
+      return synced;
+    }
+
+    // Medications → only seed Complete Tracker entries whose med_list is empty
+    // (don't clobber per-day med tracking the user already filled in).
+    if (entry.pageType === "medications") {
+      const list = (v.med_list as Record<string, string> | undefined) ?? {};
+      if (Object.values(list).some((x) => typeof x === "string" && x.trim())) {
+        const completes = await listEntries("complete-tracker");
+        let touched = 0;
+        for (const c of completes) {
+          const cur = c.values.med_list as Record<string, string> | undefined;
+          const hasAny = cur && Object.values(cur).some((x) => typeof x === "string" && x.trim());
+          if (hasAny) continue;
+          await persist(c, (dst) => { dst.med_list = { ...list }; });
+          touched++;
+        }
+        if (touched > 0) synced.push("Complete Tracker (medications)");
+      }
       return synced;
     }
 
