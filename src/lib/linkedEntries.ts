@@ -610,6 +610,17 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       }
     }
 
+    // 21. Medications — mirror the med_list grid into the master Medications entry.
+    const completeMedList = v.med_list as Record<string, string> | undefined;
+    if (completeMedList && Object.values(completeMedList).some((x) => typeof x === "string" && x.trim())) {
+      const all = await listEntries("medications");
+      const meds = all[0] ?? await createEntry("medications", {});
+      await persist(meds, (dst) => {
+        dst.med_list = { ...completeMedList };
+      });
+      synced.push("Medications");
+    }
+
   } catch (err) {
     console.error("[syncLinkedEntries] failed:", err);
   }
@@ -1061,6 +1072,19 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
         });
       }
       if (touched > 0) synced.push("Complete Tracker (measurements)");
+      return synced;
+    }
+
+    // Medications → mirror med_list back to most recent Complete Tracker entries that already have a med_list.
+    if (entry.pageType === "medications") {
+      const list = (v.med_list as Record<string, string> | undefined) ?? {};
+      const completes = await listEntries("complete-tracker");
+      let touched = 0;
+      for (const c of completes) {
+        await persist(c, (dst) => { dst.med_list = { ...list }; });
+        touched++;
+      }
+      if (touched > 0) synced.push("Complete Tracker (medications)");
       return synced;
     }
 
