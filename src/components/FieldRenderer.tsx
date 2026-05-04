@@ -750,7 +750,13 @@ function MedList({
             <span className="text-xs text-muted-foreground text-right pr-1">{n}.</span>
             {renderTextCell(n, "name", "Name")}
             {renderTextCell(n, "reason", "Reason")}
-            {renderTextCell(n, "doctor", "Doctor")}
+            <DoctorPicker
+              compact
+              value={data[`${n}_doctor_id`] ?? ""}
+              fallbackName={data[`${n}_doctor`] ?? ""}
+              onChange={(v) => update(`${n}_doctor_id`, v)}
+              ariaLabel={`Med ${n} Doctor`}
+            />
             <div className="grid grid-cols-3 gap-1 justify-items-center">
               {slots.map((s) => {
                 const key = `${n}_${s.k}`;
@@ -1447,7 +1453,7 @@ function DailyMonthGrid({
         <Input
           value={data.rowLabel ?? ""}
           onChange={(e) => setRowLabel(e.target.value)}
-          placeholder="Row label (e.g. chore name, self-care item)"
+          placeholder="Label name (Title)"
           className="h-8 text-xs bg-background/60 max-w-md"
         />
       </div>
