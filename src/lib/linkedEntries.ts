@@ -1075,16 +1075,22 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
       return synced;
     }
 
-    // Medications → mirror med_list back to most recent Complete Tracker entries that already have a med_list.
+    // Medications → only seed Complete Tracker entries whose med_list is empty
+    // (don't clobber per-day med tracking the user already filled in).
     if (entry.pageType === "medications") {
       const list = (v.med_list as Record<string, string> | undefined) ?? {};
-      const completes = await listEntries("complete-tracker");
-      let touched = 0;
-      for (const c of completes) {
-        await persist(c, (dst) => { dst.med_list = { ...list }; });
-        touched++;
+      if (Object.values(list).some((x) => typeof x === "string" && x.trim())) {
+        const completes = await listEntries("complete-tracker");
+        let touched = 0;
+        for (const c of completes) {
+          const cur = c.values.med_list as Record<string, string> | undefined;
+          const hasAny = cur && Object.values(cur).some((x) => typeof x === "string" && x.trim());
+          if (hasAny) continue;
+          await persist(c, (dst) => { dst.med_list = { ...list }; });
+          touched++;
+        }
+        if (touched > 0) synced.push("Complete Tracker (medications)");
       }
-      if (touched > 0) synced.push("Complete Tracker (medications)");
       return synced;
     }
 
