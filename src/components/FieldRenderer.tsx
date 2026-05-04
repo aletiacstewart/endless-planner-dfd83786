@@ -398,6 +398,17 @@ export function FieldRenderer({ field, value, allValues, onChange, onChangeAny, 
           onChange={onChange}
         />
       );
+    case "doctor-picker":
+      return (
+        <div>
+          {label}
+          <DoctorPicker
+            value={(value as string) ?? ""}
+            onChange={(v) => onChange(v)}
+            ariaLabel={field.label}
+          />
+        </div>
+      );
     case "paired-compact": {
       const [k1, k2] = field.pairKeys ?? ["", ""];
       const [l1, l2] = field.pairLabels ?? ["Start", "Finish"];
