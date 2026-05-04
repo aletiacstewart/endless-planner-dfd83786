@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { useUserSettings } from "@/hooks/useUserSettings";
 import { getCover } from "@/data/covers";
 import { CoverImage } from "@/components/cover/CoverImage";
+import { getPageImage } from "@/lib/pageImages";
 
 const LAST_BACKUP_KEY = "planner.lastBackupAt";
 const BACKUP_DISMISS_KEY = "planner.backupReminderDismissedUntil";
@@ -201,6 +202,7 @@ export default function Home() {
               .map((pt) => {
                 const Icon = (Icons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[pt.icon] ?? Icons.FileText;
                 const isFeatured = pt.id === "complete-tracker";
+                const img = getPageImage(pt.id);
                 return (
                   <Link
                     key={pt.id}
@@ -208,9 +210,17 @@ export default function Home() {
                     className={`planner-card flex flex-col gap-2 ${isFeatured ? "col-span-2 border-primary/40 bg-primary-soft/40" : ""}`}
                   >
                     <div className="flex items-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-primary-soft flex items-center justify-center shrink-0">
-                        <Icon className="w-5 h-5 text-primary" />
-                      </div>
+                      {img ? (
+                        <img
+                          src={img}
+                          alt=""
+                          className="w-10 h-10 rounded-full object-cover shrink-0 shadow-sm"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-primary-soft flex items-center justify-center shrink-0">
+                          <Icon className="w-5 h-5 text-primary" />
+                        </div>
+                      )}
                       <p className="font-medium text-sm">{pt.name}</p>
                     </div>
                     <p className="text-xs text-muted-foreground line-clamp-3">
