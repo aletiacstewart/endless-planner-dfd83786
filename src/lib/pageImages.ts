@@ -18,6 +18,9 @@ import bloodSugarTracker from "@/assets/page-images/blood-sugar-tracker.png";
 import yearlyCalendar from "@/assets/page-images/yearly-calendar.png";
 import dailyGoalTracker from "@/assets/page-images/daily-goal-tracker.png";
 import yearlyHabitTracker from "@/assets/page-images/yearly-habit-tracker.png";
+import oxygenTracker from "@/assets/page-images/oxygen-tracker.png";
+import wellnessTracker from "@/assets/page-images/wellness-tracker.png";
+import workoutTracker from "@/assets/page-images/workout-tracker.png";
 
 export const PAGE_IMAGES: Record<string, string> = {
   "measurement-tracker": measurementTracker,
@@ -40,6 +43,9 @@ export const PAGE_IMAGES: Record<string, string> = {
   "yearly-calendar": yearlyCalendar,
   "daily-goal-tracker": dailyGoalTracker,
   "yearly-habit-tracker": yearlyHabitTracker,
+  "oxygen-tracker": oxygenTracker,
+  "wellness-tracker": wellnessTracker,
+  "workout-tracker": workoutTracker,
 };
 
 export function getPageImage(id: string): string | undefined {
