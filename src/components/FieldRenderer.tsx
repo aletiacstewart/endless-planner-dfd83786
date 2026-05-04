@@ -1688,3 +1688,163 @@ function YearlyHabitGrid({
     </div>
   );
 }
+
+/* -------------------------------------------------------------------------- */
+/*  DoctorPicker — dropdown of shared doctors with inline "Add doctor" dialog */
+/* -------------------------------------------------------------------------- */
+
+let _doctorListeners: Array<() => void> = [];
+function notifyDoctorChange() {
+  for (const fn of _doctorListeners) fn();
+}
+
+function useDoctors(): { doctors: Doctor[]; refresh: () => void } {
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const refresh = useCallback(() => {
+    void listDoctors().then(setDoctors);
+  }, []);
+  useEffect(() => {
+    refresh();
+    _doctorListeners.push(refresh);
+    return () => {
+      _doctorListeners = _doctorListeners.filter((f) => f !== refresh);
+    };
+  }, [refresh]);
+  return { doctors, refresh };
+}
+
+function DoctorPicker({
+  value,
+  onChange,
+  ariaLabel,
+  fallbackName,
+  compact,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  ariaLabel?: string;
+  fallbackName?: string;
+  compact?: boolean;
+}) {
+  const { doctors } = useDoctors();
+  const [adding, setAdding] = useState(false);
+  const known = doctors.some((d) => d.id === value);
+  const placeholder = !known && fallbackName?.trim() ? fallbackName : "Select doctor";
+
+  return (
+    <div className="flex items-center gap-1 min-w-0">
+      <select
+        value={known ? value : ""}
+        onChange={(e) => {
+          if (e.target.value === "__add__") {
+            setAdding(true);
+            return;
+          }
+          onChange(e.target.value);
+        }}
+        aria-label={ariaLabel}
+        className={cn(
+          "flex-1 min-w-0 rounded-md border border-input bg-background/60 text-sm",
+          compact ? "h-8 px-1 text-xs" : "h-10 px-3"
+        )}
+      >
+        <option value="">{placeholder}</option>
+        {doctors.map((d) => (
+          <option key={d.id} value={d.id}>
+            {d.practice ? `${d.name} — ${d.practice}` : d.name}
+          </option>
+        ))}
+        <option value="__add__">+ Add doctor…</option>
+      </select>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={() => setAdding(true)}
+        aria-label="Add doctor"
+        className={cn(compact ? "h-8 w-8" : "h-9 w-9")}
+      >
+        <Plus className="w-4 h-4" />
+      </Button>
+      <AddDoctorDialog
+        open={adding}
+        onOpenChange={setAdding}
+        onCreated={(d) => {
+          onChange(d.id);
+          notifyDoctorChange();
+        }}
+      />
+    </div>
+  );
+}
+
+function AddDoctorDialog({
+  open,
+  onOpenChange,
+  onCreated,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  onCreated: (d: Doctor) => void;
+}) {
+  const [name, setName] = useState("");
+  const [practice, setPractice] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [notes, setNotes] = useState("");
+
+  useEffect(() => {
+    if (open) {
+      setName(""); setPractice(""); setPhone(""); setEmail(""); setNotes("");
+    }
+  }, [open]);
+
+  const save = async () => {
+    if (!name.trim()) return;
+    const d = await addDoctor({
+      name: name.trim(),
+      practice: practice.trim() || undefined,
+      phone: phone.trim() || undefined,
+      email: email.trim() || undefined,
+      notes: notes.trim() || undefined,
+    });
+    onCreated(d);
+    onOpenChange(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Add doctor</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div>
+            <label className="field-label block mb-1.5">Name</label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} className="bg-background/60" autoFocus />
+          </div>
+          <div>
+            <label className="field-label block mb-1.5">Practice</label>
+            <Input value={practice} onChange={(e) => setPractice(e.target.value)} className="bg-background/60" />
+          </div>
+          <div>
+            <label className="field-label block mb-1.5">Phone</label>
+            <Input value={phone} onChange={(e) => setPhone(e.target.value)} inputMode="tel" className="bg-background/60" />
+          </div>
+          <div>
+            <label className="field-label block mb-1.5">Email</label>
+            <Input value={email} onChange={(e) => setEmail(e.target.value)} inputMode="email" className="bg-background/60" />
+          </div>
+          <div>
+            <label className="field-label block mb-1.5">Notes</label>
+            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className="bg-background/60 resize-none" />
+          </div>
+        </div>
+        <DialogFooter className="gap-2 sm:gap-2">
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button onClick={save} disabled={!name.trim()}>Save</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
