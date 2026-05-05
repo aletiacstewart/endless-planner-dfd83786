@@ -43,11 +43,13 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       const all = await listEntries();
+      const validIds = new Set(PAGE_TYPES.map((p) => p.id));
+      const valid = all.filter((e) => validIds.has(e.pageType));
       const c: Record<string, number> = {};
-      all.forEach((e) => (c[e.pageType] = (c[e.pageType] || 0) + 1));
+      valid.forEach((e) => (c[e.pageType] = (c[e.pageType] || 0) + 1));
       setCounts(c);
-      setRecent(all.slice(0, 4));
-      setTotalEntries(all.length);
+      setRecent(valid.slice(0, 4));
+      setTotalEntries(valid.length);
 
       // Decide whether to nudge user to back up.
       const last = Number(localStorage.getItem(LAST_BACKUP_KEY) || 0);
