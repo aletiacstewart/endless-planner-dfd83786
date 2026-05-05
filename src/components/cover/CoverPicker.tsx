@@ -34,9 +34,6 @@ export function CoverPicker({
   onConfirm,
 }: Props) {
   const [filter, setFilter] = useState<CoverCollection | "all">("all");
-
-  // Only show collection chips that actually have covers.
-  const [filter, setFilter] = useState<CoverCollection | "all">("all");
   const navigate = useNavigate();
 
   // Only show collection chips that actually have covers.
