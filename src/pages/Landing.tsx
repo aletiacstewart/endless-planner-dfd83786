@@ -104,8 +104,8 @@ export default function Landing() {
                     <span className="text-xs text-muted-foreground ml-1">one-time</span>
                   </div>
                   {p.available ? (
-                    <Button onClick={() => document.getElementById("buy")?.scrollIntoView({ behavior: "smooth" })}>
-                      Buy & Install
+                    <Button asChild>
+                      <Link to={`/planner/${p.id}`}>Buy & Install</Link>
                     </Button>
                   ) : (
                     <span className="text-xs text-muted-foreground">Coming soon</span>
@@ -117,31 +117,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* What's inside */}
-      <section className="px-6 py-16">
-        <div className="max-w-6xl mx-auto">
-          <h3 className="font-display text-3xl text-center mb-2">What's inside</h3>
-          <p className="text-center text-muted-foreground mb-10">
-            {pages.length} guided pages in the {planner.name}
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {pages.map((p) => {
-              const img = getPageImage(p.id);
-              return (
-                <div key={p.id} className="planner-card text-center">
-                  {img ? (
-                    <div className="aspect-square rounded-md overflow-hidden bg-muted mb-2">
-                      <img src={img} alt={p.name} className="w-full h-full object-cover" />
-                    </div>
-                  ) : null}
-                  <h4 className="font-medium text-sm mb-1">{p.name}</h4>
-                  <p className="text-xs text-muted-foreground line-clamp-2">{p.description}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
 
       {/* Cover gallery */}
       <section className="px-6 py-16 bg-muted/30">
