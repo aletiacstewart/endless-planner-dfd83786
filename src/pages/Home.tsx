@@ -140,6 +140,23 @@ export default function Home() {
 
 
       <main className="px-5 pt-6 space-y-6">
+        {showCoverNudge && (
+          <section className="rounded-full border border-primary/30 bg-primary/5 px-4 py-2 flex items-center justify-between gap-3">
+            <Link to="/packs" className="text-sm font-medium text-foreground flex-1 truncate">
+              ✨ Try a new cover &amp; icon pack
+            </Link>
+            <button
+              onClick={() => {
+                localStorage.setItem(COVER_NUDGE_KEY, String(Date.now() + NUDGE_DISMISS_MS));
+                setShowCoverNudge(false);
+              }}
+              aria-label="Dismiss"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <Icons.X className="w-4 h-4" />
+            </button>
+          </section>
+        )}
         {showReminder && (
           <section className="rounded-xl border border-accent/40 bg-accent-soft/60 p-4">
             <div className="flex items-start gap-3">
