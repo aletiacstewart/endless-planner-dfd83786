@@ -52,6 +52,8 @@ export const PAGE_IMAGES: Record<string, string> = {
   "yearly-focus": yearlyFocus,
 };
 
-export function getPageImage(id: string): string | undefined {
-  return PAGE_IMAGES[id];
+import { getCoverPageIcon } from "@/lib/coverIcons";
+
+export function getPageImage(id: string, coverId?: string | null): string | undefined {
+  return getCoverPageIcon(coverId, id) ?? PAGE_IMAGES[id];
 }

@@ -202,7 +202,7 @@ export default function Home() {
               .map((pt) => {
                 const Icon = (Icons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[pt.icon] ?? Icons.FileText;
                 const isFeatured = pt.id === "complete-tracker";
-                const img = getPageImage(pt.id);
+                const img = getPageImage(pt.id, settings?.coverId);
                 return (
                   <Link
                     key={pt.id}
