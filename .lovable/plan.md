@@ -1,30 +1,29 @@
-## Remove three tracker pages
+I’ll add a safe owner-only way for you to open and test the planner without going through the purchase homepage.
 
-Removing **Habit Tracker**, **Fun Tracker**, and **Daily Goal Tracker** from the platform. Keeping **Yearly Habit Tracker**.
+Implementation plan:
 
-### Code changes
+1. Add an admin/test unlock route
+   - Create a route like `/admin-planner` or `/admin/unlock`.
+   - Visiting it will unlock the main planner locally on that device and send you straight to `/app`.
+   - This keeps the public homepage purchase flow intact for customers.
 
-1. **`src/lib/pageTypes.ts`** — Delete the three `PageTypeDef` entries (`habit-tracker`, `fun-tracker`, `daily-goal-tracker`).
+2. Protect it so it is not an obvious customer path
+   - Use a simple shared test key in the URL, for example `/admin-planner?key=...`.
+   - If the key is missing or wrong, show a friendly “not found / unavailable” message or redirect home.
+   - This is not meant to be high-security admin auth, but it prevents casual public discovery and avoids exposing a visible admin button.
 
-2. **`src/lib/linkedEntries.ts`** — Remove the three IDs from the linked-sync arrays and delete their reverse-sync handler blocks (the `if (entry.pageType === "...")` branches at lines 860, 990, 1112). The Complete Tracker will keep collecting habit/fun/goal field values internally, but will no longer push them to standalone pages.
+3. Add clear owner instructions in the app/docs
+   - Document the exact URL you can use whenever you want to test the planner.
+   - Include the manual fallback: if needed, use the normal `/unlock?code=...` path with a test purchase code.
 
-3. **`src/hooks/useAutoSave.ts`** — Remove the three IDs from `REVERSE_SYNC_TYPES`.
+4. Optional cleanup for your testing experience
+   - If you want, the admin route can also unlock all cover/icon packs locally so you can test every cover and icon set without buying each pack.
+   - I’ll default to unlocking the main planner only unless you want all packs included for admin testing.
 
-4. **`src/lib/pageImages.ts`** — Remove the three imports and map entries.
+Technical details:
 
-5. **`src/lib/coverIcons.ts`** — Remove the three icon imports and map entries from the `forget-me-nots-ladybugs` pack (and any other packs that reference them).
-
-6. **`src/data/planners.ts`** — Check for and remove any references to these page IDs in planner section definitions.
-
-7. **Asset files** — Delete the now-unused PNGs:
-   - `src/assets/page-images/{habit,fun,daily-goal}-tracker.png`
-   - `src/assets/cover-icons/*/{habit,fun,daily-goal}-tracker.png`
-
-### Data note
-
-Existing user entries of these page types in IndexedDB will become orphaned (not rendered, not deleted). They remain in storage harmlessly. Let me know if you'd prefer a one-time cleanup on app load.
-
-### Out of scope
-
-- Yearly Habit Tracker stays.
-- The Complete Tracker's "Fun & Habit Tracker" section stays (just no longer syncs out).
+- Current app behavior blocks all planner routes unless local storage contains `planner-unlock:wellness-journey`.
+- The homepage now correctly acts as the sales/purchase landing page.
+- The admin test route will set that local unlock value via the existing `setUnlocked("wellness-journey", ...)` helper, then navigate to `/app`.
+- No database change is required for the quickest test route.
+- If you prefer a real backend-owned test code instead, I can create a test purchase/unlock code in Lovable Cloud, but the local admin route is faster and easier for ongoing preview testing.
