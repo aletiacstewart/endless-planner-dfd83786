@@ -198,6 +198,13 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       "dinner", "dinner_notes",
       "snacks", "snacks_notes",
       "daily_notes",
+      "water", "water_other",
+      "meals", "meals_other",
+      "caffeine", "caffeine_other",
+      "sweets", "sweets_other",
+      "habits", "habits_other",
+      "mood", "mood_other",
+      "sleep", "sleep_other",
     ];
     if (anyFilled(v, dailyKeys)) {
       const daily = await findOrCreate(
@@ -558,6 +565,13 @@ const DAILY_KEYS = [
   "dinner", "dinner_notes",
   "snacks", "snacks_notes",
   "daily_notes",
+  "water", "water_other",
+  "meals", "meals_other",
+  "caffeine", "caffeine_other",
+  "sweets", "sweets_other",
+  "habits", "habits_other",
+  "mood", "mood_other",
+  "sleep", "sleep_other",
 ];
 
 /** Split "B 110 / L 130 / D 120 / S 90" back into the four meal-prefix keys. */
