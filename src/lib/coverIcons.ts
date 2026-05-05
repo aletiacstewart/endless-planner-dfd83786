@@ -22,6 +22,10 @@ import fmnlWorkout from "@/assets/cover-icons/forget-me-nots-ladybugs/workout-tr
 import fmnlDaily from "@/assets/cover-icons/forget-me-nots-ladybugs/daily-tracker.png";
 import fmnlGoalsReflection from "@/assets/cover-icons/forget-me-nots-ladybugs/goals-reflection.png";
 import fmnlMonthly from "@/assets/cover-icons/forget-me-nots-ladybugs/monthly-calendar.png";
+import fmnlNotes from "@/assets/cover-icons/forget-me-nots-ladybugs/notes.png";
+import fmnlWeekly from "@/assets/cover-icons/forget-me-nots-ladybugs/weekly-calendar.png";
+import fmnlYearlyCal from "@/assets/cover-icons/forget-me-nots-ladybugs/yearly-calendar.png";
+import fmnlYearlyFocus from "@/assets/cover-icons/forget-me-nots-ladybugs/yearly-focus.png";
 
 export const COVER_ICONS: Record<string, Record<string, string>> = {
   "forget-me-nots-ladybugs": {
@@ -45,6 +49,10 @@ export const COVER_ICONS: Record<string, Record<string, string>> = {
     "daily-tracker": fmnlDaily,
     "goals-reflection": fmnlGoalsReflection,
     "monthly-calendar": fmnlMonthly,
+    "notes": fmnlNotes,
+    "weekly-calendar": fmnlWeekly,
+    "yearly-calendar": fmnlYearlyCal,
+    "yearly-focus": fmnlYearlyFocus,
   },
 };
 
