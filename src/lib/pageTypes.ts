@@ -405,12 +405,13 @@ export const PAGE_TYPES: PageTypeDef[] = [
           {
             title: "Wellness",
             fields: [
-              { key: "water", label: "Water (glasses)", type: "rating", max: 8, otherKey: "water_other" },
-              { key: "caffeine", label: "Caffeine / Other (cups)", type: "rating", max: 6, otherKey: "caffeine_other" },
-              { key: "sweets", label: "Sweets", type: "rating", max: 4, otherKey: "sweets_other" },
-              { key: "sleep", label: "Sleep (hours)", type: "rating", max: 12, otherKey: "sleep_other" },
-              { key: "smoking", label: "Smoking / Vaping", type: "rating", max: 12, otherKey: "smoking_other" },
-              { key: "mood", label: "Mood", type: "mood-rating", max: 5 },
+              { key: "water", label: "Water intake (glasses)", type: "checkbox-group", options: ["1","2","3","4","5","6","7","8"], otherKey: "water_other" },
+              { key: "meals", label: "Meal intake", type: "checkbox-group", options: ["1","2","3","4","5","6"], otherKey: "meals_other" },
+              { key: "caffeine", label: "Caffeine / Other", type: "checkbox-group", options: ["1","2","3","4"], otherKey: "caffeine_other" },
+              { key: "sweets", label: "Sweets / Savory", type: "checkbox-group", options: ["1","2","3","4"], otherKey: "sweets_other" },
+              { key: "habits", label: "Habits (smoking, vaping, dipping, other)", type: "checkbox-group", options: ["1","2","3","4","5","6","7","8"], otherKey: "habits_other" },
+              { key: "mood", label: "Mood", type: "checkbox-group", options: ["Anger","Fear","Sadness","Disgust","Joy"], otherKey: "mood_other" },
+              { key: "sleep", label: "Sleep (hours)", type: "checkbox-group", options: ["1","2","3","4","5","6","7","8","9","10","11","12"], otherKey: "sleep_other" },
             ],
           },
           {
