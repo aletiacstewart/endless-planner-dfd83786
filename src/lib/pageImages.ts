@@ -40,7 +40,7 @@ export const PAGE_IMAGES: Record<string, string> = {
   "yearly-calendar": yearlyCalendar,
   "yearly-habit-tracker": yearlyHabitTracker,
   "oxygen-tracker": oxygenTracker,
-  "wellness-tracker": wellnessTracker,
+  
   "workout-tracker": workoutTracker,
   "monthly-calendar": monthlyCalendar,
   "yearly-focus": yearlyFocus,
