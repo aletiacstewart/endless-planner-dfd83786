@@ -43,7 +43,7 @@ export const COVER_ICONS: Record<string, Record<string, string>> = {
     "wellness-tracker": fmnlWellness,
     "workout-tracker": fmnlWorkout,
     "daily-tracker": fmnlDaily,
-    "goals-reflection": fmnlGoalsReflection,
+    
     "monthly-calendar": fmnlMonthly,
     "notes": fmnlNotes,
     "weekly-calendar": fmnlWeekly,
