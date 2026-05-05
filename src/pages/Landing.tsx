@@ -42,11 +42,26 @@ export default function Landing() {
       return;
     }
     openCheckout({
+      plannerId,
       priceId,
       quantity: 1,
       customerEmail: email,
       returnUrl: `${window.location.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}&planner=${plannerId}`,
     });
+  };
+
+  const [code, setCode] = useState("");
+  const [resendEmail, setResendEmail] = useState("");
+  const [resendStatus, setResendStatus] = useState<"idle" | "sending" | "sent">("idle");
+
+  const submitResend = async () => {
+    if (!resendEmail.includes("@")) return;
+    setResendStatus("sending");
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      await supabase.functions.invoke("resend-unlock-code", { body: { email: resendEmail } });
+    } catch {}
+    setResendStatus("sent");
   };
 
   const planner = PLANNERS[0];
