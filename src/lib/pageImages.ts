@@ -3,9 +3,7 @@ import weightTracker from "@/assets/page-images/weight-tracker.png";
 import cleaningChecklist from "@/assets/page-images/cleaning-checklist.png";
 import completeTracker from "@/assets/page-images/complete-tracker.png";
 import dailyTracker from "@/assets/page-images/daily-tracker.png";
-import funTracker from "@/assets/page-images/fun-tracker.png";
 import goalsReflection from "@/assets/page-images/goals-reflection.png";
-import habitTracker from "@/assets/page-images/habit-tracker.png";
 import medicalRecords from "@/assets/page-images/medical-records.png";
 import medications from "@/assets/page-images/medications.png";
 import myGoals from "@/assets/page-images/my-goals.png";
@@ -16,7 +14,6 @@ import weeklyCalendar from "@/assets/page-images/weekly-calendar.png";
 import bloodPressureTracker from "@/assets/page-images/blood-pressure-tracker.png";
 import bloodSugarTracker from "@/assets/page-images/blood-sugar-tracker.png";
 import yearlyCalendar from "@/assets/page-images/yearly-calendar.png";
-import dailyGoalTracker from "@/assets/page-images/daily-goal-tracker.png";
 import yearlyHabitTracker from "@/assets/page-images/yearly-habit-tracker.png";
 import oxygenTracker from "@/assets/page-images/oxygen-tracker.png";
 import wellnessTracker from "@/assets/page-images/wellness-tracker.png";
@@ -30,9 +27,7 @@ export const PAGE_IMAGES: Record<string, string> = {
   "cleaning-checklist": cleaningChecklist,
   "complete-tracker": completeTracker,
   "daily-tracker": dailyTracker,
-  "fun-tracker": funTracker,
   "goals-reflection": goalsReflection,
-  "habit-tracker": habitTracker,
   "medical-records": medicalRecords,
   "medications": medications,
   "my-goals": myGoals,
@@ -43,7 +38,6 @@ export const PAGE_IMAGES: Record<string, string> = {
   "blood-pressure-tracker": bloodPressureTracker,
   "blood-sugar-tracker": bloodSugarTracker,
   "yearly-calendar": yearlyCalendar,
-  "daily-goal-tracker": dailyGoalTracker,
   "yearly-habit-tracker": yearlyHabitTracker,
   "oxygen-tracker": oxygenTracker,
   "wellness-tracker": wellnessTracker,

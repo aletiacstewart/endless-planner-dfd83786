@@ -499,40 +499,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
     summary: (v) => (v.date ? `${v.date}` : "Daily entry"),
   },
   {
-    id: "habit-tracker",
-    name: "Habit Tracker",
-    shortName: "Habits",
-    description: "Track up to 8 habits across 31 days.",
-    icon: "CircleCheck",
-    sections: [
-      {
-        columns: 2,
-        fields: [
-          { key: "month", label: "Month", type: "month" },
-          { key: "year", label: "Year", type: "year" },
-        ],
-      },
-      {
-        fields: [
-          {
-            key: "habits",
-            label: "Habits",
-            type: "habit-grid",
-            span: 2,
-            defaultItems: [
-              "Think Positive",
-              "Let Go of Negativity",
-              "Eat & Drink Healthy",
-              "Keep an Open Mind",
-              "Don't Compare to Others",
-            ],
-          },
-        ],
-      },
-    ],
-    summary: (v) => [v.month, v.year].filter(Boolean).join(" ") || "Habit tracker",
-  },
-  {
     id: "yearly-habit-tracker",
     name: "Yearly Habit Tracker",
     shortName: "Year Habits",
@@ -735,36 +701,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
     summary: (v) => (v.year ? `Cleaning ${v.year}` : "Cleaning check list"),
   },
   {
-    id: "fun-tracker",
-    name: "Fun Tracker",
-    shortName: "Fun",
-    description: "Track fun activities through the year.",
-    icon: "PartyPopper",
-    sections: [
-      {
-        fields: [{ key: "year", label: "Year", type: "year" }],
-      },
-      {
-        fields: [
-          {
-            key: "fun_grid",
-            label: "Fun activities by month",
-            type: "month-tracker",
-            span: 2,
-            defaultItems: [
-              "Learn New Skills",
-              "Time with Friends & Family",
-              "Find New Passion",
-              "Find New Challenges",
-              "DIY Projects",
-            ],
-          },
-        ],
-      },
-    ],
-    summary: (v) => (v.year ? `Fun ${v.year}` : "Fun tracker"),
-  },
-  {
     id: "recipe",
     name: "Recipe",
     shortName: "Recipe",
@@ -887,19 +823,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
     ],
     summary: (v) => (v.date as string) || "Medical record",
-  },
-  {
-    id: "daily-goal-tracker",
-    name: "Yearly Daily Goal Tracker",
-    shortName: "Goals/Day",
-    description: "A year-long view of your daily goals and the daily habit success/fail.",
-    icon: "Target",
-    sections: [
-      { fields: [{ key: "year", label: "Year", type: "year" }] },
-      { title: "Daily Goal", fields: [{ key: "daily_goal", label: "Daily Goal", type: "daily-month-grid", span: 2 }] },
-      { title: "Daily Habit (success ✓ / fail ✗)", fields: [{ key: "daily_habit", label: "Daily Habit", type: "daily-month-grid", span: 2 }] },
-    ],
-    summary: (v) => (v.year ? `Daily goals ${v.year}` : "Daily goal tracker"),
   },
   {
     id: "yearly-focus",

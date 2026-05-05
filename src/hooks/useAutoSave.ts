@@ -14,16 +14,13 @@ const REVERSE_SYNC_TYPES = new Set([
   "cleaning-checklist",
   "yearly-calendar",
   "weekly-calendar",
-  "habit-tracker",
   "yearly-habit-tracker",
   "wellness-tracker",
   "workout-tracker",
-  "daily-goal-tracker",
   "medical-records",
   "weight-tracker",
   "measurement-tracker",
   "medications",
-  "fun-tracker",
   "yearly-focus",
 ]);
 
