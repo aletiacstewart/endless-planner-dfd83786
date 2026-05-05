@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      device_activations: {
+        Row: {
+          created_at: string
+          device_id: string
+          id: string
+          unlock_code: string
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          id?: string
+          unlock_code: string
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          id?: string
+          unlock_code?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       purchases: {
         Row: {
           created_at: string
