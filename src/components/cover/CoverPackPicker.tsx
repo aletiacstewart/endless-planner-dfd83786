@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
-import { Plus, Check, X, Lock } from "lucide-react";
+import { Plus, Check, X, Lock, Eye } from "lucide-react";
 import { COLLECTIONS, COVERS, type CoverCollection } from "@/data/covers";
 import { CoverImage } from "@/components/cover/CoverImage";
+import { CoverIconPreviewDialog } from "@/components/cover/CoverIconPreviewDialog";
 import { isCoverIncluded, calcPackTotalUSD, getPackPriceUSD } from "@/data/coverPacks";
 import { isPackUnlocked } from "@/lib/unlock";
 import { Button } from "@/components/ui/button";
