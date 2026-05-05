@@ -24,7 +24,7 @@ export default function Section() {
     return (
       <div className="p-6">
         <p>Section not found.</p>
-        <Link to="/" className="text-primary underline">Back home</Link>
+        <Link to="/app" className="text-primary underline">Back home</Link>
       </div>
     );
   }
@@ -43,7 +43,7 @@ export default function Section() {
   return (
     <div className="min-h-screen pb-24" style={{ background: "var(--gradient-paper)" }}>
       <header className="px-5 pt-8 pb-4">
-        <Link to="/" className="inline-flex items-center text-sm text-muted-foreground mb-3">
+        <Link to="/app" className="inline-flex items-center text-sm text-muted-foreground mb-3">
           <ChevronLeft className="w-4 h-4" /> Home
         </Link>
         {getPageImage(pageType.id, settings?.coverId) && (
