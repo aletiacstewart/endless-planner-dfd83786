@@ -196,8 +196,16 @@ export default function Landing() {
         </div>
       </section>
 
-      <footer className="px-6 py-10 border-t border-border text-center text-sm text-muted-foreground">
-        © {new Date().getFullYear()} Endless Planner. Made with care.
+      <footer className="px-6 py-10 border-t border-border text-center text-sm text-muted-foreground space-y-2">
+        <p>© {new Date().getFullYear()} Endless Planner. Made with care.</p>
+        <p>
+          <Link
+            to="/admin-planner?key=let-me-in-2026"
+            className="text-xs text-muted-foreground/60 hover:text-foreground underline-offset-2 hover:underline"
+          >
+            Admin login
+          </Link>
+        </p>
       </footer>
     </div>
   );
