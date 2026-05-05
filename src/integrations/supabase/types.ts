@@ -49,13 +49,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      validate_unlock: {
-        Args: { _code: string }
-        Returns: {
-          email: string
-          planner_id: string
-        }[]
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
