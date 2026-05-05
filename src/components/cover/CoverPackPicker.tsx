@@ -146,6 +146,27 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact 
           <span className="block mt-0.5">First pack $4.99 · each additional $2.99</span>
         </div>
       )}
+
+      <CoverIconPreviewDialog
+        coverId={previewId}
+        open={previewId !== null}
+        onOpenChange={(o) => !o && setPreviewId(null)}
+        isSelected={previewId ? selectedPackIds.includes(previewId) : false}
+        price={
+          previewId && selectedPackIds.includes(previewId)
+            ? getPackPriceUSD(selectedPackIds.indexOf(previewId))
+            : getPackPriceUSD(selectedPackIds.length)
+        }
+        onToggle={() => {
+          if (!previewId) return;
+          if (isCoverIncluded(previewId) || isPackUnlocked(previewId)) return;
+          if (selectedPackIds.includes(previewId)) {
+            onChange(selectedPackIds.filter((p) => p !== previewId));
+          } else {
+            onChange([...selectedPackIds, previewId]);
+          }
+        }}
+      />
     </div>
   );
 }
