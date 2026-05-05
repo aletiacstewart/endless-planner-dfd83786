@@ -4,29 +4,9 @@ import { Check, Smartphone, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { COVERS } from "@/data/covers";
 import { PLANNERS } from "@/data/planners";
-import { getPageType } from "@/lib/pageTypes";
-import { getPageImage } from "@/lib/pageImages";
-import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 
 export default function Landing() {
-  const { openCheckout, checkoutElement, closeCheckout, isOpen } = useStripeCheckout();
-  const [email, setEmail] = useState("");
-
-  const buy = (plannerId: string, priceId: string) => {
-    if (!email || !email.includes("@")) {
-      alert("Please enter the email address where we should send your install link.");
-      return;
-    }
-    openCheckout({
-      plannerId,
-      priceId,
-      quantity: 1,
-      customerEmail: email,
-      returnUrl: `${window.location.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}&planner=${plannerId}`,
-    });
-  };
-
   const [code, setCode] = useState("");
   const [resendEmail, setResendEmail] = useState("");
   const [resendStatus, setResendStatus] = useState<"idle" | "sending" | "sent">("idle");
@@ -40,11 +20,6 @@ export default function Landing() {
     } catch {}
     setResendStatus("sent");
   };
-
-  const planner = PLANNERS[0];
-  const pages = planner.pageTypeIds
-    .map((id) => getPageType(id))
-    .filter((p): p is NonNullable<ReturnType<typeof getPageType>> => Boolean(p));
 
   return (
     <div className="min-h-screen bg-background">
