@@ -19,18 +19,30 @@ Deno.serve(async (req) => {
     if (!deviceId || typeof deviceId !== "string") throw new Error("Missing deviceId");
 
     const cleanCode = code.trim().toUpperCase();
-    const { data: purchase, error } = await supabase
+
+    // Try planner code first
+    const { data: planner } = await supabase
       .from("purchases")
       .select("planner_id")
       .eq("unlock_code", cleanCode)
       .maybeSingle();
-    if (error) throw error;
-    if (!purchase) {
+
+    // Then pack code
+    const { data: pack } = !planner
+      ? await supabase
+          .from("pack_purchases")
+          .select("pack_id")
+          .eq("unlock_code", cleanCode)
+          .maybeSingle()
+      : { data: null };
+
+    if (!planner && !pack) {
       return new Response(JSON.stringify({ ok: false, error: "Invalid code" }), {
         status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
+    // Device cap check (shared across both code types)
     const { data: existing } = await supabase
       .from("device_activations")
       .select("id")
@@ -59,9 +71,18 @@ Deno.serve(async (req) => {
       });
     }
 
-    return new Response(JSON.stringify({ ok: true, planner_id: (purchase as any).planner_id }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    if (planner) {
+      return new Response(JSON.stringify({
+        ok: true,
+        type: "planner",
+        planner_id: (planner as any).planner_id,
+      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    return new Response(JSON.stringify({
+      ok: true,
+      type: "pack",
+      pack_id: (pack as any).pack_id,
+    }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: e instanceof Error ? e.message : "Error" }), {
       status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },

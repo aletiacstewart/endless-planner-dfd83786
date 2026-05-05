@@ -1,5 +1,4 @@
-// Stripe webhook handler — fulfills purchases server-side so users always
-// get their unlock code even if they close the tab on /thank-you.
+// Stripe webhook handler — fulfills planner + cover-pack purchases.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { type StripeEnv, verifyWebhook } from "../_shared/stripe.ts";
 
@@ -23,45 +22,99 @@ async function fulfill(session: any, env: StripeEnv, origin: string) {
   if (session.payment_status !== "paid") return;
   const sessionId = session.id;
   const email = session.customer_details?.email || session.customer_email;
-  const plannerId = session.metadata?.planner_id || "wellness-journey";
+  const meta = session.metadata || {};
+  const includesPlanner = meta.includes_planner === "true" || (!meta.includes_planner && meta.planner_id);
+  const plannerId = meta.planner_id || "wellness-journey";
+  const packIds: string[] = (meta.pack_ids || "")
+    .split(",")
+    .map((s: string) => s.trim())
+    .filter(Boolean);
+
   if (!email) {
     console.warn("No email on session", sessionId);
     return;
   }
 
   const supa = getSupabase();
-  const { data: existing } = await supa
-    .from("purchases")
-    .select("unlock_code")
-    .eq("stripe_session_id", sessionId)
-    .maybeSingle();
+  let planner_unlock_code: string | undefined;
+  const pack_codes: { packId: string; code: string }[] = [];
 
-  let unlock_code = (existing as any)?.unlock_code as string | undefined;
-  if (!unlock_code) {
-    unlock_code = makeCode();
-    const { error } = await supa.from("purchases").insert({
-      planner_id: plannerId,
-      email,
-      unlock_code,
-      stripe_session_id: sessionId,
-      environment: env,
-    });
-    if (error) {
-      console.error("Insert purchase failed", error);
-      return;
+  // Planner fulfillment
+  if (includesPlanner) {
+    const { data: existing } = await supa
+      .from("purchases")
+      .select("unlock_code")
+      .eq("stripe_session_id", sessionId)
+      .maybeSingle();
+    planner_unlock_code = (existing as any)?.unlock_code;
+    if (!planner_unlock_code) {
+      planner_unlock_code = makeCode();
+      const { error } = await supa.from("purchases").insert({
+        planner_id: plannerId,
+        email,
+        unlock_code: planner_unlock_code,
+        stripe_session_id: sessionId,
+        environment: env,
+      });
+      if (error) console.error("Insert purchase failed", error);
     }
   }
 
-  const installLink = `${origin}/unlock?code=${unlock_code}`;
+  // Pack fulfillment
+  for (const packId of packIds) {
+    const { data: existing } = await supa
+      .from("pack_purchases")
+      .select("unlock_code")
+      .eq("stripe_session_id", sessionId)
+      .eq("pack_id", packId)
+      .maybeSingle();
+    let code = (existing as any)?.unlock_code as string | undefined;
+    if (!code) {
+      code = makeCode();
+      const { error } = await supa.from("pack_purchases").insert({
+        email,
+        pack_id: packId,
+        unlock_code: code,
+        stripe_session_id: sessionId,
+        environment: env,
+      });
+      if (error) {
+        console.error("Insert pack_purchase failed", packId, error);
+        continue;
+      }
+    }
+    pack_codes.push({ packId, code });
+  }
+
+  // Email — planner template if planner included, else pack-only template
   try {
-    await supa.functions.invoke("send-transactional-email", {
-      body: {
-        templateName: "planner-purchase",
-        recipientEmail: email,
-        idempotencyKey: `planner-purchase-${sessionId}`,
-        templateData: { plannerId, installLink, unlockCode: unlock_code },
-      },
-    });
+    if (includesPlanner) {
+      const installLink = `${origin}/unlock?code=${planner_unlock_code}`;
+      await supa.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "planner-purchase",
+          recipientEmail: email,
+          idempotencyKey: `planner-purchase-${sessionId}`,
+          templateData: {
+            plannerId,
+            installLink,
+            unlockCode: planner_unlock_code,
+            packCodes: pack_codes,
+            origin,
+          },
+        },
+      });
+    }
+    if (pack_codes.length > 0) {
+      await supa.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "cover-pack-purchase",
+          recipientEmail: email,
+          idempotencyKey: `pack-purchase-${sessionId}`,
+          templateData: { packCodes: pack_codes, origin },
+        },
+      });
+    }
   } catch (e) {
     console.warn("Email send failed (non-fatal)", e);
   }
