@@ -125,6 +125,36 @@ export type Database = {
         }
         Relationships: []
       }
+      pack_purchases: {
+        Row: {
+          created_at: string
+          email: string
+          environment: string
+          id: string
+          pack_id: string
+          stripe_session_id: string | null
+          unlock_code: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          environment?: string
+          id?: string
+          pack_id: string
+          stripe_session_id?: string | null
+          unlock_code: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          environment?: string
+          id?: string
+          pack_id?: string
+          stripe_session_id?: string | null
+          unlock_code?: string
+        }
+        Relationships: []
+      }
       purchases: {
         Row: {
           created_at: string
