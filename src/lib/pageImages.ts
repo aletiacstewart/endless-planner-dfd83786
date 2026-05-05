@@ -27,7 +27,7 @@ export const PAGE_IMAGES: Record<string, string> = {
   "cleaning-checklist": cleaningChecklist,
   "complete-tracker": completeTracker,
   "daily-tracker": dailyTracker,
-  "goals-reflection": goalsReflection,
+  
   "medical-records": medicalRecords,
   "medications": medications,
   "my-goals": myGoals,
