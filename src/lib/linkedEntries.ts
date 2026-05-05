@@ -786,40 +786,6 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
       return synced;
     }
 
-    // Wellness Tracker → numeric ratings on Complete Tracker for each marked day.
-    if (entry.pageType === "wellness-tracker") {
-      const year = Number(v.year ?? "");
-      if (!year) return [];
-      const fields = ["water", "caffeine", "sweets", "sleep", "smoking", "mood"];
-      const cellSet = new Set<string>();
-      for (const f of fields) {
-        const grid = (v[f] as { cells?: Record<string, string> } | undefined)?.cells ?? {};
-        for (const k of Object.keys(grid)) cellSet.add(k);
-      }
-      let touched = 0;
-      for (const cellKey of cellSet) {
-        const m = /^(\d+)-(\d+)$/.exec(cellKey);
-        if (!m) continue;
-        const day = Number(m[1]);
-        const monthIndex = Number(m[2]);
-        const iso = isoOf(year, monthIndex, day);
-        touched += await updateCompleteForDate(iso, (dst) => {
-          for (const f of fields) {
-            const grid = (v[f] as { cells?: Record<string, string> } | undefined)?.cells ?? {};
-            const cellVal = grid[cellKey];
-            if (cellVal && String(cellVal).trim()) {
-              const n = Number(cellVal);
-              dst[f] = Number.isNaN(n) ? cellVal : n;
-            } else {
-              delete dst[f];
-            }
-          }
-        });
-      }
-      if (touched > 0) synced.push("Complete Tracker (wellness)");
-      return synced;
-    }
-
     // Workout Tracker → category text on Complete Tracker for each marked day.
     if (entry.pageType === "workout-tracker") {
       const year = Number(v.year ?? "");
