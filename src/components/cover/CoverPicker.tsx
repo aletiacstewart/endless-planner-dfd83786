@@ -36,6 +36,10 @@ export function CoverPicker({
   const [filter, setFilter] = useState<CoverCollection | "all">("all");
 
   // Only show collection chips that actually have covers.
+  const [filter, setFilter] = useState<CoverCollection | "all">("all");
+  const navigate = useNavigate();
+
+  // Only show collection chips that actually have covers.
   const availableCollections = useMemo(() => {
     const used = new Set(COVERS.map((c) => c.collection));
     return COLLECTIONS.filter((c) => used.has(c.id));
