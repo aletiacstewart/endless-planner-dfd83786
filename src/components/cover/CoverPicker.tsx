@@ -1,9 +1,12 @@
 import { useMemo, useState } from "react";
-import { Check, X } from "lucide-react";
+import { Check, X, Lock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { COLLECTIONS, COVERS, getCover, type CoverCollection } from "@/data/covers";
 import { CoverImage } from "./CoverImage";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { isPackUnlocked } from "@/lib/unlock";
+import { isCoverPaid } from "@/data/coverPacks";
 
 type Props = {
   open: boolean;
