@@ -1,9 +1,12 @@
 import { useMemo, useState } from "react";
-import { Check, X } from "lucide-react";
+import { Check, X, Lock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { COLLECTIONS, COVERS, getCover, type CoverCollection } from "@/data/covers";
 import { CoverImage } from "./CoverImage";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { isPackUnlocked } from "@/lib/unlock";
+import { isCoverPaid } from "@/data/coverPacks";
 
 type Props = {
   open: boolean;
@@ -31,6 +34,7 @@ export function CoverPicker({
   onConfirm,
 }: Props) {
   const [filter, setFilter] = useState<CoverCollection | "all">("all");
+  const navigate = useNavigate();
 
   // Only show collection chips that actually have covers.
   const availableCollections = useMemo(() => {
@@ -92,10 +96,17 @@ export function CoverPicker({
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {visibleCovers.map((c) => {
             const isSelected = c.id === selectedId;
+            const locked = isCoverPaid(c.id) && !isPackUnlocked(c.id);
             return (
               <button
                 key={c.id}
-                onClick={() => onSelect(c.id)}
+                onClick={() => {
+                  if (locked) {
+                    navigate(`/packs?focus=${c.id}`);
+                    return;
+                  }
+                  onSelect(c.id);
+                }}
                 className={cn(
                   "relative aspect-square rounded-xl overflow-hidden border-2 transition-all",
                   isSelected
@@ -107,12 +118,22 @@ export function CoverPicker({
                   cover={c}
                   plannerName={plannerName}
                   ownerName={ownerName}
-                  className="absolute inset-0"
+                  className={cn("absolute inset-0", locked && "opacity-60")}
                 />
-                {isSelected && (
+                {isSelected && !locked && (
                   <div className="absolute top-2 right-2 w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg">
                     <Check className="w-4 h-4" strokeWidth={3} />
                   </div>
+                )}
+                {locked && (
+                  <>
+                    <div className="absolute top-2 right-2 w-7 h-7 rounded-full bg-background/90 text-foreground flex items-center justify-center shadow-lg">
+                      <Lock className="w-3.5 h-3.5" />
+                    </div>
+                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-background/90 text-foreground text-[10px] font-semibold shadow">
+                      Unlock
+                    </div>
+                  </>
                 )}
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-2">
                   <p className="text-[11px] text-white font-medium truncate">{c.name}</p>

@@ -21,8 +21,10 @@ import { getPageImage } from "@/lib/pageImages";
 
 const LAST_BACKUP_KEY = "planner.lastBackupAt";
 const BACKUP_DISMISS_KEY = "planner.backupReminderDismissedUntil";
+const COVER_NUDGE_KEY = "home.coverNudge.dismissedUntil";
 const REMIND_AFTER_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 const DISMISS_FOR_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const NUDGE_DISMISS_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 export default function Home() {
   const { settings } = useUserSettings();
@@ -30,7 +32,13 @@ export default function Home() {
   const [recent, setRecent] = useState<PlannerEntry[]>([]);
   const [totalEntries, setTotalEntries] = useState(0);
   const [showReminder, setShowReminder] = useState(false);
+  const [showCoverNudge, setShowCoverNudge] = useState(false);
   const backupRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const dismissedUntil = Number(localStorage.getItem(COVER_NUDGE_KEY) || 0);
+    if (Date.now() > dismissedUntil) setShowCoverNudge(true);
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -132,6 +140,23 @@ export default function Home() {
 
 
       <main className="px-5 pt-6 space-y-6">
+        {showCoverNudge && (
+          <section className="rounded-full border border-primary/30 bg-primary/5 px-4 py-2 flex items-center justify-between gap-3">
+            <Link to="/packs" className="text-sm font-medium text-foreground flex-1 truncate">
+              ✨ Try a new cover &amp; icon pack
+            </Link>
+            <button
+              onClick={() => {
+                localStorage.setItem(COVER_NUDGE_KEY, String(Date.now() + NUDGE_DISMISS_MS));
+                setShowCoverNudge(false);
+              }}
+              aria-label="Dismiss"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <Icons.X className="w-4 h-4" />
+            </button>
+          </section>
+        )}
         {showReminder && (
           <section className="rounded-xl border border-accent/40 bg-accent-soft/60 p-4">
             <div className="flex items-start gap-3">

@@ -1,8 +1,6 @@
 const corsHeaders = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type" };
 import { type StripeEnv, createStripeClient } from "../_shared/stripe.ts";
 
-const FIRST_PACK_CENTS = 499;
-const ADDITIONAL_PACK_CENTS = 299;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -44,19 +42,21 @@ Deno.serve(async (req) => {
       line_items.push({ price: prices.data[0].id, quantity: quantity || 1 });
     }
 
-    packs.forEach((coverId, i) => {
-      const cents = i === 0 ? FIRST_PACK_CENTS : ADDITIONAL_PACK_CENTS;
-      line_items.push({
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: `Cover & Icon Pack — ${coverId}`,
-          },
-          unit_amount: cents,
-        },
-        quantity: 1,
+    if (packs.length > 0) {
+      const packPrices = await stripe.prices.list({
+        lookup_keys: ["cover_pack_first", "cover_pack_additional"],
       });
-    });
+      const firstPrice = packPrices.data.find((p) => p.lookup_key === "cover_pack_first");
+      const addPrice = packPrices.data.find((p) => p.lookup_key === "cover_pack_additional");
+      if (!firstPrice || !addPrice) throw new Error("Cover pack prices not found");
+
+      packs.forEach((_coverId, i) => {
+        line_items.push({
+          price: i === 0 ? firstPrice.id : addPrice.id,
+          quantity: 1,
+        });
+      });
+    }
 
     const session = await stripe.checkout.sessions.create({
       line_items,
