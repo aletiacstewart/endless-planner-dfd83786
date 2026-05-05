@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, ImageIcon } from "lucide-react";
+import { ArrowLeft, ImageIcon, Download, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CoverImage } from "@/components/cover/CoverImage";
 import { CoverPicker } from "@/components/cover/CoverPicker";
 import { useUserSettings } from "@/hooks/useUserSettings";
 import { getCover } from "@/data/covers";
+import { exportAll, importAll } from "@/lib/db";
 import { toast } from "sonner";
 
 export default function Settings() {
@@ -85,6 +86,8 @@ export default function Settings() {
           <Button onClick={saveText} className="w-full">Save</Button>
         </section>
 
+        <BackupSection />
+
         <Link to="/" className="block text-center text-sm text-muted-foreground underline pt-2">
           Back to planner
         </Link>
@@ -101,5 +104,70 @@ export default function Settings() {
         confirmLabel="Done"
       />
     </div>
+  );
+}
+
+function BackupSection() {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+
+  const onExport = async () => {
+    setBusy(true);
+    try {
+      const json = await exportAll();
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `planner-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("Backup downloaded");
+    } catch (e) {
+      toast.error("Couldn't export your data");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onImport = async (file: File) => {
+    setBusy(true);
+    try {
+      const text = await file.text();
+      const count = await importAll(text, "merge");
+      toast.success(`Restored ${count} entries`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't restore that file");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <section className="planner-card space-y-3">
+      <h2 className="font-display text-xl">Backup & Restore</h2>
+      <p className="text-xs text-muted-foreground">
+        Your data lives only on this device. Export a backup file you can save anywhere — then restore it on a new phone, tablet, or computer.
+      </p>
+      <div className="grid grid-cols-2 gap-2">
+        <Button onClick={onExport} disabled={busy} variant="outline">
+          <Download className="w-4 h-4 mr-2" /> Export backup
+        </Button>
+        <Button onClick={() => fileRef.current?.click()} disabled={busy} variant="outline">
+          <Upload className="w-4 h-4 mr-2" /> Restore from file
+        </Button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="application/json"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) onImport(f);
+            e.target.value = "";
+          }}
+        />
+      </div>
+    </section>
   );
 }
