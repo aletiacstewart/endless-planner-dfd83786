@@ -76,9 +76,9 @@ export default function Landing() {
       {/* Header */}
       <header className="px-6 py-4 flex items-center justify-between border-b border-border">
         <h1 className="font-display text-xl">Endless Planner</h1>
-        <Link to="/app" className="text-sm text-muted-foreground hover:text-foreground underline">
+        <a href="#own" className="text-sm text-muted-foreground hover:text-foreground underline">
           I already own it
-        </Link>
+        </a>
       </header>
 
       {/* Hero */}
@@ -245,8 +245,49 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Already own it */}
+      <section id="own" className="px-6 py-16">
+        <div className="max-w-3xl mx-auto grid md:grid-cols-2 gap-6">
+          <div className="planner-card">
+            <h3 className="font-display text-xl mb-2">Already have a code?</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Paste your unlock code to install on this device.
+            </p>
+            <input
+              type="text"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="XXXX-XXXX-XXXXXXXX"
+              className="w-full px-4 py-3 rounded-md border border-input bg-background mb-3 font-mono text-sm"
+            />
+            <Button
+              className="w-full"
+              onClick={() => code.trim() && (window.location.href = `/unlock?code=${encodeURIComponent(code.trim())}`)}
+            >
+              Unlock on this device
+            </Button>
+          </div>
+          <div className="planner-card">
+            <h3 className="font-display text-xl mb-2">Lost your code?</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Enter your purchase email and we'll resend your install link.
+            </p>
+            <input
+              type="email"
+              value={resendEmail}
+              onChange={(e) => setResendEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full px-4 py-3 rounded-md border border-input bg-background mb-3"
+            />
+            <Button variant="outline" className="w-full" onClick={submitResend} disabled={resendStatus === "sending"}>
+              {resendStatus === "sent" ? "Check your inbox" : resendStatus === "sending" ? "Sending…" : "Resend my link"}
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ */}
-      <section className="px-6 py-16">
+      <section className="px-6 py-16 bg-muted/30">
         <div className="max-w-3xl mx-auto">
           <h3 className="font-display text-3xl text-center mb-10">Frequently asked</h3>
           <div className="space-y-6">
