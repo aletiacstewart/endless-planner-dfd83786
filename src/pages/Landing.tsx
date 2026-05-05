@@ -155,39 +155,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Buy block */}
-      <section id="buy" className="px-6 py-16 bg-muted/30">
-        <div className="max-w-xl mx-auto planner-card text-center">
-          <h3 className="font-display text-3xl mb-2">Get the {planner.name}</h3>
-          <p className="text-muted-foreground mb-6">
-            ${planner.priceUSD} one-time. Lifetime access for as long as the platform is online.
-            Install on unlimited personal devices.
-          </p>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            className="w-full px-4 py-3 rounded-md border border-input bg-background mb-3"
-          />
-          <p className="text-xs text-muted-foreground mb-4">
-            We'll email your install link to this address after payment.
-          </p>
-          <Button size="lg" className="w-full" onClick={() => buy(planner.id, planner.priceId)}>
-            Pay ${planner.priceUSD} & Install
-          </Button>
-          {isOpen && (
-            <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur overflow-y-auto">
-              <div className="max-w-xl mx-auto p-6">
-                <button onClick={closeCheckout} className="mb-4 text-sm underline">
-                  ← Cancel
-                </button>
-                {checkoutElement}
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
 
       {/* Already own it */}
       <section id="own" className="px-6 py-16">
