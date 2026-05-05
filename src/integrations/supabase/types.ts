@@ -14,13 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      purchases: {
+        Row: {
+          created_at: string
+          email: string
+          environment: string
+          id: string
+          planner_id: string
+          stripe_session_id: string | null
+          unlock_code: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          environment?: string
+          id?: string
+          planner_id: string
+          stripe_session_id?: string | null
+          unlock_code: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          environment?: string
+          id?: string
+          planner_id?: string
+          stripe_session_id?: string | null
+          unlock_code?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      validate_unlock: {
+        Args: { _code: string }
+        Returns: {
+          email: string
+          planner_id: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
