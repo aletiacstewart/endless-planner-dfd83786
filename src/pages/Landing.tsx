@@ -93,14 +93,6 @@ export default function Landing() {
           A digital planner you install on your phone, tablet, or desktop — beautifully designed,
           fully offline, and yours for life. One simple price.
         </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-          <Button size="lg" onClick={handleInstall} variant="outline">
-            <Download className="w-4 h-4 mr-2" /> Install on this device
-          </Button>
-          <Button size="lg" onClick={() => document.getElementById("buy")?.scrollIntoView({ behavior: "smooth" })}>
-            Get the planner — ${planner.priceUSD}
-          </Button>
-        </div>
       </section>
 
       {/* Planner showcase */}
