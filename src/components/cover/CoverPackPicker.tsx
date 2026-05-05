@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
-import { Plus, Check, X, Lock } from "lucide-react";
+import { Plus, Check, X, Lock, Eye } from "lucide-react";
 import { COLLECTIONS, COVERS, type CoverCollection } from "@/data/covers";
 import { CoverImage } from "@/components/cover/CoverImage";
+import { CoverIconPreviewDialog } from "@/components/cover/CoverIconPreviewDialog";
 import { isCoverIncluded, calcPackTotalUSD, getPackPriceUSD } from "@/data/coverPacks";
 import { isPackUnlocked } from "@/lib/unlock";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ type Props = {
 
 export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact }: Props) {
   const [filter, setFilter] = useState<CoverCollection | "all">("all");
+  const [previewId, setPreviewId] = useState<string | null>(null);
 
   const availableCollections = useMemo(() => {
     const used = new Set(COVERS.map((c) => c.collection));
@@ -83,6 +85,19 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact 
             >
               <CoverImage cover={c} className="absolute inset-0" />
 
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setPreviewId(c.id);
+                }}
+                className="absolute bottom-2 right-2 z-10 w-8 h-8 rounded-full bg-black/55 hover:bg-black/75 text-white flex items-center justify-center backdrop-blur-sm transition-colors"
+                aria-label={`Preview icons for ${c.name}`}
+                title="Preview matching page icons"
+              >
+                <Eye className="w-4 h-4" />
+              </button>
+
               {included && (
                 <span className="absolute top-2 left-2 text-[10px] uppercase tracking-wide font-bold bg-primary text-primary-foreground rounded-full px-2 py-0.5">
                   Included
@@ -131,6 +146,27 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact 
           <span className="block mt-0.5">First pack $4.99 · each additional $2.99</span>
         </div>
       )}
+
+      <CoverIconPreviewDialog
+        coverId={previewId}
+        open={previewId !== null}
+        onOpenChange={(o) => !o && setPreviewId(null)}
+        isSelected={previewId ? selectedPackIds.includes(previewId) : false}
+        price={
+          previewId && selectedPackIds.includes(previewId)
+            ? getPackPriceUSD(selectedPackIds.indexOf(previewId))
+            : getPackPriceUSD(selectedPackIds.length)
+        }
+        onToggle={() => {
+          if (!previewId) return;
+          if (isCoverIncluded(previewId) || isPackUnlocked(previewId)) return;
+          if (selectedPackIds.includes(previewId)) {
+            onChange(selectedPackIds.filter((p) => p !== previewId));
+          } else {
+            onChange([...selectedPackIds, previewId]);
+          }
+        }}
+      />
     </div>
   );
 }
