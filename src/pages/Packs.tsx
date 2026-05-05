@@ -1,15 +1,26 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CoverPackPicker, CoverPackSummary } from "@/components/cover/CoverPackPicker";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { isPackUnlocked } from "@/lib/unlock";
 
 export default function Packs() {
-  const [packIds, setPackIds] = useState<string[]>([]);
+  const [searchParams] = useSearchParams();
+  const focus = searchParams.get("focus");
+  const [packIds, setPackIds] = useState<string[]>(() =>
+    focus && !isPackUnlocked(focus) ? [focus] : []
+  );
   const [email, setEmail] = useState("");
   const { openCheckout, checkoutElement, closeCheckout, isOpen } = useStripeCheckout();
+
+  useEffect(() => {
+    if (focus) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [focus]);
 
   const buy = () => {
     if (packIds.length === 0) return;
