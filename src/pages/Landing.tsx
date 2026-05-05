@@ -4,29 +4,9 @@ import { Check, Smartphone, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { COVERS } from "@/data/covers";
 import { PLANNERS } from "@/data/planners";
-import { getPageType } from "@/lib/pageTypes";
-import { getPageImage } from "@/lib/pageImages";
-import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 
 export default function Landing() {
-  const { openCheckout, checkoutElement, closeCheckout, isOpen } = useStripeCheckout();
-  const [email, setEmail] = useState("");
-
-  const buy = (plannerId: string, priceId: string) => {
-    if (!email || !email.includes("@")) {
-      alert("Please enter the email address where we should send your install link.");
-      return;
-    }
-    openCheckout({
-      plannerId,
-      priceId,
-      quantity: 1,
-      customerEmail: email,
-      returnUrl: `${window.location.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}&planner=${plannerId}`,
-    });
-  };
-
   const [code, setCode] = useState("");
   const [resendEmail, setResendEmail] = useState("");
   const [resendStatus, setResendStatus] = useState<"idle" | "sending" | "sent">("idle");
@@ -40,11 +20,6 @@ export default function Landing() {
     } catch {}
     setResendStatus("sent");
   };
-
-  const planner = PLANNERS[0];
-  const pages = planner.pageTypeIds
-    .map((id) => getPageType(id))
-    .filter((p): p is NonNullable<ReturnType<typeof getPageType>> => Boolean(p));
 
   return (
     <div className="min-h-screen bg-background">
@@ -104,8 +79,8 @@ export default function Landing() {
                     <span className="text-xs text-muted-foreground ml-1">one-time</span>
                   </div>
                   {p.available ? (
-                    <Button onClick={() => document.getElementById("buy")?.scrollIntoView({ behavior: "smooth" })}>
-                      Buy & Install
+                    <Button asChild>
+                      <Link to={`/planner/${p.id}`}>Buy & Install</Link>
                     </Button>
                   ) : (
                     <span className="text-xs text-muted-foreground">Coming soon</span>
@@ -117,31 +92,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* What's inside */}
-      <section className="px-6 py-16">
-        <div className="max-w-6xl mx-auto">
-          <h3 className="font-display text-3xl text-center mb-2">What's inside</h3>
-          <p className="text-center text-muted-foreground mb-10">
-            {pages.length} guided pages in the {planner.name}
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {pages.map((p) => {
-              const img = getPageImage(p.id);
-              return (
-                <div key={p.id} className="planner-card text-center">
-                  {img ? (
-                    <div className="aspect-square rounded-md overflow-hidden bg-muted mb-2">
-                      <img src={img} alt={p.name} className="w-full h-full object-cover" />
-                    </div>
-                  ) : null}
-                  <h4 className="font-medium text-sm mb-1">{p.name}</h4>
-                  <p className="text-xs text-muted-foreground line-clamp-2">{p.description}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
 
       {/* Cover gallery */}
       <section className="px-6 py-16 bg-muted/30">
@@ -180,39 +130,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Buy block */}
-      <section id="buy" className="px-6 py-16 bg-muted/30">
-        <div className="max-w-xl mx-auto planner-card text-center">
-          <h3 className="font-display text-3xl mb-2">Get the {planner.name}</h3>
-          <p className="text-muted-foreground mb-6">
-            ${planner.priceUSD} one-time. Lifetime access for as long as the platform is online.
-            Install on unlimited personal devices.
-          </p>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            className="w-full px-4 py-3 rounded-md border border-input bg-background mb-3"
-          />
-          <p className="text-xs text-muted-foreground mb-4">
-            We'll email your install link to this address after payment.
-          </p>
-          <Button size="lg" className="w-full" onClick={() => buy(planner.id, planner.priceId)}>
-            Pay ${planner.priceUSD} & Install
-          </Button>
-          {isOpen && (
-            <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur overflow-y-auto">
-              <div className="max-w-xl mx-auto p-6">
-                <button onClick={closeCheckout} className="mb-4 text-sm underline">
-                  ← Cancel
-                </button>
-                {checkoutElement}
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
 
       {/* Already own it */}
       <section id="own" className="px-6 py-16">
