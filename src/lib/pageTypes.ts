@@ -791,23 +791,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
     summary: (v) => (v.title as string) || (v.body as string)?.slice(0, 60) || "Untitled note",
   },
   {
-    id: "wellness-tracker",
-    name: "Yearly Wellness Tracker",
-    shortName: "Wellness",
-    description: "Daily water, caffeine, sweets, sleep, smoking and mood — across the whole year.",
-    icon: "HeartPulse",
-    sections: [
-      { fields: [{ key: "year", label: "Year", type: "year" }] },
-      { title: "Water (glasses)", fields: [{ key: "water", label: "Water", type: "daily-month-grid", span: 2 }] },
-      { title: "Caffeine / Other (cups)", fields: [{ key: "caffeine", label: "Caffeine", type: "daily-month-grid", span: 2 }] },
-      { title: "Sweets", fields: [{ key: "sweets", label: "Sweets", type: "daily-month-grid", span: 2 }] },
-      { title: "Sleep (hours)", fields: [{ key: "sleep", label: "Sleep", type: "daily-month-grid", span: 2 }] },
-      { title: "Smoking / Vaping", fields: [{ key: "smoking", label: "Smoking", type: "daily-month-grid", span: 2 }] },
-      { title: "Mood (1–5)", fields: [{ key: "mood", label: "Mood", type: "daily-month-grid", span: 2 }] },
-    ],
-    summary: (v) => (v.year ? `Wellness ${v.year}` : "Yearly wellness"),
-  },
-  {
     id: "workout-tracker",
     name: "Yearly Workout Tracker",
     shortName: "Workout",
