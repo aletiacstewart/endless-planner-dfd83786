@@ -428,25 +428,6 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       synced.push(`Yearly Focus (${yearStr})`);
     }
 
-    // 15. Wellness Tracker — six daily-month-grids of numeric ratings.
-    const wellnessFields = ["water", "caffeine", "sweets", "sleep", "smoking", "mood"];
-    if (wellnessFields.some((k) => v[k] != null && v[k] !== "")) {
-      const entry = await findOrCreate(
-        "wellness-tracker",
-        (e) => String(e.values.year ?? "") === yearStr,
-        { year: yearStr },
-      );
-      await persist(entry, (dst) => {
-        if (!dst.year) dst.year = yearStr;
-        for (const k of wellnessFields) {
-          const raw = v[k];
-          const txt = raw == null || raw === "" ? "" : String(raw);
-          mergeDailyMonthCell(dst, k, date.day, date.monthIndex, txt);
-        }
-      });
-      synced.push(`Wellness Tracker (${yearStr})`);
-    }
-
     // 16. Workout Tracker — daily-month-grid per category.
     const workoutFields = ["cardio", "weights", "yoga", "stretch", "rest_day", "other"];
     if (workoutFields.some((k) => v[k] != null && v[k] !== "" && v[k] !== false)) {
