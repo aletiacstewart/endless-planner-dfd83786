@@ -1,110 +1,117 @@
+# Cover Packs as Paid Add-Ons
 
-# Landing page, multi-planner catalog, and paid PWA download
+Make covers + matching page-icon sets sellable. The base planner ships with the **Forget‑Me‑Nots & Ladybugs** pack free. Every other cover pack is a paid add-on: **$4.99 first add-on pack, $2.99 each additional**. Buyers pick which pack(s) they want before paying, packs unlock per-device just like the planner, and Home gently nudges users to try other packs.
 
-## Goals
-1. Public marketing/landing page that showcases this planner, its full page list, and the entire cover gallery.
-2. A planner catalog data layer so new planners can be added later without rewriting the landing page. All planners share the same cover library; pages/content are planner-specific.
-3. Flat lifetime price of **$19.97 per planner** ("one-time payment, lifetime access for the life of the platform").
-4. The app becomes installable on phone / tablet / desktop (PWA) with local data, plus Backup/Restore JSON so a user can move to a new device.
-5. Stripe checkout: after successful payment, the buyer receives an email with their install/download link and a unique unlock code.
+## What "a pack" means
 
----
+A pack = **one cover** + **its matching icon set** (the per-cover icons we already wire through `COVER_ICONS` in `src/lib/coverIcons.ts`). Forget‑Me‑Nots & Ladybugs already has its full icon set; future packs each ship a cover + icon set together.
 
-## 1. Planner catalog (data layer)
+We will **group covers into pack tiers** so collections like "Sparrow Series" or "Black Moon" can each be sold as a single pack containing several covers + one shared icon set, OR sold per-cover. To keep this launch simple:
 
-Create `src/data/planners.ts`:
+- One pack = one cover (1:1). Collections remain a UI grouping for filtering only.
+- "Forget‑Me‑Nots & Ladybugs" = the included free pack.
+- Every other cover in `src/data/covers.ts` = a paid pack.
 
-```ts
-export interface PlannerDef {
-  id: string;              // "wellness-journey"
-  name: string;            // "Change of Life — Wellness Journey"
-  tagline: string;
-  description: string;
-  heroImage: string;       // imported asset
-  priceUSD: number;        // 19.97
-  pageTypeIds: string[];   // ids from pageTypes.ts that belong to this planner
-  highlights: string[];    // bullet points for landing page
-  available: boolean;      // toggle "coming soon"
-}
-export const PLANNERS: PlannerDef[] = [ /* wellness-journey seeded from current pageTypes */ ];
+(We can bundle later if you want — easy follow-up.)
+
+## Pricing logic (cart-aware)
+
+When a user buys the planner OR adds packs later, the price for **add-on packs in this transaction**:
+
+```
+1st add-on pack in cart  → $4.99
+each additional add-on   → $2.99
 ```
 
-The current planner is registered with all 25 existing page type ids. Future planners just add an entry; covers are shared globally from `src/data/covers.ts` (80 covers).
+Examples:
+- Planner only: $19.97
+- Planner + 1 pack: $19.97 + $4.99 = $24.96
+- Planner + 3 packs: $19.97 + $4.99 + $2.99 + $2.99 = $30.94
+- Returning user buys 2 packs alone: $4.99 + $2.99 = $7.98
 
-## 2. Landing page
+Stripe one-time line items per pack with `price_data` (dynamic amount) so we can apply first-pack vs additional pricing in one Checkout session.
 
-New route `/` → `src/pages/Landing.tsx` (current `/` becomes `/app` for the authenticated planner experience; splash/onboarding gated behind purchase — see §5).
+## User flows
 
-Sections:
-- **Hero**: logo, tagline, "Install on any device", primary CTA "Get the planner — $19.97".
-- **Planner showcase** (loops `PLANNERS`): name, hero image, page count, highlights, "Buy & Install" button. Coming-soon planners show a muted card.
-- **What's inside** (for the selected planner): grid of all page types using existing `pageImages.ts` thumbnails + page names + short descriptions. Pulled dynamically from `pageTypes.ts` filtered by `planner.pageTypeIds`.
-- **Cover gallery**: responsive grid of all 80 covers from `covers.ts` with the message "Every planner unlocks the full cover library."
-- **How it works**: 3 steps — Buy → Receive install link by email → Install on phone/tablet/PC and start journaling. Mentions data lives on-device with Backup/Restore.
-- **Pricing**: "$19.97 one-time. Lifetime access for as long as the platform is online. Install on unlimited personal devices."
-- **FAQ**: data ownership, moving to a new device, refunds, supported devices.
-- **Footer**: contact, terms.
+### A. First-time purchase (Planner Detail page)
+1. User picks the planner.
+2. Below the price, a new **"Choose your covers"** section shows a grid of all covers (reusing `CoverPicker`'s visual style). Forget‑Me‑Nots & Ladybugs is marked **Included**. Other covers each have a **+ Add ($4.99 / $2.99)** toggle. Live cart total updates.
+3. Email field, then **Buy & Install — $XX.XX**.
+4. Stripe Checkout includes one line for the planner + one line per selected pack.
+5. On success, the unlock email lists the planner code AND each pack code (or one combined code — see Tech section).
 
-Routing changes in `App.tsx`:
-- `/` → `Landing`
-- `/app` → existing `Index` (splash + sections), gated by `hasUnlock(plannerId)` check in localStorage; if not unlocked, redirect to `/` with a buy modal.
-- `/unlock?code=…&planner=…` → validates code via edge function, stores unlock locally, redirects to `/app`.
+### B. Returning user adds more packs
+1. New page **`/packs`** — "Cover & Icon Packs" gallery. Each cover card shows owned/locked state.
+2. Locked covers have **+ Add to cart** button. Sticky cart bar at bottom: "2 packs · $7.98 · Checkout".
+3. Checkout flow same as A but planner line is omitted.
 
-## 3. PWA install (phone / tablet / desktop)
+### C. Cover switcher (Settings → Change cover)
+- Locked covers stay visible in the picker but are dimmed with a small lock badge.
+- Tapping a locked cover opens a sheet: "Unlock this cover for $4.99" → links to `/packs` with that pack pre-selected.
 
-- Add `vite-plugin-pwa` with `registerType: 'autoUpdate'`, generate `manifest.webmanifest` (icons from existing assets, theme color from cover theme default, display `standalone`).
-- Service worker precaches the built app shell so it works offline. User data already lives in IndexedDB (`src/lib/db.ts`) so nothing else changes for offline.
-- Landing page "Install" button uses the `beforeinstallprompt` event on Android/desktop; on iOS show a small instruction sheet ("Share → Add to Home Screen").
-- **Backup / Restore**: extend Settings page with two buttons — "Export my data" (downloads JSON of all IndexedDB stores + settings) and "Restore from backup" (uploads JSON, replaces stores). This is the "new phone" recovery path.
+### D. "Try a new cover" Home prompt
+- Small dismissible chip on Home (top right under header): **"✨ Try a new cover →"**.
+- Tapping opens the cover picker. If user only owns the included pack, the picker shows locked covers with the unlock CTA.
+- Shows once per session (sessionStorage flag), and never if user has already opened the picker that day.
 
-## 4. Stripe checkout (Lovable built-in payments)
+## Technical Plan
 
-Use Lovable's built-in Stripe payments (no user-managed Stripe account needed). Flow:
+### Data
+- New file `src/data/coverPacks.ts`:
+  - `INCLUDED_PACK_IDS = ["forget-me-nots-ladybugs"]`
+  - `getPackPrice(indexInCart)` → `4.99` if first add-on, `2.99` otherwise
+  - `isCoverIncluded(coverId)` / `isCoverPaid(coverId)` helpers
+- Reuse `COVERS` from `src/data/covers.ts` as the pack catalog (one pack per cover).
 
-1. Run `payments--recommend_payment_provider`, then enable Stripe via `payments--enable_stripe_payments` (Lovable Cloud will be enabled if not already).
-2. Create one Stripe product per planner via `batch_create_product` at $19.97 one-time.
-3. Edge function `create-checkout` → builds a Checkout Session (mode `payment`), success URL `/thank-you?session_id={CHECKOUT_SESSION_ID}&planner={id}`, cancel URL `/`.
-4. Edge function `stripe-webhook` listens for `checkout.session.completed`:
-   - Generates a unique `unlock_code` (UUID).
-   - Inserts `purchases` row: `{ id, planner_id, email, unlock_code, created_at }` (Lovable Cloud DB, RLS: only service-role writes; public can call validate-unlock RPC).
-   - Calls `send-transactional-email` with template `planner-purchase` to the buyer's email containing: install link `https://<app>/unlock?code=…&planner=…`, install instructions for iOS/Android/Desktop, backup/restore note.
-5. Edge function `validate-unlock` (called from `/unlock`): looks up code, returns `{ ok, planner_id }`; client stores `unlocked:<planner_id> = true` in localStorage so `/app` lets them in.
+### Unlock storage
+- Extend `src/lib/unlock.ts` with **pack unlocks** stored separately from planner unlock:
+  - `setPackUnlocked(coverId, code)` → `localStorage["cover-pack-unlock:<coverId>"] = code`
+  - `isPackUnlocked(coverId)` → boolean
+  - `listOwnedPacks()` → `string[]`
+  - Included packs always read as unlocked.
 
-## 5. Email infrastructure
+### DB / backend
+- New table `pack_purchases` (mirrors `purchases`):
+  - columns: `id, email, stripe_session_id, environment, pack_id, unlock_code, created_at`
+  - RLS: service role only.
+- Extend `device_activations` already supports any code; reuse for pack codes (no schema change needed).
+- New edge function `validate-pack-unlock` (or extend `validate-unlock`) to check codes against `pack_purchases`.
+- Update `payments-webhook` (Stripe) to:
+  - Read `metadata.packIds` (comma-separated cover ids) from the session.
+  - Generate one unlock code per pack, insert into `pack_purchases`.
+  - Send the planner email + a packs unlock email (or one combined email listing all codes).
 
-- Use Lovable's built-in email system. Run the email domain setup dialog (will surface an `<lov-open-email-setup>` button on first run) so emails come from the user's branded subdomain.
-- After domain is configured, scaffold transactional emails and add a `planner-purchase` React Email template:
-  - Subject: "Your Endless Planner is ready — install link inside"
-  - Body: greeting, install link button, brief install instructions, mention $19.97 lifetime access, "Backup your data anytime from Settings → Export."
+### Checkout
+- Update `create-checkout` edge function:
+  - Accept `packIds: string[]` in request body.
+  - Build line items: planner price (lookup_key) + one `price_data` line per pack with computed `unit_amount` (499 for index 0, 299 for the rest).
+  - Stamp `metadata.packIds` on the session AND `metadata.includesPlanner` ("true"/"false").
+- New product registered in Stripe: `cover_pack` (no fixed price — uses dynamic `price_data`). Use `payments--create_product` with `cover_pack_first` ($4.99) and `cover_pack_additional` ($2.99) prices for catalog hygiene, but actually charge via `price_data` so we can do per-line dynamic amounts in one session.
 
-## 6. Files added / changed
+### Frontend changes
+- `src/pages/PlannerDetail.tsx`: add **CoverPackPicker** component below price, reactive cart total, pass `packIds` to `openCheckout`.
+- New page `src/pages/Packs.tsx` + route `/packs` for returning users.
+- `src/components/cover/CoverPicker.tsx`: render lock overlay on covers not in `listOwnedPacks()`. Tapping locked → call new `onLockedSelect(coverId)` prop (parent navigates to `/packs?focus=<id>`).
+- `src/pages/Home.tsx`: add dismissible "Try a new cover" chip (sessionStorage `try-cover-prompt-dismissed`).
+- `src/pages/Unlock.tsx`: support pasting pack codes too (route by code prefix or by trying both validators).
+- New `src/components/cover/CoverPackCart.tsx`: shared sticky cart UI used by Packs page and PlannerDetail.
 
-Added:
-- `src/data/planners.ts`
-- `src/pages/Landing.tsx`
-- `src/pages/Unlock.tsx`
-- `src/pages/ThankYou.tsx`
-- `src/components/landing/*` (Hero, PlannerCard, PageGrid, CoverGallery, Pricing, FAQ, InstallButton)
-- `src/lib/unlock.ts` (localStorage helpers)
-- `src/lib/backup.ts` (export/import JSON of IndexedDB)
-- `public/manifest.webmanifest` + PWA icons
-- `supabase/functions/create-checkout/index.ts`
-- `supabase/functions/stripe-webhook/index.ts`
-- `supabase/functions/validate-unlock/index.ts`
-- `supabase/functions/_shared/transactional-email-templates/planner-purchase.tsx`
+### Email
+- New template `pack-purchase.tsx` in `supabase/functions/_shared/transactional-email-templates/`. Lists each pack with its unlock code and a "Tap to unlock on this device" deep link `/unlock?code=<code>`.
+- For combined planner+packs purchase, send the existing `planner-purchase` email and append a packs section (or send a second email immediately after — simpler, less template churn).
 
-Edited:
-- `src/App.tsx` — new routes + unlock gate on `/app`
-- `src/pages/Settings.tsx` — Backup/Restore buttons
-- `vite.config.ts` — register `vite-plugin-pwa`
-- `index.html` — manifest + theme-color
+### Stripe products to create
+- Reuse existing `wellness_journey_lifetime`.
+- Create `cover_pack` product with two reference prices (`cover_pack_first` $4.99, `cover_pack_additional` $2.99) for reporting, but actual charges use `price_data` so quantity logic stays in our checkout function.
 
-DB migration: `purchases` table (id, planner_id, email, unlock_code unique, stripe_session_id, created_at) with RLS service-role write + a SECURITY DEFINER `validate_unlock(code text)` function.
+## What I will NOT change in this pass
+- Forget‑Me‑Nots remains the default cover and stays free.
+- Existing planner unlock + 5-device cap stays as-is.
+- No bundle pricing (e.g. "buy a whole collection at a discount") — happy to add next round.
 
-## Out of scope (call out)
-- No user accounts / login — unlock code in email is the entitlement. Anyone with the link can unlock the app on a device. We can add accounts later if you want device limits.
-- "Lifetime" wording will read: *"One-time payment. Lifetime access for as long as the platform is online."*
+## Open question (one)
+Right now there are **63+ covers**. Want me to:
+- **(a)** Make every existing cover a paid pack immediately (only Forget‑Me‑Nots free), or
+- **(b)** Launch with a curated starter set (e.g. 10–15 packs ready to buy) and mark the rest "coming soon"?
 
-## Confirmations needed before building
-- OK to enable Lovable Cloud + Stripe built-in payments and Lovable Emails (will prompt you to set up sender domain).
-- OK with unlock-code-via-email model (no login).
+I'll proceed with **(a)** unless you say otherwise.
