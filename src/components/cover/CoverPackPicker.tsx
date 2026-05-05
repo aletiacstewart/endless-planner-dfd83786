@@ -85,6 +85,19 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact 
             >
               <CoverImage cover={c} className="absolute inset-0" />
 
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setPreviewId(c.id);
+                }}
+                className="absolute bottom-2 right-2 z-10 w-8 h-8 rounded-full bg-black/55 hover:bg-black/75 text-white flex items-center justify-center backdrop-blur-sm transition-colors"
+                aria-label={`Preview icons for ${c.name}`}
+                title="Preview matching page icons"
+              >
+                <Eye className="w-4 h-4" />
+              </button>
+
               {included && (
                 <span className="absolute top-2 left-2 text-[10px] uppercase tracking-wide font-bold bg-primary text-primary-foreground rounded-full px-2 py-0.5">
                   Included
