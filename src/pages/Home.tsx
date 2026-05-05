@@ -21,8 +21,10 @@ import { getPageImage } from "@/lib/pageImages";
 
 const LAST_BACKUP_KEY = "planner.lastBackupAt";
 const BACKUP_DISMISS_KEY = "planner.backupReminderDismissedUntil";
+const COVER_NUDGE_KEY = "home.coverNudge.dismissedUntil";
 const REMIND_AFTER_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 const DISMISS_FOR_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const NUDGE_DISMISS_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 export default function Home() {
   const { settings } = useUserSettings();
