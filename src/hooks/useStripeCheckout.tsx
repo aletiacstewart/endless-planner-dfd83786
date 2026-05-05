@@ -1,9 +1,6 @@
 import { useCallback, useState } from "react";
 import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 
-import { useCallback, useState } from "react";
-import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
-
 interface CheckoutOptions {
   plannerId?: string;
   priceId: string;
