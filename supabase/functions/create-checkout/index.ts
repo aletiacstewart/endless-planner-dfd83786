@@ -1,8 +1,6 @@
 const corsHeaders = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type" };
 import { type StripeEnv, createStripeClient } from "../_shared/stripe.ts";
 
-const FIRST_PACK_CENTS = 499;
-const ADDITIONAL_PACK_CENTS = 299;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
