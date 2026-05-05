@@ -3,10 +3,11 @@ import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 
 interface CheckoutOptions {
   plannerId?: string;
-  priceId: string;
+  priceId?: string;
   quantity?: number;
   customerEmail?: string;
   returnUrl?: string;
+  packIds?: string[];
 }
 
 export function useStripeCheckout() {
