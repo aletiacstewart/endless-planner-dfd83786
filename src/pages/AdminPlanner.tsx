@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Loader2, ShieldCheck } from "lucide-react";
 import { setUnlocked, setPackUnlocked } from "@/lib/unlock";
 import { PLANNERS } from "@/data/planners";
-import { COVER_PACKS } from "@/data/coverPacks";
+import { COVERS } from "@/data/covers";
 
 // Simple owner-only test access. Not high-security: it just keeps
 // the URL out of casual public discovery on the marketing homepage.
@@ -29,7 +29,7 @@ export default function AdminPlanner() {
 
       // Optionally unlock every cover/icon pack for testing
       if (params.get("packs") !== "0") {
-        for (const pack of COVER_PACKS) setPackUnlocked(pack.id, "ADMIN-TEST");
+        for (const cover of COVERS) setPackUnlocked(cover.id, "ADMIN-TEST");
       }
 
       navigate("/app", { replace: true });
