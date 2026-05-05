@@ -20,6 +20,7 @@ type Props = {
 
 export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact }: Props) {
   const [filter, setFilter] = useState<CoverCollection | "all">("all");
+  const [previewId, setPreviewId] = useState<string | null>(null);
 
   const availableCollections = useMemo(() => {
     const used = new Set(COVERS.map((c) => c.collection));
