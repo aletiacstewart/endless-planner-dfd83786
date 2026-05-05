@@ -8,3 +8,9 @@ verify_jwt = false
 
 [functions.validate-unlock]
 verify_jwt = false
+
+[functions.payments-webhook]
+verify_jwt = false
+
+[functions.resend-unlock-code]
+verify_jwt = false

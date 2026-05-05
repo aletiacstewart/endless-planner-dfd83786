@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Loader2, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { setUnlocked } from "@/lib/unlock";
+import { setUnlocked, getDeviceId } from "@/lib/unlock";
 
 export default function Unlock() {
   const [params] = useSearchParams();
@@ -20,7 +20,7 @@ export default function Unlock() {
     (async () => {
       try {
         const { data, error } = await supabase.functions.invoke("validate-unlock", {
-          body: { code },
+          body: { code, deviceId: getDeviceId() },
         });
         if (error || !data?.ok) throw new Error(error?.message || "Invalid unlock code");
         setUnlocked(data.planner_id, code);

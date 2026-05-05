@@ -7,7 +7,7 @@ Deno.serve(async (req) => {
     return new Response("Method not allowed", { status: 405, headers: corsHeaders });
   }
   try {
-    const { priceId, quantity, customerEmail, returnUrl, environment } = await req.json();
+    const { priceId, quantity, customerEmail, returnUrl, environment, plannerId } = await req.json();
     if (!priceId || !/^[a-zA-Z0-9_-]+$/.test(priceId)) throw new Error("Invalid priceId");
     if (!returnUrl) throw new Error("returnUrl required");
     if (environment !== "sandbox" && environment !== "live") throw new Error("Invalid environment");
@@ -23,6 +23,7 @@ Deno.serve(async (req) => {
       ui_mode: "embedded_page",
       return_url: returnUrl,
       ...(customerEmail && { customer_email: customerEmail }),
+      metadata: { planner_id: plannerId || "wellness-journey" },
     });
 
     return new Response(JSON.stringify({ clientSecret: session.client_secret }), {

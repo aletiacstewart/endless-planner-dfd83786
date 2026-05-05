@@ -12,7 +12,9 @@ export type StripeEnv = "sandbox" | "live";
 const GATEWAY_STRIPE_BASE = "https://connector-gateway.lovable.dev/stripe";
 
 export function getConnectionApiKey(env: StripeEnv): string {
-  return env === "sandbox" ? getEnv("STRIPE_SANDBOX_API_KEY") : getEnv("STRIPE_LIVE_API_KEY");
+  return env === "sandbox"
+    ? getEnv("STRIPE_SANDBOX_API_KEY")
+    : getEnv("STRIPE_LIVE_API_KEY");
 }
 
 export function createStripeClient(env: StripeEnv): Stripe {
@@ -38,7 +40,10 @@ export function createStripeClient(env: StripeEnv): Stripe {
 export async function verifyWebhook(req: Request, env: StripeEnv): Promise<{ type: string; data: { object: any } }> {
   const signature = req.headers.get("stripe-signature");
   const body = await req.text();
-  const secret = env === "sandbox" ? getEnv("PAYMENTS_SANDBOX_WEBHOOK_SECRET") : getEnv("PAYMENTS_LIVE_WEBHOOK_SECRET");
+  const secret = env === "sandbox"
+    ? getEnv("PAYMENTS_SANDBOX_WEBHOOK_SECRET")
+    : getEnv("PAYMENTS_LIVE_WEBHOOK_SECRET");
+
   if (!signature || !body) throw new Error("Missing signature or body");
 
   let timestamp: string | undefined;
@@ -49,6 +54,7 @@ export async function verifyWebhook(req: Request, env: StripeEnv): Promise<{ typ
     if (key === "v1") v1Signatures.push(value);
   }
   if (!timestamp || v1Signatures.length === 0) throw new Error("Invalid signature format");
+
   const age = Math.abs(Date.now() / 1000 - Number(timestamp));
   if (age > 300) throw new Error("Webhook timestamp too old");
 
@@ -61,6 +67,8 @@ export async function verifyWebhook(req: Request, env: StripeEnv): Promise<{ typ
   );
   const signed = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(`${timestamp}.${body}`));
   const expected = new TextDecoder().decode(encode(new Uint8Array(signed)));
+
   if (!v1Signatures.includes(expected)) throw new Error("Invalid webhook signature");
+
   return JSON.parse(body);
 }
