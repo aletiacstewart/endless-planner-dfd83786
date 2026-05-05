@@ -32,7 +32,13 @@ export default function Home() {
   const [recent, setRecent] = useState<PlannerEntry[]>([]);
   const [totalEntries, setTotalEntries] = useState(0);
   const [showReminder, setShowReminder] = useState(false);
+  const [showCoverNudge, setShowCoverNudge] = useState(false);
   const backupRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const dismissedUntil = Number(localStorage.getItem(COVER_NUDGE_KEY) || 0);
+    if (Date.now() > dismissedUntil) setShowCoverNudge(true);
+  }, []);
 
   useEffect(() => {
     (async () => {
