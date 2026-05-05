@@ -12,6 +12,16 @@ import fmnlMedical from "@/assets/cover-icons/forget-me-nots-ladybugs/medical-re
 import fmnlMedications from "@/assets/cover-icons/forget-me-nots-ladybugs/medications.png";
 import fmnlRecipe from "@/assets/cover-icons/forget-me-nots-ladybugs/recipe.png";
 import fmnlSelfCare from "@/assets/cover-icons/forget-me-nots-ladybugs/self-care-checklist.png";
+import fmnlBloodPressure from "@/assets/cover-icons/forget-me-nots-ladybugs/blood-pressure-tracker.png";
+import fmnlBloodSugar from "@/assets/cover-icons/forget-me-nots-ladybugs/blood-sugar-tracker.png";
+import fmnlDailyGoal from "@/assets/cover-icons/forget-me-nots-ladybugs/daily-goal-tracker.png";
+import fmnlYearlyHabit from "@/assets/cover-icons/forget-me-nots-ladybugs/yearly-habit-tracker.png";
+import fmnlOxygen from "@/assets/cover-icons/forget-me-nots-ladybugs/oxygen-tracker.png";
+import fmnlWellness from "@/assets/cover-icons/forget-me-nots-ladybugs/wellness-tracker.png";
+import fmnlWorkout from "@/assets/cover-icons/forget-me-nots-ladybugs/workout-tracker.png";
+import fmnlDaily from "@/assets/cover-icons/forget-me-nots-ladybugs/daily-tracker.png";
+import fmnlGoalsReflection from "@/assets/cover-icons/forget-me-nots-ladybugs/goals-reflection.png";
+import fmnlMonthly from "@/assets/cover-icons/forget-me-nots-ladybugs/monthly-calendar.png";
 
 export const COVER_ICONS: Record<string, Record<string, string>> = {
   "forget-me-nots-ladybugs": {
@@ -25,6 +35,16 @@ export const COVER_ICONS: Record<string, Record<string, string>> = {
     "medications": fmnlMedications,
     "recipe": fmnlRecipe,
     "self-care-checklist": fmnlSelfCare,
+    "blood-pressure-tracker": fmnlBloodPressure,
+    "blood-sugar-tracker": fmnlBloodSugar,
+    "daily-goal-tracker": fmnlDailyGoal,
+    "yearly-habit-tracker": fmnlYearlyHabit,
+    "oxygen-tracker": fmnlOxygen,
+    "wellness-tracker": fmnlWellness,
+    "workout-tracker": fmnlWorkout,
+    "daily-tracker": fmnlDaily,
+    "goals-reflection": fmnlGoalsReflection,
+    "monthly-calendar": fmnlMonthly,
   },
 };
 
