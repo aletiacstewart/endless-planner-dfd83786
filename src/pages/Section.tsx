@@ -6,11 +6,13 @@ import { getPageImage } from "@/lib/pageImages";
 import { createEntry, deleteEntry, listEntries, type PlannerEntry } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useUserSettings } from "@/hooks/useUserSettings";
 
 export default function Section() {
   const { pageTypeId = "" } = useParams();
   const navigate = useNavigate();
   const pageType = getPageType(pageTypeId);
+  const { settings } = useUserSettings();
   const [entries, setEntries] = useState<PlannerEntry[]>([]);
 
   useEffect(() => {
@@ -44,9 +46,9 @@ export default function Section() {
         <Link to="/" className="inline-flex items-center text-sm text-muted-foreground mb-3">
           <ChevronLeft className="w-4 h-4" /> Home
         </Link>
-        {getPageImage(pageType.id) && (
+        {getPageImage(pageType.id, settings?.coverId) && (
           <img
-            src={getPageImage(pageType.id)}
+            src={getPageImage(pageType.id, settings?.coverId)}
             alt={pageType.name}
             className="w-full max-w-md mx-auto rounded-2xl shadow-lg mb-4 aspect-square object-cover"
           />
