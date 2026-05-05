@@ -1,4 +1,7 @@
+import { INCLUDED_PACK_IDS } from "@/data/coverPacks";
+
 const KEY = (plannerId: string) => `planner-unlock:${plannerId}`;
+const PACK_KEY = (coverId: string) => `cover-pack-unlock:${coverId}`;
 const DEVICE_KEY = "planner-device-id";
 
 export function getDeviceId(): string {
@@ -15,21 +18,39 @@ export function getDeviceId(): string {
 }
 
 export function setUnlocked(plannerId: string, code: string) {
-  try {
-    localStorage.setItem(KEY(plannerId), code);
-  } catch {}
+  try { localStorage.setItem(KEY(plannerId), code); } catch {}
 }
 
 export function isUnlocked(plannerId: string): boolean {
-  try {
-    return Boolean(localStorage.getItem(KEY(plannerId)));
-  } catch {
-    return false;
-  }
+  try { return Boolean(localStorage.getItem(KEY(plannerId))); }
+  catch { return false; }
 }
 
 export function clearUnlock(plannerId: string) {
+  try { localStorage.removeItem(KEY(plannerId)); } catch {}
+}
+
+// ----- Cover & icon packs -----
+
+export function setPackUnlocked(coverId: string, code: string) {
+  try { localStorage.setItem(PACK_KEY(coverId), code); } catch {}
+}
+
+export function isPackUnlocked(coverId: string): boolean {
+  if ((INCLUDED_PACK_IDS as readonly string[]).includes(coverId)) return true;
+  try { return Boolean(localStorage.getItem(PACK_KEY(coverId))); }
+  catch { return false; }
+}
+
+export function listOwnedPacks(): string[] {
+  const owned = new Set<string>(INCLUDED_PACK_IDS as readonly string[]);
   try {
-    localStorage.removeItem(KEY(plannerId));
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k?.startsWith("cover-pack-unlock:")) {
+        owned.add(k.slice("cover-pack-unlock:".length));
+      }
+    }
   } catch {}
+  return Array.from(owned);
 }
