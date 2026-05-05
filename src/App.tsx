@@ -13,6 +13,7 @@ import Landing from "./pages/Landing.tsx";
 import Unlock from "./pages/Unlock.tsx";
 import ThankYou from "./pages/ThankYou.tsx";
 import Unsubscribe from "./pages/Unsubscribe.tsx";
+import PlannerDetail from "./pages/PlannerDetail.tsx";
 import { OnboardingFlow } from "./components/onboarding/OnboardingFlow";
 import { SplashScreen } from "./components/SplashScreen";
 import { useUserSettings } from "./hooks/useUserSettings";
@@ -69,6 +70,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/planner/:plannerId" element={<PlannerDetail />} />
           <Route path="/unlock" element={<Unlock />} />
           <Route path="/thank-you" element={<ThankYou />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
