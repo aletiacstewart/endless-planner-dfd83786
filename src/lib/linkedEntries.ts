@@ -328,42 +328,7 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       synced.push(`Weekly Calendar (${weekIso})`);
     }
 
-    // 10. Habit Tracker (monthly grid) — fan out habit_1/2/3 success state.
-    const habitItems: { label: string; success: boolean }[] = [];
-    for (let n = 1; n <= 3; n++) {
-      const label = (v[`habit_${n}_label`] as string | undefined) ?? "";
-      const status = (v[`habit_${n}`] as string | undefined) ?? "";
-      if (!label.trim() && !status) continue;
-      habitItems.push({ label: label.trim() || `Habit ${n}`, success: status === "success" });
-    }
-    if (habitItems.length > 0) {
-      const monthName = new Date(date.year, date.monthIndex, 1)
-        .toLocaleString("en-US", { month: "long" })
-        .toLowerCase();
-      const entry = await findOrCreate(
-        "habit-tracker",
-        (e) => String(e.values.year ?? "") === yearStr && String(e.values.month ?? "").toLowerCase() === monthName,
-        { year: yearStr, month: monthName },
-      );
-      await persist(entry, (dst) => {
-        if (!dst.year) dst.year = yearStr;
-        if (!dst.month) dst.month = monthName;
-        const existing = (dst.habits as { habits?: string[]; marks?: Record<string, boolean> } | undefined) ?? {};
-        const habits = [...(existing.habits ?? [])];
-        const marks = { ...(existing.marks ?? {}) };
-        habitItems.forEach((h, i) => {
-          // Find or assign a row index for this habit label.
-          let idx = habits.findIndex((x) => x.trim().toLowerCase() === h.label.toLowerCase());
-          if (idx < 0) { idx = habits.length; habits.push(h.label); }
-          else habits[idx] = h.label;
-          const k = `${idx}-${date.day}`;
-          if (h.success) marks[k] = true;
-          else delete marks[k];
-        });
-        dst.habits = { habits, marks };
-      });
-      synced.push(`Habit Tracker (${monthName} ${yearStr})`);
-    }
+    // (Habit Tracker sync removed — page no longer exists.)
 
     // 11. Yearly Habit Tracker — habit_N_label, habit_N_mode + success per day.
     const yhRows: { idx: number; label: string; mode: "begin" | "break" | ""; success: boolean }[] = [];
@@ -407,35 +372,7 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       synced.push(`Yearly Habit Tracker (${yearStr})`);
     }
 
-    // 12. Fun Tracker — month-tracker boolean: any fun_N success this month → mark.
-    const funItems: { label: string; success: boolean }[] = [];
-    for (let n = 1; n <= 3; n++) {
-      const label = (v[`fun_${n}_label`] as string | undefined) ?? "";
-      const status = (v[`fun_${n}`] as string | undefined) ?? "";
-      if (!label.trim() && !status) continue;
-      funItems.push({ label: label.trim() || `Fun ${n}`, success: status === "success" });
-    }
-    if (funItems.some((f) => f.success || f.label)) {
-      const entry = await findOrCreate(
-        "fun-tracker",
-        (e) => String(e.values.year ?? "") === yearStr,
-        { year: yearStr },
-      );
-      await persist(entry, (dst) => {
-        if (!dst.year) dst.year = yearStr;
-        const existing = (dst.fun_grid as { items?: string[]; marks?: Record<string, boolean> } | undefined) ?? {};
-        const items = [...(existing.items ?? [])];
-        const marks = { ...(existing.marks ?? {}) };
-        funItems.forEach((f) => {
-          let idx = items.findIndex((x) => x.trim().toLowerCase() === f.label.toLowerCase());
-          if (idx < 0) { idx = items.length; items.push(f.label); }
-          else items[idx] = f.label;
-          if (f.success) marks[`${idx}-${date.monthIndex}`] = true;
-        });
-        dst.fun_grid = { items, marks };
-      });
-      synced.push(`Fun Tracker (${yearStr})`);
-    }
+    // (Fun Tracker sync removed — page no longer exists.)
 
     // 13. Weekly Calendar — also push weekly goals + reflection to that week's entry.
     const weeklyGoals = (v.weekly_goals as string | undefined) ?? "";
@@ -531,23 +468,7 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       synced.push(`Workout Tracker (${yearStr})`);
     }
 
-    // 17. Daily Goal Tracker — yearly grid of daily goals + habit success.
-    const dGoal = (v.daily_goal as string | undefined) ?? "";
-    const dHabit = (v.daily_habit as string | undefined) ?? "";
-    if (dGoal.trim() || dHabit) {
-      const entry = await findOrCreate(
-        "daily-goal-tracker",
-        (e) => String(e.values.year ?? "") === yearStr,
-        { year: yearStr },
-      );
-      await persist(entry, (dst) => {
-        if (!dst.year) dst.year = yearStr;
-        mergeDailyMonthCell(dst, "daily_goal", date.day, date.monthIndex, dGoal);
-        const mark = dHabit === "success" ? "✓" : dHabit === "failed" ? "✗" : "";
-        mergeDailyMonthCell(dst, "daily_habit", date.day, date.monthIndex, mark);
-      });
-      synced.push(`Daily Goal Tracker (${yearStr})`);
-    }
+    // (Daily Goal Tracker sync removed — page no longer exists.)
 
     // 18. Medical Records — per-date entry mirroring the three textareas.
     const medicalFields = ["medical_appointment_notes", "test_results", "lab_result_notes", "doctor_id"];
@@ -856,41 +777,7 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
       return synced;
     }
 
-    // Habit Tracker (monthly grid) → set habit_1..3 + label + success on each marked day.
-    if (entry.pageType === "habit-tracker") {
-      const year = Number(v.year ?? "");
-      const monthName = String(v.month ?? "").toLowerCase();
-      if (!year || !monthName) return [];
-      const monthIndex = new Date(`${monthName} 1, 2000`).getMonth();
-      if (Number.isNaN(monthIndex)) return [];
-      const grid = (v.habits as { habits?: string[]; marks?: Record<string, boolean> } | undefined) ?? {};
-      const habits = grid.habits ?? [];
-      const marks = grid.marks ?? {};
-      const byDay = new Map<number, number[]>();
-      for (const [k, on] of Object.entries(marks)) {
-        if (!on) continue;
-        const m = /^(\d+)-(\d+)$/.exec(k);
-        if (!m) continue;
-        const hi = Number(m[1]);
-        const day = Number(m[2]);
-        if (!byDay.has(day)) byDay.set(day, []);
-        byDay.get(day)!.push(hi);
-      }
-      let touched = 0;
-      for (const [day, his] of byDay) {
-        const iso = `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-        touched += await updateCompleteForDate(iso, (dst) => {
-          his.slice(0, 3).forEach((hi, slot) => {
-            const n = slot + 1;
-            const label = habits[hi] ?? "";
-            if (label.trim()) dst[`habit_${n}_label`] = label;
-            dst[`habit_${n}`] = "success";
-          });
-        });
-      }
-      if (touched > 0) synced.push("Complete Tracker (habits)");
-      return synced;
-    }
+    // (Habit Tracker reverse-sync removed — page no longer exists.)
 
     // Yearly Habit Tracker → for each marked day, set habit_1's mode/label + success.
     if (entry.pageType === "yearly-habit-tracker") {
@@ -986,32 +873,7 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
       return synced;
     }
 
-    // Daily Goal Tracker → daily_goal text + daily_habit success/fail.
-    if (entry.pageType === "daily-goal-tracker") {
-      const year = Number(v.year ?? "");
-      if (!year) return [];
-      const goalGrid = (v.daily_goal as { cells?: Record<string, string> } | undefined)?.cells ?? {};
-      const habitGrid = (v.daily_habit as { cells?: Record<string, string> } | undefined)?.cells ?? {};
-      const cellSet = new Set<string>([...Object.keys(goalGrid), ...Object.keys(habitGrid)]);
-      let touched = 0;
-      for (const cellKey of cellSet) {
-        const m = /^(\d+)-(\d+)$/.exec(cellKey);
-        if (!m) continue;
-        const day = Number(m[1]);
-        const monthIndex = Number(m[2]);
-        const iso = isoOf(year, monthIndex, day);
-        touched += await updateCompleteForDate(iso, (dst) => {
-          const g = goalGrid[cellKey];
-          if (g && g.trim()) dst.daily_goal = g; else delete dst.daily_goal;
-          const h = habitGrid[cellKey];
-          if (h === "✓") dst.daily_habit = "success";
-          else if (h === "✗") dst.daily_habit = "failed";
-          else delete dst.daily_habit;
-        });
-      }
-      if (touched > 0) synced.push("Complete Tracker (daily goal)");
-      return synced;
-    }
+    // (Daily Goal Tracker reverse-sync removed — page no longer exists.)
 
     // Medical Records → mirror three textareas into Complete Tracker for that date.
     if (entry.pageType === "medical-records") {
@@ -1107,66 +969,7 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
       return synced;
     }
 
-    // Fun Tracker → for each marked (item, month) cell, write into the earliest
-    // existing Complete Tracker entry of that month (never creates new entries).
-    if (entry.pageType === "fun-tracker") {
-      const year = Number(v.year ?? "");
-      if (!year) return synced;
-      const grid = (v.fun_grid as { items?: string[]; marks?: Record<string, boolean> } | undefined) ?? {};
-      const items = grid.items ?? [];
-      const marks = grid.marks ?? {};
-      // Group marked items by month.
-      const byMonth = new Map<number, string[]>();
-      for (const [k, on] of Object.entries(marks)) {
-        if (!on) continue;
-        const m = /^(\d+)-(\d+)$/.exec(k);
-        if (!m) continue;
-        const itemIdx = Number(m[1]);
-        const monthIndex = Number(m[2]);
-        const label = (items[itemIdx] ?? "").trim();
-        if (!label) continue;
-        if (!byMonth.has(monthIndex)) byMonth.set(monthIndex, []);
-        byMonth.get(monthIndex)!.push(label);
-      }
-      const completes = await listEntries("complete-tracker");
-      let touched = 0;
-      for (const [monthIndex, labels] of byMonth) {
-        // Earliest Complete Tracker entry in that month.
-        const inMonth = completes
-          .map((e) => ({ e, d: parseDate(e.values.date) }))
-          .filter((x) => x.d && x.d.year === year && x.d.monthIndex === monthIndex)
-          .sort((a, b) => (a.d!.iso < b.d!.iso ? -1 : 1));
-        const target = inMonth[0]?.e;
-        if (!target) continue;
-        await persist(target, (dst) => {
-          // Reuse existing slots when label matches, else fill next free.
-          for (const label of labels) {
-            let placed = false;
-            for (let n = 1; n <= 3; n++) {
-              const cur = (dst[`fun_${n}_label`] as string | undefined) ?? "";
-              if (cur.trim().toLowerCase() === label.toLowerCase()) {
-                dst[`fun_${n}`] = "success";
-                placed = true;
-                break;
-              }
-            }
-            if (placed) continue;
-            for (let n = 1; n <= 3; n++) {
-              const cur = (dst[`fun_${n}_label`] as string | undefined) ?? "";
-              if (!cur.trim()) {
-                dst[`fun_${n}_label`] = label;
-                dst[`fun_${n}`] = "success";
-                placed = true;
-                break;
-              }
-            }
-          }
-        });
-        touched++;
-      }
-      if (touched > 0) synced.push("Complete Tracker (fun)");
-      return synced;
-    }
+    // (Fun Tracker reverse-sync removed — page no longer exists.)
 
     // Yearly Focus → mirror yearly_focus into all Complete Tracker entries of that year.
     if (entry.pageType === "yearly-focus") {
