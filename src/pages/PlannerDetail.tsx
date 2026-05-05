@@ -7,18 +7,23 @@ import { getPageType } from "@/lib/pageTypes";
 import { getPageImage } from "@/lib/pageImages";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { CoverPackPicker, CoverPackSummary } from "@/components/cover/CoverPackPicker";
+import { calcPackTotalUSD } from "@/data/coverPacks";
 
 export default function PlannerDetail() {
   const { plannerId = "" } = useParams();
   const planner = getPlanner(plannerId);
   const { openCheckout, checkoutElement, closeCheckout, isOpen } = useStripeCheckout();
   const [email, setEmail] = useState("");
+  const [packIds, setPackIds] = useState<string[]>([]);
 
   if (!planner) return <Navigate to="/" replace />;
 
   const pages = planner.pageTypeIds
     .map((id) => getPageType(id))
     .filter((p): p is NonNullable<ReturnType<typeof getPageType>> => Boolean(p));
+
+  const grandTotal = planner.priceUSD + calcPackTotalUSD(packIds);
 
   const buy = () => {
     if (!email || !email.includes("@")) {
@@ -30,6 +35,8 @@ export default function PlannerDetail() {
       quantity: 1,
       customerEmail: email,
       returnUrl: `${window.location.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}&planner=${planner.id}`,
+      // packIds is forwarded through the checkout body
+      ...({ packIds, plannerId: planner.id } as any),
     });
   };
 
@@ -61,23 +68,22 @@ export default function PlannerDetail() {
                 </li>
               ))}
             </ul>
-            <div className="mb-4">
-              <span className="font-display text-3xl">${planner.priceUSD}</span>
-              <span className="text-xs text-muted-foreground ml-1">one-time · lifetime access</span>
-            </div>
+
+            <CoverPackSummary packIds={packIds} plannerPriceUSD={planner.priceUSD} />
+
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full px-4 py-3 rounded-md border border-input bg-background mb-3"
+              className="w-full px-4 py-3 rounded-md border border-input bg-background mt-4 mb-3"
             />
             <p className="text-xs text-muted-foreground mb-4">
-              We'll email your install link to this address after payment.
+              We'll email your install link and any pack codes to this address.
             </p>
             {planner.available ? (
               <Button size="lg" className="w-full" onClick={buy}>
-                Buy & Install — ${planner.priceUSD}
+                Buy &amp; Install — ${grandTotal.toFixed(2)}
               </Button>
             ) : (
               <Button size="lg" className="w-full" disabled>
@@ -85,6 +91,20 @@ export default function PlannerDetail() {
               </Button>
             )}
           </div>
+        </div>
+      </section>
+
+      {/* Choose covers */}
+      <section className="px-6 py-12 bg-muted/20 border-t border-border">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="font-display text-3xl text-center mb-2">Choose your covers</h2>
+          <p className="text-center text-muted-foreground mb-2">
+            <strong>Forget-Me-Nots &amp; Ladybugs</strong> is included free. Add extra cover &amp; icon packs to re-theme the whole planner.
+          </p>
+          <p className="text-center text-xs text-muted-foreground mb-8">
+            First add-on pack $4.99 · each additional pack $2.99 · works on up to 5 devices
+          </p>
+          <CoverPackPicker selectedPackIds={packIds} onChange={setPackIds} />
         </div>
       </section>
 

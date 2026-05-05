@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Loader2, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { setUnlocked, getDeviceId } from "@/lib/unlock";
+import { setUnlocked, setPackUnlocked, getDeviceId } from "@/lib/unlock";
 
 export default function Unlock() {
   const [params] = useSearchParams();
@@ -23,8 +23,13 @@ export default function Unlock() {
           body: { code, deviceId: getDeviceId() },
         });
         if (error || !data?.ok) throw new Error(error?.message || "Invalid unlock code");
-        setUnlocked(data.planner_id, code);
-        navigate("/app", { replace: true });
+        if (data.type === "pack" && data.pack_id) {
+          setPackUnlocked(data.pack_id, code);
+          navigate("/settings?cover=" + encodeURIComponent(data.pack_id), { replace: true });
+        } else {
+          setUnlocked(data.planner_id, code);
+          navigate("/app", { replace: true });
+        }
       } catch (e) {
         setStatus("error");
         setMessage(e instanceof Error ? e.message : "Could not unlock.");
