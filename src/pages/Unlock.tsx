@@ -25,7 +25,7 @@ export default function Unlock() {
         if (error || !data?.ok) throw new Error(error?.message || "Invalid unlock code");
         if (data.type === "pack" && data.pack_id) {
           setPackUnlocked(data.pack_id, code);
-          navigate("/app/settings?cover=" + encodeURIComponent(data.pack_id), { replace: true });
+          navigate("/settings?cover=" + encodeURIComponent(data.pack_id), { replace: true });
         } else {
           setUnlocked(data.planner_id, code);
           navigate("/app", { replace: true });
