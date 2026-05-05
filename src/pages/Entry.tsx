@@ -43,7 +43,7 @@ export default function Entry() {
 
   const pageType = getPageType(entry.pageType);
   if (!pageType) {
-    return <div className="p-6">Unknown page type. <Link to="/" className="text-primary underline">Home</Link></div>;
+    return <div className="p-6">Unknown page type. <Link to="/app" className="text-primary underline">Home</Link></div>;
   }
 
   const onChange = (key: string, value: FieldValue) => {

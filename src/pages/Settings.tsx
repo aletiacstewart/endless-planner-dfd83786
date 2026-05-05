@@ -88,7 +88,7 @@ export default function Settings() {
 
         <BackupSection />
 
-        <Link to="/" className="block text-center text-sm text-muted-foreground underline pt-2">
+        <Link to="/app" className="block text-center text-sm text-muted-foreground underline pt-2">
           Back to planner
         </Link>
       </main>
