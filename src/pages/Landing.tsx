@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Check, Download, Smartphone, Sparkles } from "lucide-react";
+import { Check, Smartphone, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { COVERS } from "@/data/covers";
 import { PLANNERS } from "@/data/planners";
@@ -9,32 +9,9 @@ import { getPageImage } from "@/lib/pageImages";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 
-type BIPEvent = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
-
 export default function Landing() {
-  const [installPrompt, setInstallPrompt] = useState<BIPEvent | null>(null);
   const { openCheckout, checkoutElement, closeCheckout, isOpen } = useStripeCheckout();
   const [email, setEmail] = useState("");
-
-  useEffect(() => {
-    const onPrompt = (e: Event) => {
-      e.preventDefault();
-      setInstallPrompt(e as BIPEvent);
-    };
-    window.addEventListener("beforeinstallprompt", onPrompt);
-    return () => window.removeEventListener("beforeinstallprompt", onPrompt);
-  }, []);
-
-  const handleInstall = async () => {
-    if (installPrompt) {
-      await installPrompt.prompt();
-      setInstallPrompt(null);
-    } else {
-      alert(
-        "On iPhone/iPad: tap the Share button in Safari, then 'Add to Home Screen'.\n\nOn Android: tap the menu in Chrome, then 'Install app'.\n\nOn Desktop: click the install icon in your browser's address bar."
-      );
-    }
-  };
 
   const buy = (plannerId: string, priceId: string) => {
     if (!email || !email.includes("@")) {
@@ -93,14 +70,6 @@ export default function Landing() {
           A digital planner you install on your phone, tablet, or desktop — beautifully designed,
           fully offline, and yours for life. One simple price.
         </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-          <Button size="lg" onClick={handleInstall} variant="outline">
-            <Download className="w-4 h-4 mr-2" /> Install on this device
-          </Button>
-          <Button size="lg" onClick={() => document.getElementById("buy")?.scrollIntoView({ behavior: "smooth" })}>
-            Get the planner — ${planner.priceUSD}
-          </Button>
-        </div>
       </section>
 
       {/* Planner showcase */}

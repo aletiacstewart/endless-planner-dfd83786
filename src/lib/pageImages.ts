@@ -22,6 +22,7 @@ import oxygenTracker from "@/assets/page-images/oxygen-tracker.png";
 import wellnessTracker from "@/assets/page-images/wellness-tracker.png";
 import workoutTracker from "@/assets/page-images/workout-tracker.png";
 import monthlyCalendar from "@/assets/page-images/monthly-calendar.png";
+import yearlyFocus from "@/assets/page-images/yearly-focus.png";
 
 export const PAGE_IMAGES: Record<string, string> = {
   "measurement-tracker": measurementTracker,
@@ -48,6 +49,7 @@ export const PAGE_IMAGES: Record<string, string> = {
   "wellness-tracker": wellnessTracker,
   "workout-tracker": workoutTracker,
   "monthly-calendar": monthlyCalendar,
+  "yearly-focus": yearlyFocus,
 };
 
 export function getPageImage(id: string): string | undefined {
