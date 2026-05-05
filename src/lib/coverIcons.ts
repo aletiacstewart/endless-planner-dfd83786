@@ -18,7 +18,7 @@ import fmnlOxygen from "@/assets/cover-icons/forget-me-nots-ladybugs/oxygen-trac
 import fmnlWellness from "@/assets/cover-icons/forget-me-nots-ladybugs/wellness-tracker.png";
 import fmnlWorkout from "@/assets/cover-icons/forget-me-nots-ladybugs/workout-tracker.png";
 import fmnlDaily from "@/assets/cover-icons/forget-me-nots-ladybugs/daily-tracker.png";
-import fmnlGoalsReflection from "@/assets/cover-icons/forget-me-nots-ladybugs/goals-reflection.png";
+
 import fmnlMonthly from "@/assets/cover-icons/forget-me-nots-ladybugs/monthly-calendar.png";
 import fmnlNotes from "@/assets/cover-icons/forget-me-nots-ladybugs/notes.png";
 import fmnlWeekly from "@/assets/cover-icons/forget-me-nots-ladybugs/weekly-calendar.png";
