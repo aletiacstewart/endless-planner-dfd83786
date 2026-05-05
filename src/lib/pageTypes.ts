@@ -89,20 +89,39 @@ export const PAGE_TYPES: PageTypeDef[] = [
     id: "my-goals",
     name: "My Goals",
     shortName: "Goals",
-    description: "Capture up to 12 goals and the reward for achieving them.",
+    description: "Capture up to 12 goals with why, how you'll feel, and action steps.",
     icon: "Target",
     sections: [
-      {
-        title: "Goals",
-        columns: 2,
-        fields: goalKeys.map((k, i) => ({
-          key: k,
-          label: `Goal ${i + 1}`,
-          type: "textarea",
-          rows: 2,
-          placeholder: "What do you want to achieve?",
-        })),
-      },
+      ...goalKeys.map((k, i) => ({
+        title: `Goal ${i + 1}`,
+        fields: [
+          {
+            key: k,
+            label: "Goal",
+            type: "textarea" as const,
+            rows: 2,
+            placeholder: "What do you want to achieve?",
+          },
+          {
+            key: `why_${i + 1}`,
+            label: "Why I want this",
+            type: "text" as const,
+            placeholder: "Why does this matter?",
+          },
+          {
+            key: `feel_${i + 1}`,
+            label: "How I'll feel when I reach it",
+            type: "text" as const,
+            placeholder: "Describe the feeling",
+          },
+          {
+            key: `action_${i + 1}`,
+            label: "Action steps",
+            type: "text" as const,
+            placeholder: "First step",
+          },
+        ],
+      })),
       {
         fields: [
           {
@@ -117,42 +136,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
     ],
     summary: (v) => (v.goal_1 as string) || "Untitled goals",
-  },
-  {
-    id: "goals-reflection",
-    name: "Goals Reflection",
-    shortName: "Why & How",
-    description: "For each goal: why you want it, how you'll feel, and the action steps.",
-    icon: "Sparkles",
-    sections: [
-      {
-        title: "Why do I want to reach these goals",
-        fields: goalKeys.map((k, i) => ({
-          key: `why_${i + 1}`,
-          label: `Goal ${i + 1}`,
-          type: "text",
-          placeholder: "Why does this matter?",
-        })),
-      },
-      {
-        title: "How will I feel when I reach these goals",
-        fields: goalKeys.map((k, i) => ({
-          key: `feel_${i + 1}`,
-          label: `Goal ${i + 1}`,
-          type: "text",
-          placeholder: "Describe the feeling",
-        })),
-      },
-      {
-        title: "Action steps to reach these goals",
-        fields: goalKeys.map((k, i) => ({
-          key: `action_${i + 1}`,
-          label: `Goal ${i + 1}`,
-          type: "text",
-          placeholder: "First step",
-        })),
-      },
-    ],
   },
   {
     id: "yearly-calendar",
