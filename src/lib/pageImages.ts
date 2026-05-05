@@ -3,7 +3,7 @@ import weightTracker from "@/assets/page-images/weight-tracker.png";
 import cleaningChecklist from "@/assets/page-images/cleaning-checklist.png";
 import completeTracker from "@/assets/page-images/complete-tracker.png";
 import dailyTracker from "@/assets/page-images/daily-tracker.png";
-import goalsReflection from "@/assets/page-images/goals-reflection.png";
+
 import medicalRecords from "@/assets/page-images/medical-records.png";
 import medications from "@/assets/page-images/medications.png";
 import myGoals from "@/assets/page-images/my-goals.png";
