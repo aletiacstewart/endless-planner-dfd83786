@@ -139,31 +139,45 @@ export function FieldRenderer({ field, value, allValues, onChange, onChangeAny, 
       );
     case "checkbox-group": {
       const arr = (value as string[]) ?? [];
+      const otherKey = field.otherKey;
+      const otherVal = otherKey ? ((allValues?.[otherKey] as string) ?? "") : "";
       return (
         <div>
           {label}
-          <div className="flex gap-1.5 flex-wrap">
-            {(field.options ?? []).map((opt, i) => {
-              const id = `${opt}-${i}`;
-              const active = arr.includes(id);
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => {
-                    onChange(active ? arr.filter((x) => x !== id) : [...arr, id]);
-                  }}
-                  className={cn(
-                    "w-9 h-9 rounded-md border text-xs font-medium transition-colors",
-                    active
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-background/60 border-input text-muted-foreground"
-                  )}
-                >
-                  {opt}
-                </button>
-              );
-            })}
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex gap-1.5 flex-wrap">
+              {(field.options ?? []).map((opt, i) => {
+                const id = `${opt}-${i}`;
+                const active = arr.includes(id);
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => {
+                      onChange(active ? arr.filter((x) => x !== id) : [...arr, id]);
+                    }}
+                    className={cn(
+                      "min-w-9 h-9 px-2 rounded-md border text-xs font-medium transition-colors",
+                      active
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background/60 border-input text-muted-foreground"
+                    )}
+                  >
+                    {opt}
+                  </button>
+                );
+              })}
+            </div>
+            {otherKey && onChangeAny && (
+              <Input
+                type="text"
+                value={otherVal}
+                onChange={(e) => onChangeAny(otherKey, e.target.value)}
+                placeholder="Other"
+                aria-label={`${field.label} — Other`}
+                className="bg-background/60 h-9 w-32 px-2 text-xs"
+              />
+            )}
           </div>
         </div>
       );

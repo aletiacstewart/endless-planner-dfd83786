@@ -15,7 +15,7 @@ const REVERSE_SYNC_TYPES = new Set([
   "yearly-calendar",
   "weekly-calendar",
   "yearly-habit-tracker",
-  "wellness-tracker",
+  
   "workout-tracker",
   "medical-records",
   "weight-tracker",
