@@ -155,6 +155,66 @@ export type Database = {
         }
         Relationships: []
       }
+      planner_entries: {
+        Row: {
+          client_created_at: number
+          client_updated_at: number
+          created_at: string
+          deleted_at: string | null
+          id: string
+          page_type: string
+          title: string | null
+          updated_at: string
+          user_id: string
+          values: Json
+        }
+        Insert: {
+          client_created_at: number
+          client_updated_at: number
+          created_at?: string
+          deleted_at?: string | null
+          id: string
+          page_type: string
+          title?: string | null
+          updated_at?: string
+          user_id: string
+          values?: Json
+        }
+        Update: {
+          client_created_at?: number
+          client_updated_at?: number
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          page_type?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+          values?: Json
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       purchases: {
         Row: {
           created_at: string
@@ -206,6 +266,81 @@ export type Database = {
           id?: string
           metadata?: Json | null
           reason?: string
+        }
+        Relationships: []
+      }
+      user_packs: {
+        Row: {
+          pack_id: string
+          unlock_code: string | null
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          pack_id: string
+          unlock_code?: string | null
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          pack_id?: string
+          unlock_code?: string | null
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_planner_unlocks: {
+        Row: {
+          planner_id: string
+          unlock_code: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          planner_id: string
+          unlock_code: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          planner_id?: string
+          unlock_code?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_settings: {
+        Row: {
+          client_updated_at: number
+          cover_id: string
+          created_at: string
+          onboarded: boolean
+          owner_name: string
+          planner_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          client_updated_at?: number
+          cover_id?: string
+          created_at?: string
+          onboarded?: boolean
+          owner_name?: string
+          planner_name?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          client_updated_at?: number
+          cover_id?: string
+          created_at?: string
+          onboarded?: boolean
+          owner_name?: string
+          planner_name?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
