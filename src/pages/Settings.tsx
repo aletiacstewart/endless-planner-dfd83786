@@ -1,13 +1,15 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, ImageIcon, Download, Upload } from "lucide-react";
+import { ArrowLeft, ImageIcon, Download, Upload, Cloud, CloudOff, LogOut, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CoverImage } from "@/components/cover/CoverImage";
 import { CoverPicker } from "@/components/cover/CoverPicker";
 import { useUserSettings } from "@/hooks/useUserSettings";
+import { useAuth } from "@/hooks/useAuth";
 import { getCover } from "@/data/covers";
 import { exportAll, importAll } from "@/lib/db";
+import { getLastSyncAt, signOut as syncSignOut } from "@/lib/sync";
 import { toast } from "sonner";
 
 export default function Settings() {
@@ -85,6 +87,8 @@ export default function Settings() {
           </label>
           <Button onClick={saveText} className="w-full">Save</Button>
         </section>
+
+        <AccountSection />
 
         <BackupSection />
 
@@ -167,6 +171,93 @@ function BackupSection() {
             e.target.value = "";
           }}
         />
+      </div>
+    </section>
+  );
+}
+
+function AccountSection() {
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
+  const [lastSync, setLastSync] = useState<number | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    getLastSyncAt().then(setLastSync);
+    const t = setInterval(() => getLastSyncAt().then(setLastSync), 5000);
+    return () => clearInterval(t);
+  }, [user?.id]);
+
+  const formatAgo = (ts: number) => {
+    const mins = Math.max(0, Math.floor((Date.now() - ts) / 60000));
+    if (mins < 1) return "just now";
+    if (mins === 1) return "1 minute ago";
+    if (mins < 60) return `${mins} minutes ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs === 1) return "1 hour ago";
+    if (hrs < 24) return `${hrs} hours ago`;
+    return new Date(ts).toLocaleDateString();
+  };
+
+  if (loading) return null;
+
+  if (!user) {
+    return (
+      <section className="planner-card space-y-3">
+        <div className="flex items-center gap-2">
+          <CloudOff className="w-5 h-5 text-muted-foreground" />
+          <h2 className="font-display text-xl">Sync across devices</h2>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Sign in to mirror your planner — entries, settings, and unlocked packs — to every device you install it on.
+        </p>
+        <Button onClick={() => navigate("/auth")} className="w-full">
+          <Cloud className="w-4 h-4 mr-2" /> Sign in to sync
+        </Button>
+      </section>
+    );
+  }
+
+  return (
+    <section className="planner-card space-y-3">
+      <div className="flex items-center gap-2">
+        <Cloud className="w-5 h-5 text-primary" />
+        <h2 className="font-display text-xl">Sync</h2>
+      </div>
+      <div className="text-sm">
+        <p className="text-muted-foreground">Signed in as</p>
+        <p className="font-medium">{user.email}</p>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        {lastSync ? `Last synced ${formatAgo(lastSync)}` : "Syncing…"}
+      </p>
+      <div className="grid grid-cols-2 gap-2">
+        <Button
+          variant="outline"
+          disabled={busy}
+          onClick={async () => {
+            setBusy(true);
+            try {
+              const m = await import("@/lib/sync");
+              await m.reconcileNow();
+              setLastSync(await m.getLastSyncAt());
+              toast.success("Synced");
+            } finally {
+              setBusy(false);
+            }
+          }}
+        >
+          <RefreshCw className={`w-4 h-4 mr-2 ${busy ? "animate-spin" : ""}`} /> Sync now
+        </Button>
+        <Button
+          variant="outline"
+          onClick={async () => {
+            await syncSignOut();
+            toast.success("Signed out");
+          }}
+        >
+          <LogOut className="w-4 h-4 mr-2" /> Sign out
+        </Button>
       </div>
     </section>
   );

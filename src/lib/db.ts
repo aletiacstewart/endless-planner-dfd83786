@@ -68,11 +68,14 @@ export async function getEntry(id: string): Promise<PlannerEntry | undefined> {
 export async function saveEntry(entry: PlannerEntry): Promise<void> {
   const db = await getDB();
   await db.put("entries", entry);
+  // Fire-and-forget cloud mirror (no-op if not signed in). Dynamic import avoids a circular dep.
+  import("./sync").then((m) => m.pushEntry(entry)).catch(() => {});
 }
 
 export async function deleteEntry(id: string): Promise<void> {
   const db = await getDB();
   await db.delete("entries", id);
+  import("./sync").then((m) => m.pushDelete(id)).catch(() => {});
 }
 
 export async function createEntry(pageType: string, defaults: Record<string, FieldValue> = {}): Promise<PlannerEntry> {

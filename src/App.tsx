@@ -16,6 +16,7 @@ import Unsubscribe from "./pages/Unsubscribe.tsx";
 import PlannerDetail from "./pages/PlannerDetail.tsx";
 import Packs from "./pages/Packs.tsx";
 import AdminPlanner from "./pages/AdminPlanner.tsx";
+import Auth from "./pages/Auth.tsx";
 import { OnboardingFlow } from "./components/onboarding/OnboardingFlow";
 import { SplashScreen } from "./components/SplashScreen";
 import { useUserSettings } from "./hooks/useUserSettings";
@@ -23,6 +24,7 @@ import { useCoverTheme } from "./hooks/useCoverTheme";
 import { getCover } from "./data/covers";
 import { isUnlocked } from "./lib/unlock";
 import { PLANNERS } from "./data/planners";
+import { initSync } from "./lib/sync";
 
 const queryClient = new QueryClient();
 
@@ -64,7 +66,9 @@ function PlannerApp() {
   );
 }
 
-const App = () => (
+const App = () => {
+  useEffect(() => { initSync(); }, []);
+  return (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -75,6 +79,7 @@ const App = () => (
           <Route path="/planner/:plannerId" element={<PlannerDetail />} />
           <Route path="/packs" element={<Packs />} />
           <Route path="/unlock" element={<Unlock />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="/admin-planner" element={<AdminPlanner />} />
           <Route path="/thank-you" element={<ThankYou />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
@@ -91,6 +96,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;

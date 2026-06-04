@@ -1,67 +1,69 @@
-# Sync audit — Complete Tracker ⇄ individual pages
+## Goal
 
-I walked the Complete Tracker schema (`src/lib/pageTypes.ts`), every individual tracker it claims to feed, and the two-way sync in `src/lib/linkedEntries.ts`. Almost everything lines up. There is one real gap: the **Wellness** block on the Complete Tracker drifted from the new Daily Tracker layout, and those wellness fields are not in the sync key lists at all.
+Let people install the planner on any device, sign in, and see their entries, settings, cover, and unlocked packs everywhere — while still working offline.
 
-## What's already in sync (no changes needed)
+## Approach
 
-- Daily Tracker: date/weekday/daily_goal/daily_habit, all 4 meals + notes, daily_notes
-- Vitals: blood sugar / blood pressure / oxygen (4 meal-prefixed values per day)
-- Self-Care (physical / emotional / spiritual)
-- Monthly Calendar grid, Yearly Calendar month notes, Weekly Calendar (weekday note + weekly goals + reflection)
-- Cleaning Check List
-- Yearly Habit Tracker (label / mode / success per day)
-- Yearly Workout Tracker (cardio, weights, yoga, stretch, rest_day, other)
-- Medical Records (notes, test results, lab notes, doctor)
-- Weight Tracker (weekly row from `weight_today`)
-- Measurement Tracker (per body part `m_<part>_today`)
-- Medications master list
-- Yearly Focus
+Keep the current local-first IndexedDB store as the source of truth on each device, and add a thin cloud layer that mirrors it. When signed in and online, changes push up and pull down in the background. Offline edits queue and sync on reconnect. Last-write-wins per entry, using the `updatedAt` timestamp already on every entry.
 
-## Problems found
+## User-facing flow
 
-### 1. Wellness section on Complete Tracker is out of date
-The Daily Tracker was rebuilt with **checkbox-group** rows (one box per unit) and an "Other" fill-in for each. The Complete Tracker still uses old **rating** fields with mismatched maxes and a missing/renamed field:
+1. After unlock, a one-time prompt: "Sync across your devices?" with **Sign in with Google** or **Continue with email**.
+2. Email path uses a 6-digit code sent to the user's email (no password to remember, no separate `/reset-password` page needed). Google path uses Lovable Cloud's managed Google sign-in.
+3. Account menu lives in Settings: shows email, "Last synced 2 min ago", **Sign out**, **Sync now**.
+4. On a new device: install → unlock with their code (existing flow) → sign in → entries, settings, cover, and packs appear within a few seconds.
+5. Offline: app works exactly as today. A small "Offline – changes will sync" pill appears in the header. On reconnect, queued changes flush automatically.
 
-| Topic | Daily Tracker | Complete Tracker | Issue |
-|---|---|---|---|
-| Water | checkbox-group, 8 boxes | rating max 8 | type mismatch, won't sync |
-| Meal intake | checkbox-group, 6 boxes | **missing entirely** | field absent on Complete |
-| Caffeine / Other | checkbox-group, 4 boxes | rating max **6** | wrong count + type |
-| Sweets / Savory | checkbox-group, 4 boxes | rating max 4 | type mismatch |
-| Habits (smoking/vaping/dipping/other) | `habits`, 8 boxes | `smoking`, rating max **12** | wrong key, count, type |
-| Mood | checkbox-group of Anger/Fear/Sadness/Disgust/Joy | mood-rating 1–5 faces | different concept |
-| Sleep | checkbox-group, 12 boxes | rating max 12 | type mismatch |
-| Other (per topic) | `*_other` text input | none | no Other field on Complete |
+## What syncs
 
-### 2. Wellness keys are not part of the sync
-`syncLinkedEntries` (Complete → Daily) and `syncFromIndividual` (Daily → Complete) only copy `dailyKeys`, which today is just date/weekday/goal/habit/meals/notes. None of the wellness keys (`water`, `meals`, `caffeine`, `sweets`, `habits`, `mood`, `sleep`, plus the `_other` fields) are in either list — so even if the fields matched, they wouldn't move between pages.
+- All planner entries (the `entries` IndexedDB store)
+- User settings (planner name, owner name, selected cover, onboarded flag)
+- Unlocked cover/icon packs (so paid packs follow the account, not just the device)
+- The primary planner unlock itself (so a fresh install only needs sign-in, not re-entering the unlock code)
 
-## Plan
+## Conflict handling
 
-### A. Update Complete Tracker Wellness group to match Daily Tracker
-In `src/lib/pageTypes.ts`, replace the six wellness rating fields inside the "Wellness, Self-Care, Workout & Measurements" section with the same checkbox-group definitions used on Daily Tracker:
+- Per-entry last-write-wins by `updatedAt`.
+- Deletes are soft (a `deleted_at` column) so a delete on phone propagates to laptop even if laptop edited the same entry earlier.
+- Settings are a single row keyed by user — last write wins.
 
-- `water` — checkbox-group 1–8, `otherKey: water_other`
-- `meals` — checkbox-group 1–6, `otherKey: meals_other`  (new on Complete)
-- `caffeine` — checkbox-group 1–4, `otherKey: caffeine_other`
-- `sweets` — checkbox-group 1–4, `otherKey: sweets_other`
-- `habits` — checkbox-group 1–8, `otherKey: habits_other`  (renames `smoking` → `habits`)
-- `mood` — checkbox-group of `["Anger","Fear","Sadness","Disgust","Joy"]`, `otherKey: mood_other`
-- `sleep` — checkbox-group 1–12, `otherKey: sleep_other`
+## Technical details
 
-### B. Add wellness keys to both sync directions
-In `src/lib/linkedEntries.ts`:
+**Auth**
+- Enable Email + Google via `supabase--configure_social_auth` and `configure_auth` (no anonymous sign-ups, no auto-confirm).
+- Use the existing `lovable.auth` client. Add a small `useAuth()` hook and an `AccountGate` shown after `RequireUnlock`.
 
-- Extend `dailyKeys` (in `syncLinkedEntries`) and `DAILY_KEYS` (used by `syncFromIndividual`) to also include:
-  `water, water_other, meals, meals_other, caffeine, caffeine_other, sweets, sweets_other, habits, habits_other, mood, mood_other, sleep, sleep_other`
-- `copyKeys` already handles array values (it treats anything non-empty as a value to copy, and clears empty/undefined), so checkbox-group arrays will round-trip correctly.
+**Database (single migration)**
+- `profiles(user_id pk → auth.users, email, created_at, updated_at)` — auto-created by trigger on signup.
+- `planner_entries(id pk, user_id, page_type, title, values jsonb, created_at, updated_at, deleted_at)` — `id` is the existing client-generated ID so local and cloud rows match.
+- `user_settings(user_id pk, planner_name, owner_name, cover_id, onboarded, updated_at)`.
+- `user_packs(user_id, pack_id, unlocked_at, pk(user_id, pack_id))`.
+- `user_planner_unlocks(user_id, planner_id, unlock_code, pk(user_id, planner_id))`.
+- RLS on every table: each user reads/writes only `auth.uid() = user_id`. GRANTs in same migration.
+- Enable Realtime on `planner_entries` and `user_settings` so a second device updates live.
 
-### C. Note on a couple of fields with no twin (intentional, no change)
-- `fun_1..3` and `habit_1..3` "Fun & Habit" mini-trackers on the Complete page have no standalone individual page anymore (those pages were removed earlier). The habit half still feeds Yearly Habit Tracker; the fun half is Complete-only by design. Leaving as is.
-- `month_calendar`, `cleaning_today`, `week_note_today`, `weekly_goals`, `weekly_reflection`, `month_note_today`, `yearly_focus`, `weight_today`, `m_<part>_today`, and `med_list` only live on the Complete Tracker side of the meals/measurements/calendar relationships — already covered by their dedicated sync blocks.
+**Sync engine (`src/lib/sync.ts`)**
+- On sign-in: initial reconcile — pull all server rows, merge by `updatedAt`, push anything newer locally.
+- Ongoing: subscribe to `auth.onAuthStateChange` + `postgres_changes`. Wrap `saveEntry` / `deleteEntry` / `saveSettings` so every local write also enqueues a cloud upsert.
+- Outbox: a small IndexedDB store `sync_queue` holds pending ops while offline; a `navigator.onLine` listener drains it.
+- `useAutoSave` keeps its current local save; it just gains a `queueCloudSync(entry)` call after `saveEntry`.
 
-## Files to edit
-- `src/lib/pageTypes.ts` — rewrite the Wellness group inside `complete-tracker`
-- `src/lib/linkedEntries.ts` — extend `dailyKeys` and `DAILY_KEYS`
+**Existing code touched**
+- `src/App.tsx`: add `<AccountGate>` and a `/auth` route.
+- `src/lib/db.ts`: add `deletedAt`, expose change events.
+- `src/lib/settings.ts`, `src/lib/unlock.ts`: wrap writes to also push to cloud when signed in.
+- `src/pages/Settings.tsx`: account section + sync status.
+- `src/hooks/useAutoSave.ts`: hook in cloud queue.
 
-No data migration is needed: old `smoking` rating values will simply stop displaying (the field is gone), and existing checkbox-group values from Daily Tracker will start mirroring on next save.
+**Offline & PWA**
+- No changes to existing service-worker setup beyond making sure `/auth` and Supabase auth callbacks bypass the SW navigation fallback.
+
+## Out of scope
+
+- Multi-user shared planners (only one account per planner).
+- Selective sync / per-section sync toggles.
+- Real-time collaborative editing (it's mirror sync, not OT/CRDT).
+
+## Open question
+
+The unlock code currently authorizes a device. With accounts, do you want sign-in to **replace** the unlock-code step entirely on new devices (smoother), or **keep both** (sign-in + unlock code, more secure against account sharing)? Default in this plan: sign-in replaces it, since the purchase email is the same identity.
