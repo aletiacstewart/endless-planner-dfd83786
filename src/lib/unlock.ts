@@ -19,6 +19,7 @@ export function getDeviceId(): string {
 
 export function setUnlocked(plannerId: string, code: string) {
   try { localStorage.setItem(KEY(plannerId), code); } catch {}
+  import("./sync").then((m) => m.pushPlannerUnlock(plannerId, code)).catch(() => {});
 }
 
 export function isUnlocked(plannerId: string): boolean {
@@ -34,6 +35,7 @@ export function clearUnlock(plannerId: string) {
 
 export function setPackUnlocked(coverId: string, code: string) {
   try { localStorage.setItem(PACK_KEY(coverId), code); } catch {}
+  import("./sync").then((m) => m.pushPackUnlock(coverId, code)).catch(() => {});
 }
 
 export function isPackUnlocked(coverId: string): boolean {
