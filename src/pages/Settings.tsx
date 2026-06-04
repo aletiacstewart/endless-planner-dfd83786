@@ -88,6 +88,8 @@ export default function Settings() {
           <Button onClick={saveText} className="w-full">Save</Button>
         </section>
 
+        <AccountSection />
+
         <BackupSection />
 
         <Link to="/app" className="block text-center text-sm text-muted-foreground underline pt-2">
