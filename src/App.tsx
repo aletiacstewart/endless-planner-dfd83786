@@ -25,10 +25,6 @@ import { getCover } from "./data/covers";
 import { isUnlocked } from "./lib/unlock";
 import { PLANNERS } from "./data/planners";
 import { initSync } from "./lib/sync";
-import { useCoverTheme } from "./hooks/useCoverTheme";
-import { getCover } from "./data/covers";
-import { isUnlocked } from "./lib/unlock";
-import { PLANNERS } from "./data/planners";
 
 const queryClient = new QueryClient();
 
