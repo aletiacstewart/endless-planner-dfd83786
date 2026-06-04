@@ -457,3 +457,8 @@ export async function signOut() {
   await supabase.auth.signOut();
   handleSignOut();
 }
+
+export async function reconcileNow() {
+  if (!currentUserId) return;
+  await fullReconcile(currentUserId);
+}
