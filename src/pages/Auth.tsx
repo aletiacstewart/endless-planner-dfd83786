@@ -7,6 +7,9 @@ import { Input } from "@/components/ui/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import { isUnlocked } from "@/lib/unlock";
+import { PLANNERS } from "@/data/planners";
+import { reconcileNow } from "@/lib/sync";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function Auth() {
@@ -17,15 +20,27 @@ export default function Auth() {
   const [otp, setOtp] = useState("");
   const [busy, setBusy] = useState(false);
 
+  const routeAfterSignIn = async () => {
+    // Wait for sync to pull unlocks/settings down before deciding where to go.
+    try { await reconcileNow(); } catch {}
+    if (isUnlocked(PLANNERS[0].id)) {
+      navigate("/app", { replace: true });
+    } else {
+      toast.message("Signed in. Enter your unlock code to open your planner.");
+      navigate("/", { replace: true });
+    }
+  };
+
   useEffect(() => {
-    if (!loading && user) navigate("/app", { replace: true });
-  }, [user, loading, navigate]);
+    if (!loading && user) routeAfterSignIn();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, loading]);
 
   const signInGoogle = async () => {
     setBusy(true);
     try {
       const res = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin + "/app",
+        redirect_uri: window.location.origin + "/auth",
       });
       if (res.error) {
         toast.error(res.error.message || "Couldn't sign in with Google");
@@ -68,7 +83,7 @@ export default function Auth() {
       return;
     }
     toast.success("Signed in — syncing your planner…");
-    navigate("/app", { replace: true });
+    // useEffect on `user` will run routeAfterSignIn once the session is set.
   };
 
   return (
