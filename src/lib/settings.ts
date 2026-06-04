@@ -32,5 +32,6 @@ export async function saveSettings(patch: Partial<UserSettings>): Promise<UserSe
   if (!next.createdAt) next.createdAt = Date.now();
   const db = await getDB();
   await db.put("meta", { key: SETTINGS_KEY, value: next });
+  import("./sync").then((m) => m.pushSettings(next)).catch(() => {});
   return next;
 }
