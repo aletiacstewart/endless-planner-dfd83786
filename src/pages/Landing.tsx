@@ -28,9 +28,14 @@ export default function Landing() {
       {/* Header */}
       <header className="px-6 py-4 flex items-center justify-between border-b border-border">
         <h1 className="font-display text-xl">Endless Planner</h1>
-        <a href="#own" className="text-sm text-muted-foreground hover:text-foreground underline">
-          I already own it
-        </a>
+        <div className="flex items-center gap-4">
+          <Link to="/auth" className="text-sm text-muted-foreground hover:text-foreground underline">
+            Sign in
+          </Link>
+          <a href="#own" className="text-sm text-muted-foreground hover:text-foreground underline">
+            I already own it
+          </a>
+        </div>
       </header>
 
       {/* Hero */}
