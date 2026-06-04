@@ -66,7 +66,9 @@ function PlannerApp() {
   );
 }
 
-const App = () => (
+const App = () => {
+  useEffect(() => { initSync(); }, []);
+  return (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -77,6 +79,7 @@ const App = () => (
           <Route path="/planner/:plannerId" element={<PlannerDetail />} />
           <Route path="/packs" element={<Packs />} />
           <Route path="/unlock" element={<Unlock />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="/admin-planner" element={<AdminPlanner />} />
           <Route path="/thank-you" element={<ThankYou />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
