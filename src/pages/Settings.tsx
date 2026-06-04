@@ -239,14 +239,7 @@ function AccountSection() {
             setBusy(true);
             try {
               const m = await import("@/lib/sync");
-              // Re-trigger by toggling auth state isn't needed — just call internal reconcile via signOut+signIn isn't safe.
-              // Instead, force a quick pull by re-emitting auth change.
-              const { data } = await (await import("@/integrations/supabase/client")).supabase.auth.getSession();
-              if (data.session?.user?.id) {
-                // Direct call: re-run reconcile via the module's init path.
-                // The simplest reliable way is to refresh the session, which fires onAuthStateChange.
-                await (await import("@/integrations/supabase/client")).supabase.auth.refreshSession();
-              }
+              await m.reconcileNow();
               setLastSync(await m.getLastSyncAt());
               toast.success("Synced");
             } finally {
