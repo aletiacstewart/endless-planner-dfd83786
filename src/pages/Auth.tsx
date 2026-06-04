@@ -10,6 +10,7 @@ import { lovable } from "@/integrations/lovable/index";
 import { isUnlocked } from "@/lib/unlock";
 import { PLANNERS } from "@/data/planners";
 import { reconcileNow } from "@/lib/sync";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Auth() {
   const navigate = useNavigate();
