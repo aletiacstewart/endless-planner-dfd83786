@@ -83,7 +83,7 @@ export default function Auth() {
       return;
     }
     toast.success("Signed in — syncing your planner…");
-    navigate("/app", { replace: true });
+    // useEffect on `user` will run routeAfterSignIn once the session is set.
   };
 
   return (
