@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as Icons from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { PAGE_TYPES } from "@/lib/pageTypes";
-import { listEntries, importAll, type PlannerEntry } from "@/lib/db";
+import { listEntries, importAll, createEntry, type PlannerEntry } from "@/lib/db";
 import { downloadJson, downloadCsv, downloadXlsx, downloadPdf } from "@/lib/exporters";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +27,7 @@ const DISMISS_FOR_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const NUDGE_DISMISS_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 export default function Home() {
+  const navigate = useNavigate();
   const { settings } = useUserSettings();
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [recent, setRecent] = useState<PlannerEntry[]>([]);
@@ -107,6 +108,22 @@ export default function Home() {
   const cover = getCover(settings?.coverId);
   const plannerName = settings?.plannerName || "My Planner";
 
+  const openToday = async () => {
+    const today = new Date();
+    const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    const dailies = await listEntries("daily-tracker");
+    const existing = dailies.find(
+      (e) => (e.values.date as string | undefined)?.slice(0, 10) === iso,
+    );
+    if (existing) {
+      navigate(`/entry/${existing.id}`);
+    } else {
+      const created = await createEntry("daily-tracker", { date: iso });
+      navigate(`/entry/${created.id}`);
+    }
+  };
+
+
   return (
     <div className="min-h-screen pb-24" style={{ background: "var(--gradient-paper)" }}>
       {/* Cover hero — show the full artwork, no aggressive cropping. */}
@@ -142,6 +159,24 @@ export default function Home() {
 
 
       <main className="px-5 pt-6 space-y-6">
+        <section>
+          <button
+            onClick={openToday}
+            className="planner-card w-full flex items-center gap-3 text-left border-primary/40 bg-primary-soft/40 hover:bg-primary-soft/60 transition-colors"
+          >
+            <div className="w-11 h-11 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+              <Icons.Sun className="w-5 h-5 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-sm">Today's tracker</p>
+              <p className="text-xs text-muted-foreground">
+                {new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}
+              </p>
+            </div>
+            <Icons.ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+          </button>
+        </section>
+
         {showCoverNudge && (
           <section className="rounded-full border border-primary/30 bg-primary/5 px-4 py-2 flex items-center justify-between gap-3">
             <Link to="/packs" className="text-sm font-medium text-foreground flex-1 truncate">
