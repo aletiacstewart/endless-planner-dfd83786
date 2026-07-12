@@ -101,6 +101,10 @@ async function fulfill(session: any, env: StripeEnv, origin: string) {
             unlockCode: planner_unlock_code,
             packCodes: pack_codes,
             origin,
+            amountTotal: session.amount_total,
+            currency: session.currency,
+            purchaseDate: new Date().toISOString(),
+            receiptId: sessionId,
           },
         },
       });
