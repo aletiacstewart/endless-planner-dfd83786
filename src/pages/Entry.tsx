@@ -8,7 +8,20 @@ import { PageRenderer } from "@/components/PageRenderer";
 import { Button } from "@/components/ui/button";
 import { EntryPersonalization } from "@/components/entry/EntryPersonalization";
 import { StickerLayer } from "@/components/entry/StickerLayer";
-import { getMeta, withMeta, FONT_STACKS, FONT_SIZE_PX, type EntryMeta } from "@/lib/entryMeta";
+import {
+  getMeta,
+  withMeta,
+  withTypography,
+  getTypo,
+  FONT_STACKS,
+  FONT_SIZE_PX,
+  TITLE_SIZE_REM,
+  SUBTITLE_SIZE_REM,
+  DENSITY_PADDING,
+  ACCENT_WIDTH_PX,
+  type EntryMeta,
+  type TypoSpec,
+} from "@/lib/entryMeta";
 import { toCss } from "@/hooks/useThemedSwatches";
 import { toast } from "sonner";
 
@@ -49,16 +62,19 @@ export default function Entry() {
   }
 
   const meta = getMeta(entry);
-  const font = meta.font ?? "serif";
-  const fontSize = meta.fontSize ?? "md";
-  const accentColor = meta.color ? toCss(meta.color) : undefined;
 
   const onChange = (key: string, value: FieldValue) => {
     setEntry({ ...entry, values: { ...entry.values, [key]: value } });
   };
-
-  const onMetaChange = (patch: Partial<EntryMeta>) => {
-    setEntry(withMeta(entry, patch));
+  const onMetaChange = (patch: Partial<EntryMeta>) => setEntry(withMeta(entry, patch));
+  const onTypography = (group: "title" | "subtitle" | "body", patch: Partial<TypoSpec>) =>
+    setEntry(withTypography(entry, group, patch));
+  const onReset = () => {
+    setEntry({
+      ...entry,
+      values: { ...entry.values, __meta: {} as unknown as FieldValue },
+    });
+    toast.success("Personalization reset");
   };
 
   const remove = async () => {
@@ -67,10 +83,61 @@ export default function Entry() {
     navigate(`/section/${pageType.id}`);
   };
 
+  // Resolve style values
+  const titleSpec = getTypo(meta, "title");
+  const subSpec = getTypo(meta, "subtitle");
+  const bodySpec = getTypo(meta, "body");
+  const accent = meta.color ? toCss(meta.color) : undefined;
+  const accentW = ACCENT_WIDTH_PX[meta.accentWidth ?? "md"];
+  const density = DENSITY_PADDING[meta.density ?? "cozy"];
+  const bg = meta.background ?? { kind: "paper" as const };
+
+  const pageBg =
+    bg.kind === "paper"
+      ? "var(--gradient-paper)"
+      : bg.color
+        ? toCss(bg.color)
+        : "var(--gradient-paper)";
+
+  const patternBg =
+    bg.kind === "pattern"
+      ? bg.pattern === "dots"
+        ? "radial-gradient(hsl(var(--foreground) / 0.08) 1px, transparent 1px)"
+        : bg.pattern === "lines"
+          ? "repeating-linear-gradient(0deg, hsl(var(--foreground) / 0.06) 0 1px, transparent 1px 24px)"
+          : "linear-gradient(hsl(var(--foreground) / 0.06) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground) / 0.06) 1px, transparent 1px)"
+      : undefined;
+
+  const styleVars: React.CSSProperties = {
+    // Typography variables consumed by scoped CSS in index.css
+    ["--entry-title-font" as string]: FONT_STACKS[titleSpec.font ?? "serif"],
+    ["--entry-title-size" as string]: TITLE_SIZE_REM[titleSpec.size ?? "md"],
+    ["--entry-title-color" as string]: titleSpec.color ? toCss(titleSpec.color) : "inherit",
+    ["--entry-subtitle-font" as string]: FONT_STACKS[subSpec.font ?? "serif"],
+    ["--entry-subtitle-size" as string]: SUBTITLE_SIZE_REM[subSpec.size ?? "md"],
+    ["--entry-subtitle-color" as string]: subSpec.color ? toCss(subSpec.color) : "inherit",
+    ["--entry-body-font" as string]: FONT_STACKS[bodySpec.font ?? "sans"],
+    ["--entry-body-size" as string]: FONT_SIZE_PX[bodySpec.size ?? "md"],
+    ["--entry-body-color" as string]: bodySpec.color ? toCss(bodySpec.color) : "inherit",
+    ["--entry-card-padding" as string]: density,
+    ["--entry-section-tint" as string]: meta.sectionTint ? toCss(meta.sectionTint) : "transparent",
+    ["--entry-section-tint-bg" as string]: meta.sectionTint ? `hsl(${meta.sectionTint} / 0.08)` : "hsl(var(--card))",
+    fontFamily: "var(--entry-body-font)",
+    fontSize: "var(--entry-body-size)",
+    color: "var(--entry-body-color)",
+  };
+
   return (
     <div
+      data-entry-styled
       className="min-h-screen pb-24"
-      style={{ background: "var(--gradient-paper)" }}
+      style={{
+        background: pageBg,
+        backgroundImage: patternBg ? `${patternBg}${bg.color ? "" : ""}` : undefined,
+        backgroundSize: bg.kind === "pattern" && bg.pattern === "dots" ? "20px 20px" : bg.kind === "pattern" && bg.pattern === "grid" ? "24px 24px" : undefined,
+        backgroundColor: bg.kind !== "paper" && bg.color ? toCss(bg.color) : undefined,
+        ...styleVars,
+      }}
     >
       <header className="px-5 pt-8 pb-4 sticky top-0 z-20 backdrop-blur bg-background/70 border-b border-border">
         <div className="flex items-center justify-between">
@@ -96,17 +163,20 @@ export default function Entry() {
             Auto-synced to: {linkedSummary.join(", ")}
           </p>
         )}
-        <EntryPersonalization meta={meta} onChange={onMetaChange} />
+        <EntryPersonalization
+          meta={meta}
+          onChange={onMetaChange}
+          onTypography={onTypography}
+          onReset={onReset}
+        />
       </header>
 
       <main
         className="px-5 mt-4 relative"
         style={{
-          fontFamily: FONT_STACKS[font],
-          fontSize: FONT_SIZE_PX[fontSize],
-          borderLeft: accentColor ? `4px solid ${accentColor}` : undefined,
-          marginLeft: accentColor ? "0.25rem" : undefined,
-          paddingLeft: accentColor ? "1rem" : undefined,
+          borderLeft: accent ? `${accentW} solid ${accent}` : undefined,
+          marginLeft: accent ? "0.25rem" : undefined,
+          paddingLeft: accent ? "1rem" : undefined,
         }}
       >
         <PageRenderer pageType={pageType} values={entry.values} onChange={onChange} />
