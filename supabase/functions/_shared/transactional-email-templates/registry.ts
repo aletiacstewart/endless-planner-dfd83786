@@ -11,8 +11,10 @@ export interface TemplateEntry {
 
 import { template as plannerPurchase } from './planner-purchase.tsx'
 import { template as coverPackPurchase } from './cover-pack-purchase.tsx'
+import { template as welcome } from './welcome.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'planner-purchase': plannerPurchase,
   'cover-pack-purchase': coverPackPurchase,
+  'welcome': welcome,
 }
