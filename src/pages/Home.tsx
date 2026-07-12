@@ -159,6 +159,24 @@ export default function Home() {
 
 
       <main className="px-5 pt-6 space-y-6">
+        <section>
+          <button
+            onClick={openToday}
+            className="planner-card w-full flex items-center gap-3 text-left border-primary/40 bg-primary-soft/40 hover:bg-primary-soft/60 transition-colors"
+          >
+            <div className="w-11 h-11 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+              <Icons.Sun className="w-5 h-5 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-sm">Today's tracker</p>
+              <p className="text-xs text-muted-foreground">
+                {new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}
+              </p>
+            </div>
+            <Icons.ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+          </button>
+        </section>
+
         {showCoverNudge && (
           <section className="rounded-full border border-primary/30 bg-primary/5 px-4 py-2 flex items-center justify-between gap-3">
             <Link to="/packs" className="text-sm font-medium text-foreground flex-1 truncate">
