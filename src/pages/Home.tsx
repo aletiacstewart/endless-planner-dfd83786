@@ -27,6 +27,7 @@ const DISMISS_FOR_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const NUDGE_DISMISS_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 export default function Home() {
+  const navigate = useNavigate();
   const { settings } = useUserSettings();
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [recent, setRecent] = useState<PlannerEntry[]>([]);
