@@ -1,160 +1,505 @@
 import { useState } from "react";
-import { Check, Palette, Sticker as StickerIcon, Type, X } from "lucide-react";
+import {
+  Check,
+  Palette,
+  Sticker as StickerIcon,
+  Type,
+  RefreshCw,
+  Layers,
+  Square,
+  Rows3,
+  Heading1,
+  Heading2,
+  TextCursorInput,
+  X,
+} from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { useThemedSwatches, toCss } from "@/hooks/useThemedSwatches";
 import {
   FONT_LABELS,
-  UNIVERSAL_STICKERS,
+  FONT_STACKS,
+  STICKER_GROUPS,
   newStickerId,
+  getTypo,
   type EntryFont,
   type EntryFontSize,
   type EntryMeta,
   type Sticker,
+  type TypoSpec,
+  type EntryDensity,
+  type EntryAccentWidth,
+  type BackgroundSpec,
+  type EntryPattern,
 } from "@/lib/entryMeta";
 import { cn } from "@/lib/utils";
 
 interface Props {
   meta: EntryMeta;
   onChange: (patch: Partial<EntryMeta>) => void;
+  onTypography: (group: "title" | "subtitle" | "body", patch: Partial<TypoSpec>) => void;
+  onReset: () => void;
 }
 
-const FONTS: EntryFont[] = ["serif", "sans", "hand", "mono"];
+const FONTS: EntryFont[] = ["serif", "sans", "hand", "mono", "display", "rounded"];
 const SIZES: { v: EntryFontSize; label: string }[] = [
   { v: "sm", label: "S" },
   { v: "md", label: "M" },
   { v: "lg", label: "L" },
+  { v: "xl", label: "XL" },
+];
+const DENSITIES: { v: EntryDensity; label: string }[] = [
+  { v: "compact", label: "Compact" },
+  { v: "cozy", label: "Cozy" },
+  { v: "spacious", label: "Spacious" },
+];
+const ACCENT_WIDTHS: { v: EntryAccentWidth; label: string }[] = [
+  { v: "sm", label: "Thin" },
+  { v: "md", label: "Med" },
+  { v: "lg", label: "Bold" },
 ];
 
-export function EntryPersonalization({ meta, onChange }: Props) {
+export function EntryPersonalization({ meta, onChange, onTypography, onReset }: Props) {
   const swatches = useThemedSwatches();
   const [stickerOpen, setStickerOpen] = useState(false);
+  const [stickerTab, setStickerTab] = useState(STICKER_GROUPS[0].id);
 
-  const addSticker = (s: Omit<Sticker, "id" | "x" | "y" | "size">) => {
-    const sticker: Sticker = {
+  const addSticker = (emoji: string) => {
+    // Default position: near top-center of the page (user asked for it)
+    const s: Sticker = {
       id: newStickerId(),
-      ...s,
-      x: 20 + Math.random() * 40,
-      y: 20 + Math.random() * 30,
+      src: emoji,
+      kind: "emoji",
+      x: 50 + (Math.random() * 12 - 6),
+      y: 6 + Math.random() * 4,
       size: 48,
     };
-    onChange({ stickers: [...(meta.stickers ?? []), sticker] });
+    onChange({ stickers: [...(meta.stickers ?? []), s] });
     setStickerOpen(false);
   };
 
   return (
-    <div className="mt-3 flex flex-wrap items-center gap-2">
-      {/* Color swatches */}
-      <div className="flex items-center gap-1 rounded-full border border-border bg-card/60 px-1.5 py-1">
-        <Palette className="w-3.5 h-3.5 text-muted-foreground ml-0.5" />
-        {swatches.map((s) => {
-          const active = meta.color === s.hsl;
-          return (
-            <button
-              key={s.name}
-              type="button"
-              onClick={() => onChange({ color: active ? undefined : s.hsl })}
-              aria-label={s.name}
-              className={cn(
-                "w-5 h-5 rounded-full border transition-transform",
-                active ? "border-foreground scale-110" : "border-border/60"
-              )}
-              style={{ background: toCss(s.hsl) }}
-            >
-              {active && <Check className="w-3 h-3 mx-auto text-white drop-shadow" />}
-            </button>
-          );
-        })}
-        {meta.color && (
-          <button
-            type="button"
-            onClick={() => onChange({ color: undefined })}
-            className="w-5 h-5 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground"
-            aria-label="Clear color"
-          >
-            <X className="w-3 h-3" />
-          </button>
-        )}
-      </div>
+    <div className="mt-3 -mx-1 px-1 overflow-x-auto no-scrollbar">
+      <div className="flex items-center gap-2 min-w-max pb-1">
+        {/* Typography groups */}
+        <TypoChip
+          icon={<Heading1 className="w-3.5 h-3.5" />}
+          label="Title"
+          spec={getTypo(meta, "title")}
+          swatches={swatches}
+          onChange={(p) => onTypography("title", p)}
+        />
+        <TypoChip
+          icon={<Heading2 className="w-3.5 h-3.5" />}
+          label="Subtitle"
+          spec={getTypo(meta, "subtitle")}
+          swatches={swatches}
+          onChange={(p) => onTypography("subtitle", p)}
+        />
+        <TypoChip
+          icon={<TextCursorInput className="w-3.5 h-3.5" />}
+          label="Body"
+          spec={getTypo(meta, "body")}
+          swatches={swatches}
+          onChange={(p) => onTypography("body", p)}
+        />
 
-      {/* Font family */}
-      <Popover>
-        <PopoverTrigger asChild>
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/60 px-3 h-8 text-xs font-medium"
-          >
-            <Type className="w-3.5 h-3.5" />
-            {FONT_LABELS[meta.font ?? "serif"]}
-          </button>
-        </PopoverTrigger>
-        <PopoverContent className="w-40 p-1" align="start">
+        <Divider />
+
+        {/* Background */}
+        <BackgroundChip
+          bg={meta.background}
+          swatches={swatches}
+          onChange={(bg) => onChange({ background: bg })}
+        />
+
+        {/* Section tint */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button type="button" className={chipClass}>
+              <Layers className="w-3.5 h-3.5" />
+              Cards
+              {meta.sectionTint && (
+                <span className="w-3 h-3 rounded-full border border-border/60" style={{ background: toCss(meta.sectionTint) }} />
+              )}
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-56 p-2" align="start">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-1 mb-1.5">Card tint</p>
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                type="button"
+                onClick={() => onChange({ sectionTint: undefined })}
+                className={cn(
+                  "w-6 h-6 rounded-full border flex items-center justify-center text-muted-foreground",
+                  !meta.sectionTint ? "border-foreground" : "border-border",
+                )}
+                aria-label="No tint"
+              >
+                <X className="w-3 h-3" />
+              </button>
+              {swatches.map((s) => {
+                const active = meta.sectionTint === s.hsl;
+                return (
+                  <button
+                    key={s.name}
+                    type="button"
+                    onClick={() => onChange({ sectionTint: active ? undefined : s.hsl })}
+                    className={cn("w-6 h-6 rounded-full border", active ? "border-foreground scale-110" : "border-border/60")}
+                    style={{ background: toCss(s.hsl) }}
+                    aria-label={s.name}
+                  />
+                );
+              })}
+            </div>
+          </PopoverContent>
+        </Popover>
+
+        {/* Accent stripe */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button type="button" className={chipClass}>
+              <Palette className="w-3.5 h-3.5" />
+              Accent
+              {meta.color && (
+                <span className="w-3 h-3 rounded-full border border-border/60" style={{ background: toCss(meta.color) }} />
+              )}
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-56 p-2" align="start">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-1 mb-1.5">Stripe color</p>
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              <button
+                type="button"
+                onClick={() => onChange({ color: undefined })}
+                className={cn(
+                  "w-6 h-6 rounded-full border flex items-center justify-center text-muted-foreground",
+                  !meta.color ? "border-foreground" : "border-border",
+                )}
+                aria-label="No accent"
+              >
+                <X className="w-3 h-3" />
+              </button>
+              {swatches.map((s) => {
+                const active = meta.color === s.hsl;
+                return (
+                  <button
+                    key={s.name}
+                    type="button"
+                    onClick={() => onChange({ color: active ? undefined : s.hsl })}
+                    className={cn("w-6 h-6 rounded-full border", active ? "border-foreground scale-110" : "border-border/60")}
+                    style={{ background: toCss(s.hsl) }}
+                    aria-label={s.name}
+                  />
+                );
+              })}
+            </div>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-1 mb-1">Width</p>
+            <div className="inline-flex rounded-md border border-border overflow-hidden">
+              {ACCENT_WIDTHS.map(({ v, label }) => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => onChange({ accentWidth: v })}
+                  className={cn(
+                    "px-2 h-7 text-[11px] font-medium",
+                    (meta.accentWidth ?? "md") === v
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
+
+        {/* Density */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button type="button" className={chipClass}>
+              <Rows3 className="w-3.5 h-3.5" />
+              {DENSITIES.find((d) => d.v === (meta.density ?? "cozy"))?.label}
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-40 p-1" align="start">
+            {DENSITIES.map(({ v, label }) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => onChange({ density: v })}
+                className={cn(
+                  "w-full flex items-center justify-between px-2 py-1.5 rounded text-sm hover:bg-muted",
+                  (meta.density ?? "cozy") === v && "bg-muted",
+                )}
+              >
+                {label}
+                {(meta.density ?? "cozy") === v && <Check className="w-3.5 h-3.5" />}
+              </button>
+            ))}
+          </PopoverContent>
+        </Popover>
+
+        <Divider />
+
+        {/* Stickers */}
+        <Popover open={stickerOpen} onOpenChange={setStickerOpen}>
+          <PopoverTrigger asChild>
+            <button type="button" className={chipClass}>
+              <StickerIcon className="w-3.5 h-3.5" />
+              Sticker
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-72 p-2" align="start">
+            <div className="flex gap-1 mb-2 overflow-x-auto no-scrollbar">
+              {STICKER_GROUPS.map((g) => (
+                <button
+                  key={g.id}
+                  type="button"
+                  onClick={() => setStickerTab(g.id)}
+                  className={cn(
+                    "px-2 py-1 text-[11px] rounded-full whitespace-nowrap border",
+                    stickerTab === g.id ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground",
+                  )}
+                >
+                  {g.label}
+                </button>
+              ))}
+            </div>
+            <div className="grid grid-cols-8 gap-1">
+              {(STICKER_GROUPS.find((g) => g.id === stickerTab)?.emojis ?? []).map((e, i) => (
+                <button
+                  key={`${e}-${i}`}
+                  type="button"
+                  onClick={() => addSticker(e)}
+                  className="w-7 h-7 flex items-center justify-center text-lg rounded hover:bg-muted"
+                >
+                  {e}
+                </button>
+              ))}
+            </div>
+            <p className="text-[11px] text-muted-foreground px-1 mt-2">
+              Stickers land at the top of the page. Drag to move, tap for controls.
+            </p>
+          </PopoverContent>
+        </Popover>
+
+        {/* Reset */}
+        <button
+          type="button"
+          onClick={onReset}
+          className={cn(chipClass, "text-destructive")}
+          title="Reset all personalization"
+        >
+          <RefreshCw className="w-3.5 h-3.5" />
+          Reset
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const chipClass =
+  "inline-flex items-center gap-1.5 rounded-full border border-border bg-card/60 px-3 h-8 text-xs font-medium whitespace-nowrap";
+
+function Divider() {
+  return <span className="w-px h-5 bg-border/70 mx-0.5 shrink-0" />;
+}
+
+/* -------------------- Typography chip -------------------- */
+
+function TypoChip({
+  icon,
+  label,
+  spec,
+  swatches,
+  onChange,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  spec: TypoSpec;
+  swatches: { name: string; hsl: string }[];
+  onChange: (p: Partial<TypoSpec>) => void;
+}) {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button type="button" className={chipClass}>
+          {icon}
+          {label}
+          {spec.color && (
+            <span className="w-3 h-3 rounded-full border border-border/60" style={{ background: toCss(spec.color) }} />
+          )}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-64 p-2" align="start">
+        <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-1 mb-1">Font</p>
+        <div className="grid grid-cols-2 gap-1 mb-2">
           {FONTS.map((f) => (
             <button
               key={f}
               type="button"
               onClick={() => onChange({ font: f })}
               className={cn(
-                "w-full flex items-center justify-between px-2 py-1.5 rounded text-sm hover:bg-muted",
-                meta.font === f && "bg-muted"
+                "px-2 py-1.5 rounded text-xs text-left border",
+                (spec.font ?? "") === f ? "border-primary bg-primary/5" : "border-border hover:bg-muted",
               )}
+              style={{ fontFamily: FONT_STACKS[f] }}
             >
-              <span style={{ fontFamily: f === "hand" ? "'Caveat', cursive" : f === "mono" ? "ui-monospace, Menlo, monospace" : f === "serif" ? "'Cormorant Garamond', serif" : "'Inter', sans-serif" }}>
-                {FONT_LABELS[f]}
-              </span>
-              {meta.font === f && <Check className="w-3.5 h-3.5" />}
+              {FONT_LABELS[f]}
             </button>
           ))}
-        </PopoverContent>
-      </Popover>
-
-      {/* Size */}
-      <div className="inline-flex items-center rounded-full border border-border bg-card/60 h-8 overflow-hidden">
-        {SIZES.map(({ v, label }) => (
+        </div>
+        <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-1 mb-1">Size</p>
+        <div className="inline-flex rounded-md border border-border overflow-hidden mb-2">
+          {SIZES.map(({ v, label: sl }) => (
+            <button
+              key={v}
+              type="button"
+              onClick={() => onChange({ size: v })}
+              className={cn(
+                "w-9 h-8 text-[11px] font-medium",
+                (spec.size ?? "md") === v ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {sl}
+            </button>
+          ))}
+        </div>
+        <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-1 mb-1">Color</p>
+        <div className="flex flex-wrap gap-1.5">
           <button
-            key={v}
             type="button"
-            onClick={() => onChange({ fontSize: v })}
+            onClick={() => onChange({ color: undefined })}
             className={cn(
-              "w-8 h-full text-xs font-medium",
-              (meta.fontSize ?? "md") === v ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+              "w-6 h-6 rounded-full border flex items-center justify-center text-muted-foreground",
+              !spec.color ? "border-foreground" : "border-border",
             )}
+            aria-label="Default color"
           >
-            {label}
+            <X className="w-3 h-3" />
           </button>
-        ))}
-      </div>
-
-      {/* Stickers */}
-      <Popover open={stickerOpen} onOpenChange={setStickerOpen}>
-        <PopoverTrigger asChild>
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/60 px-3 h-8 text-xs font-medium"
-          >
-            <StickerIcon className="w-3.5 h-3.5" />
-            Sticker
-          </button>
-        </PopoverTrigger>
-        <PopoverContent className="w-64 p-2" align="start">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-1 mb-1">Add a sticker</p>
-          <div className="grid grid-cols-8 gap-1">
-            {UNIVERSAL_STICKERS.map((s) => (
+          {swatches.map((s) => {
+            const active = spec.color === s.hsl;
+            return (
               <button
-                key={s.id}
+                key={s.name}
                 type="button"
-                onClick={() => addSticker({ src: s.emoji, kind: "emoji" })}
-                title={s.label}
-                className="w-7 h-7 flex items-center justify-center text-lg rounded hover:bg-muted"
-              >
-                {s.emoji}
-              </button>
-            ))}
-          </div>
-          <p className="text-[11px] text-muted-foreground px-1 mt-2">
-            Drag on the page to move. Double-tap to remove.
-          </p>
-        </PopoverContent>
-      </Popover>
-    </div>
+                onClick={() => onChange({ color: active ? undefined : s.hsl })}
+                className={cn("w-6 h-6 rounded-full border", active ? "border-foreground scale-110" : "border-border/60")}
+                style={{ background: toCss(s.hsl) }}
+                aria-label={s.name}
+              />
+            );
+          })}
+        </div>
+      </PopoverContent>
+    </Popover>
   );
+}
+
+/* -------------------- Background chip -------------------- */
+
+const PATTERNS: { v: EntryPattern; label: string }[] = [
+  { v: "dots", label: "Dots" },
+  { v: "lines", label: "Lines" },
+  { v: "grid", label: "Grid" },
+];
+
+function BackgroundChip({
+  bg,
+  swatches,
+  onChange,
+}: {
+  bg: BackgroundSpec | undefined;
+  swatches: { name: string; hsl: string }[];
+  onChange: (bg: BackgroundSpec | undefined) => void;
+}) {
+  const current = bg ?? { kind: "paper" as const };
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button type="button" className={chipClass}>
+          <Square className="w-3.5 h-3.5" />
+          Background
+          {current.color && (
+            <span className="w-3 h-3 rounded-full border border-border/60" style={{ background: toCss(current.color) }} />
+          )}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-64 p-2" align="start">
+        <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-1 mb-1">Style</p>
+        <div className="inline-flex rounded-md border border-border overflow-hidden mb-2">
+          {(["paper", "solid", "pattern"] as const).map((k) => (
+            <button
+              key={k}
+              type="button"
+              onClick={() => onChange({ ...current, kind: k })}
+              className={cn(
+                "px-2 h-7 text-[11px] font-medium capitalize",
+                current.kind === k ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {k}
+            </button>
+          ))}
+        </div>
+
+        {current.kind !== "paper" && (
+          <>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-1 mb-1">Color</p>
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              {[
+                { name: "White", hsl: "0 0% 100%" },
+                { name: "Off-white", hsl: "40 30% 97%" },
+                ...swatches.map((s) => ({ name: s.name, hsl: shiftLight(s.hsl, 78) })),
+              ].map((s) => {
+                const active = current.color === s.hsl;
+                return (
+                  <button
+                    key={s.name}
+                    type="button"
+                    onClick={() => onChange({ ...current, color: s.hsl })}
+                    className={cn("w-6 h-6 rounded-full border", active ? "border-foreground scale-110" : "border-border/60")}
+                    style={{ background: toCss(s.hsl) }}
+                    aria-label={s.name}
+                  />
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        {current.kind === "pattern" && (
+          <>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-1 mb-1">Pattern</p>
+            <div className="inline-flex rounded-md border border-border overflow-hidden">
+              {PATTERNS.map(({ v, label }) => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => onChange({ ...current, pattern: v })}
+                  className={cn(
+                    "px-2 h-7 text-[11px] font-medium",
+                    current.pattern === v ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+/** Lighten an "H S% L%" HSL string to a fixed lightness. */
+function shiftLight(hsl: string, targetL: number): string {
+  const m = /^\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)%\s+(-?\d+(?:\.\d+)?)%\s*$/.exec(hsl);
+  if (!m) return hsl;
+  const h = Number(m[1]);
+  const s = Math.min(45, Number(m[2]));
+  return `${h} ${s}% ${targetL}%`;
 }

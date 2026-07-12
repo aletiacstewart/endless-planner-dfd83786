@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&family=Caveat:wght@500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&family=Caveat:wght@500;600&family=Playfair+Display:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -176,4 +176,51 @@
   .richtext ul { list-style: disc; padding-left: 1.25rem; }
   .richtext ol { list-style: decimal; padding-left: 1.25rem; }
   .richtext u { text-decoration: underline; }
+
+  /* Hide scrollbar on personalization toolbar strip */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Scoped personalization — applied only inside a personalized Entry page.   */
+/*  CSS variables are set by src/pages/Entry.tsx.                             */
+/* -------------------------------------------------------------------------- */
+[data-entry-styled] h1.section-title,
+[data-entry-styled] .section-title {
+  font-family: var(--entry-title-font);
+  font-size: var(--entry-title-size);
+  color: var(--entry-title-color);
+}
+[data-entry-styled] main h2,
+[data-entry-styled] main h3 {
+  font-family: var(--entry-title-font);
+  color: var(--entry-title-color);
+}
+[data-entry-styled] .field-label {
+  font-family: var(--entry-subtitle-font);
+  font-size: calc(var(--entry-subtitle-size) * 0.75);
+  color: var(--entry-subtitle-color);
+}
+[data-entry-styled] main input,
+[data-entry-styled] main textarea,
+[data-entry-styled] main select,
+[data-entry-styled] main .richtext {
+  font-family: var(--entry-body-font);
+  font-size: var(--entry-body-size);
+  color: var(--entry-body-color);
+}
+[data-entry-styled] main .planner-card {
+  background-color: var(--entry-section-tint-bg);
+  border-color: var(--entry-section-tint, hsl(var(--border)));
+  padding: var(--entry-card-padding);
+}
+/* Ensure inline styles from the rich-text editor inherit the body font. */
+[data-entry-styled] .richtext span,
+[data-entry-styled] .richtext b,
+[data-entry-styled] .richtext strong,
+[data-entry-styled] .richtext i,
+[data-entry-styled] .richtext em,
+[data-entry-styled] .richtext u {
+  font-family: inherit;
 }

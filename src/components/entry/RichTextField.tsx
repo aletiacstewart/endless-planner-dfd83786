@@ -12,9 +12,9 @@ interface Props {
 }
 
 /**
- * Lightweight rich-text editor built on contentEditable + document.execCommand.
- * Stores HTML. Plain-text values from the pre-rich-text era render unchanged
- * and are upgraded to HTML on the next edit.
+ * Lightweight rich-text editor built on contentEditable.
+ * Uses styleWithCSS so bold/italic/underline emit inline styles that
+ * inherit the surrounding font-family (fixing "bold breaks font" bug).
  */
 export function RichTextField({ value, onChange, placeholder, rows = 3, id }: Props) {
   const ref = useRef<HTMLDivElement>(null);
@@ -22,26 +22,25 @@ export function RichTextField({ value, onChange, placeholder, rows = 3, id }: Pr
   const [colorOpen, setColorOpen] = useState(false);
   const swatches = useThemedSwatches();
 
-  // Set initial HTML only when the incoming value is different from what's rendered,
-  // so typing doesn't get reset each keystroke.
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const current = el.innerHTML;
-    // Treat plain text (no tags) as a first-time upgrade.
     const incoming = value ?? "";
-    if (current !== incoming) {
-      if (document.activeElement === el) return; // don't clobber while typing
+    if (el.innerHTML !== incoming) {
+      if (document.activeElement === el) return;
       el.innerHTML = incoming;
     }
   }, [value]);
 
   const exec = (cmd: string, arg?: string) => {
-    ref.current?.focus();
-    document.execCommand(cmd, false, arg);
-    // fire an input event manually so onChange picks up
     const el = ref.current;
-    if (el) onChange(el.innerHTML);
+    if (!el) return;
+    el.focus();
+    // styleWithCSS ensures bold/italic/underline use <span style="…">
+    // which inherits the surrounding font stack correctly.
+    try { document.execCommand("styleWithCSS", false, "true"); } catch { /* noop */ }
+    document.execCommand(cmd, false, arg);
+    onChange(el.innerHTML);
   };
 
   const minH = `${Math.max(2, rows) * 1.6}rem`;
@@ -51,7 +50,6 @@ export function RichTextField({ value, onChange, placeholder, rows = 3, id }: Pr
       {focused && (
         <div
           className="absolute -top-9 left-0 z-20 flex items-center gap-0.5 rounded-md border border-border bg-popover px-1 py-1 shadow-md"
-          // Prevent blur on toolbar click
           onMouseDown={(e) => e.preventDefault()}
         >
           <ToolbarBtn onClick={() => exec("bold")} title="Bold"><Bold className="w-3.5 h-3.5" /></ToolbarBtn>
