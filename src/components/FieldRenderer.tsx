@@ -15,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { listDoctors, addDoctor, type Doctor } from "@/lib/doctors";
+import { RichTextField } from "@/components/entry/RichTextField";
 
 interface Props {
   field: FieldDef;
@@ -117,13 +118,12 @@ export function FieldRenderer({ field, value, allValues, onChange, onChangeAny, 
       return (
         <div>
           {label}
-          <Textarea
+          <RichTextField
             id={field.key}
             rows={field.rows ?? 3}
             value={(value as string) ?? ""}
             placeholder={field.placeholder}
-            onChange={(e) => onChange(e.target.value)}
-            className="bg-background/60 resize-none"
+            onChange={(v) => onChange(v)}
           />
         </div>
       );

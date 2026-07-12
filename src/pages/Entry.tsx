@@ -6,6 +6,10 @@ import { getPageType, type FieldValue } from "@/lib/pageTypes";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { PageRenderer } from "@/components/PageRenderer";
 import { Button } from "@/components/ui/button";
+import { EntryPersonalization } from "@/components/entry/EntryPersonalization";
+import { StickerLayer } from "@/components/entry/StickerLayer";
+import { getMeta, withMeta, FONT_STACKS, FONT_SIZE_PX, type EntryMeta } from "@/lib/entryMeta";
+import { toCss } from "@/hooks/useThemedSwatches";
 import { toast } from "sonner";
 
 export default function Entry() {
@@ -19,8 +23,6 @@ export default function Entry() {
         setEntry(null);
         return;
       }
-      // Migrate legacy entries: anything saved as "daily-tracker" that contains
-      // Complete-Tracker-only fields belongs to the new "complete-tracker" page.
       const looksComplete =
         e.pageType === "daily-tracker" &&
         ("med_list" in e.values ||
@@ -46,8 +48,17 @@ export default function Entry() {
     return <div className="p-6">Unknown page type. <Link to="/app" className="text-primary underline">Home</Link></div>;
   }
 
+  const meta = getMeta(entry);
+  const font = meta.font ?? "serif";
+  const fontSize = meta.fontSize ?? "md";
+  const accentColor = meta.color ? toCss(meta.color) : undefined;
+
   const onChange = (key: string, value: FieldValue) => {
     setEntry({ ...entry, values: { ...entry.values, [key]: value } });
+  };
+
+  const onMetaChange = (patch: Partial<EntryMeta>) => {
+    setEntry(withMeta(entry, patch));
   };
 
   const remove = async () => {
@@ -57,8 +68,11 @@ export default function Entry() {
   };
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: "var(--gradient-paper)" }}>
-      <header className="px-5 pt-8 pb-4 sticky top-0 z-10 backdrop-blur bg-background/70 border-b border-border">
+    <div
+      className="min-h-screen pb-24"
+      style={{ background: "var(--gradient-paper)" }}
+    >
+      <header className="px-5 pt-8 pb-4 sticky top-0 z-20 backdrop-blur bg-background/70 border-b border-border">
         <div className="flex items-center justify-between">
           <Link
             to={`/section/${pageType.id}`}
@@ -82,10 +96,24 @@ export default function Entry() {
             Auto-synced to: {linkedSummary.join(", ")}
           </p>
         )}
+        <EntryPersonalization meta={meta} onChange={onMetaChange} />
       </header>
 
-      <main className="px-5 mt-4">
+      <main
+        className="px-5 mt-4 relative"
+        style={{
+          fontFamily: FONT_STACKS[font],
+          fontSize: FONT_SIZE_PX[fontSize],
+          borderLeft: accentColor ? `4px solid ${accentColor}` : undefined,
+          marginLeft: accentColor ? "0.25rem" : undefined,
+          paddingLeft: accentColor ? "1rem" : undefined,
+        }}
+      >
         <PageRenderer pageType={pageType} values={entry.values} onChange={onChange} />
+        <StickerLayer
+          stickers={meta.stickers ?? []}
+          onChange={(stickers) => onMetaChange({ stickers })}
+        />
       </main>
     </div>
   );
