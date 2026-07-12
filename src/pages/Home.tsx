@@ -108,6 +108,22 @@ export default function Home() {
   const cover = getCover(settings?.coverId);
   const plannerName = settings?.plannerName || "My Planner";
 
+  const openToday = async () => {
+    const today = new Date();
+    const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    const dailies = await listEntries("daily-tracker");
+    const existing = dailies.find(
+      (e) => (e.values.date as string | undefined)?.slice(0, 10) === iso,
+    );
+    if (existing) {
+      navigate(`/entry/${existing.id}`);
+    } else {
+      const created = await createEntry("daily-tracker", { date: iso });
+      navigate(`/entry/${created.id}`);
+    }
+  };
+
+
   return (
     <div className="min-h-screen pb-24" style={{ background: "var(--gradient-paper)" }}>
       {/* Cover hero — show the full artwork, no aggressive cropping. */}
