@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS timezone text, ADD COLUMN IF NOT EXISTS welcomed_at timestamptz;
