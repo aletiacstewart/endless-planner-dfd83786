@@ -116,21 +116,14 @@ export default function PlannerDetail() {
             {pages.length} guided pages in the {planner.name}
           </p>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {pages.map((p) => {
-              const img = getPageImage(p.id);
-              return (
-                <div key={p.id} className="planner-card text-center">
-                  {img ? (
-                    <div className="aspect-square rounded-md overflow-hidden bg-muted mb-2">
-                      <img src={img} alt={p.name} className="w-full h-full object-cover" />
-                    </div>
-                  ) : null}
-                  <h3 className="font-medium text-sm mb-1">{p.name}</h3>
-                  <p className="text-xs text-muted-foreground line-clamp-2">{p.description}</p>
-                </div>
-              );
-            })}
+            {pages.map((p) => (
+              <div key={p.id} className="planner-card text-center">
+                <h3 className="font-medium text-sm mb-1">{p.name}</h3>
+                <p className="text-xs text-muted-foreground line-clamp-2">{p.description}</p>
+              </div>
+            ))}
           </div>
+
         </div>
       </section>
 
