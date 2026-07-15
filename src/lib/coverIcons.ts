@@ -1060,6 +1060,30 @@ import dgnYearlyFocus from "@/assets/page-icons/dragons/yearly-focus.jpg";
 
 const DRAGONS_SHARED_ICONS = { "my-goals": dgnMyGoals, "yearly-calendar": dgnYearlyCalendar, "monthly-calendar": dgnMonthlyCalendar, "weekly-calendar": dgnWeeklyCalendar, "daily-tracker": dgnDailyTracker, "complete-tracker": dgnCompleteTracker, "yearly-habit-tracker": dgnYearlyHabitTracker, "weight-tracker": dgnWeightTracker, "measurement-tracker": dgnMeasurementTracker, "blood-sugar-tracker": dgnBloodSugarTracker, "blood-pressure-tracker": dgnBloodPressureTracker, "oxygen-tracker": dgnOxygenTracker, "self-care-checklist": dgnSelfCareChecklist, "cleaning-checklist": dgnCleaningChecklist, recipe: dgnRecipe, notes: dgnNotes, "workout-tracker": dgnWorkoutTracker, medications: dgnMedications, "medical-records": dgnMedicalRecords, "yearly-focus": dgnYearlyFocus };
 
+// Gothic Sirens (shared across all gothic-siren-* covers)
+import gsMyGoals from "@/assets/page-icons/gothic-sirens/my-goals.jpg";
+import gsYearlyCalendar from "@/assets/page-icons/gothic-sirens/yearly-calendar.jpg";
+import gsMonthlyCalendar from "@/assets/page-icons/gothic-sirens/monthly-calendar.jpg";
+import gsWeeklyCalendar from "@/assets/page-icons/gothic-sirens/weekly-calendar.jpg";
+import gsDailyTracker from "@/assets/page-icons/gothic-sirens/daily-tracker.jpg";
+import gsCompleteTracker from "@/assets/page-icons/gothic-sirens/complete-tracker.jpg";
+import gsYearlyHabitTracker from "@/assets/page-icons/gothic-sirens/yearly-habit-tracker.jpg";
+import gsWeightTracker from "@/assets/page-icons/gothic-sirens/weight-tracker.jpg";
+import gsMeasurementTracker from "@/assets/page-icons/gothic-sirens/measurement-tracker.jpg";
+import gsBloodSugarTracker from "@/assets/page-icons/gothic-sirens/blood-sugar-tracker.jpg";
+import gsBloodPressureTracker from "@/assets/page-icons/gothic-sirens/blood-pressure-tracker.jpg";
+import gsOxygenTracker from "@/assets/page-icons/gothic-sirens/oxygen-tracker.jpg";
+import gsSelfCareChecklist from "@/assets/page-icons/gothic-sirens/self-care-checklist.jpg";
+import gsCleaningChecklist from "@/assets/page-icons/gothic-sirens/cleaning-checklist.jpg";
+import gsRecipe from "@/assets/page-icons/gothic-sirens/recipe.jpg";
+import gsNotes from "@/assets/page-icons/gothic-sirens/notes.jpg";
+import gsWorkoutTracker from "@/assets/page-icons/gothic-sirens/workout-tracker.jpg";
+import gsMedications from "@/assets/page-icons/gothic-sirens/medications.jpg";
+import gsMedicalRecords from "@/assets/page-icons/gothic-sirens/medical-records.jpg";
+import gsYearlyFocus from "@/assets/page-icons/gothic-sirens/yearly-focus.jpg";
+
+const GOTHIC_SIRENS_SHARED_ICONS = { "my-goals": gsMyGoals, "yearly-calendar": gsYearlyCalendar, "monthly-calendar": gsMonthlyCalendar, "weekly-calendar": gsWeeklyCalendar, "daily-tracker": gsDailyTracker, "complete-tracker": gsCompleteTracker, "yearly-habit-tracker": gsYearlyHabitTracker, "weight-tracker": gsWeightTracker, "measurement-tracker": gsMeasurementTracker, "blood-sugar-tracker": gsBloodSugarTracker, "blood-pressure-tracker": gsBloodPressureTracker, "oxygen-tracker": gsOxygenTracker, "self-care-checklist": gsSelfCareChecklist, "cleaning-checklist": gsCleaningChecklist, recipe: gsRecipe, notes: gsNotes, "workout-tracker": gsWorkoutTracker, medications: gsMedications, "medical-records": gsMedicalRecords, "yearly-focus": gsYearlyFocus };
+
 
 
 
@@ -1525,6 +1549,16 @@ export const COVER_ICONS: Record<string, Record<string, string>> = {
   "dragon-heart-flame": pack(DRAGONS_SHARED_ICONS),
   "dragon-sovereign": pack(DRAGONS_SHARED_ICONS),
   "dragon-thornwood": pack(DRAGONS_SHARED_ICONS),
+  "gothic-siren-cathedral-throne": pack(GOTHIC_SIRENS_SHARED_ICONS),
+  "gothic-siren-nautilus": pack(GOTHIC_SIRENS_SHARED_ICONS),
+  "gothic-siren-horned-queen": pack(GOTHIC_SIRENS_SHARED_ICONS),
+  "gothic-siren-ribbed-crown": pack(GOTHIC_SIRENS_SHARED_ICONS),
+  "gothic-siren-winged-fae": pack(GOTHIC_SIRENS_SHARED_ICONS),
+  "gothic-siren-cathedral-nautilus": pack(GOTHIC_SIRENS_SHARED_ICONS),
+  "gothic-siren-conch-skull": pack(GOTHIC_SIRENS_SHARED_ICONS),
+  "gothic-siren-webbed": pack(GOTHIC_SIRENS_SHARED_ICONS),
+  "gothic-siren-skeleton": pack(GOTHIC_SIRENS_SHARED_ICONS),
+  "gothic-siren-haloed-conch": pack(GOTHIC_SIRENS_SHARED_ICONS),
 };
 
 
