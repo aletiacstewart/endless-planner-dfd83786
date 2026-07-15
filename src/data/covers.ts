@@ -84,6 +84,16 @@ import threeCrosses from "@/assets/covers/three-crosses.png.asset.json";
 import gatesOfHeaven from "@/assets/covers/gates-of-heaven.png.asset.json";
 import dreamscape from "@/assets/covers/dreamscape.png.asset.json";
 import sunMoonStorm from "@/assets/covers/sun-moon-storm.png.asset.json";
+import ivoryRibbons from "@/assets/covers/ivory-ribbons.png.asset.json";
+import midnightRibbons from "@/assets/covers/midnight-ribbons.png.asset.json";
+import luminousHummingbird from "@/assets/covers/luminous-hummingbird.png.asset.json";
+import luminousDragonfly from "@/assets/covers/luminous-dragonfly.png.asset.json";
+import blackDahliaMoon from "@/assets/covers/black-dahlia-moon.png.asset.json";
+import blackRoseMoon from "@/assets/covers/black-rose-moon.png.asset.json";
+import midnightIrisMoon from "@/assets/covers/midnight-iris-moon.png.asset.json";
+import blackLilyMoon from "@/assets/covers/black-lily-moon.png.asset.json";
+import swallowtailMoon from "@/assets/covers/swallowtail-moon.png.asset.json";
+import gildedRose from "@/assets/covers/gilded-rose.png.asset.json";
 
 // ---- Palettes ----
 
@@ -312,6 +322,45 @@ const paletteSunMoonStorm: CoverPalette = {
     "linear-gradient(135deg, hsl(40 55% 96%), hsl(220 45% 92%))",
 };
 
+// Ivory Ribbons — soft cream paper with warm champagne accent.
+const paletteIvory: CoverPalette = {
+  mode: "light",
+  background: "36 35% 96%",
+  foreground: "28 30% 22%",
+  card: "36 45% 99%",
+  cardForeground: "28 30% 22%",
+  primary: "32 45% 55%",
+  primaryForeground: "36 45% 99%",
+  primarySoft: "32 35% 92%",
+  accent: "28 55% 60%",
+  accentForeground: "36 45% 99%",
+  muted: "36 20% 92%",
+  mutedForeground: "28 15% 42%",
+  border: "36 20% 84%",
+  paperGradient: "linear-gradient(180deg, hsl(36 45% 98%), hsl(32 25% 92%))",
+};
+
+// Gilded Rose / Midnight Ribbons — deep black paper with gold accents.
+const paletteGilded: CoverPalette = {
+  mode: "dark",
+  background: "40 15% 7%",
+  foreground: "42 45% 92%",
+  card: "40 12% 11%",
+  cardForeground: "42 45% 92%",
+  primary: "42 70% 55%",
+  primaryForeground: "40 15% 8%",
+  primarySoft: "42 40% 20%",
+  accent: "36 80% 60%",
+  accentForeground: "40 15% 8%",
+  muted: "40 10% 15%",
+  mutedForeground: "42 20% 70%",
+  border: "40 10% 22%",
+  paperGradient:
+    "radial-gradient(120% 80% at 50% 0%, hsl(42 60% 22% / 0.4), transparent 60%), linear-gradient(180deg, hsl(40 15% 8%), hsl(40 15% 5%))",
+};
+
+
+
 export const COVERS: Cover[] = [
   {
     id: "patriotic-roses",
@@ -459,6 +508,76 @@ export const COVERS: Cover[] = [
     collection: "celestial-florals",
     image: sunMoonStorm.url,
     palette: paletteSunMoonStorm,
+  },
+  {
+    id: "ivory-ribbons",
+    name: "Ivory Ribbons",
+    collection: "celestial-florals",
+    image: ivoryRibbons.url,
+    palette: paletteIvory,
+  },
+  {
+    id: "midnight-ribbons",
+    name: "Midnight Ribbons",
+    collection: "scrapbook",
+    image: midnightRibbons.url,
+    palette: paletteGilded,
+  },
+  {
+    id: "luminous-hummingbird",
+    name: "Luminous Hummingbird",
+    collection: "celestial-birds-insects",
+    image: luminousHummingbird.url,
+    palette: paletteCelestialGold,
+  },
+  {
+    id: "luminous-dragonfly",
+    name: "Luminous Dragonfly",
+    collection: "celestial-birds-insects",
+    image: luminousDragonfly.url,
+    palette: paletteCelestialGold,
+  },
+  {
+    id: "black-dahlia-moon",
+    name: "Black Dahlia Moon",
+    collection: "black-moon",
+    image: blackDahliaMoon.url,
+    palette: paletteCelestialGold,
+  },
+  {
+    id: "black-rose-moon",
+    name: "Black Rose Moon",
+    collection: "black-moon",
+    image: blackRoseMoon.url,
+    palette: paletteCelestialGold,
+  },
+  {
+    id: "midnight-iris-moon",
+    name: "Midnight Iris Moon",
+    collection: "black-moon",
+    image: midnightIrisMoon.url,
+    palette: paletteBluebonnet,
+  },
+  {
+    id: "black-lily-moon",
+    name: "Black Lily Moon",
+    collection: "black-moon",
+    image: blackLilyMoon.url,
+    palette: paletteCelestialGold,
+  },
+  {
+    id: "swallowtail-moon",
+    name: "Swallowtail Moon",
+    collection: "celestial-birds-insects",
+    image: swallowtailMoon.url,
+    palette: paletteCelestialGold,
+  },
+  {
+    id: "gilded-rose",
+    name: "Gilded Rose",
+    collection: "scrapbook",
+    image: gildedRose.url,
+    palette: paletteGilded,
   },
 ];
 
