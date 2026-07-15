@@ -71,6 +71,7 @@ import bluebonnetMoon from "@/assets/covers/bluebonnet-moon.png.asset.json";
 import monarchMoon from "@/assets/covers/monarch-moon.png.asset.json";
 import longhornStar from "@/assets/covers/longhorn-star.png.asset.json";
 import mockingbirdMoon from "@/assets/covers/mockingbird-moon.png.asset.json";
+import patrioticWhiteRose from "@/assets/covers/patriotic-white-rose.png.asset.json";
 
 // ---- Palettes ----
 
@@ -294,6 +295,13 @@ export const COVERS: Cover[] = [
     collection: "sparrow",
     image: mockingbirdMoon.url,
     palette: paletteCelestialGold,
+  },
+  {
+    id: "patriotic-white-rose",
+    name: "Patriotic White Rose",
+    collection: "classic",
+    image: patrioticWhiteRose.url,
+    palette: palettePatrioticBlue,
   },
 ];
 
