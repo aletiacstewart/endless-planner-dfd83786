@@ -33,7 +33,8 @@ export type CoverCollection =
   | "faith"
   | "chronicles"
   | "scrapbook"
-  | "classic";
+  | "classic"
+  | "change-of-life";
 
 export const COLLECTIONS: { id: CoverCollection; label: string }[] = [
   { id: "classic", label: "Patriotic" },
@@ -47,6 +48,7 @@ export const COLLECTIONS: { id: CoverCollection; label: string }[] = [
   { id: "affirmations", label: "Affirmations" },
   { id: "faith", label: "Faith" },
   { id: "chronicles", label: "Chronicles" },
+  { id: "change-of-life", label: "Change of Life" },
 ];
 
 export type Cover = {
@@ -72,6 +74,16 @@ import monarchMoon from "@/assets/covers/monarch-moon.png.asset.json";
 import longhornStar from "@/assets/covers/longhorn-star.png.asset.json";
 import mockingbirdMoon from "@/assets/covers/mockingbird-moon.png.asset.json";
 import patrioticWhiteRose from "@/assets/covers/patriotic-white-rose.png.asset.json";
+import liveOakLights from "@/assets/covers/live-oak-lights.png.asset.json";
+import wellnessRoots from "@/assets/covers/wellness-roots.png.asset.json";
+import wellnessRiver from "@/assets/covers/wellness-river.png.asset.json";
+import wellnessBloom from "@/assets/covers/wellness-bloom.png.asset.json";
+import wellnessStillWater from "@/assets/covers/wellness-still-water.png.asset.json";
+import goodShepherd from "@/assets/covers/good-shepherd.png.asset.json";
+import threeCrosses from "@/assets/covers/three-crosses.png.asset.json";
+import gatesOfHeaven from "@/assets/covers/gates-of-heaven.png.asset.json";
+import dreamscape from "@/assets/covers/dreamscape.png.asset.json";
+import sunMoonStorm from "@/assets/covers/sun-moon-storm.png.asset.json";
 
 // ---- Palettes ----
 
@@ -223,6 +235,81 @@ const paletteLonghorn: CoverPalette = {
   border: "225 15% 22%",
   paperGradient:
     "radial-gradient(120% 80% at 50% 0%, hsl(18 55% 22% / 0.5), transparent 60%), linear-gradient(180deg, hsl(225 22% 10%), hsl(225 22% 6%))",
+};
+
+// Watercolor wellness — soft sage, cream paper, dusty blue accent.
+const paletteWellness: CoverPalette = {
+  mode: "light",
+  background: "48 25% 95%",
+  foreground: "200 25% 20%",
+  card: "48 30% 98%",
+  cardForeground: "200 25% 20%",
+  primary: "150 22% 42%",
+  primaryForeground: "48 30% 98%",
+  primarySoft: "150 20% 88%",
+  accent: "205 35% 50%",
+  accentForeground: "48 30% 98%",
+  muted: "48 18% 90%",
+  mutedForeground: "200 15% 42%",
+  border: "48 15% 82%",
+  paperGradient: "linear-gradient(180deg, hsl(48 30% 97%), hsl(150 15% 90%))",
+};
+
+// Faith — warm gold on deep sky, reverent + luminous.
+const paletteFaith: CoverPalette = {
+  mode: "dark",
+  background: "222 40% 10%",
+  foreground: "42 55% 94%",
+  card: "222 32% 14%",
+  cardForeground: "42 55% 94%",
+  primary: "42 80% 58%",
+  primaryForeground: "222 40% 10%",
+  primarySoft: "42 40% 22%",
+  accent: "38 90% 68%",
+  accentForeground: "222 40% 10%",
+  muted: "222 22% 18%",
+  mutedForeground: "42 25% 72%",
+  border: "222 22% 24%",
+  paperGradient:
+    "radial-gradient(140% 90% at 50% 0%, hsl(38 70% 26% / 0.5), transparent 60%), linear-gradient(180deg, hsl(222 40% 11%), hsl(222 40% 7%))",
+};
+
+// Dreamscape — surreal twilight, plum + peach + cyan.
+const paletteDreamscape: CoverPalette = {
+  mode: "dark",
+  background: "245 30% 10%",
+  foreground: "35 45% 92%",
+  card: "245 28% 14%",
+  cardForeground: "35 45% 92%",
+  primary: "22 75% 62%",
+  primaryForeground: "245 30% 10%",
+  primarySoft: "22 40% 22%",
+  accent: "195 70% 60%",
+  accentForeground: "245 30% 10%",
+  muted: "245 22% 18%",
+  mutedForeground: "35 20% 70%",
+  border: "245 22% 24%",
+  paperGradient:
+    "radial-gradient(140% 90% at 50% 0%, hsl(280 45% 22% / 0.55), transparent 60%), linear-gradient(180deg, hsl(245 32% 11%), hsl(245 32% 7%))",
+};
+
+// Sun / Moon / Storm — split celestial, warm sunrise + cool storm.
+const paletteSunMoonStorm: CoverPalette = {
+  mode: "light",
+  background: "40 45% 96%",
+  foreground: "230 40% 18%",
+  card: "40 50% 99%",
+  cardForeground: "230 40% 18%",
+  primary: "32 85% 55%",
+  primaryForeground: "40 50% 99%",
+  primarySoft: "32 55% 90%",
+  accent: "220 60% 45%",
+  accentForeground: "40 50% 99%",
+  muted: "40 22% 92%",
+  mutedForeground: "230 18% 40%",
+  border: "40 22% 84%",
+  paperGradient:
+    "linear-gradient(135deg, hsl(40 55% 96%), hsl(220 45% 92%))",
 };
 
 export const COVERS: Cover[] = [
