@@ -96,6 +96,16 @@ import midnightIrisMoon from "@/assets/covers/midnight-iris-moon.png.asset.json"
 import blackLilyMoon from "@/assets/covers/black-lily-moon.png.asset.json";
 import swallowtailMoon from "@/assets/covers/swallowtail-moon.png.asset.json";
 import gildedRose from "@/assets/covers/gilded-rose.png.asset.json";
+import scrapbookBotanical from "@/assets/covers/scrapbook-botanical.png.asset.json";
+import midnightMothBloom from "@/assets/covers/midnight-moth-bloom.png.asset.json";
+import tealMothBloom from "@/assets/covers/teal-moth-bloom.png.asset.json";
+import thinkinSmack from "@/assets/covers/thinkin-smack.png.asset.json";
+import talkinSmack from "@/assets/covers/talkin-smack.png.asset.json";
+import pastelClipboard from "@/assets/covers/pastel-clipboard.png.asset.json";
+import redRoseMoonlight from "@/assets/covers/red-rose-moonlight.png.asset.json";
+import whiteRoseMoonlight from "@/assets/covers/white-rose-moonlight.png.asset.json";
+import faithAffirmationsBright from "@/assets/covers/faith-affirmations-bright.png.asset.json";
+import faithAffirmationsMuted from "@/assets/covers/faith-affirmations-muted.png.asset.json";
 
 // ---- Palettes ----
 
