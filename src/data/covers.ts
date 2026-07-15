@@ -726,6 +726,10 @@ const paletteLadybugSky: CoverPalette = {
 };
 
 
+export const COVERS: Cover[] = [
+
+
+
 
   {
     id: "patriotic-roses",
