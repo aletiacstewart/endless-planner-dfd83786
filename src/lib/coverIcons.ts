@@ -1489,6 +1489,16 @@ export const COVER_ICONS: Record<string, Record<string, string>> = {
   "feather-phoenix": pack(FEATHER_PHOENIX_ICONS),
   "feather-amethyst": pack(FEATHER_AMETHYST_ICONS),
   "feather-crimson": pack(FEATHER_CRIMSON_ICONS),
+  "dragon-twin-flame": pack(DRAGONS_SHARED_ICONS),
+  "dragon-filigree": pack(DRAGONS_SHARED_ICONS),
+  "dragon-skull-ember": pack(DRAGONS_SHARED_ICONS),
+  "dragon-winged-cross": pack(DRAGONS_SHARED_ICONS),
+  "dragon-whirlwind": pack(DRAGONS_SHARED_ICONS),
+  "dragon-onyx": pack(DRAGONS_SHARED_ICONS),
+  "dragon-curling-ember": pack(DRAGONS_SHARED_ICONS),
+  "dragon-heart-flame": pack(DRAGONS_SHARED_ICONS),
+  "dragon-sovereign": pack(DRAGONS_SHARED_ICONS),
+  "dragon-thornwood": pack(DRAGONS_SHARED_ICONS),
 };
 
 
