@@ -36,7 +36,8 @@ export type CoverCollection =
   | "classic"
   | "change-of-life"
   | "pop-art"
-  | "grit";
+  | "grit"
+  | "feathers";
 
 export const COLLECTIONS: { id: CoverCollection; label: string }[] = [
   { id: "classic", label: "Patriotic" },
@@ -53,6 +54,7 @@ export const COLLECTIONS: { id: CoverCollection; label: string }[] = [
   { id: "change-of-life", label: "Change of Life" },
   { id: "pop-art", label: "Pop Art" },
   { id: "grit", label: "Grit & Grace" },
+  { id: "feathers", label: "Feathers" },
 ];
 
 export type Cover = {
@@ -138,6 +140,10 @@ import doveRavenRoses from "@/assets/covers/dove-raven-roses.png.asset.json";
 import ravenRedRoses from "@/assets/covers/raven-red-roses.png.asset.json";
 import roseCrossStars from "@/assets/covers/rose-cross-stars.png.asset.json";
 import wovenHeartCross from "@/assets/covers/woven-heart-cross.png.asset.json";
+import featherEmerald from "@/assets/covers/feather-emerald.png.asset.json";
+import featherPhoenix from "@/assets/covers/feather-phoenix.png.asset.json";
+import featherAmethyst from "@/assets/covers/feather-amethyst.png.asset.json";
+import featherCrimson from "@/assets/covers/feather-crimson.png.asset.json";
 
 // ---- Palettes ----
 
@@ -812,6 +818,80 @@ const paletteGothicRed: CoverPalette = {
     "radial-gradient(140% 90% at 50% 0%, hsl(350 55% 20% / 0.55), transparent 60%), linear-gradient(180deg, hsl(0 15% 8%), hsl(0 15% 4%))",
 };
 
+// Feather — emerald quill drifting above cloud.
+const paletteFeatherEmerald: CoverPalette = {
+  mode: "light",
+  background: "165 40% 96%",
+  foreground: "165 40% 12%",
+  card: "0 0% 100%",
+  cardForeground: "165 40% 12%",
+  primary: "150 55% 32%",
+  primaryForeground: "150 30% 98%",
+  primarySoft: "150 40% 88%",
+  accent: "180 45% 45%",
+  accentForeground: "0 0% 100%",
+  muted: "165 25% 92%",
+  mutedForeground: "165 15% 38%",
+  border: "165 25% 82%",
+  paperGradient: "linear-gradient(180deg, hsl(180 40% 97%), hsl(150 35% 90%))",
+};
+
+// Feather — phoenix ember over warm sand cloud.
+const paletteFeatherPhoenix: CoverPalette = {
+  mode: "light",
+  background: "30 45% 95%",
+  foreground: "20 40% 14%",
+  card: "0 0% 100%",
+  cardForeground: "20 40% 14%",
+  primary: "18 82% 48%",
+  primaryForeground: "30 30% 98%",
+  primarySoft: "22 60% 90%",
+  accent: "220 65% 38%",
+  accentForeground: "0 0% 100%",
+  muted: "30 30% 92%",
+  mutedForeground: "25 20% 38%",
+  border: "28 30% 82%",
+  paperGradient: "linear-gradient(180deg, hsl(30 55% 96%), hsl(18 45% 88%))",
+};
+
+// Feather — amethyst stardust over lilac cloud.
+const paletteFeatherAmethyst: CoverPalette = {
+  mode: "light",
+  background: "270 50% 96%",
+  foreground: "270 35% 14%",
+  card: "0 0% 100%",
+  cardForeground: "270 35% 14%",
+  primary: "280 55% 42%",
+  primaryForeground: "280 30% 98%",
+  primarySoft: "275 45% 90%",
+  accent: "255 55% 55%",
+  accentForeground: "0 0% 100%",
+  muted: "275 30% 93%",
+  mutedForeground: "270 18% 40%",
+  border: "275 30% 82%",
+  paperGradient: "linear-gradient(180deg, hsl(275 55% 97%), hsl(265 45% 88%))",
+};
+
+// Feather — crimson starlight over dawn cloud.
+const paletteFeatherCrimson: CoverPalette = {
+  mode: "light",
+  background: "350 50% 96%",
+  foreground: "350 40% 14%",
+  card: "0 0% 100%",
+  cardForeground: "350 40% 14%",
+  primary: "352 72% 45%",
+  primaryForeground: "350 30% 98%",
+  primarySoft: "352 55% 90%",
+  accent: "220 45% 32%",
+  accentForeground: "0 0% 100%",
+  muted: "350 30% 93%",
+  mutedForeground: "350 18% 40%",
+  border: "350 30% 82%",
+  paperGradient: "linear-gradient(180deg, hsl(350 55% 97%), hsl(345 50% 88%))",
+};
+
+
+
 
 export const COVERS: Cover[] = [
 
@@ -1316,6 +1396,34 @@ export const COVERS: Cover[] = [
     collection: "faith",
     image: wovenHeartCross.url,
     palette: paletteBlackGold,
+  },
+  {
+    id: "feather-emerald",
+    name: "Emerald Feather",
+    collection: "feathers",
+    image: featherEmerald.url,
+    palette: paletteFeatherEmerald,
+  },
+  {
+    id: "feather-phoenix",
+    name: "Phoenix Feather",
+    collection: "feathers",
+    image: featherPhoenix.url,
+    palette: paletteFeatherPhoenix,
+  },
+  {
+    id: "feather-amethyst",
+    name: "Amethyst Feather",
+    collection: "feathers",
+    image: featherAmethyst.url,
+    palette: paletteFeatherAmethyst,
+  },
+  {
+    id: "feather-crimson",
+    name: "Crimson Feather",
+    collection: "feathers",
+    image: featherCrimson.url,
+    palette: paletteFeatherCrimson,
   },
 ];
 
