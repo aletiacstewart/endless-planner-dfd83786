@@ -1,5 +1,5 @@
 import { PAGE_TYPES } from "@/lib/pageTypes";
-import heroImage from "@/assets/page-images/complete-tracker.png";
+const heroImage = "";
 
 export interface PlannerDef {
   id: string;
