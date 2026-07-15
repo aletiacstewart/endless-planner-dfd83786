@@ -465,8 +465,137 @@ import giMedications from "@/assets/page-icons/gilded/medications.jpg";
 import giMedicalRecords from "@/assets/page-icons/gilded/medical-records.jpg";
 import giYearlyFocus from "@/assets/page-icons/gilded/yearly-focus.jpg";
 
+// Scrapbook Blush (scrapbook-botanical)
+import sbbMyGoals from "@/assets/page-icons/scrapbook-blush/my-goals.jpg";
+import sbbYearlyCalendar from "@/assets/page-icons/scrapbook-blush/yearly-calendar.jpg";
+import sbbMonthlyCalendar from "@/assets/page-icons/scrapbook-blush/monthly-calendar.jpg";
+import sbbWeeklyCalendar from "@/assets/page-icons/scrapbook-blush/weekly-calendar.jpg";
+import sbbDailyTracker from "@/assets/page-icons/scrapbook-blush/daily-tracker.jpg";
+import sbbCompleteTracker from "@/assets/page-icons/scrapbook-blush/complete-tracker.jpg";
+import sbbYearlyHabitTracker from "@/assets/page-icons/scrapbook-blush/yearly-habit-tracker.jpg";
+import sbbWeightTracker from "@/assets/page-icons/scrapbook-blush/weight-tracker.jpg";
+import sbbMeasurementTracker from "@/assets/page-icons/scrapbook-blush/measurement-tracker.jpg";
+import sbbBloodSugarTracker from "@/assets/page-icons/scrapbook-blush/blood-sugar-tracker.jpg";
+import sbbBloodPressureTracker from "@/assets/page-icons/scrapbook-blush/blood-pressure-tracker.jpg";
+import sbbOxygenTracker from "@/assets/page-icons/scrapbook-blush/oxygen-tracker.jpg";
+import sbbSelfCareChecklist from "@/assets/page-icons/scrapbook-blush/self-care-checklist.jpg";
+import sbbCleaningChecklist from "@/assets/page-icons/scrapbook-blush/cleaning-checklist.jpg";
+import sbbRecipe from "@/assets/page-icons/scrapbook-blush/recipe.jpg";
+import sbbNotes from "@/assets/page-icons/scrapbook-blush/notes.jpg";
+import sbbWorkoutTracker from "@/assets/page-icons/scrapbook-blush/workout-tracker.jpg";
+import sbbMedications from "@/assets/page-icons/scrapbook-blush/medications.jpg";
+import sbbMedicalRecords from "@/assets/page-icons/scrapbook-blush/medical-records.jpg";
+import sbbYearlyFocus from "@/assets/page-icons/scrapbook-blush/yearly-focus.jpg";
 
+// Pastel Clipboard
+import pcpMyGoals from "@/assets/page-icons/pastel-clipboard/my-goals.jpg";
+import pcpYearlyCalendar from "@/assets/page-icons/pastel-clipboard/yearly-calendar.jpg";
+import pcpMonthlyCalendar from "@/assets/page-icons/pastel-clipboard/monthly-calendar.jpg";
+import pcpWeeklyCalendar from "@/assets/page-icons/pastel-clipboard/weekly-calendar.jpg";
+import pcpDailyTracker from "@/assets/page-icons/pastel-clipboard/daily-tracker.jpg";
+import pcpCompleteTracker from "@/assets/page-icons/pastel-clipboard/complete-tracker.jpg";
+import pcpYearlyHabitTracker from "@/assets/page-icons/pastel-clipboard/yearly-habit-tracker.jpg";
+import pcpWeightTracker from "@/assets/page-icons/pastel-clipboard/weight-tracker.jpg";
+import pcpMeasurementTracker from "@/assets/page-icons/pastel-clipboard/measurement-tracker.jpg";
+import pcpBloodSugarTracker from "@/assets/page-icons/pastel-clipboard/blood-sugar-tracker.jpg";
+import pcpBloodPressureTracker from "@/assets/page-icons/pastel-clipboard/blood-pressure-tracker.jpg";
+import pcpOxygenTracker from "@/assets/page-icons/pastel-clipboard/oxygen-tracker.jpg";
+import pcpSelfCareChecklist from "@/assets/page-icons/pastel-clipboard/self-care-checklist.jpg";
+import pcpCleaningChecklist from "@/assets/page-icons/pastel-clipboard/cleaning-checklist.jpg";
+import pcpRecipe from "@/assets/page-icons/pastel-clipboard/recipe.jpg";
+import pcpNotes from "@/assets/page-icons/pastel-clipboard/notes.jpg";
+import pcpWorkoutTracker from "@/assets/page-icons/pastel-clipboard/workout-tracker.jpg";
+import pcpMedications from "@/assets/page-icons/pastel-clipboard/medications.jpg";
+import pcpMedicalRecords from "@/assets/page-icons/pastel-clipboard/medical-records.jpg";
+import pcpYearlyFocus from "@/assets/page-icons/pastel-clipboard/yearly-focus.jpg";
 
+// Moth Bloom (midnight-moth-bloom, teal-moth-bloom)
+import mblMyGoals from "@/assets/page-icons/moth-bloom/my-goals.jpg";
+import mblYearlyCalendar from "@/assets/page-icons/moth-bloom/yearly-calendar.jpg";
+import mblMonthlyCalendar from "@/assets/page-icons/moth-bloom/monthly-calendar.jpg";
+import mblWeeklyCalendar from "@/assets/page-icons/moth-bloom/weekly-calendar.jpg";
+import mblDailyTracker from "@/assets/page-icons/moth-bloom/daily-tracker.jpg";
+import mblCompleteTracker from "@/assets/page-icons/moth-bloom/complete-tracker.jpg";
+import mblYearlyHabitTracker from "@/assets/page-icons/moth-bloom/yearly-habit-tracker.jpg";
+import mblWeightTracker from "@/assets/page-icons/moth-bloom/weight-tracker.jpg";
+import mblMeasurementTracker from "@/assets/page-icons/moth-bloom/measurement-tracker.jpg";
+import mblBloodSugarTracker from "@/assets/page-icons/moth-bloom/blood-sugar-tracker.jpg";
+import mblBloodPressureTracker from "@/assets/page-icons/moth-bloom/blood-pressure-tracker.jpg";
+import mblOxygenTracker from "@/assets/page-icons/moth-bloom/oxygen-tracker.jpg";
+import mblSelfCareChecklist from "@/assets/page-icons/moth-bloom/self-care-checklist.jpg";
+import mblCleaningChecklist from "@/assets/page-icons/moth-bloom/cleaning-checklist.jpg";
+import mblRecipe from "@/assets/page-icons/moth-bloom/recipe.jpg";
+import mblNotes from "@/assets/page-icons/moth-bloom/notes.jpg";
+import mblWorkoutTracker from "@/assets/page-icons/moth-bloom/workout-tracker.jpg";
+import mblMedications from "@/assets/page-icons/moth-bloom/medications.jpg";
+import mblMedicalRecords from "@/assets/page-icons/moth-bloom/medical-records.jpg";
+import mblYearlyFocus from "@/assets/page-icons/moth-bloom/yearly-focus.jpg";
+
+// Rose Moonlight (red-rose-moonlight, white-rose-moonlight)
+import rmoMyGoals from "@/assets/page-icons/rose-moonlight/my-goals.jpg";
+import rmoYearlyCalendar from "@/assets/page-icons/rose-moonlight/yearly-calendar.jpg";
+import rmoMonthlyCalendar from "@/assets/page-icons/rose-moonlight/monthly-calendar.jpg";
+import rmoWeeklyCalendar from "@/assets/page-icons/rose-moonlight/weekly-calendar.jpg";
+import rmoDailyTracker from "@/assets/page-icons/rose-moonlight/daily-tracker.jpg";
+import rmoCompleteTracker from "@/assets/page-icons/rose-moonlight/complete-tracker.jpg";
+import rmoYearlyHabitTracker from "@/assets/page-icons/rose-moonlight/yearly-habit-tracker.jpg";
+import rmoWeightTracker from "@/assets/page-icons/rose-moonlight/weight-tracker.jpg";
+import rmoMeasurementTracker from "@/assets/page-icons/rose-moonlight/measurement-tracker.jpg";
+import rmoBloodSugarTracker from "@/assets/page-icons/rose-moonlight/blood-sugar-tracker.jpg";
+import rmoBloodPressureTracker from "@/assets/page-icons/rose-moonlight/blood-pressure-tracker.jpg";
+import rmoOxygenTracker from "@/assets/page-icons/rose-moonlight/oxygen-tracker.jpg";
+import rmoSelfCareChecklist from "@/assets/page-icons/rose-moonlight/self-care-checklist.jpg";
+import rmoCleaningChecklist from "@/assets/page-icons/rose-moonlight/cleaning-checklist.jpg";
+import rmoRecipe from "@/assets/page-icons/rose-moonlight/recipe.jpg";
+import rmoNotes from "@/assets/page-icons/rose-moonlight/notes.jpg";
+import rmoWorkoutTracker from "@/assets/page-icons/rose-moonlight/workout-tracker.jpg";
+import rmoMedications from "@/assets/page-icons/rose-moonlight/medications.jpg";
+import rmoMedicalRecords from "@/assets/page-icons/rose-moonlight/medical-records.jpg";
+import rmoYearlyFocus from "@/assets/page-icons/rose-moonlight/yearly-focus.jpg";
+
+// Faith Affirmations (faith-affirmations-bright, faith-affirmations-muted)
+import famMyGoals from "@/assets/page-icons/faith-affirmations/my-goals.jpg";
+import famYearlyCalendar from "@/assets/page-icons/faith-affirmations/yearly-calendar.jpg";
+import famMonthlyCalendar from "@/assets/page-icons/faith-affirmations/monthly-calendar.jpg";
+import famWeeklyCalendar from "@/assets/page-icons/faith-affirmations/weekly-calendar.jpg";
+import famDailyTracker from "@/assets/page-icons/faith-affirmations/daily-tracker.jpg";
+import famCompleteTracker from "@/assets/page-icons/faith-affirmations/complete-tracker.jpg";
+import famYearlyHabitTracker from "@/assets/page-icons/faith-affirmations/yearly-habit-tracker.jpg";
+import famWeightTracker from "@/assets/page-icons/faith-affirmations/weight-tracker.jpg";
+import famMeasurementTracker from "@/assets/page-icons/faith-affirmations/measurement-tracker.jpg";
+import famBloodSugarTracker from "@/assets/page-icons/faith-affirmations/blood-sugar-tracker.jpg";
+import famBloodPressureTracker from "@/assets/page-icons/faith-affirmations/blood-pressure-tracker.jpg";
+import famOxygenTracker from "@/assets/page-icons/faith-affirmations/oxygen-tracker.jpg";
+import famSelfCareChecklist from "@/assets/page-icons/faith-affirmations/self-care-checklist.jpg";
+import famCleaningChecklist from "@/assets/page-icons/faith-affirmations/cleaning-checklist.jpg";
+import famRecipe from "@/assets/page-icons/faith-affirmations/recipe.jpg";
+import famNotes from "@/assets/page-icons/faith-affirmations/notes.jpg";
+import famWorkoutTracker from "@/assets/page-icons/faith-affirmations/workout-tracker.jpg";
+import famMedications from "@/assets/page-icons/faith-affirmations/medications.jpg";
+import famMedicalRecords from "@/assets/page-icons/faith-affirmations/medical-records.jpg";
+import famYearlyFocus from "@/assets/page-icons/faith-affirmations/yearly-focus.jpg";
+
+// Pop Art (thinkin-smack, talkin-smack)
+import popMyGoals from "@/assets/page-icons/pop-art/my-goals.jpg";
+import popYearlyCalendar from "@/assets/page-icons/pop-art/yearly-calendar.jpg";
+import popMonthlyCalendar from "@/assets/page-icons/pop-art/monthly-calendar.jpg";
+import popWeeklyCalendar from "@/assets/page-icons/pop-art/weekly-calendar.jpg";
+import popDailyTracker from "@/assets/page-icons/pop-art/daily-tracker.jpg";
+import popCompleteTracker from "@/assets/page-icons/pop-art/complete-tracker.jpg";
+import popYearlyHabitTracker from "@/assets/page-icons/pop-art/yearly-habit-tracker.jpg";
+import popWeightTracker from "@/assets/page-icons/pop-art/weight-tracker.jpg";
+import popMeasurementTracker from "@/assets/page-icons/pop-art/measurement-tracker.jpg";
+import popBloodSugarTracker from "@/assets/page-icons/pop-art/blood-sugar-tracker.jpg";
+import popBloodPressureTracker from "@/assets/page-icons/pop-art/blood-pressure-tracker.jpg";
+import popOxygenTracker from "@/assets/page-icons/pop-art/oxygen-tracker.jpg";
+import popSelfCareChecklist from "@/assets/page-icons/pop-art/self-care-checklist.jpg";
+import popCleaningChecklist from "@/assets/page-icons/pop-art/cleaning-checklist.jpg";
+import popRecipe from "@/assets/page-icons/pop-art/recipe.jpg";
+import popNotes from "@/assets/page-icons/pop-art/notes.jpg";
+import popWorkoutTracker from "@/assets/page-icons/pop-art/workout-tracker.jpg";
+import popMedications from "@/assets/page-icons/pop-art/medications.jpg";
+import popMedicalRecords from "@/assets/page-icons/pop-art/medical-records.jpg";
+import popYearlyFocus from "@/assets/page-icons/pop-art/yearly-focus.jpg";
 
 
 function pack(icons: Record<string, string>): Record<string, string> {
@@ -784,7 +913,108 @@ export const COVER_ICONS: Record<string, Record<string, string>> = {
     recipe: giRecipe, notes: giNotes, "workout-tracker": giWorkoutTracker,
     medications: giMedications, "medical-records": giMedicalRecords, "yearly-focus": giYearlyFocus,
   }),
+  "scrapbook-botanical": pack({
+    "my-goals": sbbMyGoals, "yearly-calendar": sbbYearlyCalendar, "monthly-calendar": sbbMonthlyCalendar,
+    "weekly-calendar": sbbWeeklyCalendar, "daily-tracker": sbbDailyTracker, "complete-tracker": sbbCompleteTracker,
+    "yearly-habit-tracker": sbbYearlyHabitTracker, "weight-tracker": sbbWeightTracker,
+    "measurement-tracker": sbbMeasurementTracker, "blood-sugar-tracker": sbbBloodSugarTracker,
+    "blood-pressure-tracker": sbbBloodPressureTracker, "oxygen-tracker": sbbOxygenTracker,
+    "self-care-checklist": sbbSelfCareChecklist, "cleaning-checklist": sbbCleaningChecklist,
+    recipe: sbbRecipe, notes: sbbNotes, "workout-tracker": sbbWorkoutTracker,
+    medications: sbbMedications, "medical-records": sbbMedicalRecords, "yearly-focus": sbbYearlyFocus,
+  }),
+  "pastel-clipboard": pack({
+    "my-goals": pcpMyGoals, "yearly-calendar": pcpYearlyCalendar, "monthly-calendar": pcpMonthlyCalendar,
+    "weekly-calendar": pcpWeeklyCalendar, "daily-tracker": pcpDailyTracker, "complete-tracker": pcpCompleteTracker,
+    "yearly-habit-tracker": pcpYearlyHabitTracker, "weight-tracker": pcpWeightTracker,
+    "measurement-tracker": pcpMeasurementTracker, "blood-sugar-tracker": pcpBloodSugarTracker,
+    "blood-pressure-tracker": pcpBloodPressureTracker, "oxygen-tracker": pcpOxygenTracker,
+    "self-care-checklist": pcpSelfCareChecklist, "cleaning-checklist": pcpCleaningChecklist,
+    recipe: pcpRecipe, notes: pcpNotes, "workout-tracker": pcpWorkoutTracker,
+    medications: pcpMedications, "medical-records": pcpMedicalRecords, "yearly-focus": pcpYearlyFocus,
+  }),
+  "midnight-moth-bloom": pack({
+    "my-goals": mblMyGoals, "yearly-calendar": mblYearlyCalendar, "monthly-calendar": mblMonthlyCalendar,
+    "weekly-calendar": mblWeeklyCalendar, "daily-tracker": mblDailyTracker, "complete-tracker": mblCompleteTracker,
+    "yearly-habit-tracker": mblYearlyHabitTracker, "weight-tracker": mblWeightTracker,
+    "measurement-tracker": mblMeasurementTracker, "blood-sugar-tracker": mblBloodSugarTracker,
+    "blood-pressure-tracker": mblBloodPressureTracker, "oxygen-tracker": mblOxygenTracker,
+    "self-care-checklist": mblSelfCareChecklist, "cleaning-checklist": mblCleaningChecklist,
+    recipe: mblRecipe, notes: mblNotes, "workout-tracker": mblWorkoutTracker,
+    medications: mblMedications, "medical-records": mblMedicalRecords, "yearly-focus": mblYearlyFocus,
+  }),
+  "teal-moth-bloom": pack({
+    "my-goals": mblMyGoals, "yearly-calendar": mblYearlyCalendar, "monthly-calendar": mblMonthlyCalendar,
+    "weekly-calendar": mblWeeklyCalendar, "daily-tracker": mblDailyTracker, "complete-tracker": mblCompleteTracker,
+    "yearly-habit-tracker": mblYearlyHabitTracker, "weight-tracker": mblWeightTracker,
+    "measurement-tracker": mblMeasurementTracker, "blood-sugar-tracker": mblBloodSugarTracker,
+    "blood-pressure-tracker": mblBloodPressureTracker, "oxygen-tracker": mblOxygenTracker,
+    "self-care-checklist": mblSelfCareChecklist, "cleaning-checklist": mblCleaningChecklist,
+    recipe: mblRecipe, notes: mblNotes, "workout-tracker": mblWorkoutTracker,
+    medications: mblMedications, "medical-records": mblMedicalRecords, "yearly-focus": mblYearlyFocus,
+  }),
+  "red-rose-moonlight": pack({
+    "my-goals": rmoMyGoals, "yearly-calendar": rmoYearlyCalendar, "monthly-calendar": rmoMonthlyCalendar,
+    "weekly-calendar": rmoWeeklyCalendar, "daily-tracker": rmoDailyTracker, "complete-tracker": rmoCompleteTracker,
+    "yearly-habit-tracker": rmoYearlyHabitTracker, "weight-tracker": rmoWeightTracker,
+    "measurement-tracker": rmoMeasurementTracker, "blood-sugar-tracker": rmoBloodSugarTracker,
+    "blood-pressure-tracker": rmoBloodPressureTracker, "oxygen-tracker": rmoOxygenTracker,
+    "self-care-checklist": rmoSelfCareChecklist, "cleaning-checklist": rmoCleaningChecklist,
+    recipe: rmoRecipe, notes: rmoNotes, "workout-tracker": rmoWorkoutTracker,
+    medications: rmoMedications, "medical-records": rmoMedicalRecords, "yearly-focus": rmoYearlyFocus,
+  }),
+  "white-rose-moonlight": pack({
+    "my-goals": rmoMyGoals, "yearly-calendar": rmoYearlyCalendar, "monthly-calendar": rmoMonthlyCalendar,
+    "weekly-calendar": rmoWeeklyCalendar, "daily-tracker": rmoDailyTracker, "complete-tracker": rmoCompleteTracker,
+    "yearly-habit-tracker": rmoYearlyHabitTracker, "weight-tracker": rmoWeightTracker,
+    "measurement-tracker": rmoMeasurementTracker, "blood-sugar-tracker": rmoBloodSugarTracker,
+    "blood-pressure-tracker": rmoBloodPressureTracker, "oxygen-tracker": rmoOxygenTracker,
+    "self-care-checklist": rmoSelfCareChecklist, "cleaning-checklist": rmoCleaningChecklist,
+    recipe: rmoRecipe, notes: rmoNotes, "workout-tracker": rmoWorkoutTracker,
+    medications: rmoMedications, "medical-records": rmoMedicalRecords, "yearly-focus": rmoYearlyFocus,
+  }),
+  "faith-affirmations-bright": pack({
+    "my-goals": famMyGoals, "yearly-calendar": famYearlyCalendar, "monthly-calendar": famMonthlyCalendar,
+    "weekly-calendar": famWeeklyCalendar, "daily-tracker": famDailyTracker, "complete-tracker": famCompleteTracker,
+    "yearly-habit-tracker": famYearlyHabitTracker, "weight-tracker": famWeightTracker,
+    "measurement-tracker": famMeasurementTracker, "blood-sugar-tracker": famBloodSugarTracker,
+    "blood-pressure-tracker": famBloodPressureTracker, "oxygen-tracker": famOxygenTracker,
+    "self-care-checklist": famSelfCareChecklist, "cleaning-checklist": famCleaningChecklist,
+    recipe: famRecipe, notes: famNotes, "workout-tracker": famWorkoutTracker,
+    medications: famMedications, "medical-records": famMedicalRecords, "yearly-focus": famYearlyFocus,
+  }),
+  "faith-affirmations-muted": pack({
+    "my-goals": famMyGoals, "yearly-calendar": famYearlyCalendar, "monthly-calendar": famMonthlyCalendar,
+    "weekly-calendar": famWeeklyCalendar, "daily-tracker": famDailyTracker, "complete-tracker": famCompleteTracker,
+    "yearly-habit-tracker": famYearlyHabitTracker, "weight-tracker": famWeightTracker,
+    "measurement-tracker": famMeasurementTracker, "blood-sugar-tracker": famBloodSugarTracker,
+    "blood-pressure-tracker": famBloodPressureTracker, "oxygen-tracker": famOxygenTracker,
+    "self-care-checklist": famSelfCareChecklist, "cleaning-checklist": famCleaningChecklist,
+    recipe: famRecipe, notes: famNotes, "workout-tracker": famWorkoutTracker,
+    medications: famMedications, "medical-records": famMedicalRecords, "yearly-focus": famYearlyFocus,
+  }),
+  "thinkin-smack": pack({
+    "my-goals": popMyGoals, "yearly-calendar": popYearlyCalendar, "monthly-calendar": popMonthlyCalendar,
+    "weekly-calendar": popWeeklyCalendar, "daily-tracker": popDailyTracker, "complete-tracker": popCompleteTracker,
+    "yearly-habit-tracker": popYearlyHabitTracker, "weight-tracker": popWeightTracker,
+    "measurement-tracker": popMeasurementTracker, "blood-sugar-tracker": popBloodSugarTracker,
+    "blood-pressure-tracker": popBloodPressureTracker, "oxygen-tracker": popOxygenTracker,
+    "self-care-checklist": popSelfCareChecklist, "cleaning-checklist": popCleaningChecklist,
+    recipe: popRecipe, notes: popNotes, "workout-tracker": popWorkoutTracker,
+    medications: popMedications, "medical-records": popMedicalRecords, "yearly-focus": popYearlyFocus,
+  }),
+  "talkin-smack": pack({
+    "my-goals": popMyGoals, "yearly-calendar": popYearlyCalendar, "monthly-calendar": popMonthlyCalendar,
+    "weekly-calendar": popWeeklyCalendar, "daily-tracker": popDailyTracker, "complete-tracker": popCompleteTracker,
+    "yearly-habit-tracker": popYearlyHabitTracker, "weight-tracker": popWeightTracker,
+    "measurement-tracker": popMeasurementTracker, "blood-sugar-tracker": popBloodSugarTracker,
+    "blood-pressure-tracker": popBloodPressureTracker, "oxygen-tracker": popOxygenTracker,
+    "self-care-checklist": popSelfCareChecklist, "cleaning-checklist": popCleaningChecklist,
+    recipe: popRecipe, notes: popNotes, "workout-tracker": popWorkoutTracker,
+    medications: popMedications, "medical-records": popMedicalRecords, "yearly-focus": popYearlyFocus,
+  }),
 };
+
 
 export function getCoverPageIcon(coverId: string | null | undefined, pageId: string): string | undefined {
   if (!coverId) return undefined;
