@@ -35,7 +35,8 @@ export type CoverCollection =
   | "scrapbook"
   | "classic"
   | "change-of-life"
-  | "pop-art";
+  | "pop-art"
+  | "grit";
 
 export const COLLECTIONS: { id: CoverCollection; label: string }[] = [
   { id: "classic", label: "Patriotic" },
@@ -51,6 +52,7 @@ export const COLLECTIONS: { id: CoverCollection; label: string }[] = [
   { id: "chronicles", label: "Chronicles" },
   { id: "change-of-life", label: "Change of Life" },
   { id: "pop-art", label: "Pop Art" },
+  { id: "grit", label: "Grit & Grace" },
 ];
 
 export type Cover = {
@@ -126,6 +128,16 @@ import mothDragonflyLotus from "@/assets/covers/moth-dragonfly-lotus.png.asset.j
 import blackRoseGoldSpikes from "@/assets/covers/black-rose-gold-spikes.png.asset.json";
 import ladybugForgetMeNots from "@/assets/covers/ladybug-forget-me-nots.png.asset.json";
 import dandelionLadybugNest from "@/assets/covers/dandelion-ladybug-nest.png.asset.json";
+import tobaccoLeaf from "@/assets/covers/tobacco-leaf.png.asset.json";
+import gildedCrystals from "@/assets/covers/gilded-crystals.png.asset.json";
+import fragileNotBroken from "@/assets/covers/fragile-not-broken.png.asset.json";
+import creamRibbons from "@/assets/covers/cream-ribbons.png.asset.json";
+import pastelCrystals from "@/assets/covers/pastel-crystals.png.asset.json";
+import doveWhiteRoses from "@/assets/covers/dove-white-roses.png.asset.json";
+import doveRavenRoses from "@/assets/covers/dove-raven-roses.png.asset.json";
+import ravenRedRoses from "@/assets/covers/raven-red-roses.png.asset.json";
+import roseCrossStars from "@/assets/covers/rose-cross-stars.png.asset.json";
+import wovenHeartCross from "@/assets/covers/woven-heart-cross.png.asset.json";
 
 // ---- Palettes ----
 
@@ -725,8 +737,85 @@ const paletteLadybugSky: CoverPalette = {
   paperGradient: "linear-gradient(180deg, hsl(210 55% 97%), hsl(210 45% 90%))",
 };
 
+// Tobacco leaf — warm supple leather-brown, tan glow, deep umber ink.
+const paletteTobacco: CoverPalette = {
+  mode: "dark",
+  background: "22 28% 12%",
+  foreground: "32 40% 92%",
+  card: "22 26% 16%",
+  cardForeground: "32 40% 92%",
+  primary: "24 65% 55%",
+  primaryForeground: "22 30% 12%",
+  primarySoft: "24 40% 24%",
+  accent: "36 75% 62%",
+  accentForeground: "22 30% 12%",
+  muted: "22 20% 20%",
+  mutedForeground: "32 22% 72%",
+  border: "22 20% 26%",
+  paperGradient:
+    "radial-gradient(120% 80% at 50% 0%, hsl(24 60% 28% / 0.5), transparent 60%), linear-gradient(180deg, hsl(22 28% 14%), hsl(22 28% 9%))",
+};
+
+// Pastel crystals — inky black with rose-quartz + aquamarine jewels.
+const palettePastelCrystals: CoverPalette = {
+  mode: "dark",
+  background: "230 25% 8%",
+  foreground: "340 30% 94%",
+  card: "230 22% 12%",
+  cardForeground: "340 30% 94%",
+  primary: "340 60% 70%",
+  primaryForeground: "230 25% 10%",
+  primarySoft: "340 35% 22%",
+  accent: "195 60% 65%",
+  accentForeground: "230 25% 10%",
+  muted: "230 18% 16%",
+  mutedForeground: "340 18% 74%",
+  border: "230 18% 22%",
+  paperGradient:
+    "radial-gradient(140% 90% at 50% 0%, hsl(340 40% 22% / 0.5), transparent 60%), linear-gradient(180deg, hsl(230 25% 9%), hsl(230 25% 6%))",
+};
+
+// Mono ink — stark grunge B&W, cracked-paper aesthetic.
+const paletteMonoInk: CoverPalette = {
+  mode: "light",
+  background: "0 0% 97%",
+  foreground: "0 0% 8%",
+  card: "0 0% 100%",
+  cardForeground: "0 0% 8%",
+  primary: "0 0% 12%",
+  primaryForeground: "0 0% 98%",
+  primarySoft: "0 0% 90%",
+  accent: "0 0% 25%",
+  accentForeground: "0 0% 98%",
+  muted: "0 0% 92%",
+  mutedForeground: "0 0% 35%",
+  border: "0 0% 82%",
+  paperGradient: "linear-gradient(180deg, hsl(0 0% 98%), hsl(0 0% 90%))",
+};
+
+// Gothic raven — inky black with blood-red rose accent.
+const paletteGothicRed: CoverPalette = {
+  mode: "dark",
+  background: "0 15% 6%",
+  foreground: "0 20% 92%",
+  card: "0 12% 10%",
+  cardForeground: "0 20% 92%",
+  primary: "350 75% 42%",
+  primaryForeground: "0 15% 96%",
+  primarySoft: "350 45% 20%",
+  accent: "0 0% 85%",
+  accentForeground: "0 15% 8%",
+  muted: "0 10% 14%",
+  mutedForeground: "0 12% 70%",
+  border: "0 10% 20%",
+  paperGradient:
+    "radial-gradient(140% 90% at 50% 0%, hsl(350 55% 20% / 0.55), transparent 60%), linear-gradient(180deg, hsl(0 15% 8%), hsl(0 15% 4%))",
+};
+
 
 export const COVERS: Cover[] = [
+
+
 
 
 
@@ -1156,6 +1245,76 @@ export const COVERS: Cover[] = [
     name: "Dandelion Ladybug Nest",
     collection: "black-moon",
     image: dandelionLadybugNest.url,
+    palette: paletteBlackGold,
+  },
+  {
+    id: "tobacco-leaf",
+    name: "Tobacco Leaf",
+    collection: "chronicles",
+    image: tobaccoLeaf.url,
+    palette: paletteTobacco,
+  },
+  {
+    id: "gilded-crystals",
+    name: "Gilded Crystals",
+    collection: "chronicles",
+    image: gildedCrystals.url,
+    palette: paletteGilded,
+  },
+  {
+    id: "pastel-crystals",
+    name: "Rose Quartz Crystals",
+    collection: "chronicles",
+    image: pastelCrystals.url,
+    palette: palettePastelCrystals,
+  },
+  {
+    id: "cream-ribbons",
+    name: "Cream Ribbons",
+    collection: "celestial-florals",
+    image: creamRibbons.url,
+    palette: paletteIvory,
+  },
+  {
+    id: "fragile-not-broken",
+    name: "Fragile, Not Broken",
+    collection: "grit",
+    image: fragileNotBroken.url,
+    palette: paletteMonoInk,
+  },
+  {
+    id: "dove-white-roses",
+    name: "Dove & White Roses",
+    collection: "faith",
+    image: doveWhiteRoses.url,
+    palette: paletteBlackGold,
+  },
+  {
+    id: "dove-raven-roses",
+    name: "Dove & Raven",
+    collection: "faith",
+    image: doveRavenRoses.url,
+    palette: paletteGothicRed,
+  },
+  {
+    id: "raven-red-roses",
+    name: "Raven & Red Roses",
+    collection: "black-moon",
+    image: ravenRedRoses.url,
+    palette: paletteGothicRed,
+  },
+  {
+    id: "rose-cross-stars",
+    name: "Rose Cross & Stars",
+    collection: "faith",
+    image: roseCrossStars.url,
+    palette: paletteBlackGold,
+  },
+  {
+    id: "woven-heart-cross",
+    name: "Woven Heart Cross",
+    collection: "faith",
+    image: wovenHeartCross.url,
     palette: paletteBlackGold,
   },
 ];
