@@ -116,6 +116,16 @@ import blueCopperButterfly from "@/assets/covers/blue-copper-butterfly.png.asset
 import redAdmiralOrchid from "@/assets/covers/red-admiral-orchid.png.asset.json";
 import dragonflyPampas from "@/assets/covers/dragonfly-pampas.png.asset.json";
 import englishRoseDew from "@/assets/covers/english-rose-dew.png.asset.json";
+import sparrowLotus from "@/assets/covers/sparrow-lotus.png.asset.json";
+import sparrowDandelionMeadow from "@/assets/covers/sparrow-dandelion-meadow.png.asset.json";
+import sparrowForgetMeNots from "@/assets/covers/sparrow-forget-me-nots.png.asset.json";
+import sparrowDandelionStars from "@/assets/covers/sparrow-dandelion-stars.png.asset.json";
+import sparrowDahliaGlow from "@/assets/covers/sparrow-dahlia-glow.png.asset.json";
+import sparrowChrysanthemum from "@/assets/covers/sparrow-chrysanthemum.png.asset.json";
+import mothDragonflyLotus from "@/assets/covers/moth-dragonfly-lotus.png.asset.json";
+import blackRoseGoldSpikes from "@/assets/covers/black-rose-gold-spikes.png.asset.json";
+import ladybugForgetMeNots from "@/assets/covers/ladybug-forget-me-nots.png.asset.json";
+import dandelionLadybugNest from "@/assets/covers/dandelion-ladybug-nest.png.asset.json";
 
 // ---- Palettes ----
 
@@ -643,8 +653,84 @@ const paletteCopperBlue: CoverPalette = {
   paperGradient: "linear-gradient(180deg, hsl(22 45% 96%), hsl(22 30% 88%))",
 };
 
+// Black & gold — obsidian paper, gold-flecked, warm gold ink.
+const paletteBlackGold: CoverPalette = {
+  mode: "dark",
+  background: "40 20% 6%",
+  foreground: "45 45% 88%",
+  card: "40 15% 10%",
+  cardForeground: "45 45% 88%",
+  primary: "42 70% 55%",
+  primaryForeground: "40 20% 8%",
+  primarySoft: "42 30% 22%",
+  accent: "38 80% 60%",
+  accentForeground: "40 20% 8%",
+  muted: "40 12% 14%",
+  mutedForeground: "45 20% 65%",
+  border: "40 15% 18%",
+  paperGradient: "linear-gradient(180deg, hsl(40 20% 8%), hsl(40 18% 5%))",
+};
+
+// Moth-lotus night — deep midnight with teal wing and violet lotus accents.
+const paletteMothLotus: CoverPalette = {
+  mode: "dark",
+  background: "220 30% 8%",
+  foreground: "185 30% 88%",
+  card: "220 25% 11%",
+  cardForeground: "185 30% 88%",
+  primary: "185 55% 55%",
+  primaryForeground: "220 30% 8%",
+  primarySoft: "185 35% 22%",
+  accent: "285 45% 60%",
+  accentForeground: "220 30% 8%",
+  muted: "220 20% 15%",
+  mutedForeground: "220 15% 65%",
+  border: "220 20% 20%",
+  paperGradient: "linear-gradient(180deg, hsl(220 30% 10%), hsl(220 30% 6%))",
+};
+
+// Sparrow warm — sun-lit cream with warm brown ink and rose accent.
+const paletteSparrowWarm: CoverPalette = {
+  mode: "light",
+  background: "36 40% 95%",
+  foreground: "22 40% 22%",
+  card: "36 50% 98%",
+  cardForeground: "22 40% 22%",
+  primary: "22 50% 40%",
+  primaryForeground: "36 50% 98%",
+  primarySoft: "22 35% 90%",
+  accent: "340 55% 62%",
+  accentForeground: "36 50% 98%",
+  muted: "36 25% 90%",
+  mutedForeground: "22 20% 45%",
+  border: "36 22% 82%",
+  paperGradient: "linear-gradient(180deg, hsl(36 40% 97%), hsl(36 30% 90%))",
+};
+
+// Ladybug sky — clear sky-blue paper with red ladybug accent.
+const paletteLadybugSky: CoverPalette = {
+  mode: "light",
+  background: "210 55% 95%",
+  foreground: "215 45% 20%",
+  card: "210 60% 98%",
+  cardForeground: "215 45% 20%",
+  primary: "215 60% 42%",
+  primaryForeground: "210 60% 98%",
+  primarySoft: "210 45% 90%",
+  accent: "8 75% 52%",
+  accentForeground: "210 60% 98%",
+  muted: "210 35% 90%",
+  mutedForeground: "215 20% 42%",
+  border: "210 30% 82%",
+  paperGradient: "linear-gradient(180deg, hsl(210 55% 97%), hsl(210 45% 90%))",
+};
+
 
 export const COVERS: Cover[] = [
+
+
+
+
   {
     id: "patriotic-roses",
     name: "Patriotic Roses",
@@ -1001,6 +1087,76 @@ export const COVERS: Cover[] = [
     collection: "garden",
     image: englishRoseDew.url,
     palette: palettePinkMimosa,
+  },
+  {
+    id: "sparrow-lotus",
+    name: "Sparrow on Lotus",
+    collection: "sparrow",
+    image: sparrowLotus.url,
+    palette: paletteSparrowWarm,
+  },
+  {
+    id: "sparrow-dandelion-meadow",
+    name: "Sparrow in the Meadow",
+    collection: "sparrow",
+    image: sparrowDandelionMeadow.url,
+    palette: paletteSparrowWarm,
+  },
+  {
+    id: "sparrow-forget-me-nots",
+    name: "Sparrow & Forget-Me-Nots",
+    collection: "sparrow",
+    image: sparrowForgetMeNots.url,
+    palette: paletteLadybugSky,
+  },
+  {
+    id: "sparrow-dandelion-stars",
+    name: "Sparrow Among Stars",
+    collection: "sparrow",
+    image: sparrowDandelionStars.url,
+    palette: paletteSparrowWarm,
+  },
+  {
+    id: "sparrow-dahlia-glow",
+    name: "Sparrow & Dahlia Glow",
+    collection: "sparrow",
+    image: sparrowDahliaGlow.url,
+    palette: paletteSparrowWarm,
+  },
+  {
+    id: "sparrow-chrysanthemum",
+    name: "Sparrow & Chrysanthemum",
+    collection: "sparrow",
+    image: sparrowChrysanthemum.url,
+    palette: paletteSparrowWarm,
+  },
+  {
+    id: "moth-dragonfly-lotus",
+    name: "Moth & Dragonfly Lotus",
+    collection: "celestial-birds-insects",
+    image: mothDragonflyLotus.url,
+    palette: paletteMothLotus,
+  },
+  {
+    id: "black-rose-gold-spikes",
+    name: "Black Rose & Gold",
+    collection: "black-moon",
+    image: blackRoseGoldSpikes.url,
+    palette: paletteBlackGold,
+  },
+  {
+    id: "ladybug-forget-me-nots",
+    name: "Ladybug & Forget-Me-Nots",
+    collection: "garden",
+    image: ladybugForgetMeNots.url,
+    palette: paletteLadybugSky,
+  },
+  {
+    id: "dandelion-ladybug-nest",
+    name: "Dandelion Ladybug Nest",
+    collection: "black-moon",
+    image: dandelionLadybugNest.url,
+    palette: paletteBlackGold,
   },
 ];
 
