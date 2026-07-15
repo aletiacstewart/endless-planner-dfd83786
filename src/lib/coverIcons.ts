@@ -946,6 +946,96 @@ const DOVE_INK_ICONS = { "my-goals": dvkMyGoals, "yearly-calendar": dvkYearlyCal
 
 const GOTHIC_RAVEN_ICONS = { "my-goals": gtrMyGoals, "yearly-calendar": gtrYearlyCalendar, "monthly-calendar": gtrMonthlyCalendar, "weekly-calendar": gtrWeeklyCalendar, "daily-tracker": gtrDailyTracker, "complete-tracker": gtrCompleteTracker, "yearly-habit-tracker": gtrYearlyHabitTracker, "weight-tracker": gtrWeightTracker, "measurement-tracker": gtrMeasurementTracker, "blood-sugar-tracker": gtrBloodSugarTracker, "blood-pressure-tracker": gtrBloodPressureTracker, "oxygen-tracker": gtrOxygenTracker, "self-care-checklist": gtrSelfCareChecklist, "cleaning-checklist": gtrCleaningChecklist, recipe: gtrRecipe, notes: gtrNotes, "workout-tracker": gtrWorkoutTracker, medications: gtrMedications, "medical-records": gtrMedicalRecords, "yearly-focus": gtrYearlyFocus };
 
+// Feathers packs
+import feMyGoals from "@/assets/page-icons/feather-emerald/my-goals.jpg";
+import feYearlyCalendar from "@/assets/page-icons/feather-emerald/yearly-calendar.jpg";
+import feMonthlyCalendar from "@/assets/page-icons/feather-emerald/monthly-calendar.jpg";
+import feWeeklyCalendar from "@/assets/page-icons/feather-emerald/weekly-calendar.jpg";
+import feDailyTracker from "@/assets/page-icons/feather-emerald/daily-tracker.jpg";
+import feCompleteTracker from "@/assets/page-icons/feather-emerald/complete-tracker.jpg";
+import feYearlyHabitTracker from "@/assets/page-icons/feather-emerald/yearly-habit-tracker.jpg";
+import feWeightTracker from "@/assets/page-icons/feather-emerald/weight-tracker.jpg";
+import feMeasurementTracker from "@/assets/page-icons/feather-emerald/measurement-tracker.jpg";
+import feBloodSugarTracker from "@/assets/page-icons/feather-emerald/blood-sugar-tracker.jpg";
+import feBloodPressureTracker from "@/assets/page-icons/feather-emerald/blood-pressure-tracker.jpg";
+import feOxygenTracker from "@/assets/page-icons/feather-emerald/oxygen-tracker.jpg";
+import feSelfCareChecklist from "@/assets/page-icons/feather-emerald/self-care-checklist.jpg";
+import feCleaningChecklist from "@/assets/page-icons/feather-emerald/cleaning-checklist.jpg";
+import feRecipe from "@/assets/page-icons/feather-emerald/recipe.jpg";
+import feNotes from "@/assets/page-icons/feather-emerald/notes.jpg";
+import feWorkoutTracker from "@/assets/page-icons/feather-emerald/workout-tracker.jpg";
+import feMedications from "@/assets/page-icons/feather-emerald/medications.jpg";
+import feMedicalRecords from "@/assets/page-icons/feather-emerald/medical-records.jpg";
+import feYearlyFocus from "@/assets/page-icons/feather-emerald/yearly-focus.jpg";
+
+import fpMyGoals from "@/assets/page-icons/feather-phoenix/my-goals.jpg";
+import fpYearlyCalendar from "@/assets/page-icons/feather-phoenix/yearly-calendar.jpg";
+import fpMonthlyCalendar from "@/assets/page-icons/feather-phoenix/monthly-calendar.jpg";
+import fpWeeklyCalendar from "@/assets/page-icons/feather-phoenix/weekly-calendar.jpg";
+import fpDailyTracker from "@/assets/page-icons/feather-phoenix/daily-tracker.jpg";
+import fpCompleteTracker from "@/assets/page-icons/feather-phoenix/complete-tracker.jpg";
+import fpYearlyHabitTracker from "@/assets/page-icons/feather-phoenix/yearly-habit-tracker.jpg";
+import fpWeightTracker from "@/assets/page-icons/feather-phoenix/weight-tracker.jpg";
+import fpMeasurementTracker from "@/assets/page-icons/feather-phoenix/measurement-tracker.jpg";
+import fpBloodSugarTracker from "@/assets/page-icons/feather-phoenix/blood-sugar-tracker.jpg";
+import fpBloodPressureTracker from "@/assets/page-icons/feather-phoenix/blood-pressure-tracker.jpg";
+import fpOxygenTracker from "@/assets/page-icons/feather-phoenix/oxygen-tracker.jpg";
+import fpSelfCareChecklist from "@/assets/page-icons/feather-phoenix/self-care-checklist.jpg";
+import fpCleaningChecklist from "@/assets/page-icons/feather-phoenix/cleaning-checklist.jpg";
+import fpRecipe from "@/assets/page-icons/feather-phoenix/recipe.jpg";
+import fpNotes from "@/assets/page-icons/feather-phoenix/notes.jpg";
+import fpWorkoutTracker from "@/assets/page-icons/feather-phoenix/workout-tracker.jpg";
+import fpMedications from "@/assets/page-icons/feather-phoenix/medications.jpg";
+import fpMedicalRecords from "@/assets/page-icons/feather-phoenix/medical-records.jpg";
+import fpYearlyFocus from "@/assets/page-icons/feather-phoenix/yearly-focus.jpg";
+
+import fmtMyGoals from "@/assets/page-icons/feather-amethyst/my-goals.jpg";
+import fmtYearlyCalendar from "@/assets/page-icons/feather-amethyst/yearly-calendar.jpg";
+import fmtMonthlyCalendar from "@/assets/page-icons/feather-amethyst/monthly-calendar.jpg";
+import fmtWeeklyCalendar from "@/assets/page-icons/feather-amethyst/weekly-calendar.jpg";
+import fmtDailyTracker from "@/assets/page-icons/feather-amethyst/daily-tracker.jpg";
+import fmtCompleteTracker from "@/assets/page-icons/feather-amethyst/complete-tracker.jpg";
+import fmtYearlyHabitTracker from "@/assets/page-icons/feather-amethyst/yearly-habit-tracker.jpg";
+import fmtWeightTracker from "@/assets/page-icons/feather-amethyst/weight-tracker.jpg";
+import fmtMeasurementTracker from "@/assets/page-icons/feather-amethyst/measurement-tracker.jpg";
+import fmtBloodSugarTracker from "@/assets/page-icons/feather-amethyst/blood-sugar-tracker.jpg";
+import fmtBloodPressureTracker from "@/assets/page-icons/feather-amethyst/blood-pressure-tracker.jpg";
+import fmtOxygenTracker from "@/assets/page-icons/feather-amethyst/oxygen-tracker.jpg";
+import fmtSelfCareChecklist from "@/assets/page-icons/feather-amethyst/self-care-checklist.jpg";
+import fmtCleaningChecklist from "@/assets/page-icons/feather-amethyst/cleaning-checklist.jpg";
+import fmtRecipe from "@/assets/page-icons/feather-amethyst/recipe.jpg";
+import fmtNotes from "@/assets/page-icons/feather-amethyst/notes.jpg";
+import fmtWorkoutTracker from "@/assets/page-icons/feather-amethyst/workout-tracker.jpg";
+import fmtMedications from "@/assets/page-icons/feather-amethyst/medications.jpg";
+import fmtMedicalRecords from "@/assets/page-icons/feather-amethyst/medical-records.jpg";
+import fmtYearlyFocus from "@/assets/page-icons/feather-amethyst/yearly-focus.jpg";
+
+import fcMyGoals from "@/assets/page-icons/feather-crimson/my-goals.jpg";
+import fcYearlyCalendar from "@/assets/page-icons/feather-crimson/yearly-calendar.jpg";
+import fcMonthlyCalendar from "@/assets/page-icons/feather-crimson/monthly-calendar.jpg";
+import fcWeeklyCalendar from "@/assets/page-icons/feather-crimson/weekly-calendar.jpg";
+import fcDailyTracker from "@/assets/page-icons/feather-crimson/daily-tracker.jpg";
+import fcCompleteTracker from "@/assets/page-icons/feather-crimson/complete-tracker.jpg";
+import fcYearlyHabitTracker from "@/assets/page-icons/feather-crimson/yearly-habit-tracker.jpg";
+import fcWeightTracker from "@/assets/page-icons/feather-crimson/weight-tracker.jpg";
+import fcMeasurementTracker from "@/assets/page-icons/feather-crimson/measurement-tracker.jpg";
+import fcBloodSugarTracker from "@/assets/page-icons/feather-crimson/blood-sugar-tracker.jpg";
+import fcBloodPressureTracker from "@/assets/page-icons/feather-crimson/blood-pressure-tracker.jpg";
+import fcOxygenTracker from "@/assets/page-icons/feather-crimson/oxygen-tracker.jpg";
+import fcSelfCareChecklist from "@/assets/page-icons/feather-crimson/self-care-checklist.jpg";
+import fcCleaningChecklist from "@/assets/page-icons/feather-crimson/cleaning-checklist.jpg";
+import fcRecipe from "@/assets/page-icons/feather-crimson/recipe.jpg";
+import fcNotes from "@/assets/page-icons/feather-crimson/notes.jpg";
+import fcWorkoutTracker from "@/assets/page-icons/feather-crimson/workout-tracker.jpg";
+import fcMedications from "@/assets/page-icons/feather-crimson/medications.jpg";
+import fcMedicalRecords from "@/assets/page-icons/feather-crimson/medical-records.jpg";
+import fcYearlyFocus from "@/assets/page-icons/feather-crimson/yearly-focus.jpg";
+
+const FEATHER_EMERALD_ICONS = { "my-goals": feMyGoals, "yearly-calendar": feYearlyCalendar, "monthly-calendar": feMonthlyCalendar, "weekly-calendar": feWeeklyCalendar, "daily-tracker": feDailyTracker, "complete-tracker": feCompleteTracker, "yearly-habit-tracker": feYearlyHabitTracker, "weight-tracker": feWeightTracker, "measurement-tracker": feMeasurementTracker, "blood-sugar-tracker": feBloodSugarTracker, "blood-pressure-tracker": feBloodPressureTracker, "oxygen-tracker": feOxygenTracker, "self-care-checklist": feSelfCareChecklist, "cleaning-checklist": feCleaningChecklist, recipe: feRecipe, notes: feNotes, "workout-tracker": feWorkoutTracker, medications: feMedications, "medical-records": feMedicalRecords, "yearly-focus": feYearlyFocus };
+const FEATHER_PHOENIX_ICONS = { "my-goals": fpMyGoals, "yearly-calendar": fpYearlyCalendar, "monthly-calendar": fpMonthlyCalendar, "weekly-calendar": fpWeeklyCalendar, "daily-tracker": fpDailyTracker, "complete-tracker": fpCompleteTracker, "yearly-habit-tracker": fpYearlyHabitTracker, "weight-tracker": fpWeightTracker, "measurement-tracker": fpMeasurementTracker, "blood-sugar-tracker": fpBloodSugarTracker, "blood-pressure-tracker": fpBloodPressureTracker, "oxygen-tracker": fpOxygenTracker, "self-care-checklist": fpSelfCareChecklist, "cleaning-checklist": fpCleaningChecklist, recipe: fpRecipe, notes: fpNotes, "workout-tracker": fpWorkoutTracker, medications: fpMedications, "medical-records": fpMedicalRecords, "yearly-focus": fpYearlyFocus };
+const FEATHER_AMETHYST_ICONS = { "my-goals": fmtMyGoals, "yearly-calendar": fmtYearlyCalendar, "monthly-calendar": fmtMonthlyCalendar, "weekly-calendar": fmtWeeklyCalendar, "daily-tracker": fmtDailyTracker, "complete-tracker": fmtCompleteTracker, "yearly-habit-tracker": fmtYearlyHabitTracker, "weight-tracker": fmtWeightTracker, "measurement-tracker": fmtMeasurementTracker, "blood-sugar-tracker": fmtBloodSugarTracker, "blood-pressure-tracker": fmtBloodPressureTracker, "oxygen-tracker": fmtOxygenTracker, "self-care-checklist": fmtSelfCareChecklist, "cleaning-checklist": fmtCleaningChecklist, recipe: fmtRecipe, notes: fmtNotes, "workout-tracker": fmtWorkoutTracker, medications: fmtMedications, "medical-records": fmtMedicalRecords, "yearly-focus": fmtYearlyFocus };
+const FEATHER_CRIMSON_ICONS = { "my-goals": fcMyGoals, "yearly-calendar": fcYearlyCalendar, "monthly-calendar": fcMonthlyCalendar, "weekly-calendar": fcWeeklyCalendar, "daily-tracker": fcDailyTracker, "complete-tracker": fcCompleteTracker, "yearly-habit-tracker": fcYearlyHabitTracker, "weight-tracker": fcWeightTracker, "measurement-tracker": fcMeasurementTracker, "blood-sugar-tracker": fcBloodSugarTracker, "blood-pressure-tracker": fcBloodPressureTracker, "oxygen-tracker": fcOxygenTracker, "self-care-checklist": fcSelfCareChecklist, "cleaning-checklist": fcCleaningChecklist, recipe: fcRecipe, notes: fcNotes, "workout-tracker": fcWorkoutTracker, medications: fcMedications, "medical-records": fcMedicalRecords, "yearly-focus": fcYearlyFocus };
+
 
 
 
@@ -1395,6 +1485,10 @@ export const COVER_ICONS: Record<string, Record<string, string>> = {
   "woven-heart-cross": pack(DOVE_INK_ICONS),
   "dove-raven-roses": pack(GOTHIC_RAVEN_ICONS),
   "raven-red-roses": pack(GOTHIC_RAVEN_ICONS),
+  "feather-emerald": pack(FEATHER_EMERALD_ICONS),
+  "feather-phoenix": pack(FEATHER_PHOENIX_ICONS),
+  "feather-amethyst": pack(FEATHER_AMETHYST_ICONS),
+  "feather-crimson": pack(FEATHER_CRIMSON_ICONS),
 };
 
 
