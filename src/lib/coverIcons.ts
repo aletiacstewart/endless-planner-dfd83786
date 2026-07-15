@@ -1485,6 +1485,10 @@ export const COVER_ICONS: Record<string, Record<string, string>> = {
   "woven-heart-cross": pack(DOVE_INK_ICONS),
   "dove-raven-roses": pack(GOTHIC_RAVEN_ICONS),
   "raven-red-roses": pack(GOTHIC_RAVEN_ICONS),
+  "feather-emerald": pack(FEATHER_EMERALD_ICONS),
+  "feather-phoenix": pack(FEATHER_PHOENIX_ICONS),
+  "feather-amethyst": pack(FEATHER_AMETHYST_ICONS),
+  "feather-crimson": pack(FEATHER_CRIMSON_ICONS),
 };
 
 
