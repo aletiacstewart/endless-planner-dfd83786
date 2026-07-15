@@ -642,26 +642,26 @@ import bgMedicalRecords from "@/assets/page-icons/butterfly-garden/medical-recor
 import bgYearlyFocus from "@/assets/page-icons/butterfly-garden/yearly-focus.jpg";
 
 // Dragonfly Rose (shared)
-import drMyGoals from "@/assets/page-icons/dragonfly-rose/my-goals.jpg";
-import drYearlyCalendar from "@/assets/page-icons/dragonfly-rose/yearly-calendar.jpg";
-import drMonthlyCalendar from "@/assets/page-icons/dragonfly-rose/monthly-calendar.jpg";
-import drWeeklyCalendar from "@/assets/page-icons/dragonfly-rose/weekly-calendar.jpg";
-import drDailyTracker from "@/assets/page-icons/dragonfly-rose/daily-tracker.jpg";
-import drCompleteTracker from "@/assets/page-icons/dragonfly-rose/complete-tracker.jpg";
-import drYearlyHabitTracker from "@/assets/page-icons/dragonfly-rose/yearly-habit-tracker.jpg";
-import drWeightTracker from "@/assets/page-icons/dragonfly-rose/weight-tracker.jpg";
-import drMeasurementTracker from "@/assets/page-icons/dragonfly-rose/measurement-tracker.jpg";
-import drBloodSugarTracker from "@/assets/page-icons/dragonfly-rose/blood-sugar-tracker.jpg";
-import drBloodPressureTracker from "@/assets/page-icons/dragonfly-rose/blood-pressure-tracker.jpg";
-import drOxygenTracker from "@/assets/page-icons/dragonfly-rose/oxygen-tracker.jpg";
-import drSelfCareChecklist from "@/assets/page-icons/dragonfly-rose/self-care-checklist.jpg";
-import drCleaningChecklist from "@/assets/page-icons/dragonfly-rose/cleaning-checklist.jpg";
-import drRecipe from "@/assets/page-icons/dragonfly-rose/recipe.jpg";
-import drNotes from "@/assets/page-icons/dragonfly-rose/notes.jpg";
-import drWorkoutTracker from "@/assets/page-icons/dragonfly-rose/workout-tracker.jpg";
-import drMedications from "@/assets/page-icons/dragonfly-rose/medications.jpg";
-import drMedicalRecords from "@/assets/page-icons/dragonfly-rose/medical-records.jpg";
-import drYearlyFocus from "@/assets/page-icons/dragonfly-rose/yearly-focus.jpg";
+import dgrMyGoals from "@/assets/page-icons/dragonfly-rose/my-goals.jpg";
+import dgrYearlyCalendar from "@/assets/page-icons/dragonfly-rose/yearly-calendar.jpg";
+import dgrMonthlyCalendar from "@/assets/page-icons/dragonfly-rose/monthly-calendar.jpg";
+import dgrWeeklyCalendar from "@/assets/page-icons/dragonfly-rose/weekly-calendar.jpg";
+import dgrDailyTracker from "@/assets/page-icons/dragonfly-rose/daily-tracker.jpg";
+import dgrCompleteTracker from "@/assets/page-icons/dragonfly-rose/complete-tracker.jpg";
+import dgrYearlyHabitTracker from "@/assets/page-icons/dragonfly-rose/yearly-habit-tracker.jpg";
+import dgrWeightTracker from "@/assets/page-icons/dragonfly-rose/weight-tracker.jpg";
+import dgrMeasurementTracker from "@/assets/page-icons/dragonfly-rose/measurement-tracker.jpg";
+import dgrBloodSugarTracker from "@/assets/page-icons/dragonfly-rose/blood-sugar-tracker.jpg";
+import dgrBloodPressureTracker from "@/assets/page-icons/dragonfly-rose/blood-pressure-tracker.jpg";
+import dgrOxygenTracker from "@/assets/page-icons/dragonfly-rose/oxygen-tracker.jpg";
+import dgrSelfCareChecklist from "@/assets/page-icons/dragonfly-rose/self-care-checklist.jpg";
+import dgrCleaningChecklist from "@/assets/page-icons/dragonfly-rose/cleaning-checklist.jpg";
+import dgrRecipe from "@/assets/page-icons/dragonfly-rose/recipe.jpg";
+import dgrNotes from "@/assets/page-icons/dragonfly-rose/notes.jpg";
+import dgrWorkoutTracker from "@/assets/page-icons/dragonfly-rose/workout-tracker.jpg";
+import dgrMedications from "@/assets/page-icons/dragonfly-rose/medications.jpg";
+import dgrMedicalRecords from "@/assets/page-icons/dragonfly-rose/medical-records.jpg";
+import dgrYearlyFocus from "@/assets/page-icons/dragonfly-rose/yearly-focus.jpg";
 
 const HUMMINGBIRD_GARDEN_ICONS = {
   "my-goals": hgMyGoals, "yearly-calendar": hgYearlyCalendar, "monthly-calendar": hgMonthlyCalendar,
@@ -686,14 +686,14 @@ const BUTTERFLY_GARDEN_ICONS = {
 };
 
 const DRAGONFLY_ROSE_ICONS = {
-  "my-goals": drMyGoals, "yearly-calendar": drYearlyCalendar, "monthly-calendar": drMonthlyCalendar,
-  "weekly-calendar": drWeeklyCalendar, "daily-tracker": drDailyTracker, "complete-tracker": drCompleteTracker,
-  "yearly-habit-tracker": drYearlyHabitTracker, "weight-tracker": drWeightTracker,
-  "measurement-tracker": drMeasurementTracker, "blood-sugar-tracker": drBloodSugarTracker,
-  "blood-pressure-tracker": drBloodPressureTracker, "oxygen-tracker": drOxygenTracker,
-  "self-care-checklist": drSelfCareChecklist, "cleaning-checklist": drCleaningChecklist,
-  recipe: drRecipe, notes: drNotes, "workout-tracker": drWorkoutTracker,
-  medications: drMedications, "medical-records": drMedicalRecords, "yearly-focus": drYearlyFocus,
+  "my-goals": dgrMyGoals, "yearly-calendar": dgrYearlyCalendar, "monthly-calendar": dgrMonthlyCalendar,
+  "weekly-calendar": dgrWeeklyCalendar, "daily-tracker": dgrDailyTracker, "complete-tracker": dgrCompleteTracker,
+  "yearly-habit-tracker": dgrYearlyHabitTracker, "weight-tracker": dgrWeightTracker,
+  "measurement-tracker": dgrMeasurementTracker, "blood-sugar-tracker": dgrBloodSugarTracker,
+  "blood-pressure-tracker": dgrBloodPressureTracker, "oxygen-tracker": dgrOxygenTracker,
+  "self-care-checklist": dgrSelfCareChecklist, "cleaning-checklist": dgrCleaningChecklist,
+  recipe: dgrRecipe, notes: dgrNotes, "workout-tracker": dgrWorkoutTracker,
+  medications: dgrMedications, "medical-records": dgrMedicalRecords, "yearly-focus": dgrYearlyFocus,
 };
 
 
@@ -895,14 +895,14 @@ export const COVER_ICONS: Record<string, Record<string, string>> = {
     medications: faMedications, "medical-records": faMedicalRecords, "yearly-focus": faYearlyFocus,
   }),
   dreamscape: pack({
-    "my-goals": drMyGoals, "yearly-calendar": drYearlyCalendar, "monthly-calendar": drMonthlyCalendar,
-    "weekly-calendar": drWeeklyCalendar, "daily-tracker": drDailyTracker, "complete-tracker": drCompleteTracker,
-    "yearly-habit-tracker": drYearlyHabitTracker, "weight-tracker": drWeightTracker,
-    "measurement-tracker": drMeasurementTracker, "blood-sugar-tracker": drBloodSugarTracker,
-    "blood-pressure-tracker": drBloodPressureTracker, "oxygen-tracker": drOxygenTracker,
-    "self-care-checklist": drSelfCareChecklist, "cleaning-checklist": drCleaningChecklist,
-    recipe: drRecipe, notes: drNotes, "workout-tracker": drWorkoutTracker,
-    medications: drMedications, "medical-records": drMedicalRecords, "yearly-focus": drYearlyFocus,
+    "my-goals": dgrMyGoals, "yearly-calendar": dgrYearlyCalendar, "monthly-calendar": dgrMonthlyCalendar,
+    "weekly-calendar": dgrWeeklyCalendar, "daily-tracker": dgrDailyTracker, "complete-tracker": dgrCompleteTracker,
+    "yearly-habit-tracker": dgrYearlyHabitTracker, "weight-tracker": dgrWeightTracker,
+    "measurement-tracker": dgrMeasurementTracker, "blood-sugar-tracker": dgrBloodSugarTracker,
+    "blood-pressure-tracker": dgrBloodPressureTracker, "oxygen-tracker": dgrOxygenTracker,
+    "self-care-checklist": dgrSelfCareChecklist, "cleaning-checklist": dgrCleaningChecklist,
+    recipe: dgrRecipe, notes: dgrNotes, "workout-tracker": dgrWorkoutTracker,
+    medications: dgrMedications, "medical-records": dgrMedicalRecords, "yearly-focus": dgrYearlyFocus,
   }),
   "sun-moon-storm": pack({
     "my-goals": smMyGoals, "yearly-calendar": smYearlyCalendar, "monthly-calendar": smMonthlyCalendar,
