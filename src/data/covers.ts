@@ -34,7 +34,8 @@ export type CoverCollection =
   | "chronicles"
   | "scrapbook"
   | "classic"
-  | "change-of-life";
+  | "change-of-life"
+  | "pop-art";
 
 export const COLLECTIONS: { id: CoverCollection; label: string }[] = [
   { id: "classic", label: "Patriotic" },
@@ -49,6 +50,7 @@ export const COLLECTIONS: { id: CoverCollection; label: string }[] = [
   { id: "faith", label: "Faith" },
   { id: "chronicles", label: "Chronicles" },
   { id: "change-of-life", label: "Change of Life" },
+  { id: "pop-art", label: "Pop Art" },
 ];
 
 export type Cover = {
