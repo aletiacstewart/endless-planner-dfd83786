@@ -355,6 +355,118 @@ import smMedications from "@/assets/page-icons/sun-moon-storm/medications.jpg";
 import smMedicalRecords from "@/assets/page-icons/sun-moon-storm/medical-records.jpg";
 import smYearlyFocus from "@/assets/page-icons/sun-moon-storm/yearly-focus.jpg";
 
+// Ribbons Ivory (shared: ivory-ribbons)
+import riMyGoals from "@/assets/page-icons/ribbons-ivory/my-goals.jpg";
+import riYearlyCalendar from "@/assets/page-icons/ribbons-ivory/yearly-calendar.jpg";
+import riMonthlyCalendar from "@/assets/page-icons/ribbons-ivory/monthly-calendar.jpg";
+import riWeeklyCalendar from "@/assets/page-icons/ribbons-ivory/weekly-calendar.jpg";
+import riDailyTracker from "@/assets/page-icons/ribbons-ivory/daily-tracker.jpg";
+import riCompleteTracker from "@/assets/page-icons/ribbons-ivory/complete-tracker.jpg";
+import riYearlyHabitTracker from "@/assets/page-icons/ribbons-ivory/yearly-habit-tracker.jpg";
+import riWeightTracker from "@/assets/page-icons/ribbons-ivory/weight-tracker.jpg";
+import riMeasurementTracker from "@/assets/page-icons/ribbons-ivory/measurement-tracker.jpg";
+import riBloodSugarTracker from "@/assets/page-icons/ribbons-ivory/blood-sugar-tracker.jpg";
+import riBloodPressureTracker from "@/assets/page-icons/ribbons-ivory/blood-pressure-tracker.jpg";
+import riOxygenTracker from "@/assets/page-icons/ribbons-ivory/oxygen-tracker.jpg";
+import riSelfCareChecklist from "@/assets/page-icons/ribbons-ivory/self-care-checklist.jpg";
+import riCleaningChecklist from "@/assets/page-icons/ribbons-ivory/cleaning-checklist.jpg";
+import riRecipe from "@/assets/page-icons/ribbons-ivory/recipe.jpg";
+import riNotes from "@/assets/page-icons/ribbons-ivory/notes.jpg";
+import riWorkoutTracker from "@/assets/page-icons/ribbons-ivory/workout-tracker.jpg";
+import riMedications from "@/assets/page-icons/ribbons-ivory/medications.jpg";
+import riMedicalRecords from "@/assets/page-icons/ribbons-ivory/medical-records.jpg";
+import riYearlyFocus from "@/assets/page-icons/ribbons-ivory/yearly-focus.jpg";
+
+// Ribbons Midnight (shared: midnight-ribbons)
+import rmMyGoals from "@/assets/page-icons/ribbons-midnight/my-goals.jpg";
+import rmYearlyCalendar from "@/assets/page-icons/ribbons-midnight/yearly-calendar.jpg";
+import rmMonthlyCalendar from "@/assets/page-icons/ribbons-midnight/monthly-calendar.jpg";
+import rmWeeklyCalendar from "@/assets/page-icons/ribbons-midnight/weekly-calendar.jpg";
+import rmDailyTracker from "@/assets/page-icons/ribbons-midnight/daily-tracker.jpg";
+import rmCompleteTracker from "@/assets/page-icons/ribbons-midnight/complete-tracker.jpg";
+import rmYearlyHabitTracker from "@/assets/page-icons/ribbons-midnight/yearly-habit-tracker.jpg";
+import rmWeightTracker from "@/assets/page-icons/ribbons-midnight/weight-tracker.jpg";
+import rmMeasurementTracker from "@/assets/page-icons/ribbons-midnight/measurement-tracker.jpg";
+import rmBloodSugarTracker from "@/assets/page-icons/ribbons-midnight/blood-sugar-tracker.jpg";
+import rmBloodPressureTracker from "@/assets/page-icons/ribbons-midnight/blood-pressure-tracker.jpg";
+import rmOxygenTracker from "@/assets/page-icons/ribbons-midnight/oxygen-tracker.jpg";
+import rmSelfCareChecklist from "@/assets/page-icons/ribbons-midnight/self-care-checklist.jpg";
+import rmCleaningChecklist from "@/assets/page-icons/ribbons-midnight/cleaning-checklist.jpg";
+import rmRecipe from "@/assets/page-icons/ribbons-midnight/recipe.jpg";
+import rmNotes from "@/assets/page-icons/ribbons-midnight/notes.jpg";
+import rmWorkoutTracker from "@/assets/page-icons/ribbons-midnight/workout-tracker.jpg";
+import rmMedications from "@/assets/page-icons/ribbons-midnight/medications.jpg";
+import rmMedicalRecords from "@/assets/page-icons/ribbons-midnight/medical-records.jpg";
+import rmYearlyFocus from "@/assets/page-icons/ribbons-midnight/yearly-focus.jpg";
+
+// Luminous (shared: luminous-hummingbird, luminous-dragonfly)
+import luMyGoals from "@/assets/page-icons/luminous/my-goals.jpg";
+import luYearlyCalendar from "@/assets/page-icons/luminous/yearly-calendar.jpg";
+import luMonthlyCalendar from "@/assets/page-icons/luminous/monthly-calendar.jpg";
+import luWeeklyCalendar from "@/assets/page-icons/luminous/weekly-calendar.jpg";
+import luDailyTracker from "@/assets/page-icons/luminous/daily-tracker.jpg";
+import luCompleteTracker from "@/assets/page-icons/luminous/complete-tracker.jpg";
+import luYearlyHabitTracker from "@/assets/page-icons/luminous/yearly-habit-tracker.jpg";
+import luWeightTracker from "@/assets/page-icons/luminous/weight-tracker.jpg";
+import luMeasurementTracker from "@/assets/page-icons/luminous/measurement-tracker.jpg";
+import luBloodSugarTracker from "@/assets/page-icons/luminous/blood-sugar-tracker.jpg";
+import luBloodPressureTracker from "@/assets/page-icons/luminous/blood-pressure-tracker.jpg";
+import luOxygenTracker from "@/assets/page-icons/luminous/oxygen-tracker.jpg";
+import luSelfCareChecklist from "@/assets/page-icons/luminous/self-care-checklist.jpg";
+import luCleaningChecklist from "@/assets/page-icons/luminous/cleaning-checklist.jpg";
+import luRecipe from "@/assets/page-icons/luminous/recipe.jpg";
+import luNotes from "@/assets/page-icons/luminous/notes.jpg";
+import luWorkoutTracker from "@/assets/page-icons/luminous/workout-tracker.jpg";
+import luMedications from "@/assets/page-icons/luminous/medications.jpg";
+import luMedicalRecords from "@/assets/page-icons/luminous/medical-records.jpg";
+import luYearlyFocus from "@/assets/page-icons/luminous/yearly-focus.jpg";
+
+// Black Moon Flora (shared: black-dahlia-moon, black-rose-moon, midnight-iris-moon, black-lily-moon, swallowtail-moon)
+import bmfMyGoals from "@/assets/page-icons/black-moon-flora/my-goals.jpg";
+import bmfYearlyCalendar from "@/assets/page-icons/black-moon-flora/yearly-calendar.jpg";
+import bmfMonthlyCalendar from "@/assets/page-icons/black-moon-flora/monthly-calendar.jpg";
+import bmfWeeklyCalendar from "@/assets/page-icons/black-moon-flora/weekly-calendar.jpg";
+import bmfDailyTracker from "@/assets/page-icons/black-moon-flora/daily-tracker.jpg";
+import bmfCompleteTracker from "@/assets/page-icons/black-moon-flora/complete-tracker.jpg";
+import bmfYearlyHabitTracker from "@/assets/page-icons/black-moon-flora/yearly-habit-tracker.jpg";
+import bmfWeightTracker from "@/assets/page-icons/black-moon-flora/weight-tracker.jpg";
+import bmfMeasurementTracker from "@/assets/page-icons/black-moon-flora/measurement-tracker.jpg";
+import bmfBloodSugarTracker from "@/assets/page-icons/black-moon-flora/blood-sugar-tracker.jpg";
+import bmfBloodPressureTracker from "@/assets/page-icons/black-moon-flora/blood-pressure-tracker.jpg";
+import bmfOxygenTracker from "@/assets/page-icons/black-moon-flora/oxygen-tracker.jpg";
+import bmfSelfCareChecklist from "@/assets/page-icons/black-moon-flora/self-care-checklist.jpg";
+import bmfCleaningChecklist from "@/assets/page-icons/black-moon-flora/cleaning-checklist.jpg";
+import bmfRecipe from "@/assets/page-icons/black-moon-flora/recipe.jpg";
+import bmfNotes from "@/assets/page-icons/black-moon-flora/notes.jpg";
+import bmfWorkoutTracker from "@/assets/page-icons/black-moon-flora/workout-tracker.jpg";
+import bmfMedications from "@/assets/page-icons/black-moon-flora/medications.jpg";
+import bmfMedicalRecords from "@/assets/page-icons/black-moon-flora/medical-records.jpg";
+import bmfYearlyFocus from "@/assets/page-icons/black-moon-flora/yearly-focus.jpg";
+
+// Gilded (gilded-rose)
+import giMyGoals from "@/assets/page-icons/gilded/my-goals.jpg";
+import giYearlyCalendar from "@/assets/page-icons/gilded/yearly-calendar.jpg";
+import giMonthlyCalendar from "@/assets/page-icons/gilded/monthly-calendar.jpg";
+import giWeeklyCalendar from "@/assets/page-icons/gilded/weekly-calendar.jpg";
+import giDailyTracker from "@/assets/page-icons/gilded/daily-tracker.jpg";
+import giCompleteTracker from "@/assets/page-icons/gilded/complete-tracker.jpg";
+import giYearlyHabitTracker from "@/assets/page-icons/gilded/yearly-habit-tracker.jpg";
+import giWeightTracker from "@/assets/page-icons/gilded/weight-tracker.jpg";
+import giMeasurementTracker from "@/assets/page-icons/gilded/measurement-tracker.jpg";
+import giBloodSugarTracker from "@/assets/page-icons/gilded/blood-sugar-tracker.jpg";
+import giBloodPressureTracker from "@/assets/page-icons/gilded/blood-pressure-tracker.jpg";
+import giOxygenTracker from "@/assets/page-icons/gilded/oxygen-tracker.jpg";
+import giSelfCareChecklist from "@/assets/page-icons/gilded/self-care-checklist.jpg";
+import giCleaningChecklist from "@/assets/page-icons/gilded/cleaning-checklist.jpg";
+import giRecipe from "@/assets/page-icons/gilded/recipe.jpg";
+import giNotes from "@/assets/page-icons/gilded/notes.jpg";
+import giWorkoutTracker from "@/assets/page-icons/gilded/workout-tracker.jpg";
+import giMedications from "@/assets/page-icons/gilded/medications.jpg";
+import giMedicalRecords from "@/assets/page-icons/gilded/medical-records.jpg";
+import giYearlyFocus from "@/assets/page-icons/gilded/yearly-focus.jpg";
+
+
+
 
 
 function pack(icons: Record<string, string>): Record<string, string> {
@@ -571,6 +683,106 @@ export const COVER_ICONS: Record<string, Record<string, string>> = {
     "self-care-checklist": smSelfCareChecklist, "cleaning-checklist": smCleaningChecklist,
     recipe: smRecipe, notes: smNotes, "workout-tracker": smWorkoutTracker,
     medications: smMedications, "medical-records": smMedicalRecords, "yearly-focus": smYearlyFocus,
+  }),
+  "ivory-ribbons": pack({
+    "my-goals": riMyGoals, "yearly-calendar": riYearlyCalendar, "monthly-calendar": riMonthlyCalendar,
+    "weekly-calendar": riWeeklyCalendar, "daily-tracker": riDailyTracker, "complete-tracker": riCompleteTracker,
+    "yearly-habit-tracker": riYearlyHabitTracker, "weight-tracker": riWeightTracker,
+    "measurement-tracker": riMeasurementTracker, "blood-sugar-tracker": riBloodSugarTracker,
+    "blood-pressure-tracker": riBloodPressureTracker, "oxygen-tracker": riOxygenTracker,
+    "self-care-checklist": riSelfCareChecklist, "cleaning-checklist": riCleaningChecklist,
+    recipe: riRecipe, notes: riNotes, "workout-tracker": riWorkoutTracker,
+    medications: riMedications, "medical-records": riMedicalRecords, "yearly-focus": riYearlyFocus,
+  }),
+  "midnight-ribbons": pack({
+    "my-goals": rmMyGoals, "yearly-calendar": rmYearlyCalendar, "monthly-calendar": rmMonthlyCalendar,
+    "weekly-calendar": rmWeeklyCalendar, "daily-tracker": rmDailyTracker, "complete-tracker": rmCompleteTracker,
+    "yearly-habit-tracker": rmYearlyHabitTracker, "weight-tracker": rmWeightTracker,
+    "measurement-tracker": rmMeasurementTracker, "blood-sugar-tracker": rmBloodSugarTracker,
+    "blood-pressure-tracker": rmBloodPressureTracker, "oxygen-tracker": rmOxygenTracker,
+    "self-care-checklist": rmSelfCareChecklist, "cleaning-checklist": rmCleaningChecklist,
+    recipe: rmRecipe, notes: rmNotes, "workout-tracker": rmWorkoutTracker,
+    medications: rmMedications, "medical-records": rmMedicalRecords, "yearly-focus": rmYearlyFocus,
+  }),
+  "luminous-hummingbird": pack({
+    "my-goals": luMyGoals, "yearly-calendar": luYearlyCalendar, "monthly-calendar": luMonthlyCalendar,
+    "weekly-calendar": luWeeklyCalendar, "daily-tracker": luDailyTracker, "complete-tracker": luCompleteTracker,
+    "yearly-habit-tracker": luYearlyHabitTracker, "weight-tracker": luWeightTracker,
+    "measurement-tracker": luMeasurementTracker, "blood-sugar-tracker": luBloodSugarTracker,
+    "blood-pressure-tracker": luBloodPressureTracker, "oxygen-tracker": luOxygenTracker,
+    "self-care-checklist": luSelfCareChecklist, "cleaning-checklist": luCleaningChecklist,
+    recipe: luRecipe, notes: luNotes, "workout-tracker": luWorkoutTracker,
+    medications: luMedications, "medical-records": luMedicalRecords, "yearly-focus": luYearlyFocus,
+  }),
+  "luminous-dragonfly": pack({
+    "my-goals": luMyGoals, "yearly-calendar": luYearlyCalendar, "monthly-calendar": luMonthlyCalendar,
+    "weekly-calendar": luWeeklyCalendar, "daily-tracker": luDailyTracker, "complete-tracker": luCompleteTracker,
+    "yearly-habit-tracker": luYearlyHabitTracker, "weight-tracker": luWeightTracker,
+    "measurement-tracker": luMeasurementTracker, "blood-sugar-tracker": luBloodSugarTracker,
+    "blood-pressure-tracker": luBloodPressureTracker, "oxygen-tracker": luOxygenTracker,
+    "self-care-checklist": luSelfCareChecklist, "cleaning-checklist": luCleaningChecklist,
+    recipe: luRecipe, notes: luNotes, "workout-tracker": luWorkoutTracker,
+    medications: luMedications, "medical-records": luMedicalRecords, "yearly-focus": luYearlyFocus,
+  }),
+  "black-dahlia-moon": pack({
+    "my-goals": bmfMyGoals, "yearly-calendar": bmfYearlyCalendar, "monthly-calendar": bmfMonthlyCalendar,
+    "weekly-calendar": bmfWeeklyCalendar, "daily-tracker": bmfDailyTracker, "complete-tracker": bmfCompleteTracker,
+    "yearly-habit-tracker": bmfYearlyHabitTracker, "weight-tracker": bmfWeightTracker,
+    "measurement-tracker": bmfMeasurementTracker, "blood-sugar-tracker": bmfBloodSugarTracker,
+    "blood-pressure-tracker": bmfBloodPressureTracker, "oxygen-tracker": bmfOxygenTracker,
+    "self-care-checklist": bmfSelfCareChecklist, "cleaning-checklist": bmfCleaningChecklist,
+    recipe: bmfRecipe, notes: bmfNotes, "workout-tracker": bmfWorkoutTracker,
+    medications: bmfMedications, "medical-records": bmfMedicalRecords, "yearly-focus": bmfYearlyFocus,
+  }),
+  "black-rose-moon": pack({
+    "my-goals": bmfMyGoals, "yearly-calendar": bmfYearlyCalendar, "monthly-calendar": bmfMonthlyCalendar,
+    "weekly-calendar": bmfWeeklyCalendar, "daily-tracker": bmfDailyTracker, "complete-tracker": bmfCompleteTracker,
+    "yearly-habit-tracker": bmfYearlyHabitTracker, "weight-tracker": bmfWeightTracker,
+    "measurement-tracker": bmfMeasurementTracker, "blood-sugar-tracker": bmfBloodSugarTracker,
+    "blood-pressure-tracker": bmfBloodPressureTracker, "oxygen-tracker": bmfOxygenTracker,
+    "self-care-checklist": bmfSelfCareChecklist, "cleaning-checklist": bmfCleaningChecklist,
+    recipe: bmfRecipe, notes: bmfNotes, "workout-tracker": bmfWorkoutTracker,
+    medications: bmfMedications, "medical-records": bmfMedicalRecords, "yearly-focus": bmfYearlyFocus,
+  }),
+  "midnight-iris-moon": pack({
+    "my-goals": bmfMyGoals, "yearly-calendar": bmfYearlyCalendar, "monthly-calendar": bmfMonthlyCalendar,
+    "weekly-calendar": bmfWeeklyCalendar, "daily-tracker": bmfDailyTracker, "complete-tracker": bmfCompleteTracker,
+    "yearly-habit-tracker": bmfYearlyHabitTracker, "weight-tracker": bmfWeightTracker,
+    "measurement-tracker": bmfMeasurementTracker, "blood-sugar-tracker": bmfBloodSugarTracker,
+    "blood-pressure-tracker": bmfBloodPressureTracker, "oxygen-tracker": bmfOxygenTracker,
+    "self-care-checklist": bmfSelfCareChecklist, "cleaning-checklist": bmfCleaningChecklist,
+    recipe: bmfRecipe, notes: bmfNotes, "workout-tracker": bmfWorkoutTracker,
+    medications: bmfMedications, "medical-records": bmfMedicalRecords, "yearly-focus": bmfYearlyFocus,
+  }),
+  "black-lily-moon": pack({
+    "my-goals": bmfMyGoals, "yearly-calendar": bmfYearlyCalendar, "monthly-calendar": bmfMonthlyCalendar,
+    "weekly-calendar": bmfWeeklyCalendar, "daily-tracker": bmfDailyTracker, "complete-tracker": bmfCompleteTracker,
+    "yearly-habit-tracker": bmfYearlyHabitTracker, "weight-tracker": bmfWeightTracker,
+    "measurement-tracker": bmfMeasurementTracker, "blood-sugar-tracker": bmfBloodSugarTracker,
+    "blood-pressure-tracker": bmfBloodPressureTracker, "oxygen-tracker": bmfOxygenTracker,
+    "self-care-checklist": bmfSelfCareChecklist, "cleaning-checklist": bmfCleaningChecklist,
+    recipe: bmfRecipe, notes: bmfNotes, "workout-tracker": bmfWorkoutTracker,
+    medications: bmfMedications, "medical-records": bmfMedicalRecords, "yearly-focus": bmfYearlyFocus,
+  }),
+  "swallowtail-moon": pack({
+    "my-goals": bmfMyGoals, "yearly-calendar": bmfYearlyCalendar, "monthly-calendar": bmfMonthlyCalendar,
+    "weekly-calendar": bmfWeeklyCalendar, "daily-tracker": bmfDailyTracker, "complete-tracker": bmfCompleteTracker,
+    "yearly-habit-tracker": bmfYearlyHabitTracker, "weight-tracker": bmfWeightTracker,
+    "measurement-tracker": bmfMeasurementTracker, "blood-sugar-tracker": bmfBloodSugarTracker,
+    "blood-pressure-tracker": bmfBloodPressureTracker, "oxygen-tracker": bmfOxygenTracker,
+    "self-care-checklist": bmfSelfCareChecklist, "cleaning-checklist": bmfCleaningChecklist,
+    recipe: bmfRecipe, notes: bmfNotes, "workout-tracker": bmfWorkoutTracker,
+    medications: bmfMedications, "medical-records": bmfMedicalRecords, "yearly-focus": bmfYearlyFocus,
+  }),
+  "gilded-rose": pack({
+    "my-goals": giMyGoals, "yearly-calendar": giYearlyCalendar, "monthly-calendar": giMonthlyCalendar,
+    "weekly-calendar": giWeeklyCalendar, "daily-tracker": giDailyTracker, "complete-tracker": giCompleteTracker,
+    "yearly-habit-tracker": giYearlyHabitTracker, "weight-tracker": giWeightTracker,
+    "measurement-tracker": giMeasurementTracker, "blood-sugar-tracker": giBloodSugarTracker,
+    "blood-pressure-tracker": giBloodPressureTracker, "oxygen-tracker": giOxygenTracker,
+    "self-care-checklist": giSelfCareChecklist, "cleaning-checklist": giCleaningChecklist,
+    recipe: giRecipe, notes: giNotes, "workout-tracker": giWorkoutTracker,
+    medications: giMedications, "medical-records": giMedicalRecords, "yearly-focus": giYearlyFocus,
   }),
 };
 
