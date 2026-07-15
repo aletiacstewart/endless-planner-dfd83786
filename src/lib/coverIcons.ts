@@ -1036,6 +1036,32 @@ const FEATHER_PHOENIX_ICONS = { "my-goals": fpMyGoals, "yearly-calendar": fpYear
 const FEATHER_AMETHYST_ICONS = { "my-goals": fmtMyGoals, "yearly-calendar": fmtYearlyCalendar, "monthly-calendar": fmtMonthlyCalendar, "weekly-calendar": fmtWeeklyCalendar, "daily-tracker": fmtDailyTracker, "complete-tracker": fmtCompleteTracker, "yearly-habit-tracker": fmtYearlyHabitTracker, "weight-tracker": fmtWeightTracker, "measurement-tracker": fmtMeasurementTracker, "blood-sugar-tracker": fmtBloodSugarTracker, "blood-pressure-tracker": fmtBloodPressureTracker, "oxygen-tracker": fmtOxygenTracker, "self-care-checklist": fmtSelfCareChecklist, "cleaning-checklist": fmtCleaningChecklist, recipe: fmtRecipe, notes: fmtNotes, "workout-tracker": fmtWorkoutTracker, medications: fmtMedications, "medical-records": fmtMedicalRecords, "yearly-focus": fmtYearlyFocus };
 const FEATHER_CRIMSON_ICONS = { "my-goals": fcMyGoals, "yearly-calendar": fcYearlyCalendar, "monthly-calendar": fcMonthlyCalendar, "weekly-calendar": fcWeeklyCalendar, "daily-tracker": fcDailyTracker, "complete-tracker": fcCompleteTracker, "yearly-habit-tracker": fcYearlyHabitTracker, "weight-tracker": fcWeightTracker, "measurement-tracker": fcMeasurementTracker, "blood-sugar-tracker": fcBloodSugarTracker, "blood-pressure-tracker": fcBloodPressureTracker, "oxygen-tracker": fcOxygenTracker, "self-care-checklist": fcSelfCareChecklist, "cleaning-checklist": fcCleaningChecklist, recipe: fcRecipe, notes: fcNotes, "workout-tracker": fcWorkoutTracker, medications: fcMedications, "medical-records": fcMedicalRecords, "yearly-focus": fcYearlyFocus };
 
+// Dragons — one shared pack for all dragon covers
+import dgnMyGoals from "@/assets/page-icons/dragons/my-goals.jpg";
+import dgnYearlyCalendar from "@/assets/page-icons/dragons/yearly-calendar.jpg";
+import dgnMonthlyCalendar from "@/assets/page-icons/dragons/monthly-calendar.jpg";
+import dgnWeeklyCalendar from "@/assets/page-icons/dragons/weekly-calendar.jpg";
+import dgnDailyTracker from "@/assets/page-icons/dragons/daily-tracker.jpg";
+import dgnCompleteTracker from "@/assets/page-icons/dragons/complete-tracker.jpg";
+import dgnYearlyHabitTracker from "@/assets/page-icons/dragons/yearly-habit-tracker.jpg";
+import dgnWeightTracker from "@/assets/page-icons/dragons/weight-tracker.jpg";
+import dgnMeasurementTracker from "@/assets/page-icons/dragons/measurement-tracker.jpg";
+import dgnBloodSugarTracker from "@/assets/page-icons/dragons/blood-sugar-tracker.jpg";
+import dgnBloodPressureTracker from "@/assets/page-icons/dragons/blood-pressure-tracker.jpg";
+import dgnOxygenTracker from "@/assets/page-icons/dragons/oxygen-tracker.jpg";
+import dgnSelfCareChecklist from "@/assets/page-icons/dragons/self-care-checklist.jpg";
+import dgnCleaningChecklist from "@/assets/page-icons/dragons/cleaning-checklist.jpg";
+import dgnRecipe from "@/assets/page-icons/dragons/recipe.jpg";
+import dgnNotes from "@/assets/page-icons/dragons/notes.jpg";
+import dgnWorkoutTracker from "@/assets/page-icons/dragons/workout-tracker.jpg";
+import dgnMedications from "@/assets/page-icons/dragons/medications.jpg";
+import dgnMedicalRecords from "@/assets/page-icons/dragons/medical-records.jpg";
+import dgnYearlyFocus from "@/assets/page-icons/dragons/yearly-focus.jpg";
+
+const DRAGONS_SHARED_ICONS = { "my-goals": dgnMyGoals, "yearly-calendar": dgnYearlyCalendar, "monthly-calendar": dgnMonthlyCalendar, "weekly-calendar": dgnWeeklyCalendar, "daily-tracker": dgnDailyTracker, "complete-tracker": dgnCompleteTracker, "yearly-habit-tracker": dgnYearlyHabitTracker, "weight-tracker": dgnWeightTracker, "measurement-tracker": dgnMeasurementTracker, "blood-sugar-tracker": dgnBloodSugarTracker, "blood-pressure-tracker": dgnBloodPressureTracker, "oxygen-tracker": dgnOxygenTracker, "self-care-checklist": dgnSelfCareChecklist, "cleaning-checklist": dgnCleaningChecklist, recipe: dgnRecipe, notes: dgnNotes, "workout-tracker": dgnWorkoutTracker, medications: dgnMedications, "medical-records": dgnMedicalRecords, "yearly-focus": dgnYearlyFocus };
+
+
+
 
 
 
@@ -1489,6 +1515,16 @@ export const COVER_ICONS: Record<string, Record<string, string>> = {
   "feather-phoenix": pack(FEATHER_PHOENIX_ICONS),
   "feather-amethyst": pack(FEATHER_AMETHYST_ICONS),
   "feather-crimson": pack(FEATHER_CRIMSON_ICONS),
+  "dragon-twin-flame": pack(DRAGONS_SHARED_ICONS),
+  "dragon-filigree": pack(DRAGONS_SHARED_ICONS),
+  "dragon-skull-ember": pack(DRAGONS_SHARED_ICONS),
+  "dragon-winged-cross": pack(DRAGONS_SHARED_ICONS),
+  "dragon-whirlwind": pack(DRAGONS_SHARED_ICONS),
+  "dragon-onyx": pack(DRAGONS_SHARED_ICONS),
+  "dragon-curling-ember": pack(DRAGONS_SHARED_ICONS),
+  "dragon-heart-flame": pack(DRAGONS_SHARED_ICONS),
+  "dragon-sovereign": pack(DRAGONS_SHARED_ICONS),
+  "dragon-thornwood": pack(DRAGONS_SHARED_ICONS),
 };
 
 
