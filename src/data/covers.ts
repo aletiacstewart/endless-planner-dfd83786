@@ -322,6 +322,45 @@ const paletteSunMoonStorm: CoverPalette = {
     "linear-gradient(135deg, hsl(40 55% 96%), hsl(220 45% 92%))",
 };
 
+// Ivory Ribbons — soft cream paper with warm champagne accent.
+const paletteIvory: CoverPalette = {
+  mode: "light",
+  background: "36 35% 96%",
+  foreground: "28 30% 22%",
+  card: "36 45% 99%",
+  cardForeground: "28 30% 22%",
+  primary: "32 45% 55%",
+  primaryForeground: "36 45% 99%",
+  primarySoft: "32 35% 92%",
+  accent: "28 55% 60%",
+  accentForeground: "36 45% 99%",
+  muted: "36 20% 92%",
+  mutedForeground: "28 15% 42%",
+  border: "36 20% 84%",
+  paperGradient: "linear-gradient(180deg, hsl(36 45% 98%), hsl(32 25% 92%))",
+};
+
+// Gilded Rose / Midnight Ribbons — deep black paper with gold accents.
+const paletteGilded: CoverPalette = {
+  mode: "dark",
+  background: "40 15% 7%",
+  foreground: "42 45% 92%",
+  card: "40 12% 11%",
+  cardForeground: "42 45% 92%",
+  primary: "42 70% 55%",
+  primaryForeground: "40 15% 8%",
+  primarySoft: "42 40% 20%",
+  accent: "36 80% 60%",
+  accentForeground: "40 15% 8%",
+  muted: "40 10% 15%",
+  mutedForeground: "42 20% 70%",
+  border: "40 10% 22%",
+  paperGradient:
+    "radial-gradient(120% 80% at 50% 0%, hsl(42 60% 22% / 0.4), transparent 60%), linear-gradient(180deg, hsl(40 15% 8%), hsl(40 15% 5%))",
+};
+
+
+
 export const COVERS: Cover[] = [
   {
     id: "patriotic-roses",
