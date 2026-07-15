@@ -1,39 +1,38 @@
-## Goal
+## Register 11 pack covers
 
-Clear out every cover and every per-cover icon set so you can reupload from scratch. Keep the cover/icon system wired up (types, hooks, picker, packs, pricing) so re-adding a cover is just "drop assets + register".
+I've matched the 10 uploaded covers to pack IDs. Waiting on the 11th (Patriotic White Rose).
 
-## What gets deleted
+| Upload | Pack ID |
+|---|---|
+| 75-2.png (red rose + flag) | `patriotic-roses` |
+| 76-2.png (horned lizard) | `texas-horned-lizard` |
+| 77-2.png (cactus + moon) | `starlit-cactus` |
+| 78-2.png (pecan tree) | `pecan-tree-moon` |
+| 79-2.png (wheat + moon) | `golden-wheat-moon` |
+| 80-2.png (bluebonnet) | `bluebonnet-moon` |
+| 81-2.png (monarch butterfly) | `monarch-moon` |
+| 82-2.png (longhorn + star) | `longhorn-star` |
+| 83-2.png (mockingbird) | `mockingbird-moon` |
+| 73-2.png (blue rose + flag) | `patriotic-blue-rose` |
+| _pending_ | `patriotic-white-rose` |
 
-- All 64 cover images in `src/assets/covers/` (entire folder)
-- All per-cover icon assets in `src/assets/cover-icons/` (currently only `forget-me-nots-ladybugs/`)
-- All cover imports, palette presets, and `COVERS` entries in `src/data/covers.ts`
-- All entries in `COVER_ICONS` in `src/lib/coverIcons.ts`
+### Steps
 
-## What stays (system intact for reupload)
+1. Register each upload as a Lovable Asset via `lovable-assets create` → write `src/assets/covers/<pack-id>.jpg.asset.json` pointer files (keeps binaries out of the repo).
+2. Rewrite `src/data/covers.ts`:
+   - Import all 11 cover asset pointers.
+   - Define a matching `CoverPalette` per cover (e.g. patriotic red/white/blue for the rose+flag covers; deep-night gold for the celestial "moon" covers; desert teal+gold for cactus; earthy brown+star-gold for lizard/longhorn; etc.).
+   - Replace the placeholder `COVERS` array with the 11 real entries, each assigned to an appropriate `collection` from existing `COLLECTIONS` (e.g. `celestial-birds-insects`, `sparrow`, `garden`, `classic`).
+   - Set `DEFAULT_COVER_ID` to `patriotic-roses` (the free included pack).
+3. Update `src/data/coverPacks.ts`: change `INCLUDED_PACK_IDS` from `["placeholder"]` to `["patriotic-roses"]` so the first pack is free/included.
+4. Wait for the 11th upload before finalizing — until then I'll register the 10 available and add `patriotic-white-rose` as soon as it arrives.
 
-- `src/data/covers.ts` types (`Cover`, `CoverPalette`, `CoverMode`, `CoverCollection`, `COLLECTIONS`), plus `getCover()` helper
-- `src/lib/coverIcons.ts` structure + `getCoverPageIcon()` helper
-- `src/data/coverPacks.ts` pricing + `INCLUDED_PACK_IDS`
-- All UI: `CoverPicker`, `CoverPackPicker`, `CoverIconPreviewDialog`, `CoverImage`, `useCoverTheme`, `Packs` page
-- Default page icons in `src/lib/pageImages.ts` (used as fallback)
+### Not changing
 
-## Placeholder cover
+- Existing icon sets in `src/lib/coverIcons.ts` (already keyed to these 11 IDs).
+- Pricing, checkout, `CoverPicker`/`CoverPackPicker` UI, sync.
+- The `personalized` scrapbook code path (none of these 11 covers are personalized).
 
-To avoid crashes anywhere the app assumes a selected cover exists, add a single neutral placeholder:
+### Question
 
-- `COVERS = [placeholderCover]` with id `placeholder`, a soft neutral light palette, and `image: ""` (CoverImage already renders a gradient fallback when `image` is empty)
-- Update `INCLUDED_PACK_IDS` in `src/data/coverPacks.ts` from `["forget-me-nots-ladybugs"]` to `["placeholder"]` so the free/included slot still resolves
-- Any localStorage/user-settings referencing `forget-me-nots-ladybugs` will fall back to the placeholder via `getCover()`'s existing default logic
-
-## Re-adding covers later
-
-Same 3-step flow already documented in `docs/ADDING_A_PACK.md`:
-1. Drop `src/assets/covers/<id>.jpg`
-2. Add import + `COVERS.push({...})` entry with palette in `src/data/covers.ts`
-3. (Optional) Drop `src/assets/cover-icons/<id>/*.png` and register in `COVER_ICONS`
-
-## Out of scope
-
-- No changes to Stripe pricing, pack purchase flow, or DB
-- No changes to page icons / page types
-- No user-facing copy changes beyond what's implied by an empty catalog
+Should I proceed with registering the 10 uploads now and add the White Rose in a follow-up, or wait until you upload the 11th and do them all in one batch?

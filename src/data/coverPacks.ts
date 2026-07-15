@@ -8,7 +8,7 @@
 
 import { COVERS, getCover } from "@/data/covers";
 
-export const INCLUDED_PACK_IDS = ["placeholder"] as const;
+export const INCLUDED_PACK_IDS = ["patriotic-roses"] as const;
 
 export const FIRST_PACK_PRICE_USD = 4.99;
 export const ADDITIONAL_PACK_PRICE_USD = 2.99;
