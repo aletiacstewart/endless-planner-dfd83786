@@ -99,7 +99,7 @@ export default function PlannerDetail() {
         <div className="max-w-5xl mx-auto">
           <h2 className="font-display text-3xl text-center mb-2">Choose your covers</h2>
           <p className="text-center text-muted-foreground mb-2">
-            <strong>Forget-Me-Nots &amp; Ladybugs</strong> is included free. Add extra cover &amp; icon packs to re-theme the whole planner.
+            Add cover &amp; icon packs to re-theme the whole planner.
           </p>
           <p className="text-center text-xs text-muted-foreground mb-8">
             First add-on pack $4.99 · each additional pack $2.99 · works on up to 5 devices
