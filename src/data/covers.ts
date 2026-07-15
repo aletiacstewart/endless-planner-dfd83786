@@ -106,6 +106,16 @@ import redRoseMoonlight from "@/assets/covers/red-rose-moonlight.png.asset.json"
 import whiteRoseMoonlight from "@/assets/covers/white-rose-moonlight.png.asset.json";
 import faithAffirmationsBright from "@/assets/covers/faith-affirmations-bright.png.asset.json";
 import faithAffirmationsMuted from "@/assets/covers/faith-affirmations-muted.png.asset.json";
+import hummingbirdOlive from "@/assets/covers/hummingbird-olive.png.asset.json";
+import whiteButterflyFirecracker from "@/assets/covers/white-butterfly-firecracker.png.asset.json";
+import angelTrumpetMoth from "@/assets/covers/angel-trumpet-moth.png.asset.json";
+import sunsetHummingbird from "@/assets/covers/sunset-hummingbird.png.asset.json";
+import dragonflySalvia from "@/assets/covers/dragonfly-salvia.png.asset.json";
+import mimosaHummingbird from "@/assets/covers/mimosa-hummingbird.png.asset.json";
+import blueCopperButterfly from "@/assets/covers/blue-copper-butterfly.png.asset.json";
+import redAdmiralOrchid from "@/assets/covers/red-admiral-orchid.png.asset.json";
+import dragonflyPampas from "@/assets/covers/dragonfly-pampas.png.asset.json";
+import englishRoseDew from "@/assets/covers/english-rose-dew.png.asset.json";
 
 // ---- Palettes ----
 
@@ -542,6 +552,98 @@ const paletteFaithMuted: CoverPalette = {
 };
 
 
+// Olive grove — cream paper, olive/sage foliage, jewel-teal accent.
+const paletteOliveGrove: CoverPalette = {
+  mode: "light",
+  background: "48 30% 95%",
+  foreground: "80 25% 18%",
+  card: "48 40% 99%",
+  cardForeground: "80 25% 18%",
+  primary: "80 30% 40%",
+  primaryForeground: "48 40% 99%",
+  primarySoft: "80 25% 90%",
+  accent: "175 55% 42%",
+  accentForeground: "48 40% 99%",
+  muted: "48 20% 90%",
+  mutedForeground: "80 15% 40%",
+  border: "48 18% 82%",
+  paperGradient: "linear-gradient(180deg, hsl(48 40% 97%), hsl(80 20% 90%))",
+};
+
+// Golden nebula — warm gold cosmos with crimson accent.
+const paletteGoldenNebula: CoverPalette = {
+  mode: "dark",
+  background: "32 35% 10%",
+  foreground: "42 55% 94%",
+  card: "32 30% 14%",
+  cardForeground: "42 55% 94%",
+  primary: "42 85% 60%",
+  primaryForeground: "32 35% 10%",
+  primarySoft: "42 45% 22%",
+  accent: "356 70% 55%",
+  accentForeground: "32 35% 10%",
+  muted: "32 22% 18%",
+  mutedForeground: "42 25% 72%",
+  border: "32 22% 24%",
+  paperGradient:
+    "radial-gradient(140% 90% at 50% 0%, hsl(42 70% 26% / 0.55), transparent 60%), linear-gradient(180deg, hsl(32 35% 11%), hsl(32 35% 7%))",
+};
+
+// Sunset glow — hot pink + orange nebula, jewel-teal accent.
+const paletteSunsetGlow: CoverPalette = {
+  mode: "light",
+  background: "20 60% 96%",
+  foreground: "340 40% 20%",
+  card: "20 70% 99%",
+  cardForeground: "340 40% 20%",
+  primary: "340 75% 55%",
+  primaryForeground: "20 70% 99%",
+  primarySoft: "340 55% 92%",
+  accent: "175 65% 42%",
+  accentForeground: "20 70% 99%",
+  muted: "20 30% 92%",
+  mutedForeground: "340 20% 42%",
+  border: "20 30% 84%",
+  paperGradient: "linear-gradient(160deg, hsl(20 70% 96%), hsl(340 55% 92%))",
+};
+
+// Pink mimosa — soft blush paper, rose primary, sage accent.
+const palettePinkMimosa: CoverPalette = {
+  mode: "light",
+  background: "350 40% 96%",
+  foreground: "340 30% 22%",
+  card: "350 50% 99%",
+  cardForeground: "340 30% 22%",
+  primary: "340 55% 60%",
+  primaryForeground: "350 50% 99%",
+  primarySoft: "340 45% 92%",
+  accent: "150 30% 45%",
+  accentForeground: "350 50% 99%",
+  muted: "350 25% 92%",
+  mutedForeground: "340 15% 42%",
+  border: "350 25% 84%",
+  paperGradient: "linear-gradient(180deg, hsl(350 50% 97%), hsl(340 35% 92%))",
+};
+
+// Copper blue — warm copper background with cool blue accent.
+const paletteCopperBlue: CoverPalette = {
+  mode: "light",
+  background: "22 35% 93%",
+  foreground: "22 40% 20%",
+  card: "22 45% 98%",
+  cardForeground: "22 40% 20%",
+  primary: "22 65% 48%",
+  primaryForeground: "22 45% 98%",
+  primarySoft: "22 45% 90%",
+  accent: "215 65% 50%",
+  accentForeground: "22 45% 98%",
+  muted: "22 25% 90%",
+  mutedForeground: "22 20% 42%",
+  border: "22 22% 82%",
+  paperGradient: "linear-gradient(180deg, hsl(22 45% 96%), hsl(22 30% 88%))",
+};
+
+
 export const COVERS: Cover[] = [
   {
     id: "patriotic-roses",
@@ -829,6 +931,76 @@ export const COVERS: Cover[] = [
     collection: "pop-art",
     image: talkinSmack.url,
     palette: palettePopArt,
+  },
+  {
+    id: "hummingbird-olive",
+    name: "Olive Grove Hummingbird",
+    collection: "celestial-birds-insects",
+    image: hummingbirdOlive.url,
+    palette: paletteOliveGrove,
+  },
+  {
+    id: "white-butterfly-firecracker",
+    name: "Firecracker Butterfly",
+    collection: "celestial-birds-insects",
+    image: whiteButterflyFirecracker.url,
+    palette: paletteGoldenNebula,
+  },
+  {
+    id: "angel-trumpet-moth",
+    name: "Angel Trumpet Moth",
+    collection: "celestial-florals",
+    image: angelTrumpetMoth.url,
+    palette: paletteTealBloom,
+  },
+  {
+    id: "sunset-hummingbird",
+    name: "Sunset Hummingbird",
+    collection: "celestial-birds-insects",
+    image: sunsetHummingbird.url,
+    palette: paletteSunsetGlow,
+  },
+  {
+    id: "dragonfly-salvia",
+    name: "Salvia Dragonfly",
+    collection: "celestial-birds-insects",
+    image: dragonflySalvia.url,
+    palette: paletteTealBloom,
+  },
+  {
+    id: "mimosa-hummingbird",
+    name: "Mimosa Hummingbird",
+    collection: "celestial-birds-insects",
+    image: mimosaHummingbird.url,
+    palette: palettePinkMimosa,
+  },
+  {
+    id: "blue-copper-butterfly",
+    name: "Copper Blue Butterfly",
+    collection: "celestial-birds-insects",
+    image: blueCopperButterfly.url,
+    palette: paletteCopperBlue,
+  },
+  {
+    id: "red-admiral-orchid",
+    name: "Red Admiral Orchid",
+    collection: "celestial-birds-insects",
+    image: redAdmiralOrchid.url,
+    palette: paletteIvory,
+  },
+  {
+    id: "dragonfly-pampas",
+    name: "Pampas Dragonfly",
+    collection: "celestial-birds-insects",
+    image: dragonflyPampas.url,
+    palette: paletteScrapbookBlush,
+  },
+  {
+    id: "english-rose-dew",
+    name: "English Rose",
+    collection: "garden",
+    image: englishRoseDew.url,
+    palette: palettePinkMimosa,
   },
 ];
 
