@@ -914,6 +914,24 @@ const paletteFeatherCrimson: CoverPalette = {
   paperGradient: "linear-gradient(180deg, hsl(350 55% 97%), hsl(345 50% 88%))",
 };
 
+const paletteGothicSiren: CoverPalette = {
+  mode: "dark",
+  background: "220 20% 12%",
+  foreground: "38 40% 92%",
+  card: "220 18% 16%",
+  cardForeground: "38 40% 92%",
+  primary: "36 70% 62%",
+  primaryForeground: "220 20% 10%",
+  primarySoft: "36 30% 24%",
+  accent: "210 25% 55%",
+  accentForeground: "220 20% 10%",
+  muted: "220 14% 20%",
+  mutedForeground: "38 18% 72%",
+  border: "220 14% 26%",
+  paperGradient:
+    "linear-gradient(180deg, hsl(210 30% 62%) 0%, hsl(220 15% 55%) 40%, hsl(36 55% 60%) 80%, hsl(220 20% 12%) 100%)",
+};
+
 // Dragon sunset — twilight sky (indigo → violet → amber → gold) with inky black silhouettes.
 const paletteDragonSunset: CoverPalette = {
   mode: "dark",
@@ -1478,6 +1496,16 @@ export const COVERS: Cover[] = [
   { id: "dragon-heart-flame", name: "Heart Flame Dragon", collection: "dragons", image: dragonHeartFlame.url, palette: paletteDragonSunset },
   { id: "dragon-sovereign", name: "Sovereign Dragon", collection: "dragons", image: dragonSovereign.url, palette: paletteDragonSunset },
   { id: "dragon-thornwood", name: "Thornwood Dragon", collection: "dragons", image: dragonThornwood.url, palette: paletteDragonSunset },
+  { id: "gothic-siren-cathedral-throne", name: "Cathedral Throne Siren", collection: "gothic-sirens", image: gsCathedralThrone.url, palette: paletteGothicSiren },
+  { id: "gothic-siren-nautilus", name: "Nautilus Siren", collection: "gothic-sirens", image: gsNautilus.url, palette: paletteGothicSiren },
+  { id: "gothic-siren-horned-queen", name: "Horned Queen Siren", collection: "gothic-sirens", image: gsHornedQueen.url, palette: paletteGothicSiren },
+  { id: "gothic-siren-ribbed-crown", name: "Ribbed Crown Siren", collection: "gothic-sirens", image: gsRibbedCrown.url, palette: paletteGothicSiren },
+  { id: "gothic-siren-winged-fae", name: "Winged Fae Siren", collection: "gothic-sirens", image: gsWingedFae.url, palette: paletteGothicSiren },
+  { id: "gothic-siren-cathedral-nautilus", name: "Cathedral Nautilus Siren", collection: "gothic-sirens", image: gsCathedralNautilus.url, palette: paletteGothicSiren },
+  { id: "gothic-siren-conch-skull", name: "Conch & Skull Siren", collection: "gothic-sirens", image: gsConchSkull.url, palette: paletteGothicSiren },
+  { id: "gothic-siren-webbed", name: "Webbed Siren", collection: "gothic-sirens", image: gsWebbed.url, palette: paletteGothicSiren },
+  { id: "gothic-siren-skeleton", name: "Skeleton Siren", collection: "gothic-sirens", image: gsSkeleton.url, palette: paletteGothicSiren },
+  { id: "gothic-siren-haloed-conch", name: "Haloed Conch Siren", collection: "gothic-sirens", image: gsHaloedConch.url, palette: paletteGothicSiren },
 ];
 
 export const DEFAULT_COVER_ID = "patriotic-roses";
