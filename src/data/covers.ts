@@ -37,7 +37,8 @@ export type CoverCollection =
   | "change-of-life"
   | "pop-art"
   | "grit"
-  | "feathers";
+  | "feathers"
+  | "dragons";
 
 export const COLLECTIONS: { id: CoverCollection; label: string }[] = [
   { id: "classic", label: "Patriotic" },
@@ -55,6 +56,7 @@ export const COLLECTIONS: { id: CoverCollection; label: string }[] = [
   { id: "pop-art", label: "Pop Art" },
   { id: "grit", label: "Grit & Grace" },
   { id: "feathers", label: "Feathers" },
+  { id: "dragons", label: "Dragons" },
 ];
 
 export type Cover = {
@@ -144,6 +146,16 @@ import featherEmerald from "@/assets/covers/feather-emerald.png.asset.json";
 import featherPhoenix from "@/assets/covers/feather-phoenix.png.asset.json";
 import featherAmethyst from "@/assets/covers/feather-amethyst.png.asset.json";
 import featherCrimson from "@/assets/covers/feather-crimson.png.asset.json";
+import dragonTwinFlame from "@/assets/covers/dragon-twin-flame.png.asset.json";
+import dragonFiligree from "@/assets/covers/dragon-filigree.png.asset.json";
+import dragonSkullEmber from "@/assets/covers/dragon-skull-ember.png.asset.json";
+import dragonWingedCross from "@/assets/covers/dragon-winged-cross.png.asset.json";
+import dragonWhirlwind from "@/assets/covers/dragon-whirlwind.png.asset.json";
+import dragonOnyx from "@/assets/covers/dragon-onyx.png.asset.json";
+import dragonCurlingEmber from "@/assets/covers/dragon-curling-ember.png.asset.json";
+import dragonHeartFlame from "@/assets/covers/dragon-heart-flame.png.asset.json";
+import dragonSovereign from "@/assets/covers/dragon-sovereign.png.asset.json";
+import dragonThornwood from "@/assets/covers/dragon-thornwood.png.asset.json";
 
 // ---- Palettes ----
 
@@ -890,6 +902,25 @@ const paletteFeatherCrimson: CoverPalette = {
   paperGradient: "linear-gradient(180deg, hsl(350 55% 97%), hsl(345 50% 88%))",
 };
 
+// Dragon sunset — twilight sky (indigo → violet → amber → gold) with inky black silhouettes.
+const paletteDragonSunset: CoverPalette = {
+  mode: "dark",
+  background: "228 35% 10%",
+  foreground: "38 50% 92%",
+  card: "228 30% 14%",
+  cardForeground: "38 50% 92%",
+  primary: "28 85% 58%",
+  primaryForeground: "228 35% 10%",
+  primarySoft: "28 45% 22%",
+  accent: "280 40% 60%",
+  accentForeground: "228 35% 10%",
+  muted: "228 22% 18%",
+  mutedForeground: "38 22% 72%",
+  border: "228 22% 24%",
+  paperGradient:
+    "linear-gradient(180deg, hsl(228 45% 22%) 0%, hsl(280 35% 26%) 35%, hsl(28 70% 55%) 75%, hsl(48 85% 60%) 100%)",
+};
+
 
 
 
@@ -1425,6 +1456,16 @@ export const COVERS: Cover[] = [
     image: featherCrimson.url,
     palette: paletteFeatherCrimson,
   },
+  { id: "dragon-twin-flame", name: "Twin Flame Dragon", collection: "dragons", image: dragonTwinFlame.url, palette: paletteDragonSunset },
+  { id: "dragon-filigree", name: "Filigree Dragon", collection: "dragons", image: dragonFiligree.url, palette: paletteDragonSunset },
+  { id: "dragon-skull-ember", name: "Skull Ember Dragon", collection: "dragons", image: dragonSkullEmber.url, palette: paletteDragonSunset },
+  { id: "dragon-winged-cross", name: "Winged Cross Dragon", collection: "dragons", image: dragonWingedCross.url, palette: paletteDragonSunset },
+  { id: "dragon-whirlwind", name: "Whirlwind Dragon", collection: "dragons", image: dragonWhirlwind.url, palette: paletteDragonSunset },
+  { id: "dragon-onyx", name: "Onyx Dragon", collection: "dragons", image: dragonOnyx.url, palette: paletteDragonSunset },
+  { id: "dragon-curling-ember", name: "Curling Ember Dragon", collection: "dragons", image: dragonCurlingEmber.url, palette: paletteDragonSunset },
+  { id: "dragon-heart-flame", name: "Heart Flame Dragon", collection: "dragons", image: dragonHeartFlame.url, palette: paletteDragonSunset },
+  { id: "dragon-sovereign", name: "Sovereign Dragon", collection: "dragons", image: dragonSovereign.url, palette: paletteDragonSunset },
+  { id: "dragon-thornwood", name: "Thornwood Dragon", collection: "dragons", image: dragonThornwood.url, palette: paletteDragonSunset },
 ];
 
 export const DEFAULT_COVER_ID = "patriotic-roses";
