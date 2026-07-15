@@ -38,7 +38,8 @@ export type CoverCollection =
   | "pop-art"
   | "grit"
   | "feathers"
-  | "dragons";
+  | "dragons"
+  | "gothic-sirens";
 
 export const COLLECTIONS: { id: CoverCollection; label: string }[] = [
   { id: "classic", label: "Patriotic" },
@@ -57,6 +58,7 @@ export const COLLECTIONS: { id: CoverCollection; label: string }[] = [
   { id: "grit", label: "Grit & Grace" },
   { id: "feathers", label: "Feathers" },
   { id: "dragons", label: "Dragons" },
+  { id: "gothic-sirens", label: "Gothic Sirens" },
 ];
 
 export type Cover = {
@@ -156,6 +158,16 @@ import dragonCurlingEmber from "@/assets/covers/dragon-curling-ember.png.asset.j
 import dragonHeartFlame from "@/assets/covers/dragon-heart-flame.png.asset.json";
 import dragonSovereign from "@/assets/covers/dragon-sovereign.png.asset.json";
 import dragonThornwood from "@/assets/covers/dragon-thornwood.png.asset.json";
+import gsCathedralThrone from "@/assets/covers/gothic-siren-cathedral-throne.png.asset.json";
+import gsNautilus from "@/assets/covers/gothic-siren-nautilus.png.asset.json";
+import gsHornedQueen from "@/assets/covers/gothic-siren-horned-queen.png.asset.json";
+import gsRibbedCrown from "@/assets/covers/gothic-siren-ribbed-crown.png.asset.json";
+import gsWingedFae from "@/assets/covers/gothic-siren-winged-fae.png.asset.json";
+import gsCathedralNautilus from "@/assets/covers/gothic-siren-cathedral-nautilus.png.asset.json";
+import gsConchSkull from "@/assets/covers/gothic-siren-conch-skull.png.asset.json";
+import gsWebbed from "@/assets/covers/gothic-siren-webbed.png.asset.json";
+import gsSkeleton from "@/assets/covers/gothic-siren-skeleton.png.asset.json";
+import gsHaloedConch from "@/assets/covers/gothic-siren-haloed-conch.png.asset.json";
 
 // ---- Palettes ----
 
