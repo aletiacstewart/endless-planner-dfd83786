@@ -737,8 +737,85 @@ const paletteLadybugSky: CoverPalette = {
   paperGradient: "linear-gradient(180deg, hsl(210 55% 97%), hsl(210 45% 90%))",
 };
 
+// Tobacco leaf — warm supple leather-brown, tan glow, deep umber ink.
+const paletteTobacco: CoverPalette = {
+  mode: "dark",
+  background: "22 28% 12%",
+  foreground: "32 40% 92%",
+  card: "22 26% 16%",
+  cardForeground: "32 40% 92%",
+  primary: "24 65% 55%",
+  primaryForeground: "22 30% 12%",
+  primarySoft: "24 40% 24%",
+  accent: "36 75% 62%",
+  accentForeground: "22 30% 12%",
+  muted: "22 20% 20%",
+  mutedForeground: "32 22% 72%",
+  border: "22 20% 26%",
+  paperGradient:
+    "radial-gradient(120% 80% at 50% 0%, hsl(24 60% 28% / 0.5), transparent 60%), linear-gradient(180deg, hsl(22 28% 14%), hsl(22 28% 9%))",
+};
+
+// Pastel crystals — inky black with rose-quartz + aquamarine jewels.
+const palettePastelCrystals: CoverPalette = {
+  mode: "dark",
+  background: "230 25% 8%",
+  foreground: "340 30% 94%",
+  card: "230 22% 12%",
+  cardForeground: "340 30% 94%",
+  primary: "340 60% 70%",
+  primaryForeground: "230 25% 10%",
+  primarySoft: "340 35% 22%",
+  accent: "195 60% 65%",
+  accentForeground: "230 25% 10%",
+  muted: "230 18% 16%",
+  mutedForeground: "340 18% 74%",
+  border: "230 18% 22%",
+  paperGradient:
+    "radial-gradient(140% 90% at 50% 0%, hsl(340 40% 22% / 0.5), transparent 60%), linear-gradient(180deg, hsl(230 25% 9%), hsl(230 25% 6%))",
+};
+
+// Mono ink — stark grunge B&W, cracked-paper aesthetic.
+const paletteMonoInk: CoverPalette = {
+  mode: "light",
+  background: "0 0% 97%",
+  foreground: "0 0% 8%",
+  card: "0 0% 100%",
+  cardForeground: "0 0% 8%",
+  primary: "0 0% 12%",
+  primaryForeground: "0 0% 98%",
+  primarySoft: "0 0% 90%",
+  accent: "0 0% 25%",
+  accentForeground: "0 0% 98%",
+  muted: "0 0% 92%",
+  mutedForeground: "0 0% 35%",
+  border: "0 0% 82%",
+  paperGradient: "linear-gradient(180deg, hsl(0 0% 98%), hsl(0 0% 90%))",
+};
+
+// Gothic raven — inky black with blood-red rose accent.
+const paletteGothicRed: CoverPalette = {
+  mode: "dark",
+  background: "0 15% 6%",
+  foreground: "0 20% 92%",
+  card: "0 12% 10%",
+  cardForeground: "0 20% 92%",
+  primary: "350 75% 42%",
+  primaryForeground: "0 15% 96%",
+  primarySoft: "350 45% 20%",
+  accent: "0 0% 85%",
+  accentForeground: "0 15% 8%",
+  muted: "0 10% 14%",
+  mutedForeground: "0 12% 70%",
+  border: "0 10% 20%",
+  paperGradient:
+    "radial-gradient(140% 90% at 50% 0%, hsl(350 55% 20% / 0.55), transparent 60%), linear-gradient(180deg, hsl(0 15% 8%), hsl(0 15% 4%))",
+};
+
 
 export const COVERS: Cover[] = [
+
+
 
 
 
