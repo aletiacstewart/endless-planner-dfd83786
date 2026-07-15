@@ -373,6 +373,175 @@ const paletteGilded: CoverPalette = {
 
 
 
+// Scrapbook botanical — warm blush paper, sage + coral accents.
+const paletteScrapbookBlush: CoverPalette = {
+  mode: "light",
+  background: "24 40% 94%",
+  foreground: "20 30% 22%",
+  card: "30 50% 98%",
+  cardForeground: "20 30% 22%",
+  primary: "18 55% 55%",
+  primaryForeground: "30 50% 98%",
+  primarySoft: "18 40% 90%",
+  accent: "140 25% 45%",
+  accentForeground: "30 50% 98%",
+  muted: "24 25% 90%",
+  mutedForeground: "20 18% 42%",
+  border: "24 22% 82%",
+  paperGradient: "linear-gradient(180deg, hsl(30 50% 97%), hsl(20 30% 90%))",
+};
+
+// Pastel clipboard — soft mint + lavender scrapbook.
+const palettePastelClipboard: CoverPalette = {
+  mode: "light",
+  background: "170 30% 95%",
+  foreground: "240 25% 25%",
+  card: "170 40% 99%",
+  cardForeground: "240 25% 25%",
+  primary: "260 45% 60%",
+  primaryForeground: "170 40% 99%",
+  primarySoft: "260 35% 92%",
+  accent: "340 60% 68%",
+  accentForeground: "170 40% 99%",
+  muted: "170 20% 90%",
+  mutedForeground: "240 15% 45%",
+  border: "170 20% 82%",
+  paperGradient: "linear-gradient(180deg, hsl(170 40% 97%), hsl(260 30% 92%))",
+};
+
+// Pop Art comic — halftone yellow, red, cyan on cream.
+const palettePopArt: CoverPalette = {
+  mode: "light",
+  background: "48 55% 94%",
+  foreground: "0 0% 8%",
+  card: "48 65% 99%",
+  cardForeground: "0 0% 8%",
+  primary: "0 85% 52%",
+  primaryForeground: "48 65% 99%",
+  primarySoft: "0 60% 92%",
+  accent: "195 85% 48%",
+  accentForeground: "48 65% 99%",
+  muted: "48 30% 90%",
+  mutedForeground: "0 0% 25%",
+  border: "0 0% 12%",
+  paperGradient: "linear-gradient(180deg, hsl(48 65% 96%), hsl(48 40% 88%))",
+};
+
+// Rose moonlight — deep midnight with warm fairy-light gold + rose accent.
+const paletteRoseMoonlight: CoverPalette = {
+  mode: "dark",
+  background: "220 45% 8%",
+  foreground: "42 55% 94%",
+  card: "220 40% 12%",
+  cardForeground: "42 55% 94%",
+  primary: "356 70% 55%",
+  primaryForeground: "220 40% 10%",
+  primarySoft: "356 40% 22%",
+  accent: "42 85% 62%",
+  accentForeground: "220 40% 10%",
+  muted: "220 28% 16%",
+  mutedForeground: "42 25% 72%",
+  border: "220 28% 22%",
+  paperGradient:
+    "radial-gradient(140% 90% at 50% 0%, hsl(42 70% 24% / 0.5), transparent 60%), linear-gradient(180deg, hsl(220 45% 10%), hsl(220 45% 6%))",
+};
+
+// White rose moonlight — cool silver moonlight, softer than red rose.
+const paletteWhiteRoseMoonlight: CoverPalette = {
+  mode: "dark",
+  background: "215 40% 10%",
+  foreground: "210 30% 94%",
+  card: "215 36% 14%",
+  cardForeground: "210 30% 94%",
+  primary: "210 40% 78%",
+  primaryForeground: "215 40% 10%",
+  primarySoft: "210 30% 24%",
+  accent: "42 70% 68%",
+  accentForeground: "215 40% 10%",
+  muted: "215 24% 18%",
+  mutedForeground: "210 20% 74%",
+  border: "215 24% 24%",
+  paperGradient:
+    "radial-gradient(140% 90% at 50% 0%, hsl(210 50% 26% / 0.5), transparent 60%), linear-gradient(180deg, hsl(215 40% 12%), hsl(215 40% 7%))",
+};
+
+// Midnight bloom moth — inky navy with jewel-tone accents.
+const paletteMidnightBloom: CoverPalette = {
+  mode: "dark",
+  background: "230 45% 8%",
+  foreground: "40 40% 92%",
+  card: "230 40% 12%",
+  cardForeground: "40 40% 92%",
+  primary: "45 85% 58%",
+  primaryForeground: "230 45% 10%",
+  primarySoft: "45 45% 22%",
+  accent: "340 65% 55%",
+  accentForeground: "230 45% 10%",
+  muted: "230 28% 16%",
+  mutedForeground: "40 22% 70%",
+  border: "230 28% 22%",
+  paperGradient:
+    "radial-gradient(140% 90% at 50% 0%, hsl(340 45% 22% / 0.45), transparent 60%), linear-gradient(180deg, hsl(230 45% 10%), hsl(230 45% 6%))",
+};
+
+// Teal moth — deep teal with peacock blue + amber accents.
+const paletteTealBloom: CoverPalette = {
+  mode: "dark",
+  background: "195 45% 10%",
+  foreground: "40 40% 92%",
+  card: "195 40% 14%",
+  cardForeground: "40 40% 92%",
+  primary: "195 70% 55%",
+  primaryForeground: "195 45% 10%",
+  primarySoft: "195 40% 22%",
+  accent: "32 85% 60%",
+  accentForeground: "195 45% 10%",
+  muted: "195 28% 18%",
+  mutedForeground: "40 22% 72%",
+  border: "195 28% 24%",
+  paperGradient:
+    "radial-gradient(140% 90% at 50% 0%, hsl(195 60% 22% / 0.5), transparent 60%), linear-gradient(180deg, hsl(195 45% 11%), hsl(195 45% 7%))",
+};
+
+// Faith affirmations bright — playful multicolor on black.
+const paletteFaithBright: CoverPalette = {
+  mode: "dark",
+  background: "260 25% 8%",
+  foreground: "0 0% 96%",
+  card: "260 22% 12%",
+  cardForeground: "0 0% 96%",
+  primary: "320 75% 65%",
+  primaryForeground: "260 25% 10%",
+  primarySoft: "320 40% 22%",
+  accent: "180 65% 55%",
+  accentForeground: "260 25% 10%",
+  muted: "260 18% 16%",
+  mutedForeground: "0 0% 72%",
+  border: "260 18% 22%",
+  paperGradient:
+    "radial-gradient(140% 90% at 50% 0%, hsl(320 50% 20% / 0.5), transparent 60%), linear-gradient(180deg, hsl(260 25% 9%), hsl(260 25% 6%))",
+};
+
+// Faith affirmations muted — earthy red/green/blue on black.
+const paletteFaithMuted: CoverPalette = {
+  mode: "dark",
+  background: "150 15% 8%",
+  foreground: "40 25% 92%",
+  card: "150 15% 12%",
+  cardForeground: "40 25% 92%",
+  primary: "140 40% 45%",
+  primaryForeground: "150 15% 10%",
+  primarySoft: "140 30% 20%",
+  accent: "0 60% 50%",
+  accentForeground: "150 15% 10%",
+  muted: "150 12% 16%",
+  mutedForeground: "40 15% 70%",
+  border: "150 12% 22%",
+  paperGradient:
+    "radial-gradient(140% 90% at 50% 0%, hsl(140 40% 18% / 0.45), transparent 60%), linear-gradient(180deg, hsl(150 15% 9%), hsl(150 15% 6%))",
+};
+
+
 export const COVERS: Cover[] = [
   {
     id: "patriotic-roses",
