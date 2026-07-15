@@ -106,6 +106,16 @@ import redRoseMoonlight from "@/assets/covers/red-rose-moonlight.png.asset.json"
 import whiteRoseMoonlight from "@/assets/covers/white-rose-moonlight.png.asset.json";
 import faithAffirmationsBright from "@/assets/covers/faith-affirmations-bright.png.asset.json";
 import faithAffirmationsMuted from "@/assets/covers/faith-affirmations-muted.png.asset.json";
+import hummingbirdOlive from "@/assets/covers/hummingbird-olive.png.asset.json";
+import whiteButterflyFirecracker from "@/assets/covers/white-butterfly-firecracker.png.asset.json";
+import angelTrumpetMoth from "@/assets/covers/angel-trumpet-moth.png.asset.json";
+import sunsetHummingbird from "@/assets/covers/sunset-hummingbird.png.asset.json";
+import dragonflySalvia from "@/assets/covers/dragonfly-salvia.png.asset.json";
+import mimosaHummingbird from "@/assets/covers/mimosa-hummingbird.png.asset.json";
+import blueCopperButterfly from "@/assets/covers/blue-copper-butterfly.png.asset.json";
+import redAdmiralOrchid from "@/assets/covers/red-admiral-orchid.png.asset.json";
+import dragonflyPampas from "@/assets/covers/dragonfly-pampas.png.asset.json";
+import englishRoseDew from "@/assets/covers/english-rose-dew.png.asset.json";
 
 // ---- Palettes ----
 
