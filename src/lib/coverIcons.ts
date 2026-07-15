@@ -751,6 +751,112 @@ import brgMedications from "@/assets/page-icons/black-rose-gold/medications.jpg"
 import brgMedicalRecords from "@/assets/page-icons/black-rose-gold/medical-records.jpg";
 import brgYearlyFocus from "@/assets/page-icons/black-rose-gold/yearly-focus.jpg";
 
+import tobMyGoals from "@/assets/page-icons/tobacco-leather/my-goals.jpg";
+import tobYearlyCalendar from "@/assets/page-icons/tobacco-leather/yearly-calendar.jpg";
+import tobMonthlyCalendar from "@/assets/page-icons/tobacco-leather/monthly-calendar.jpg";
+import tobWeeklyCalendar from "@/assets/page-icons/tobacco-leather/weekly-calendar.jpg";
+import tobDailyTracker from "@/assets/page-icons/tobacco-leather/daily-tracker.jpg";
+import tobCompleteTracker from "@/assets/page-icons/tobacco-leather/complete-tracker.jpg";
+import tobYearlyHabitTracker from "@/assets/page-icons/tobacco-leather/yearly-habit-tracker.jpg";
+import tobWeightTracker from "@/assets/page-icons/tobacco-leather/weight-tracker.jpg";
+import tobMeasurementTracker from "@/assets/page-icons/tobacco-leather/measurement-tracker.jpg";
+import tobBloodSugarTracker from "@/assets/page-icons/tobacco-leather/blood-sugar-tracker.jpg";
+import tobBloodPressureTracker from "@/assets/page-icons/tobacco-leather/blood-pressure-tracker.jpg";
+import tobOxygenTracker from "@/assets/page-icons/tobacco-leather/oxygen-tracker.jpg";
+import tobSelfCareChecklist from "@/assets/page-icons/tobacco-leather/self-care-checklist.jpg";
+import tobCleaningChecklist from "@/assets/page-icons/tobacco-leather/cleaning-checklist.jpg";
+import tobRecipe from "@/assets/page-icons/tobacco-leather/recipe.jpg";
+import tobNotes from "@/assets/page-icons/tobacco-leather/notes.jpg";
+import tobWorkoutTracker from "@/assets/page-icons/tobacco-leather/workout-tracker.jpg";
+import tobMedications from "@/assets/page-icons/tobacco-leather/medications.jpg";
+import tobMedicalRecords from "@/assets/page-icons/tobacco-leather/medical-records.jpg";
+import tobYearlyFocus from "@/assets/page-icons/tobacco-leather/yearly-focus.jpg";
+
+import jwlMyGoals from "@/assets/page-icons/jewel-crystals/my-goals.jpg";
+import jwlYearlyCalendar from "@/assets/page-icons/jewel-crystals/yearly-calendar.jpg";
+import jwlMonthlyCalendar from "@/assets/page-icons/jewel-crystals/monthly-calendar.jpg";
+import jwlWeeklyCalendar from "@/assets/page-icons/jewel-crystals/weekly-calendar.jpg";
+import jwlDailyTracker from "@/assets/page-icons/jewel-crystals/daily-tracker.jpg";
+import jwlCompleteTracker from "@/assets/page-icons/jewel-crystals/complete-tracker.jpg";
+import jwlYearlyHabitTracker from "@/assets/page-icons/jewel-crystals/yearly-habit-tracker.jpg";
+import jwlWeightTracker from "@/assets/page-icons/jewel-crystals/weight-tracker.jpg";
+import jwlMeasurementTracker from "@/assets/page-icons/jewel-crystals/measurement-tracker.jpg";
+import jwlBloodSugarTracker from "@/assets/page-icons/jewel-crystals/blood-sugar-tracker.jpg";
+import jwlBloodPressureTracker from "@/assets/page-icons/jewel-crystals/blood-pressure-tracker.jpg";
+import jwlOxygenTracker from "@/assets/page-icons/jewel-crystals/oxygen-tracker.jpg";
+import jwlSelfCareChecklist from "@/assets/page-icons/jewel-crystals/self-care-checklist.jpg";
+import jwlCleaningChecklist from "@/assets/page-icons/jewel-crystals/cleaning-checklist.jpg";
+import jwlRecipe from "@/assets/page-icons/jewel-crystals/recipe.jpg";
+import jwlNotes from "@/assets/page-icons/jewel-crystals/notes.jpg";
+import jwlWorkoutTracker from "@/assets/page-icons/jewel-crystals/workout-tracker.jpg";
+import jwlMedications from "@/assets/page-icons/jewel-crystals/medications.jpg";
+import jwlMedicalRecords from "@/assets/page-icons/jewel-crystals/medical-records.jpg";
+import jwlYearlyFocus from "@/assets/page-icons/jewel-crystals/yearly-focus.jpg";
+
+import grtMyGoals from "@/assets/page-icons/grit-mono/my-goals.jpg";
+import grtYearlyCalendar from "@/assets/page-icons/grit-mono/yearly-calendar.jpg";
+import grtMonthlyCalendar from "@/assets/page-icons/grit-mono/monthly-calendar.jpg";
+import grtWeeklyCalendar from "@/assets/page-icons/grit-mono/weekly-calendar.jpg";
+import grtDailyTracker from "@/assets/page-icons/grit-mono/daily-tracker.jpg";
+import grtCompleteTracker from "@/assets/page-icons/grit-mono/complete-tracker.jpg";
+import grtYearlyHabitTracker from "@/assets/page-icons/grit-mono/yearly-habit-tracker.jpg";
+import grtWeightTracker from "@/assets/page-icons/grit-mono/weight-tracker.jpg";
+import grtMeasurementTracker from "@/assets/page-icons/grit-mono/measurement-tracker.jpg";
+import grtBloodSugarTracker from "@/assets/page-icons/grit-mono/blood-sugar-tracker.jpg";
+import grtBloodPressureTracker from "@/assets/page-icons/grit-mono/blood-pressure-tracker.jpg";
+import grtOxygenTracker from "@/assets/page-icons/grit-mono/oxygen-tracker.jpg";
+import grtSelfCareChecklist from "@/assets/page-icons/grit-mono/self-care-checklist.jpg";
+import grtCleaningChecklist from "@/assets/page-icons/grit-mono/cleaning-checklist.jpg";
+import grtRecipe from "@/assets/page-icons/grit-mono/recipe.jpg";
+import grtNotes from "@/assets/page-icons/grit-mono/notes.jpg";
+import grtWorkoutTracker from "@/assets/page-icons/grit-mono/workout-tracker.jpg";
+import grtMedications from "@/assets/page-icons/grit-mono/medications.jpg";
+import grtMedicalRecords from "@/assets/page-icons/grit-mono/medical-records.jpg";
+import grtYearlyFocus from "@/assets/page-icons/grit-mono/yearly-focus.jpg";
+
+import dvkMyGoals from "@/assets/page-icons/dove-ink/my-goals.jpg";
+import dvkYearlyCalendar from "@/assets/page-icons/dove-ink/yearly-calendar.jpg";
+import dvkMonthlyCalendar from "@/assets/page-icons/dove-ink/monthly-calendar.jpg";
+import dvkWeeklyCalendar from "@/assets/page-icons/dove-ink/weekly-calendar.jpg";
+import dvkDailyTracker from "@/assets/page-icons/dove-ink/daily-tracker.jpg";
+import dvkCompleteTracker from "@/assets/page-icons/dove-ink/complete-tracker.jpg";
+import dvkYearlyHabitTracker from "@/assets/page-icons/dove-ink/yearly-habit-tracker.jpg";
+import dvkWeightTracker from "@/assets/page-icons/dove-ink/weight-tracker.jpg";
+import dvkMeasurementTracker from "@/assets/page-icons/dove-ink/measurement-tracker.jpg";
+import dvkBloodSugarTracker from "@/assets/page-icons/dove-ink/blood-sugar-tracker.jpg";
+import dvkBloodPressureTracker from "@/assets/page-icons/dove-ink/blood-pressure-tracker.jpg";
+import dvkOxygenTracker from "@/assets/page-icons/dove-ink/oxygen-tracker.jpg";
+import dvkSelfCareChecklist from "@/assets/page-icons/dove-ink/self-care-checklist.jpg";
+import dvkCleaningChecklist from "@/assets/page-icons/dove-ink/cleaning-checklist.jpg";
+import dvkRecipe from "@/assets/page-icons/dove-ink/recipe.jpg";
+import dvkNotes from "@/assets/page-icons/dove-ink/notes.jpg";
+import dvkWorkoutTracker from "@/assets/page-icons/dove-ink/workout-tracker.jpg";
+import dvkMedications from "@/assets/page-icons/dove-ink/medications.jpg";
+import dvkMedicalRecords from "@/assets/page-icons/dove-ink/medical-records.jpg";
+import dvkYearlyFocus from "@/assets/page-icons/dove-ink/yearly-focus.jpg";
+
+import gtrMyGoals from "@/assets/page-icons/gothic-raven/my-goals.jpg";
+import gtrYearlyCalendar from "@/assets/page-icons/gothic-raven/yearly-calendar.jpg";
+import gtrMonthlyCalendar from "@/assets/page-icons/gothic-raven/monthly-calendar.jpg";
+import gtrWeeklyCalendar from "@/assets/page-icons/gothic-raven/weekly-calendar.jpg";
+import gtrDailyTracker from "@/assets/page-icons/gothic-raven/daily-tracker.jpg";
+import gtrCompleteTracker from "@/assets/page-icons/gothic-raven/complete-tracker.jpg";
+import gtrYearlyHabitTracker from "@/assets/page-icons/gothic-raven/yearly-habit-tracker.jpg";
+import gtrWeightTracker from "@/assets/page-icons/gothic-raven/weight-tracker.jpg";
+import gtrMeasurementTracker from "@/assets/page-icons/gothic-raven/measurement-tracker.jpg";
+import gtrBloodSugarTracker from "@/assets/page-icons/gothic-raven/blood-sugar-tracker.jpg";
+import gtrBloodPressureTracker from "@/assets/page-icons/gothic-raven/blood-pressure-tracker.jpg";
+import gtrOxygenTracker from "@/assets/page-icons/gothic-raven/oxygen-tracker.jpg";
+import gtrSelfCareChecklist from "@/assets/page-icons/gothic-raven/self-care-checklist.jpg";
+import gtrCleaningChecklist from "@/assets/page-icons/gothic-raven/cleaning-checklist.jpg";
+import gtrRecipe from "@/assets/page-icons/gothic-raven/recipe.jpg";
+import gtrNotes from "@/assets/page-icons/gothic-raven/notes.jpg";
+import gtrWorkoutTracker from "@/assets/page-icons/gothic-raven/workout-tracker.jpg";
+import gtrMedications from "@/assets/page-icons/gothic-raven/medications.jpg";
+import gtrMedicalRecords from "@/assets/page-icons/gothic-raven/medical-records.jpg";
+import gtrYearlyFocus from "@/assets/page-icons/gothic-raven/yearly-focus.jpg";
+
+
 
 
 const HUMMINGBIRD_GARDEN_ICONS = {
@@ -829,6 +935,17 @@ const BLACK_ROSE_GOLD_ICONS = {
   recipe: brgRecipe, notes: brgNotes, "workout-tracker": brgWorkoutTracker,
   medications: brgMedications, "medical-records": brgMedicalRecords, "yearly-focus": brgYearlyFocus,
 };
+
+const TOBACCO_LEATHER_ICONS = { "my-goals": tobMyGoals, "yearly-calendar": tobYearlyCalendar, "monthly-calendar": tobMonthlyCalendar, "weekly-calendar": tobWeeklyCalendar, "daily-tracker": tobDailyTracker, "complete-tracker": tobCompleteTracker, "yearly-habit-tracker": tobYearlyHabitTracker, "weight-tracker": tobWeightTracker, "measurement-tracker": tobMeasurementTracker, "blood-sugar-tracker": tobBloodSugarTracker, "blood-pressure-tracker": tobBloodPressureTracker, "oxygen-tracker": tobOxygenTracker, "self-care-checklist": tobSelfCareChecklist, "cleaning-checklist": tobCleaningChecklist, recipe: tobRecipe, notes: tobNotes, "workout-tracker": tobWorkoutTracker, medications: tobMedications, "medical-records": tobMedicalRecords, "yearly-focus": tobYearlyFocus };
+
+const JEWEL_CRYSTALS_ICONS = { "my-goals": jwlMyGoals, "yearly-calendar": jwlYearlyCalendar, "monthly-calendar": jwlMonthlyCalendar, "weekly-calendar": jwlWeeklyCalendar, "daily-tracker": jwlDailyTracker, "complete-tracker": jwlCompleteTracker, "yearly-habit-tracker": jwlYearlyHabitTracker, "weight-tracker": jwlWeightTracker, "measurement-tracker": jwlMeasurementTracker, "blood-sugar-tracker": jwlBloodSugarTracker, "blood-pressure-tracker": jwlBloodPressureTracker, "oxygen-tracker": jwlOxygenTracker, "self-care-checklist": jwlSelfCareChecklist, "cleaning-checklist": jwlCleaningChecklist, recipe: jwlRecipe, notes: jwlNotes, "workout-tracker": jwlWorkoutTracker, medications: jwlMedications, "medical-records": jwlMedicalRecords, "yearly-focus": jwlYearlyFocus };
+
+const GRIT_MONO_ICONS = { "my-goals": grtMyGoals, "yearly-calendar": grtYearlyCalendar, "monthly-calendar": grtMonthlyCalendar, "weekly-calendar": grtWeeklyCalendar, "daily-tracker": grtDailyTracker, "complete-tracker": grtCompleteTracker, "yearly-habit-tracker": grtYearlyHabitTracker, "weight-tracker": grtWeightTracker, "measurement-tracker": grtMeasurementTracker, "blood-sugar-tracker": grtBloodSugarTracker, "blood-pressure-tracker": grtBloodPressureTracker, "oxygen-tracker": grtOxygenTracker, "self-care-checklist": grtSelfCareChecklist, "cleaning-checklist": grtCleaningChecklist, recipe: grtRecipe, notes: grtNotes, "workout-tracker": grtWorkoutTracker, medications: grtMedications, "medical-records": grtMedicalRecords, "yearly-focus": grtYearlyFocus };
+
+const DOVE_INK_ICONS = { "my-goals": dvkMyGoals, "yearly-calendar": dvkYearlyCalendar, "monthly-calendar": dvkMonthlyCalendar, "weekly-calendar": dvkWeeklyCalendar, "daily-tracker": dvkDailyTracker, "complete-tracker": dvkCompleteTracker, "yearly-habit-tracker": dvkYearlyHabitTracker, "weight-tracker": dvkWeightTracker, "measurement-tracker": dvkMeasurementTracker, "blood-sugar-tracker": dvkBloodSugarTracker, "blood-pressure-tracker": dvkBloodPressureTracker, "oxygen-tracker": dvkOxygenTracker, "self-care-checklist": dvkSelfCareChecklist, "cleaning-checklist": dvkCleaningChecklist, recipe: dvkRecipe, notes: dvkNotes, "workout-tracker": dvkWorkoutTracker, medications: dvkMedications, "medical-records": dvkMedicalRecords, "yearly-focus": dvkYearlyFocus };
+
+const GOTHIC_RAVEN_ICONS = { "my-goals": gtrMyGoals, "yearly-calendar": gtrYearlyCalendar, "monthly-calendar": gtrMonthlyCalendar, "weekly-calendar": gtrWeeklyCalendar, "daily-tracker": gtrDailyTracker, "complete-tracker": gtrCompleteTracker, "yearly-habit-tracker": gtrYearlyHabitTracker, "weight-tracker": gtrWeightTracker, "measurement-tracker": gtrMeasurementTracker, "blood-sugar-tracker": gtrBloodSugarTracker, "blood-pressure-tracker": gtrBloodPressureTracker, "oxygen-tracker": gtrOxygenTracker, "self-care-checklist": gtrSelfCareChecklist, "cleaning-checklist": gtrCleaningChecklist, recipe: gtrRecipe, notes: gtrNotes, "workout-tracker": gtrWorkoutTracker, medications: gtrMedications, "medical-records": gtrMedicalRecords, "yearly-focus": gtrYearlyFocus };
+
 
 
 
@@ -1268,6 +1385,16 @@ export const COVER_ICONS: Record<string, Record<string, string>> = {
   "black-rose-gold-spikes": pack(BLACK_ROSE_GOLD_ICONS),
   "ladybug-forget-me-nots": pack(LADYBUG_MEADOW_ICONS),
   "dandelion-ladybug-nest": pack(LADYBUG_MEADOW_ICONS),
+  "tobacco-leaf": pack(TOBACCO_LEATHER_ICONS),
+  "gilded-crystals": pack(JEWEL_CRYSTALS_ICONS),
+  "pastel-crystals": pack(JEWEL_CRYSTALS_ICONS),
+  "cream-ribbons": pack(JEWEL_CRYSTALS_ICONS),
+  "fragile-not-broken": pack(GRIT_MONO_ICONS),
+  "dove-white-roses": pack(DOVE_INK_ICONS),
+  "rose-cross-stars": pack(DOVE_INK_ICONS),
+  "woven-heart-cross": pack(DOVE_INK_ICONS),
+  "dove-raven-roses": pack(GOTHIC_RAVEN_ICONS),
+  "raven-red-roses": pack(GOTHIC_RAVEN_ICONS),
 };
 
 
