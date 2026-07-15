@@ -128,6 +128,16 @@ import mothDragonflyLotus from "@/assets/covers/moth-dragonfly-lotus.png.asset.j
 import blackRoseGoldSpikes from "@/assets/covers/black-rose-gold-spikes.png.asset.json";
 import ladybugForgetMeNots from "@/assets/covers/ladybug-forget-me-nots.png.asset.json";
 import dandelionLadybugNest from "@/assets/covers/dandelion-ladybug-nest.png.asset.json";
+import tobaccoLeaf from "@/assets/covers/tobacco-leaf.png.asset.json";
+import gildedCrystals from "@/assets/covers/gilded-crystals.png.asset.json";
+import fragileNotBroken from "@/assets/covers/fragile-not-broken.png.asset.json";
+import creamRibbons from "@/assets/covers/cream-ribbons.png.asset.json";
+import pastelCrystals from "@/assets/covers/pastel-crystals.png.asset.json";
+import doveWhiteRoses from "@/assets/covers/dove-white-roses.png.asset.json";
+import doveRavenRoses from "@/assets/covers/dove-raven-roses.png.asset.json";
+import ravenRedRoses from "@/assets/covers/raven-red-roses.png.asset.json";
+import roseCrossStars from "@/assets/covers/rose-cross-stars.png.asset.json";
+import wovenHeartCross from "@/assets/covers/woven-heart-cross.png.asset.json";
 
 // ---- Palettes ----
 
