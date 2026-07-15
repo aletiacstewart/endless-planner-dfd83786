@@ -597,6 +597,107 @@ import popMedications from "@/assets/page-icons/pop-art/medications.jpg";
 import popMedicalRecords from "@/assets/page-icons/pop-art/medical-records.jpg";
 import popYearlyFocus from "@/assets/page-icons/pop-art/yearly-focus.jpg";
 
+// Hummingbird Garden (shared)
+import hgMyGoals from "@/assets/page-icons/hummingbird-garden/my-goals.jpg";
+import hgYearlyCalendar from "@/assets/page-icons/hummingbird-garden/yearly-calendar.jpg";
+import hgMonthlyCalendar from "@/assets/page-icons/hummingbird-garden/monthly-calendar.jpg";
+import hgWeeklyCalendar from "@/assets/page-icons/hummingbird-garden/weekly-calendar.jpg";
+import hgDailyTracker from "@/assets/page-icons/hummingbird-garden/daily-tracker.jpg";
+import hgCompleteTracker from "@/assets/page-icons/hummingbird-garden/complete-tracker.jpg";
+import hgYearlyHabitTracker from "@/assets/page-icons/hummingbird-garden/yearly-habit-tracker.jpg";
+import hgWeightTracker from "@/assets/page-icons/hummingbird-garden/weight-tracker.jpg";
+import hgMeasurementTracker from "@/assets/page-icons/hummingbird-garden/measurement-tracker.jpg";
+import hgBloodSugarTracker from "@/assets/page-icons/hummingbird-garden/blood-sugar-tracker.jpg";
+import hgBloodPressureTracker from "@/assets/page-icons/hummingbird-garden/blood-pressure-tracker.jpg";
+import hgOxygenTracker from "@/assets/page-icons/hummingbird-garden/oxygen-tracker.jpg";
+import hgSelfCareChecklist from "@/assets/page-icons/hummingbird-garden/self-care-checklist.jpg";
+import hgCleaningChecklist from "@/assets/page-icons/hummingbird-garden/cleaning-checklist.jpg";
+import hgRecipe from "@/assets/page-icons/hummingbird-garden/recipe.jpg";
+import hgNotes from "@/assets/page-icons/hummingbird-garden/notes.jpg";
+import hgWorkoutTracker from "@/assets/page-icons/hummingbird-garden/workout-tracker.jpg";
+import hgMedications from "@/assets/page-icons/hummingbird-garden/medications.jpg";
+import hgMedicalRecords from "@/assets/page-icons/hummingbird-garden/medical-records.jpg";
+import hgYearlyFocus from "@/assets/page-icons/hummingbird-garden/yearly-focus.jpg";
+
+// Butterfly Garden (shared)
+import bgMyGoals from "@/assets/page-icons/butterfly-garden/my-goals.jpg";
+import bgYearlyCalendar from "@/assets/page-icons/butterfly-garden/yearly-calendar.jpg";
+import bgMonthlyCalendar from "@/assets/page-icons/butterfly-garden/monthly-calendar.jpg";
+import bgWeeklyCalendar from "@/assets/page-icons/butterfly-garden/weekly-calendar.jpg";
+import bgDailyTracker from "@/assets/page-icons/butterfly-garden/daily-tracker.jpg";
+import bgCompleteTracker from "@/assets/page-icons/butterfly-garden/complete-tracker.jpg";
+import bgYearlyHabitTracker from "@/assets/page-icons/butterfly-garden/yearly-habit-tracker.jpg";
+import bgWeightTracker from "@/assets/page-icons/butterfly-garden/weight-tracker.jpg";
+import bgMeasurementTracker from "@/assets/page-icons/butterfly-garden/measurement-tracker.jpg";
+import bgBloodSugarTracker from "@/assets/page-icons/butterfly-garden/blood-sugar-tracker.jpg";
+import bgBloodPressureTracker from "@/assets/page-icons/butterfly-garden/blood-pressure-tracker.jpg";
+import bgOxygenTracker from "@/assets/page-icons/butterfly-garden/oxygen-tracker.jpg";
+import bgSelfCareChecklist from "@/assets/page-icons/butterfly-garden/self-care-checklist.jpg";
+import bgCleaningChecklist from "@/assets/page-icons/butterfly-garden/cleaning-checklist.jpg";
+import bgRecipe from "@/assets/page-icons/butterfly-garden/recipe.jpg";
+import bgNotes from "@/assets/page-icons/butterfly-garden/notes.jpg";
+import bgWorkoutTracker from "@/assets/page-icons/butterfly-garden/workout-tracker.jpg";
+import bgMedications from "@/assets/page-icons/butterfly-garden/medications.jpg";
+import bgMedicalRecords from "@/assets/page-icons/butterfly-garden/medical-records.jpg";
+import bgYearlyFocus from "@/assets/page-icons/butterfly-garden/yearly-focus.jpg";
+
+// Dragonfly Rose (shared)
+import drMyGoals from "@/assets/page-icons/dragonfly-rose/my-goals.jpg";
+import drYearlyCalendar from "@/assets/page-icons/dragonfly-rose/yearly-calendar.jpg";
+import drMonthlyCalendar from "@/assets/page-icons/dragonfly-rose/monthly-calendar.jpg";
+import drWeeklyCalendar from "@/assets/page-icons/dragonfly-rose/weekly-calendar.jpg";
+import drDailyTracker from "@/assets/page-icons/dragonfly-rose/daily-tracker.jpg";
+import drCompleteTracker from "@/assets/page-icons/dragonfly-rose/complete-tracker.jpg";
+import drYearlyHabitTracker from "@/assets/page-icons/dragonfly-rose/yearly-habit-tracker.jpg";
+import drWeightTracker from "@/assets/page-icons/dragonfly-rose/weight-tracker.jpg";
+import drMeasurementTracker from "@/assets/page-icons/dragonfly-rose/measurement-tracker.jpg";
+import drBloodSugarTracker from "@/assets/page-icons/dragonfly-rose/blood-sugar-tracker.jpg";
+import drBloodPressureTracker from "@/assets/page-icons/dragonfly-rose/blood-pressure-tracker.jpg";
+import drOxygenTracker from "@/assets/page-icons/dragonfly-rose/oxygen-tracker.jpg";
+import drSelfCareChecklist from "@/assets/page-icons/dragonfly-rose/self-care-checklist.jpg";
+import drCleaningChecklist from "@/assets/page-icons/dragonfly-rose/cleaning-checklist.jpg";
+import drRecipe from "@/assets/page-icons/dragonfly-rose/recipe.jpg";
+import drNotes from "@/assets/page-icons/dragonfly-rose/notes.jpg";
+import drWorkoutTracker from "@/assets/page-icons/dragonfly-rose/workout-tracker.jpg";
+import drMedications from "@/assets/page-icons/dragonfly-rose/medications.jpg";
+import drMedicalRecords from "@/assets/page-icons/dragonfly-rose/medical-records.jpg";
+import drYearlyFocus from "@/assets/page-icons/dragonfly-rose/yearly-focus.jpg";
+
+const HUMMINGBIRD_GARDEN_ICONS = {
+  "my-goals": hgMyGoals, "yearly-calendar": hgYearlyCalendar, "monthly-calendar": hgMonthlyCalendar,
+  "weekly-calendar": hgWeeklyCalendar, "daily-tracker": hgDailyTracker, "complete-tracker": hgCompleteTracker,
+  "yearly-habit-tracker": hgYearlyHabitTracker, "weight-tracker": hgWeightTracker,
+  "measurement-tracker": hgMeasurementTracker, "blood-sugar-tracker": hgBloodSugarTracker,
+  "blood-pressure-tracker": hgBloodPressureTracker, "oxygen-tracker": hgOxygenTracker,
+  "self-care-checklist": hgSelfCareChecklist, "cleaning-checklist": hgCleaningChecklist,
+  recipe: hgRecipe, notes: hgNotes, "workout-tracker": hgWorkoutTracker,
+  medications: hgMedications, "medical-records": hgMedicalRecords, "yearly-focus": hgYearlyFocus,
+};
+
+const BUTTERFLY_GARDEN_ICONS = {
+  "my-goals": bgMyGoals, "yearly-calendar": bgYearlyCalendar, "monthly-calendar": bgMonthlyCalendar,
+  "weekly-calendar": bgWeeklyCalendar, "daily-tracker": bgDailyTracker, "complete-tracker": bgCompleteTracker,
+  "yearly-habit-tracker": bgYearlyHabitTracker, "weight-tracker": bgWeightTracker,
+  "measurement-tracker": bgMeasurementTracker, "blood-sugar-tracker": bgBloodSugarTracker,
+  "blood-pressure-tracker": bgBloodPressureTracker, "oxygen-tracker": bgOxygenTracker,
+  "self-care-checklist": bgSelfCareChecklist, "cleaning-checklist": bgCleaningChecklist,
+  recipe: bgRecipe, notes: bgNotes, "workout-tracker": bgWorkoutTracker,
+  medications: bgMedications, "medical-records": bgMedicalRecords, "yearly-focus": bgYearlyFocus,
+};
+
+const DRAGONFLY_ROSE_ICONS = {
+  "my-goals": drMyGoals, "yearly-calendar": drYearlyCalendar, "monthly-calendar": drMonthlyCalendar,
+  "weekly-calendar": drWeeklyCalendar, "daily-tracker": drDailyTracker, "complete-tracker": drCompleteTracker,
+  "yearly-habit-tracker": drYearlyHabitTracker, "weight-tracker": drWeightTracker,
+  "measurement-tracker": drMeasurementTracker, "blood-sugar-tracker": drBloodSugarTracker,
+  "blood-pressure-tracker": drBloodPressureTracker, "oxygen-tracker": drOxygenTracker,
+  "self-care-checklist": drSelfCareChecklist, "cleaning-checklist": drCleaningChecklist,
+  recipe: drRecipe, notes: drNotes, "workout-tracker": drWorkoutTracker,
+  medications: drMedications, "medical-records": drMedicalRecords, "yearly-focus": drYearlyFocus,
+};
+
+
+
 
 function pack(icons: Record<string, string>): Record<string, string> {
   return icons;
@@ -1013,6 +1114,16 @@ export const COVER_ICONS: Record<string, Record<string, string>> = {
     recipe: popRecipe, notes: popNotes, "workout-tracker": popWorkoutTracker,
     medications: popMedications, "medical-records": popMedicalRecords, "yearly-focus": popYearlyFocus,
   }),
+  "hummingbird-olive": pack(HUMMINGBIRD_GARDEN_ICONS),
+  "sunset-hummingbird": pack(HUMMINGBIRD_GARDEN_ICONS),
+  "mimosa-hummingbird": pack(HUMMINGBIRD_GARDEN_ICONS),
+  "white-butterfly-firecracker": pack(BUTTERFLY_GARDEN_ICONS),
+  "angel-trumpet-moth": pack(BUTTERFLY_GARDEN_ICONS),
+  "blue-copper-butterfly": pack(BUTTERFLY_GARDEN_ICONS),
+  "red-admiral-orchid": pack(BUTTERFLY_GARDEN_ICONS),
+  "dragonfly-salvia": pack(DRAGONFLY_ROSE_ICONS),
+  "dragonfly-pampas": pack(DRAGONFLY_ROSE_ICONS),
+  "english-rose-dew": pack(DRAGONFLY_ROSE_ICONS),
 };
 
 
