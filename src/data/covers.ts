@@ -84,6 +84,16 @@ import threeCrosses from "@/assets/covers/three-crosses.png.asset.json";
 import gatesOfHeaven from "@/assets/covers/gates-of-heaven.png.asset.json";
 import dreamscape from "@/assets/covers/dreamscape.png.asset.json";
 import sunMoonStorm from "@/assets/covers/sun-moon-storm.png.asset.json";
+import ivoryRibbons from "@/assets/covers/ivory-ribbons.png.asset.json";
+import midnightRibbons from "@/assets/covers/midnight-ribbons.png.asset.json";
+import luminousHummingbird from "@/assets/covers/luminous-hummingbird.png.asset.json";
+import luminousDragonfly from "@/assets/covers/luminous-dragonfly.png.asset.json";
+import blackDahliaMoon from "@/assets/covers/black-dahlia-moon.png.asset.json";
+import blackRoseMoon from "@/assets/covers/black-rose-moon.png.asset.json";
+import midnightIrisMoon from "@/assets/covers/midnight-iris-moon.png.asset.json";
+import blackLilyMoon from "@/assets/covers/black-lily-moon.png.asset.json";
+import swallowtailMoon from "@/assets/covers/swallowtail-moon.png.asset.json";
+import gildedRose from "@/assets/covers/gilded-rose.png.asset.json";
 
 // ---- Palettes ----
 
