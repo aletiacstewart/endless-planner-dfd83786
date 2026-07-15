@@ -1037,28 +1037,28 @@ const FEATHER_AMETHYST_ICONS = { "my-goals": fmtMyGoals, "yearly-calendar": fmtY
 const FEATHER_CRIMSON_ICONS = { "my-goals": fcMyGoals, "yearly-calendar": fcYearlyCalendar, "monthly-calendar": fcMonthlyCalendar, "weekly-calendar": fcWeeklyCalendar, "daily-tracker": fcDailyTracker, "complete-tracker": fcCompleteTracker, "yearly-habit-tracker": fcYearlyHabitTracker, "weight-tracker": fcWeightTracker, "measurement-tracker": fcMeasurementTracker, "blood-sugar-tracker": fcBloodSugarTracker, "blood-pressure-tracker": fcBloodPressureTracker, "oxygen-tracker": fcOxygenTracker, "self-care-checklist": fcSelfCareChecklist, "cleaning-checklist": fcCleaningChecklist, recipe: fcRecipe, notes: fcNotes, "workout-tracker": fcWorkoutTracker, medications: fcMedications, "medical-records": fcMedicalRecords, "yearly-focus": fcYearlyFocus };
 
 // Dragons — one shared pack for all dragon covers
-import drMyGoals from "@/assets/page-icons/dragons/my-goals.jpg";
-import drYearlyCalendar from "@/assets/page-icons/dragons/yearly-calendar.jpg";
-import drMonthlyCalendar from "@/assets/page-icons/dragons/monthly-calendar.jpg";
-import drWeeklyCalendar from "@/assets/page-icons/dragons/weekly-calendar.jpg";
-import drDailyTracker from "@/assets/page-icons/dragons/daily-tracker.jpg";
-import drCompleteTracker from "@/assets/page-icons/dragons/complete-tracker.jpg";
-import drYearlyHabitTracker from "@/assets/page-icons/dragons/yearly-habit-tracker.jpg";
-import drWeightTracker from "@/assets/page-icons/dragons/weight-tracker.jpg";
-import drMeasurementTracker from "@/assets/page-icons/dragons/measurement-tracker.jpg";
-import drBloodSugarTracker from "@/assets/page-icons/dragons/blood-sugar-tracker.jpg";
-import drBloodPressureTracker from "@/assets/page-icons/dragons/blood-pressure-tracker.jpg";
-import drOxygenTracker from "@/assets/page-icons/dragons/oxygen-tracker.jpg";
-import drSelfCareChecklist from "@/assets/page-icons/dragons/self-care-checklist.jpg";
-import drCleaningChecklist from "@/assets/page-icons/dragons/cleaning-checklist.jpg";
-import drRecipe from "@/assets/page-icons/dragons/recipe.jpg";
-import drNotes from "@/assets/page-icons/dragons/notes.jpg";
-import drWorkoutTracker from "@/assets/page-icons/dragons/workout-tracker.jpg";
-import drMedications from "@/assets/page-icons/dragons/medications.jpg";
-import drMedicalRecords from "@/assets/page-icons/dragons/medical-records.jpg";
-import drYearlyFocus from "@/assets/page-icons/dragons/yearly-focus.jpg";
+import dgnMyGoals from "@/assets/page-icons/dragons/my-goals.jpg";
+import dgnYearlyCalendar from "@/assets/page-icons/dragons/yearly-calendar.jpg";
+import dgnMonthlyCalendar from "@/assets/page-icons/dragons/monthly-calendar.jpg";
+import dgnWeeklyCalendar from "@/assets/page-icons/dragons/weekly-calendar.jpg";
+import dgnDailyTracker from "@/assets/page-icons/dragons/daily-tracker.jpg";
+import dgnCompleteTracker from "@/assets/page-icons/dragons/complete-tracker.jpg";
+import dgnYearlyHabitTracker from "@/assets/page-icons/dragons/yearly-habit-tracker.jpg";
+import dgnWeightTracker from "@/assets/page-icons/dragons/weight-tracker.jpg";
+import dgnMeasurementTracker from "@/assets/page-icons/dragons/measurement-tracker.jpg";
+import dgnBloodSugarTracker from "@/assets/page-icons/dragons/blood-sugar-tracker.jpg";
+import dgnBloodPressureTracker from "@/assets/page-icons/dragons/blood-pressure-tracker.jpg";
+import dgnOxygenTracker from "@/assets/page-icons/dragons/oxygen-tracker.jpg";
+import dgnSelfCareChecklist from "@/assets/page-icons/dragons/self-care-checklist.jpg";
+import dgnCleaningChecklist from "@/assets/page-icons/dragons/cleaning-checklist.jpg";
+import dgnRecipe from "@/assets/page-icons/dragons/recipe.jpg";
+import dgnNotes from "@/assets/page-icons/dragons/notes.jpg";
+import dgnWorkoutTracker from "@/assets/page-icons/dragons/workout-tracker.jpg";
+import dgnMedications from "@/assets/page-icons/dragons/medications.jpg";
+import dgnMedicalRecords from "@/assets/page-icons/dragons/medical-records.jpg";
+import dgnYearlyFocus from "@/assets/page-icons/dragons/yearly-focus.jpg";
 
-const DRAGONS_SHARED_ICONS = { "my-goals": drMyGoals, "yearly-calendar": drYearlyCalendar, "monthly-calendar": drMonthlyCalendar, "weekly-calendar": drWeeklyCalendar, "daily-tracker": drDailyTracker, "complete-tracker": drCompleteTracker, "yearly-habit-tracker": drYearlyHabitTracker, "weight-tracker": drWeightTracker, "measurement-tracker": drMeasurementTracker, "blood-sugar-tracker": drBloodSugarTracker, "blood-pressure-tracker": drBloodPressureTracker, "oxygen-tracker": drOxygenTracker, "self-care-checklist": drSelfCareChecklist, "cleaning-checklist": drCleaningChecklist, recipe: drRecipe, notes: drNotes, "workout-tracker": drWorkoutTracker, medications: drMedications, "medical-records": drMedicalRecords, "yearly-focus": drYearlyFocus };
+const DRAGONS_SHARED_ICONS = { "my-goals": dgnMyGoals, "yearly-calendar": dgnYearlyCalendar, "monthly-calendar": dgnMonthlyCalendar, "weekly-calendar": dgnWeeklyCalendar, "daily-tracker": dgnDailyTracker, "complete-tracker": dgnCompleteTracker, "yearly-habit-tracker": dgnYearlyHabitTracker, "weight-tracker": dgnWeightTracker, "measurement-tracker": dgnMeasurementTracker, "blood-sugar-tracker": dgnBloodSugarTracker, "blood-pressure-tracker": dgnBloodPressureTracker, "oxygen-tracker": dgnOxygenTracker, "self-care-checklist": dgnSelfCareChecklist, "cleaning-checklist": dgnCleaningChecklist, recipe: dgnRecipe, notes: dgnNotes, "workout-tracker": dgnWorkoutTracker, medications: dgnMedications, "medical-records": dgnMedicalRecords, "yearly-focus": dgnYearlyFocus };
 
 
 
