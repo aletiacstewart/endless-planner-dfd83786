@@ -148,6 +148,8 @@ import featherEmerald from "@/assets/covers/feather-emerald.png.asset.json";
 import featherPhoenix from "@/assets/covers/feather-phoenix.png.asset.json";
 import featherAmethyst from "@/assets/covers/feather-amethyst.png.asset.json";
 import featherCrimson from "@/assets/covers/feather-crimson.png.asset.json";
+import featherSapphire from "@/assets/covers/feather-sapphire.png.asset.json";
+import featherGold from "@/assets/covers/feather-gold.png.asset.json";
 import dragonTwinFlame from "@/assets/covers/dragon-twin-flame.png.asset.json";
 import dragonFiligree from "@/assets/covers/dragon-filigree.png.asset.json";
 import dragonSkullEmber from "@/assets/covers/dragon-skull-ember.png.asset.json";
