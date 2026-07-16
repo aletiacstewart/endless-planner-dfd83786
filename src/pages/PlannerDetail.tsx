@@ -44,7 +44,7 @@ export default function PlannerDetail() {
       ...({
         packIds,
         plannerId: planner.id,
-        selectedCoverId: featuredCoverId,
+        selectedCoverId: primaryCoverId,
         monthlyPriceId: planner.monthlyPriceId,
       } as any),
     });
