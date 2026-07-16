@@ -121,9 +121,9 @@ export default function Landing() {
           <h3 className="font-display text-3xl text-center mb-10">How it works</h3>
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { n: "1", t: "Buy your planner", d: "One flat fee, securely paid online. No subscriptions." },
+              { n: "1", t: "Subscribe & activate", d: "$19.97 to start, then $10/month for updates and cloud hosting. Cancel any time." },
               { n: "2", t: "Get your install link by email", d: "We'll email you a private link to unlock the planner on your devices." },
-              { n: "3", t: "Install & start journaling", d: "Add it to your phone, tablet, or desktop. Works offline. Backup any time." },
+              { n: "3", t: "Install & sync everywhere", d: "Add it to your phone, tablet, or desktop. Works offline. Sign in on any device to restore." },
             ].map((s) => (
               <div key={s.n} className="planner-card">
                 <div className="font-display text-3xl text-primary mb-2">{s.n}</div>
