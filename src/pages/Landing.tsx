@@ -12,7 +12,7 @@ function PlannerShowcaseCard({ p }: { p: PlannerDef }) {
   const [coverId, setCoverId] = useState<string | undefined>();
   return (
     <article className={`planner-card flex flex-col gap-4 ${!p.available ? "opacity-60" : ""}`}>
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid md:grid-cols-2 gap-4 items-start">
         <CoverSlideshow onCoverChange={setCoverId} />
         <CoverIconStrip coverId={coverId} />
       </div>
