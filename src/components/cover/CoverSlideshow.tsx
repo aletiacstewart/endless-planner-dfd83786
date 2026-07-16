@@ -42,7 +42,7 @@ export function CoverSlideshow({ intervalMs = 7000, onCoverChange, className }: 
   return (
     <div
       className={cn(
-        "relative aspect-[3/4] rounded-lg overflow-hidden bg-muted group",
+        "relative aspect-[4/5] rounded-lg overflow-hidden bg-muted group",
         className
       )}
       onMouseEnter={() => setPaused(true)}
