@@ -48,7 +48,7 @@ export default function Landing() {
         </h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
           A digital planner you install on your phone, tablet, or desktop — beautifully designed,
-          fully offline, and yours for life. One simple price.
+          works offline, and backed up to the cloud so it follows you to every device.
         </p>
       </section>
 
@@ -57,7 +57,7 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto">
           <h3 className="font-display text-3xl text-center mb-2">Choose your planner</h3>
           <p className="text-center text-muted-foreground mb-10">
-            One flat price per planner. Lifetime access.
+            $19.97 to get started. $10/month for updates, cloud backup &amp; restore.
           </p>
           <div className="grid md:grid-cols-2 gap-6">
             {PLANNERS.map((p) => (
@@ -183,11 +183,11 @@ export default function Landing() {
           <h3 className="font-display text-3xl text-center mb-10">Frequently asked</h3>
           <div className="space-y-6">
             {[
-              { q: "Where is my data stored?", a: "On your device only. Nothing is sent to our servers. You can export a JSON backup any time from Settings." },
-              { q: "What if I get a new phone?", a: "Export your backup from your old device, then use Restore on your new device. Your install link in your purchase email always works on new devices too." },
-              { q: "Is this really lifetime?", a: "Yes — one-time payment. You'll have access for as long as the platform is online. No subscriptions, no surprise renewals." },
+              { q: "Where is my data stored?", a: "On your device and backed up to our cloud so you can restore on any device. Export a JSON backup any time from Settings." },
+              { q: "What if I get a new phone?", a: "Sign in on the new device and your planner restores from the cloud automatically. Your subscription covers unlimited devices." },
+              { q: "How does the pricing work?", a: "$19.97 to activate your planner today, then $10/month for continued updates, cloud hosting, and multi-device backup/restore. Cancel any time." },
               { q: "Which devices are supported?", a: "Anything with a modern browser — iPhone, iPad, Android, Mac, Windows, Linux. The planner installs as an app via your browser's 'Add to Home Screen' or 'Install' option." },
-              { q: "Refunds?", a: "Because this is a digital download granting lifetime access, all sales are final. Reach out if anything goes wrong with installation and we'll help you out." },
+              { q: "Refunds?", a: "Cancel your subscription any time. Because activation grants immediate digital access, the initial $19.97 setup fee is non-refundable." },
             ].map((f) => (
               <div key={f.q} className="planner-card">
                 <h4 className="font-medium mb-2 flex items-start gap-2">
