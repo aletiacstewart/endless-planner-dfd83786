@@ -3,7 +3,7 @@ import { Plus, Check, X, Lock, Eye } from "lucide-react";
 import { COLLECTIONS, COVERS, type CoverCollection } from "@/data/covers";
 import { CoverImage } from "@/components/cover/CoverImage";
 import { CoverIconPreviewDialog } from "@/components/cover/CoverIconPreviewDialog";
-import { isCoverIncluded, calcPackTotalUSD, getPackPriceUSD } from "@/data/coverPacks";
+import { isCoverIncluded, calcPackTotalUSD, getPackPriceUSD, getDiscountLabel } from "@/data/coverPacks";
 import { isPackUnlocked } from "@/lib/unlock";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -144,7 +144,7 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact 
         <div className="text-xs text-muted-foreground text-center">
           {selectedPackIds.length} pack{selectedPackIds.length === 1 ? "" : "s"} selected · packs total <strong className="text-foreground">${total.toFixed(2)}</strong>
           <span className="block mt-0.5">
-            {(() => { const { getDiscountLabel } = require("@/data/coverPacks"); return getDiscountLabel(selectedPackIds.length) || "$10 per pack"; })()}
+            {getDiscountLabel(selectedPackIds.length) || "$10 per pack"}
           </span>
         </div>
       )}
