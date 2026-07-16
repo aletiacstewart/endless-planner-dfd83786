@@ -143,7 +143,9 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact 
       {selectedPackIds.length > 0 && (
         <div className="text-xs text-muted-foreground text-center">
           {selectedPackIds.length} pack{selectedPackIds.length === 1 ? "" : "s"} selected · packs total <strong className="text-foreground">${total.toFixed(2)}</strong>
-          <span className="block mt-0.5">First pack $4.99 · each additional $2.99</span>
+          <span className="block mt-0.5">
+            {(() => { const { getDiscountLabel } = require("@/data/coverPacks"); return getDiscountLabel(selectedPackIds.length) || "$10 per pack"; })()}
+          </span>
         </div>
       )}
 
