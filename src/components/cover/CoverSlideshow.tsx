@@ -52,12 +52,12 @@ export function CoverSlideshow({ intervalMs = 7000, onCoverChange, className }: 
         <div
           key={c.id}
           className={cn(
-            "absolute inset-0 flex items-center justify-center transition-opacity duration-700",
+            "absolute inset-0 flex items-start justify-center transition-opacity duration-700",
             i === index ? "opacity-100" : "opacity-0 pointer-events-none"
           )}
           aria-hidden={i !== index}
         >
-          <CoverImage cover={c} className="!object-contain" />
+          <CoverImage cover={c} className="!object-contain object-top" />
         </div>
       ))}
 
