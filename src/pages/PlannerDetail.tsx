@@ -166,14 +166,18 @@ export default function PlannerDetail() {
       {/* Choose covers */}
       <section className="px-6 py-12 bg-muted/20 border-t border-border">
         <div className="max-w-5xl mx-auto">
-          <h2 className="font-display text-3xl text-center mb-2">Add extra covers</h2>
+          <h2 className="font-display text-3xl text-center mb-2">Add more covers</h2>
           <p className="text-center text-muted-foreground mb-2">
-            Each pack re-themes the whole planner with a matching cover &amp; icon set.
+            Your install includes 1 cover &amp; icon set. Add extras below — each pack re-themes the whole planner with its matching cover &amp; icons.
           </p>
           <p className="text-center text-xs text-muted-foreground mb-8">
             $10 per pack · 3+ save 10% · pick 5 &amp; the 5th is free · 6+ save 25%
           </p>
-          <CoverPackPicker selectedPackIds={packIds} onChange={setPackIds} />
+          <CoverPackPicker
+            selectedPackIds={packIds}
+            onChange={setPackIds}
+            excludeIds={[primaryCoverId]}
+          />
         </div>
       </section>
 
