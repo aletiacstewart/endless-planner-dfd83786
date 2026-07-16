@@ -65,16 +65,16 @@ export function CoverSlideshow({ intervalMs = 7000, onCoverChange, className }: 
       <button
         type="button"
         aria-label="Previous cover"
-        onClick={() => go(-1)}
-        className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+        onClick={() => { setPaused(true); go(-1); }}
+        className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors z-10"
       >
         <ChevronLeft className="w-5 h-5" />
       </button>
       <button
         type="button"
         aria-label="Next cover"
-        onClick={() => go(1)}
-        className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+        onClick={() => { setPaused(true); go(1); }}
+        className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors z-10"
       >
         <ChevronRight className="w-5 h-5" />
       </button>
