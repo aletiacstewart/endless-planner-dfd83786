@@ -81,11 +81,11 @@ export default function Landing() {
                 <div className="flex items-baseline justify-between mt-auto">
                   <div>
                     <span className="font-display text-2xl">${p.priceUSD}</span>
-                    <span className="text-xs text-muted-foreground ml-1">one-time</span>
+                    <span className="text-xs text-muted-foreground ml-1">today, then ${p.monthlyPriceUSD}/mo</span>
                   </div>
                   {p.available ? (
                     <Button asChild>
-                      <Link to={`/planner/${p.id}`}>Buy & Install</Link>
+                      <Link to={`/planner/${p.id}`}>Subscribe & Install</Link>
                     </Button>
                   ) : (
                     <span className="text-xs text-muted-foreground">Coming soon</span>

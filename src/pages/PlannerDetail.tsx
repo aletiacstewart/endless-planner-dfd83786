@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { Link, useParams, Navigate } from "react-router-dom";
-import { Check, ArrowLeft } from "lucide-react";
+import { Check, ArrowLeft, Download, Cloud } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getPlanner } from "@/data/planners";
 import { getPageType } from "@/lib/pageTypes";
-import { getPageImage } from "@/lib/pageImages";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { CoverPackPicker, CoverPackSummary } from "@/components/cover/CoverPackPicker";
+import { CoverSlideshow } from "@/components/cover/CoverSlideshow";
 import { calcPackTotalUSD } from "@/data/coverPacks";
+import { getCover } from "@/data/covers";
 
 export default function PlannerDetail() {
   const { plannerId = "" } = useParams();
@@ -16,6 +17,7 @@ export default function PlannerDetail() {
   const { openCheckout, checkoutElement, closeCheckout, isOpen } = useStripeCheckout();
   const [email, setEmail] = useState("");
   const [packIds, setPackIds] = useState<string[]>([]);
+  const [featuredCoverId, setFeaturedCoverId] = useState<string | undefined>();
 
   if (!planner) return <Navigate to="/" replace />;
 
@@ -23,7 +25,8 @@ export default function PlannerDetail() {
     .map((id) => getPageType(id))
     .filter((p): p is NonNullable<ReturnType<typeof getPageType>> => Boolean(p));
 
-  const grandTotal = planner.priceUSD + calcPackTotalUSD(packIds);
+  const packSubtotal = calcPackTotalUSD(packIds);
+  const dueToday = planner.priceUSD + packSubtotal;
 
   const buy = () => {
     if (!email || !email.includes("@")) {
@@ -35,10 +38,16 @@ export default function PlannerDetail() {
       quantity: 1,
       customerEmail: email,
       returnUrl: `${window.location.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}&planner=${planner.id}`,
-      // packIds is forwarded through the checkout body
-      ...({ packIds, plannerId: planner.id } as any),
+      ...({
+        packIds,
+        plannerId: planner.id,
+        selectedCoverId: featuredCoverId,
+        monthlyPriceId: planner.monthlyPriceId,
+      } as any),
     });
   };
+
+  const featured = featuredCoverId ? getCover(featuredCoverId) : undefined;
 
   return (
     <div className="min-h-screen bg-background">
@@ -54,8 +63,13 @@ export default function PlannerDetail() {
       {/* Buy & Install hero */}
       <section className="px-6 py-12">
         <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 items-start">
-          <div className="aspect-[16/10] rounded-lg overflow-hidden bg-muted">
-            <img src={planner.heroImage} alt={planner.name} className="w-full h-full object-cover" />
+          <div>
+            <CoverSlideshow onCoverChange={setFeaturedCoverId} />
+            {featured && (
+              <p className="text-xs text-muted-foreground text-center mt-2">
+                Previewing: <span className="text-foreground font-medium">{featured.name}</span> — pick your favorite below.
+              </p>
+            )}
           </div>
           <div className="planner-card">
             <h1 className="font-display text-3xl mb-2">{planner.name}</h1>
@@ -69,22 +83,47 @@ export default function PlannerDetail() {
               ))}
             </ul>
 
-            <CoverPackSummary packIds={packIds} plannerPriceUSD={planner.priceUSD} />
+            <div className="rounded-md bg-muted/40 border border-border p-3 mb-4 text-sm space-y-1">
+              <div className="flex justify-between">
+                <span>Planner activation (one-time)</span>
+                <span>${planner.priceUSD.toFixed(2)}</span>
+              </div>
+              {packIds.length > 0 && (
+                <div className="flex justify-between text-muted-foreground">
+                  <span>{packIds.length} extra cover pack{packIds.length === 1 ? "" : "s"}</span>
+                  <span>${packSubtotal.toFixed(2)}</span>
+                </div>
+              )}
+              <div className="flex justify-between font-display text-lg pt-1.5 border-t border-border">
+                <span>Due today</span>
+                <span>${dueToday.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-xs text-muted-foreground pt-1">
+                <span>Then</span>
+                <span>${planner.monthlyPriceUSD}/month — updates, cloud backup & restore</span>
+              </div>
+            </div>
 
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full px-4 py-3 rounded-md border border-input bg-background mt-4 mb-3"
+              className="w-full px-4 py-3 rounded-md border border-input bg-background mb-3"
             />
             <p className="text-xs text-muted-foreground mb-4">
-              We'll email your install link and any pack codes to this address.
+              We'll email your install link to this address. Sign in on any device to restore.
             </p>
             {planner.available ? (
-              <Button size="lg" className="w-full" onClick={buy}>
-                Buy &amp; Install — ${grandTotal.toFixed(2)}
-              </Button>
+              <>
+                <Button size="lg" className="w-full" onClick={buy}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Subscribe &amp; Install — ${dueToday.toFixed(2)} today
+                </Button>
+                <p className="text-[11px] text-muted-foreground text-center mt-2 inline-flex items-center justify-center gap-1 w-full">
+                  <Cloud className="w-3 h-3" /> Then ${planner.monthlyPriceUSD}/month · cancel anytime
+                </p>
+              </>
             ) : (
               <Button size="lg" className="w-full" disabled>
                 Coming soon
@@ -97,12 +136,12 @@ export default function PlannerDetail() {
       {/* Choose covers */}
       <section className="px-6 py-12 bg-muted/20 border-t border-border">
         <div className="max-w-5xl mx-auto">
-          <h2 className="font-display text-3xl text-center mb-2">Choose your covers</h2>
+          <h2 className="font-display text-3xl text-center mb-2">Add extra covers</h2>
           <p className="text-center text-muted-foreground mb-2">
-            Add cover &amp; icon packs to re-theme the whole planner.
+            Each pack re-themes the whole planner with a matching cover &amp; icon set.
           </p>
           <p className="text-center text-xs text-muted-foreground mb-8">
-            First add-on pack $4.99 · each additional pack $2.99 · works on up to 5 devices
+            $10 per pack · 3+ save 10% · pick 5 &amp; the 5th is free · 6+ save 25%
           </p>
           <CoverPackPicker selectedPackIds={packIds} onChange={setPackIds} />
         </div>
@@ -123,7 +162,6 @@ export default function PlannerDetail() {
               </div>
             ))}
           </div>
-
         </div>
       </section>
 
