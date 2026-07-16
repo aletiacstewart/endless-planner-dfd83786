@@ -8,6 +8,7 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { CoverPackPicker, CoverPackSummary } from "@/components/cover/CoverPackPicker";
 import { CoverSlideshow } from "@/components/cover/CoverSlideshow";
+import { CoverIconStrip } from "@/components/cover/CoverIconStrip";
 import { calcPackTotalUSD } from "@/data/coverPacks";
 import { getCover } from "@/data/covers";
 
