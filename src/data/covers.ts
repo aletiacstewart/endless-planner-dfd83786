@@ -148,6 +148,8 @@ import featherEmerald from "@/assets/covers/feather-emerald.png.asset.json";
 import featherPhoenix from "@/assets/covers/feather-phoenix.png.asset.json";
 import featherAmethyst from "@/assets/covers/feather-amethyst.png.asset.json";
 import featherCrimson from "@/assets/covers/feather-crimson.png.asset.json";
+import featherSapphire from "@/assets/covers/feather-sapphire.png.asset.json";
+import featherGold from "@/assets/covers/feather-gold.png.asset.json";
 import dragonTwinFlame from "@/assets/covers/dragon-twin-flame.png.asset.json";
 import dragonFiligree from "@/assets/covers/dragon-filigree.png.asset.json";
 import dragonSkullEmber from "@/assets/covers/dragon-skull-ember.png.asset.json";
@@ -914,6 +916,42 @@ const paletteFeatherCrimson: CoverPalette = {
   paperGradient: "linear-gradient(180deg, hsl(350 55% 97%), hsl(345 50% 88%))",
 };
 
+// Feather — sapphire ice quill drifting above a bright winter sky.
+const paletteFeatherSapphire: CoverPalette = {
+  mode: "light",
+  background: "205 60% 96%",
+  foreground: "215 55% 16%",
+  card: "0 0% 100%",
+  cardForeground: "215 55% 16%",
+  primary: "210 80% 45%",
+  primaryForeground: "205 40% 98%",
+  primarySoft: "205 60% 90%",
+  accent: "190 70% 45%",
+  accentForeground: "0 0% 100%",
+  muted: "205 40% 93%",
+  mutedForeground: "210 25% 40%",
+  border: "205 40% 82%",
+  paperGradient: "linear-gradient(180deg, hsl(200 65% 97%), hsl(210 55% 88%))",
+};
+
+// Feather — luminous gold quill over warm cream sky.
+const paletteFeatherGold: CoverPalette = {
+  mode: "light",
+  background: "42 60% 96%",
+  foreground: "32 45% 15%",
+  card: "0 0% 100%",
+  cardForeground: "32 45% 15%",
+  primary: "38 78% 46%",
+  primaryForeground: "42 40% 98%",
+  primarySoft: "42 60% 90%",
+  accent: "28 55% 40%",
+  accentForeground: "0 0% 100%",
+  muted: "42 40% 93%",
+  mutedForeground: "32 22% 40%",
+  border: "40 40% 82%",
+  paperGradient: "linear-gradient(180deg, hsl(45 70% 97%), hsl(38 60% 89%))",
+};
+
 const paletteGothicSiren: CoverPalette = {
   mode: "dark",
   background: "220 20% 12%",
@@ -1485,6 +1523,20 @@ export const COVERS: Cover[] = [
     collection: "feathers",
     image: featherCrimson.url,
     palette: paletteFeatherCrimson,
+  },
+  {
+    id: "feather-sapphire",
+    name: "Sapphire Feather",
+    collection: "feathers",
+    image: featherSapphire.url,
+    palette: paletteFeatherSapphire,
+  },
+  {
+    id: "feather-gold",
+    name: "Gold Feather",
+    collection: "feathers",
+    image: featherGold.url,
+    palette: paletteFeatherGold,
   },
   { id: "dragon-twin-flame", name: "Twin Flame Dragon", collection: "dragons", image: dragonTwinFlame.url, palette: paletteDragonSunset },
   { id: "dragon-filigree", name: "Filigree Dragon", collection: "dragons", image: dragonFiligree.url, palette: paletteDragonSunset },
