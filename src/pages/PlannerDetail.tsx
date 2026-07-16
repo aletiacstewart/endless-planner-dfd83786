@@ -83,6 +83,21 @@ export default function PlannerDetail() {
           <div className="planner-card">
             <h1 className="font-display text-3xl mb-2">{planner.name}</h1>
             <p className="text-muted-foreground mb-4">{planner.tagline}</p>
+
+            <div className="mb-4">
+              <CoverSelect
+                value={primaryCoverId}
+                onChange={setPrimaryCoverId}
+                excludeIds={packIds}
+              />
+              <div className="mt-3">
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-1.5">
+                  Page icons included with this cover
+                </p>
+                <CoverIconStrip coverId={primaryCoverId} />
+              </div>
+            </div>
+
             <ul className="text-sm space-y-1.5 mb-5">
               {planner.highlights.map((h) => (
                 <li key={h} className="flex items-start gap-2">
