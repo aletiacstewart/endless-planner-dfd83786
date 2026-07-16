@@ -100,39 +100,9 @@ export default function Landing() {
           <p className="text-center text-muted-foreground mb-10">
             $19.97 to get started. $10/month for updates, cloud backup &amp; restore.
           </p>
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid gap-6">
             {PLANNERS.map((p) => (
-              <article
-                key={p.id}
-                className={`planner-card flex flex-col ${!p.available ? "opacity-60" : ""}`}
-              >
-                <div className="aspect-[16/10] rounded-lg overflow-hidden bg-muted mb-4">
-                  <img src={p.heroImage} alt={p.name} className="w-full h-full object-cover" />
-                </div>
-                <h4 className="font-display text-xl mb-1">{p.name}</h4>
-                <p className="text-sm text-muted-foreground mb-3">{p.tagline}</p>
-                <ul className="text-sm space-y-1.5 mb-4 flex-1">
-                  {p.highlights.map((h) => (
-                    <li key={h} className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                      <span>{h}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="flex items-baseline justify-between mt-auto">
-                  <div>
-                    <span className="font-display text-2xl">${p.priceUSD}</span>
-                    <span className="text-xs text-muted-foreground ml-1">today, then ${p.monthlyPriceUSD}/mo</span>
-                  </div>
-                  {p.available ? (
-                    <Button asChild>
-                      <Link to={`/planner/${p.id}`}>Subscribe & Install</Link>
-                    </Button>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">Coming soon</span>
-                  )}
-                </div>
-              </article>
+              <PlannerShowcaseCard key={p.id} p={p} />
             ))}
           </div>
         </div>
