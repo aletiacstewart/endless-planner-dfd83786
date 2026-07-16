@@ -9,16 +9,18 @@ import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { CoverPackPicker, CoverPackSummary } from "@/components/cover/CoverPackPicker";
 import { CoverSlideshow } from "@/components/cover/CoverSlideshow";
 import { CoverIconStrip } from "@/components/cover/CoverIconStrip";
+import { CoverSelect } from "@/components/cover/CoverSelect";
 import { calcPackTotalUSD } from "@/data/coverPacks";
-import { getCover } from "@/data/covers";
+import { COVERS, getCover } from "@/data/covers";
 
 export default function PlannerDetail() {
   const { plannerId = "" } = useParams();
   const planner = getPlanner(plannerId);
   const { openCheckout, checkoutElement, closeCheckout, isOpen } = useStripeCheckout();
   const [email, setEmail] = useState("");
+  const [primaryCoverId, setPrimaryCoverId] = useState<string>(COVERS[0]?.id ?? "");
   const [packIds, setPackIds] = useState<string[]>([]);
-  const [featuredCoverId, setFeaturedCoverId] = useState<string | undefined>();
+  const [featuredCoverId, setFeaturedCoverId] = useState<string | undefined>(primaryCoverId);
 
   if (!planner) return <Navigate to="/" replace />;
 
@@ -42,7 +44,7 @@ export default function PlannerDetail() {
       ...({
         packIds,
         plannerId: planner.id,
-        selectedCoverId: featuredCoverId,
+        selectedCoverId: primaryCoverId,
         monthlyPriceId: planner.monthlyPriceId,
       } as any),
     });
@@ -67,20 +69,41 @@ export default function PlannerDetail() {
           <div>
             <CoverSlideshow onCoverChange={setFeaturedCoverId} />
             {featured && (
-              <p className="text-xs text-muted-foreground text-center mt-2 mb-4">
-                Previewing: <span className="text-foreground font-medium">{featured.name}</span> — pick your favorite below.
+              <p className="text-xs text-muted-foreground text-center mt-2">
+                Browsing: <span className="text-foreground font-medium">{featured.name}</span>
+                {featured.id !== primaryCoverId && (
+                  <>
+                    {" "}·{" "}
+                    <button
+                      type="button"
+                      onClick={() => setPrimaryCoverId(featured.id)}
+                      className="underline text-primary hover:opacity-80"
+                    >
+                      Use this cover
+                    </button>
+                  </>
+                )}
               </p>
             )}
-            <div className="mt-4">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
-                Page icons in this set
-              </p>
-              <CoverIconStrip coverId={featuredCoverId} />
-            </div>
           </div>
           <div className="planner-card">
             <h1 className="font-display text-3xl mb-2">{planner.name}</h1>
             <p className="text-muted-foreground mb-4">{planner.tagline}</p>
+
+            <div className="mb-4">
+              <CoverSelect
+                value={primaryCoverId}
+                onChange={setPrimaryCoverId}
+                excludeIds={packIds}
+              />
+              <div className="mt-3">
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-1.5">
+                  Page icons included with this cover
+                </p>
+                <CoverIconStrip coverId={primaryCoverId} />
+              </div>
+            </div>
+
             <ul className="text-sm space-y-1.5 mb-5">
               {planner.highlights.map((h) => (
                 <li key={h} className="flex items-start gap-2">
@@ -143,14 +166,18 @@ export default function PlannerDetail() {
       {/* Choose covers */}
       <section className="px-6 py-12 bg-muted/20 border-t border-border">
         <div className="max-w-5xl mx-auto">
-          <h2 className="font-display text-3xl text-center mb-2">Add extra covers</h2>
+          <h2 className="font-display text-3xl text-center mb-2">Add more covers</h2>
           <p className="text-center text-muted-foreground mb-2">
-            Each pack re-themes the whole planner with a matching cover &amp; icon set.
+            Your install includes 1 cover &amp; icon set. Add extras below — each pack re-themes the whole planner with its matching cover &amp; icons.
           </p>
           <p className="text-center text-xs text-muted-foreground mb-8">
             $10 per pack · 3+ save 10% · pick 5 &amp; the 5th is free · 6+ save 25%
           </p>
-          <CoverPackPicker selectedPackIds={packIds} onChange={setPackIds} />
+          <CoverPackPicker
+            selectedPackIds={packIds}
+            onChange={setPackIds}
+            excludeIds={[primaryCoverId]}
+          />
         </div>
       </section>
 
