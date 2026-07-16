@@ -16,9 +16,11 @@ type Props = {
   hideOwned?: boolean;
   /** Compact mode for embedding inside other cards. */
   compact?: boolean;
+  /** Cover ids to exclude entirely (e.g. the primary cover already included with install). */
+  excludeIds?: string[];
 };
 
-export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact }: Props) {
+export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact, excludeIds = [] }: Props) {
   const [filter, setFilter] = useState<CoverCollection | "all">("all");
   const [previewId, setPreviewId] = useState<string | null>(null);
 
@@ -31,8 +33,9 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact 
     let list = COVERS;
     if (filter !== "all") list = list.filter((c) => c.collection === filter);
     if (hideOwned) list = list.filter((c) => !isPackUnlocked(c.id));
+    if (excludeIds.length) list = list.filter((c) => !excludeIds.includes(c.id));
     return list;
-  }, [filter, hideOwned]);
+  }, [filter, hideOwned, excludeIds]);
 
   const toggle = (id: string) => {
     if (isCoverIncluded(id)) return;
