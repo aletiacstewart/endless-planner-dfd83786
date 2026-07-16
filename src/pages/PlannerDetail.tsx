@@ -9,16 +9,18 @@ import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { CoverPackPicker, CoverPackSummary } from "@/components/cover/CoverPackPicker";
 import { CoverSlideshow } from "@/components/cover/CoverSlideshow";
 import { CoverIconStrip } from "@/components/cover/CoverIconStrip";
+import { CoverSelect } from "@/components/cover/CoverSelect";
 import { calcPackTotalUSD } from "@/data/coverPacks";
-import { getCover } from "@/data/covers";
+import { COVERS, getCover } from "@/data/covers";
 
 export default function PlannerDetail() {
   const { plannerId = "" } = useParams();
   const planner = getPlanner(plannerId);
   const { openCheckout, checkoutElement, closeCheckout, isOpen } = useStripeCheckout();
   const [email, setEmail] = useState("");
+  const [primaryCoverId, setPrimaryCoverId] = useState<string>(COVERS[0]?.id ?? "");
   const [packIds, setPackIds] = useState<string[]>([]);
-  const [featuredCoverId, setFeaturedCoverId] = useState<string | undefined>();
+  const [featuredCoverId, setFeaturedCoverId] = useState<string | undefined>(primaryCoverId);
 
   if (!planner) return <Navigate to="/" replace />;
 
