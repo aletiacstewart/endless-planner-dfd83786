@@ -69,16 +69,22 @@ export default function PlannerDetail() {
           <div>
             <CoverSlideshow onCoverChange={setFeaturedCoverId} />
             {featured && (
-              <p className="text-xs text-muted-foreground text-center mt-2 mb-4">
-                Previewing: <span className="text-foreground font-medium">{featured.name}</span> — pick your favorite below.
+              <p className="text-xs text-muted-foreground text-center mt-2">
+                Browsing: <span className="text-foreground font-medium">{featured.name}</span>
+                {featured.id !== primaryCoverId && (
+                  <>
+                    {" "}·{" "}
+                    <button
+                      type="button"
+                      onClick={() => setPrimaryCoverId(featured.id)}
+                      className="underline text-primary hover:opacity-80"
+                    >
+                      Use this cover
+                    </button>
+                  </>
+                )}
               </p>
             )}
-            <div className="mt-4">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
-                Page icons in this set
-              </p>
-              <CoverIconStrip coverId={featuredCoverId} />
-            </div>
           </div>
           <div className="planner-card">
             <h1 className="font-display text-3xl mb-2">{planner.name}</h1>
