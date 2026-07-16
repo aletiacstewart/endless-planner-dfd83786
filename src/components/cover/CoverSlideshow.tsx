@@ -10,7 +10,7 @@ type Props = {
   className?: string;
 };
 
-export function CoverSlideshow({ intervalMs = 3500, onCoverChange, className }: Props) {
+export function CoverSlideshow({ intervalMs = 7000, onCoverChange, className }: Props) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
