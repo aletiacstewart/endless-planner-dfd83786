@@ -42,7 +42,7 @@ export function CoverSlideshow({ intervalMs = 7000, onCoverChange, className }: 
   return (
     <div
       className={cn(
-        "relative aspect-[16/10] rounded-lg overflow-hidden bg-muted group",
+        "relative aspect-[3/4] rounded-lg overflow-hidden bg-muted group",
         className
       )}
       onMouseEnter={() => setPaused(true)}
@@ -52,12 +52,12 @@ export function CoverSlideshow({ intervalMs = 7000, onCoverChange, className }: 
         <div
           key={c.id}
           className={cn(
-            "absolute inset-0 transition-opacity duration-700",
+            "absolute inset-0 flex items-center justify-center transition-opacity duration-700",
             i === index ? "opacity-100" : "opacity-0 pointer-events-none"
           )}
           aria-hidden={i !== index}
         >
-          <CoverImage cover={c} className="w-full h-full" />
+          <CoverImage cover={c} className="!object-contain" />
         </div>
       ))}
 
