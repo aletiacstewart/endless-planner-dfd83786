@@ -2,7 +2,10 @@ import { Cloud } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getCover } from "@/data/covers";
 import { calcPackTotalUSD, getDiscountLabel } from "@/data/coverPacks";
+import { CoverImage } from "@/components/cover/CoverImage";
+import { CoverIconStrip } from "@/components/cover/CoverIconStrip";
 import { cn } from "@/lib/utils";
+
 
 type Props = {
   activationLabel: string;
