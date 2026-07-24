@@ -47,6 +47,30 @@ export function CartSummary({
         </p>
       </div>
 
+      {includedCover && (
+        <div className="rounded-lg border border-primary/40 bg-primary/5 p-3 space-y-2">
+          <p className="text-[10px] uppercase tracking-wide font-bold text-primary">
+            Included with activation
+          </p>
+          <div className="flex gap-3 items-center">
+            <div className="relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0 border border-border">
+              <CoverImage cover={includedCover} className="absolute inset-0" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-sm font-medium truncate">{includedCover.name}</div>
+              <div className="text-[11px] text-muted-foreground">
+                Cover + matching page icon set
+              </div>
+            </div>
+          </div>
+          <CoverIconStrip coverId={includedCover.id} />
+          <p className="text-[11px] text-muted-foreground text-center">
+            Tap any other cover in the grid to switch which one is included.
+          </p>
+        </div>
+      )}
+
+
       <div className="text-sm space-y-2">
         <div className="flex justify-between">
           <div>
