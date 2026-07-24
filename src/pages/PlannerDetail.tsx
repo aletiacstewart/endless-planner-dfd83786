@@ -98,9 +98,10 @@ export default function PlannerDetail() {
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <h2 className="font-display text-2xl">Pick your covers</h2>
               <p className="text-xs text-muted-foreground">
-                Star one as included. Add any others for $10 each.
+                Every cover ships with its own matching page icon set. Star one to include with activation.
               </p>
             </div>
+
 
             <div className="overflow-x-auto whitespace-nowrap -mx-1 px-1 pb-2 mb-4">
               <button onClick={() => setFilter("all")} className={chipClass(filter === "all")}>
