@@ -1,4 +1,4 @@
-import { Check, Plus, X, Star, Eye } from "lucide-react";
+import { Check, Plus, X, Star, Eye, CircleDot } from "lucide-react";
 import { useState } from "react";
 import { type Cover } from "@/data/covers";
 import { CoverImage } from "@/components/cover/CoverImage";
@@ -76,7 +76,7 @@ export function CoverCard({
 
           {isIncluded ? (
             <Button size="sm" variant="secondary" disabled className="w-full">
-              Included with activation
+              <Star className="w-3.5 h-3.5 mr-1" strokeWidth={3} /> Included with activation
             </Button>
           ) : isExtra ? (
             <Button size="sm" variant="outline" className="w-full" onClick={onRemoveExtra}>
@@ -84,18 +84,20 @@ export function CoverCard({
             </Button>
           ) : (
             <div className="flex flex-col gap-1.5">
-              <Button size="sm" className="w-full" onClick={onAddExtra}>
-                <Plus className="w-3.5 h-3.5 mr-1" /> Add for $10
+              <Button size="sm" className="w-full" onClick={onMakeIncluded}>
+                <CircleDot className="w-3.5 h-3.5 mr-1" /> Include with activation
               </Button>
-              <button
-                type="button"
-                onClick={onMakeIncluded}
-                className="text-[11px] text-primary hover:underline text-center"
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-full"
+                onClick={onAddExtra}
               >
-                Make this the included cover
-              </button>
+                <Plus className="w-3.5 h-3.5 mr-1" /> Or add for $10
+              </Button>
             </div>
           )}
+
         </div>
       </article>
 
