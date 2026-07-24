@@ -31,12 +31,12 @@ function PlannerShowcaseCard({ p }: { p: PlannerDef }) {
           <div>
             <span className="font-display text-2xl">${p.priceUSD}</span>
             <span className="text-xs text-muted-foreground ml-1">
-              today, then ${p.monthlyPriceUSD}/mo
+              one-time · includes 1 cover
             </span>
           </div>
           {p.available ? (
             <Button asChild>
-              <Link to={`/planner/${p.id}`}>Subscribe & Install</Link>
+              <Link to={`/planner/${p.id}`}>Choose covers & install</Link>
             </Button>
           ) : (
             <span className="text-xs text-muted-foreground">Coming soon</span>
@@ -98,7 +98,7 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto">
           <h3 className="font-display text-3xl text-center mb-2">Choose your planner</h3>
           <p className="text-center text-muted-foreground mb-10">
-            $19.97 to get started. $10/month for updates, cloud backup &amp; restore.
+            One-time $19.97 gets you the planner &amp; 1 cover of your choice. Add more covers à la carte for $10 each.
           </p>
           <div className="grid gap-6">
             {PLANNERS.map((p) => (
@@ -132,7 +132,7 @@ export default function Landing() {
           <h3 className="font-display text-3xl text-center mb-10">How it works</h3>
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { n: "1", t: "Subscribe & activate", d: "$19.97 to start, then $10/month for updates and cloud hosting. Cancel any time." },
+              { n: "1", t: "Pick your covers & activate", d: "$19.97 one-time gets you the planner and 1 cover of your choice. Add more for $10 each — no subscription." },
               { n: "2", t: "Get your install link by email", d: "We'll email you a private link to unlock the planner on your devices." },
               { n: "3", t: "Install & sync everywhere", d: "Add it to your phone, tablet, or desktop. Works offline. Sign in on any device to restore." },
             ].map((s) => (
@@ -195,10 +195,10 @@ export default function Landing() {
           <div className="space-y-6">
             {[
               { q: "Where is my data stored?", a: "On your device and backed up to our cloud so you can restore on any device. Export a JSON backup any time from Settings." },
-              { q: "What if I get a new phone?", a: "Sign in on the new device and your planner restores from the cloud automatically. Your subscription covers unlimited devices." },
-              { q: "How does the pricing work?", a: "$19.97 to activate your planner today, then $10/month for continued updates, cloud hosting, and multi-device backup/restore. Cancel any time." },
+              { q: "What if I get a new phone?", a: "Sign in on the new device and your planner restores from the cloud automatically. Your purchase covers unlimited devices." },
+              { q: "How does the pricing work?", a: "$19.97 one-time gets you the planner and 1 cover & matching icon set of your choice. Extra covers are $10 each — buy 3+ and save 10%, buy 5 and the 5th is free, buy 6+ and save 25%. No subscription." },
               { q: "Which devices are supported?", a: "Anything with a modern browser — iPhone, iPad, Android, Mac, Windows, Linux. The planner installs as an app via your browser's 'Add to Home Screen' or 'Install' option." },
-              { q: "Refunds?", a: "Cancel your subscription any time. Because activation grants immediate digital access, the initial $19.97 setup fee is non-refundable." },
+              { q: "Refunds?", a: "Because activation grants immediate digital access, purchases are non-refundable. Reach out if something isn't working and we'll make it right." },
             ].map((f) => (
               <div key={f.q} className="planner-card">
                 <h4 className="font-medium mb-2 flex items-start gap-2">
