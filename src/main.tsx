@@ -2,11 +2,15 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 
-// Register the PWA service worker (auto-update). Available because of vite-plugin-pwa.
+// Kill-switch: unregister any previously-installed service workers and clear
+// their caches so stale preview builds stop being served.
 if ("serviceWorker" in navigator) {
-  import("virtual:pwa-register").then(({ registerSW }) => {
-    registerSW({ immediate: true });
+  navigator.serviceWorker.getRegistrations().then((regs) => {
+    regs.forEach((r) => r.unregister());
   }).catch(() => {});
+  if ("caches" in window) {
+    caches.keys().then((keys) => keys.forEach((k) => caches.delete(k))).catch(() => {});
+  }
 }
 
 createRoot(document.getElementById("root")!).render(<App />);
