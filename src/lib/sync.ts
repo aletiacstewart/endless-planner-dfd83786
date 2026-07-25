@@ -373,11 +373,16 @@ async function reconcilePlannerUnlocks(userId: string) {
 }
 
 async function fullReconcile(userId: string) {
-  await reconcileEntries(userId);
-  await reconcileSettings(userId);
+  // Always sync paid-for unlocks (planners + cover packs) so users can restore
+  // purchases on any device without an active Cloud subscription.
   await reconcilePacks(userId);
   await reconcilePlannerUnlocks(userId);
-  await flushQueue();
+  // Entries + settings + queue flush are gated behind an active subscription.
+  if (hasActiveSub) {
+    await reconcileEntries(userId);
+    await reconcileSettings(userId);
+    await flushQueue();
+  }
   await setLastSyncAt(Date.now());
   emitDataChanged();
 }
