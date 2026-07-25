@@ -30,8 +30,36 @@ const META_CURRENT_USER = "sync:current-user";
 const DATA_CHANGED_EVENT = "planner-data-changed";
 
 let currentUserId: string | null = null;
+let hasActiveSub = false;
 let inboundIds = new Set<string>(); // entry ids we just received via realtime — don't re-push
 let realtimeChannel: ReturnType<typeof supabase.channel> | null = null;
+
+async function refreshSubStatus(userId: string): Promise<boolean> {
+  try {
+    const env = (await import("./stripe")).getStripeEnvironment();
+    const { data } = await supabase
+      .from("subscriptions")
+      .select("status, current_period_end")
+      .eq("user_id", userId)
+      .eq("environment", env)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (!data) return (hasActiveSub = false);
+    const end = data.current_period_end ? new Date(data.current_period_end).getTime() : null;
+    const within = end === null || end > Date.now();
+    hasActiveSub =
+      (["active", "trialing", "past_due"].includes(data.status) && within) ||
+      (data.status === "canceled" && end !== null && end > Date.now());
+    return hasActiveSub;
+  } catch {
+    return (hasActiveSub = false);
+  }
+}
+
+export function hasCloudSyncEntitlement(): boolean {
+  return hasActiveSub;
+}
 
 // ---------- public API ----------
 
