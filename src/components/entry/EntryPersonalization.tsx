@@ -304,6 +304,17 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
           </PopoverContent>
         </Popover>
 
+        {/* Themed Sticker Library */}
+        <button
+          type="button"
+          className={chipClass}
+          onClick={() => setLibraryOpen(true)}
+          title="Open themed sticker library for your active cover"
+        >
+          <Sparkles className="w-3.5 h-3.5" />
+          Library
+        </button>
+
         {/* Reset */}
         <button
           type="button"
@@ -315,9 +326,17 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
           Reset
         </button>
       </div>
+
+      <StickerLibraryDialog
+        open={libraryOpen}
+        onOpenChange={setLibraryOpen}
+        coverId={settings?.coverId}
+        onPick={addFromLibrary}
+      />
     </div>
   );
 }
+
 
 const chipClass =
   "inline-flex items-center gap-1.5 rounded-full border border-border bg-card/60 px-3 h-8 text-xs font-medium whitespace-nowrap";
