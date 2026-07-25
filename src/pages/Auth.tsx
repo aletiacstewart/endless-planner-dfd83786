@@ -21,8 +21,17 @@ export default function Auth() {
   const [busy, setBusy] = useState(false);
 
   const routeAfterSignIn = async () => {
+    // Claim any anonymous purchases/subscriptions bought with this email.
+    try { await supabase.rpc("link_user_purchases"); } catch {}
     // Wait for sync to pull unlocks/settings down before deciding where to go.
     try { await reconcileNow(); } catch {}
+    // Support ?next redirect (e.g. from Subscribe page requiring auth)
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get("next");
+    if (next && next.startsWith("/")) {
+      navigate(next, { replace: true });
+      return;
+    }
     if (isUnlocked(PLANNERS[0].id)) {
       navigate("/app", { replace: true });
     } else {
