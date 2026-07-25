@@ -65,8 +65,10 @@ const ACCENT_WIDTHS: { v: EntryAccentWidth; label: string }[] = [
 
 export function EntryPersonalization({ meta, onChange, onTypography, onReset }: Props) {
   const swatches = useThemedSwatches();
+  const { settings } = useUserSettings();
   const [stickerOpen, setStickerOpen] = useState(false);
   const [stickerTab, setStickerTab] = useState(STICKER_GROUPS[0].id);
+  const [libraryOpen, setLibraryOpen] = useState(false);
 
   const addSticker = (emoji: string) => {
     // Default position: near top-center of the page (user asked for it)
@@ -81,6 +83,19 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
     onChange({ stickers: [...(meta.stickers ?? []), s] });
     setStickerOpen(false);
   };
+
+  const addFromLibrary = (a: StickerAsset) => {
+    const s: Sticker = {
+      id: newStickerId(),
+      src: a.src,
+      kind: a.kind,
+      x: 50 + (Math.random() * 12 - 6),
+      y: 6 + Math.random() * 4,
+      size: a.kind === "emoji" ? 48 : 96,
+    };
+    onChange({ stickers: [...(meta.stickers ?? []), s] });
+  };
+
 
   return (
     <div className="mt-3 -mx-1 px-1 overflow-x-auto no-scrollbar">
