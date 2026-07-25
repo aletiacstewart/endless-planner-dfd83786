@@ -12,9 +12,13 @@ import {
   Heading2,
   TextCursorInput,
   X,
+  Sparkles,
 } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { useThemedSwatches, toCss } from "@/hooks/useThemedSwatches";
+import { useUserSettings } from "@/hooks/useUserSettings";
+import { StickerLibraryDialog } from "@/components/entry/StickerLibraryDialog";
+import type { StickerAsset } from "@/data/stickers";
 import {
   FONT_LABELS,
   FONT_STACKS,
@@ -32,6 +36,7 @@ import {
   type EntryPattern,
 } from "@/lib/entryMeta";
 import { cn } from "@/lib/utils";
+
 
 interface Props {
   meta: EntryMeta;
