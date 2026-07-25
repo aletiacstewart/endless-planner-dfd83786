@@ -138,8 +138,9 @@ export default function PlannerDetail() {
             email={email}
             onEmailChange={setEmail}
             onCheckout={buy}
-            disabled={!planner.available}
+            disabled={!planner.available || !includedCoverId}
           />
+
         </div>
       </section>
 
