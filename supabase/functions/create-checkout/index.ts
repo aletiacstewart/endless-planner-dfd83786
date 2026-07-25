@@ -37,7 +37,6 @@ Deno.serve(async (req) => {
     const stripe = createStripeClient(environment as StripeEnv);
     const line_items: any[] = [];
 
-    // Look up all needed prices in one batch when possible.
     const lookupKeys: string[] = [];
     if (includesPlanner) lookupKeys.push(priceId);
     if (packs.length > 0) lookupKeys.push("cover_pack_flat");
@@ -48,52 +47,48 @@ Deno.serve(async (req) => {
     const priceByKey = new Map<string, any>();
     for (const p of priceList.data) if (p.lookup_key) priceByKey.set(p.lookup_key, p);
 
+    let isRecurring = false;
     if (includesPlanner) {
       const setup = priceByKey.get(priceId);
-      if (!setup) throw new Error(`Activation price not found (${priceId})`);
+      if (!setup) throw new Error(`Price not found (${priceId})`);
+      isRecurring = setup.type === "recurring";
       line_items.push({ price: setup.id, quantity: quantity || 1 });
     }
 
-    // Extras: charge for all packs (the included cover is passed separately as selectedCoverId).
-    // The 5th-pack-free rule below drops one billable unit when exactly 5 extras are in the cart.
-    let billablePackCount = packs.length;
-    if (packs.length === 5) billablePackCount = 4;
-
-    if (billablePackCount > 0) {
+    if (!isRecurring && packs.length > 0) {
       const flat = priceByKey.get("cover_pack_flat");
       if (!flat) throw new Error("Cover pack price not found (cover_pack_flat)");
-      line_items.push({ price: flat.id, quantity: billablePackCount });
+      line_items.push({ price: flat.id, quantity: packs.length });
     }
 
-    // Volume discount coupon (created on the fly, one-time-use).
     let discounts: any[] | undefined;
-    let percentOff = 0;
-    if (packs.length >= 6) percentOff = 25;
-    else if (packs.length >= 3) percentOff = 10;
-
-    if (percentOff > 0) {
+    if (!isRecurring && packs.length >= 5) {
       const coupon = await stripe.coupons.create({
-        percent_off: percentOff,
+        percent_off: 10,
         duration: "once",
-        name: `${percentOff}% off cover packs`,
+        name: "10% off cover packs",
         max_redemptions: 1,
       });
       discounts = [{ coupon: coupon.id }];
     }
 
+    const metadata = {
+      planner_id: includesPlanner && !isRecurring ? (plannerId || "wellness-journey") : "",
+      includes_planner: includesPlanner && !isRecurring ? "true" : "false",
+      pack_ids: packs.join(","),
+      selected_cover_id: typeof selectedCoverId === "string" ? selectedCoverId : "",
+      subscription_price_id: isRecurring ? priceId : "",
+    };
+
     const session = await stripe.checkout.sessions.create({
       line_items,
-      mode: "payment",
+      mode: isRecurring ? "subscription" : "payment",
       ui_mode: "embedded_page",
       return_url: returnUrl,
       ...(customerEmail && { customer_email: customerEmail }),
       ...(discounts && { discounts }),
-      metadata: {
-        planner_id: includesPlanner ? (plannerId || "wellness-journey") : "",
-        includes_planner: includesPlanner ? "true" : "false",
-        pack_ids: packs.join(","),
-        selected_cover_id: typeof selectedCoverId === "string" ? selectedCoverId : "",
-      },
+      metadata,
+      ...(isRecurring && { subscription_data: { metadata } }),
     });
 
     return new Response(JSON.stringify({ clientSecret: session.client_secret }), {

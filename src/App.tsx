@@ -15,6 +15,7 @@ import ThankYou from "./pages/ThankYou.tsx";
 import Unsubscribe from "./pages/Unsubscribe.tsx";
 import PlannerDetail from "./pages/PlannerDetail.tsx";
 import Packs from "./pages/Packs.tsx";
+import Subscribe from "./pages/Subscribe.tsx";
 import AdminPlanner from "./pages/AdminPlanner.tsx";
 import Auth from "./pages/Auth.tsx";
 import { OnboardingFlow } from "./components/onboarding/OnboardingFlow";
@@ -78,6 +79,7 @@ const App = () => {
           <Route path="/" element={<Landing />} />
           <Route path="/planner/:plannerId" element={<PlannerDetail />} />
           <Route path="/packs" element={<Packs />} />
+          <Route path="/subscribe" element={<Subscribe />} />
           <Route path="/unlock" element={<Unlock />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin-planner" element={<AdminPlanner />} />
