@@ -9,61 +9,61 @@
 
 @layer base {
   :root {
-    /* Surfaces */
-    --background: 40 30% 97%;
-    --foreground: 150 12% 18%;
+    /* Surfaces — Bloom-inspired cream editorial */
+    --background: 45 40% 98%;         /* #FCFBF7 */
+    --foreground: 158 78% 15%;         /* deep emerald ink */
 
-    --card: 40 35% 99%;
-    --card-foreground: 150 12% 18%;
+    --card: 0 0% 100%;
+    --card-foreground: 158 78% 15%;
 
-    --popover: 40 35% 99%;
-    --popover-foreground: 150 12% 18%;
+    --popover: 45 40% 99%;
+    --popover-foreground: 158 78% 15%;
 
-    /* Brand: sage green */
-    --primary: 145 18% 38%;
-    --primary-foreground: 40 35% 98%;
-    --primary-soft: 145 22% 88%;
+    /* Brand: deep emerald */
+    --primary: 158 78% 16%;            /* #064E3B */
+    --primary-foreground: 45 40% 98%;
+    --primary-soft: 152 40% 92%;
 
-    /* Warm accent: terracotta */
+    /* Warm accent: soft terracotta blush */
     --accent: 18 45% 60%;
-    --accent-foreground: 40 35% 98%;
+    --accent-foreground: 45 40% 98%;
     --accent-soft: 18 50% 92%;
 
-    --secondary: 40 25% 92%;
-    --secondary-foreground: 150 12% 22%;
+    --secondary: 45 25% 94%;
+    --secondary-foreground: 158 78% 15%;
 
-    --muted: 40 20% 93%;
-    --muted-foreground: 150 8% 42%;
+    --muted: 45 22% 94%;
+    --muted-foreground: 158 15% 40%;
 
     --destructive: 4 60% 52%;
-    --destructive-foreground: 40 35% 98%;
+    --destructive-foreground: 45 40% 98%;
 
-    --border: 40 15% 86%;
-    --input: 40 15% 86%;
-    --ring: 145 18% 38%;
+    --border: 158 20% 88%;
+    --input: 158 20% 88%;
+    --ring: 158 78% 16%;
 
     --radius: 1rem;
 
-    /* Custom planner tokens */
+    /* Custom planner tokens (inside-planner still uses sage) */
     --paper: 40 35% 98%;
     --paper-line: 40 12% 82%;
-    --ink: 150 14% 20%;
-    --ink-soft: 150 8% 45%;
+    --ink: 158 78% 15%;
+    --ink-soft: 158 12% 40%;
 
-    --gradient-paper: linear-gradient(180deg, hsl(40 35% 99%), hsl(40 28% 95%));
-    --gradient-sage: linear-gradient(135deg, hsl(145 22% 70%), hsl(145 18% 38%));
-    --shadow-soft: 0 4px 20px -8px hsl(150 18% 25% / 0.15);
-    --shadow-card: 0 2px 12px -4px hsl(150 18% 25% / 0.08);
+    --gradient-paper: linear-gradient(180deg, hsl(45 40% 99%), hsl(45 30% 95%));
+    --gradient-sage: linear-gradient(135deg, hsl(158 40% 45%), hsl(158 78% 16%));
+    --shadow-soft: 0 12px 40px -20px hsl(158 78% 15% / 0.25);
+    --shadow-card: 0 4px 24px -10px hsl(158 78% 15% / 0.12);
     --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-background: 40 30% 97%;
-    --sidebar-foreground: 150 12% 18%;
-    --sidebar-primary: 145 18% 38%;
-    --sidebar-primary-foreground: 40 35% 98%;
-    --sidebar-accent: 40 25% 92%;
-    --sidebar-accent-foreground: 150 12% 22%;
-    --sidebar-border: 40 15% 86%;
-    --sidebar-ring: 145 18% 38%;
+    --sidebar-background: 45 40% 98%;
+    --sidebar-foreground: 158 78% 15%;
+    --sidebar-primary: 158 78% 16%;
+    --sidebar-primary-foreground: 45 40% 98%;
+    --sidebar-accent: 45 25% 94%;
+    --sidebar-accent-foreground: 158 78% 15%;
+    --sidebar-border: 158 20% 88%;
+    --sidebar-ring: 158 78% 16%;
   }
 
   .dark {
