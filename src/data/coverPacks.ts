@@ -10,7 +10,7 @@
 
 import { COVERS, getCover } from "@/data/covers";
 
-export const PACK_PRICE_USD = 10;
+export const PACK_PRICE_USD = 5;
 
 // Kept for backward compat with existing imports; nothing is included for free.
 export const INCLUDED_PACK_IDS: readonly string[] = [];

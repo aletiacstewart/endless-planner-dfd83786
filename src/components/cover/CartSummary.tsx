@@ -91,7 +91,7 @@ export function CartSummary({
               return (
                 <div key={id} className="flex justify-between text-muted-foreground">
                   <span className="truncate pr-2">Extra: {c?.name ?? id}</span>
-                  <span>$10.00</span>
+                  <span>$5.00</span>
                 </div>
               );
             })}

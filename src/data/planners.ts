@@ -22,7 +22,7 @@ export const PLANNERS: PlannerDef[] = [
     name: "Change of Life — Wellness Journey",
     tagline: "A complete planner for navigating life's changes with intention.",
     description:
-      "Track your habits, health, goals, meals, workouts, and reflections in one beautifully organized planner. A one-time $19.97 activation gets you the planner plus 1 cover & matching icon set of your choice. Add more covers à la carte for $10 each — 3+ save 10%, 5th free, 6+ save 25%.",
+      "Track your habits, health, goals, meals, workouts, and reflections in one beautifully organized planner. A one-time $19.97 activation gets you the planner plus 1 cover & matching icon set of your choice. Add more covers à la carte for $5 each — 3+ save 10%, 5th free, 6+ save 25%.",
     heroImage,
     priceUSD: 19.97,
     priceId: "wellness_journey_setup",
