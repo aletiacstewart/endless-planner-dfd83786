@@ -124,6 +124,52 @@ async function fulfill(session: any, env: StripeEnv, origin: string) {
   }
 }
 
+async function upsertSubscription(sub: any, env: StripeEnv) {
+  const item = sub.items?.data?.[0];
+  const priceId = item?.price?.lookup_key || item?.price?.id;
+  const periodStart = item?.current_period_start ?? sub.current_period_start;
+  const periodEnd = item?.current_period_end ?? sub.current_period_end;
+
+  // Try to resolve the user by email attached to the Stripe customer.
+  const supa = getSupabase();
+  let email: string | null = null;
+  try {
+    const stripeCustomerId = typeof sub.customer === "string" ? sub.customer : sub.customer?.id;
+    if (stripeCustomerId) {
+      const { createStripeClient } = await import("../_shared/stripe.ts");
+      const stripe = createStripeClient(env);
+      const cust: any = await stripe.customers.retrieve(stripeCustomerId);
+      email = cust?.email ?? null;
+    }
+  } catch (e) {
+    console.warn("Fetch customer email failed", e);
+  }
+
+  await supa.from("subscriptions").upsert(
+    {
+      email,
+      stripe_subscription_id: sub.id,
+      stripe_customer_id: typeof sub.customer === "string" ? sub.customer : sub.customer?.id,
+      price_id: priceId,
+      status: sub.status,
+      current_period_start: periodStart ? new Date(periodStart * 1000).toISOString() : null,
+      current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
+      cancel_at_period_end: sub.cancel_at_period_end || false,
+      environment: env,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "stripe_subscription_id" },
+  );
+}
+
+async function markSubscriptionCanceled(sub: any, env: StripeEnv) {
+  await getSupabase()
+    .from("subscriptions")
+    .update({ status: "canceled", updated_at: new Date().toISOString() })
+    .eq("stripe_subscription_id", sub.id)
+    .eq("environment", env);
+}
+
 Deno.serve(async (req) => {
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
   const url = new URL(req.url);
