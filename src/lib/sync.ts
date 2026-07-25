@@ -477,12 +477,33 @@ async function handleSignIn(userId: string) {
     const db = await getDB();
     await db.put("meta", { key: META_CURRENT_USER, value: userId });
   } catch {}
+  await refreshSubStatus(userId);
   await fullReconcile(userId);
-  startRealtime(userId);
+  if (hasActiveSub) startRealtime(userId);
+
+  // React to subscription changes without needing a page reload.
+  supabase
+    .channel(`sync-sub-${userId}`)
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "subscriptions", filter: `user_id=eq.${userId}` },
+      async () => {
+        const wasActive = hasActiveSub;
+        await refreshSubStatus(userId);
+        if (hasActiveSub && !wasActive) {
+          await fullReconcile(userId);
+          startRealtime(userId);
+        } else if (!hasActiveSub && wasActive) {
+          stopRealtime();
+        }
+      },
+    )
+    .subscribe();
 }
 
 function handleSignOut() {
   currentUserId = null;
+  hasActiveSub = false;
   stopRealtime();
 }
 
