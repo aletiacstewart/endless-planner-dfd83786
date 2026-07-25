@@ -12,9 +12,13 @@ import {
   Heading2,
   TextCursorInput,
   X,
+  Sparkles,
 } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { useThemedSwatches, toCss } from "@/hooks/useThemedSwatches";
+import { useUserSettings } from "@/hooks/useUserSettings";
+import { StickerLibraryDialog } from "@/components/entry/StickerLibraryDialog";
+import type { StickerAsset } from "@/data/stickers";
 import {
   FONT_LABELS,
   FONT_STACKS,
@@ -32,6 +36,7 @@ import {
   type EntryPattern,
 } from "@/lib/entryMeta";
 import { cn } from "@/lib/utils";
+
 
 interface Props {
   meta: EntryMeta;
@@ -60,8 +65,10 @@ const ACCENT_WIDTHS: { v: EntryAccentWidth; label: string }[] = [
 
 export function EntryPersonalization({ meta, onChange, onTypography, onReset }: Props) {
   const swatches = useThemedSwatches();
+  const { settings } = useUserSettings();
   const [stickerOpen, setStickerOpen] = useState(false);
   const [stickerTab, setStickerTab] = useState(STICKER_GROUPS[0].id);
+  const [libraryOpen, setLibraryOpen] = useState(false);
 
   const addSticker = (emoji: string) => {
     // Default position: near top-center of the page (user asked for it)
@@ -76,6 +83,19 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
     onChange({ stickers: [...(meta.stickers ?? []), s] });
     setStickerOpen(false);
   };
+
+  const addFromLibrary = (a: StickerAsset) => {
+    const s: Sticker = {
+      id: newStickerId(),
+      src: a.src,
+      kind: a.kind,
+      x: 50 + (Math.random() * 12 - 6),
+      y: 6 + Math.random() * 4,
+      size: a.kind === "emoji" ? 48 : 96,
+    };
+    onChange({ stickers: [...(meta.stickers ?? []), s] });
+  };
+
 
   return (
     <div className="mt-3 -mx-1 px-1 overflow-x-auto no-scrollbar">
@@ -284,6 +304,17 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
           </PopoverContent>
         </Popover>
 
+        {/* Themed Sticker Library */}
+        <button
+          type="button"
+          className={chipClass}
+          onClick={() => setLibraryOpen(true)}
+          title="Open themed sticker library for your active cover"
+        >
+          <Sparkles className="w-3.5 h-3.5" />
+          Library
+        </button>
+
         {/* Reset */}
         <button
           type="button"
@@ -295,9 +326,17 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
           Reset
         </button>
       </div>
+
+      <StickerLibraryDialog
+        open={libraryOpen}
+        onOpenChange={setLibraryOpen}
+        coverId={settings?.coverId}
+        onPick={addFromLibrary}
+      />
     </div>
   );
 }
+
 
 const chipClass =
   "inline-flex items-center gap-1.5 rounded-full border border-border bg-card/60 px-3 h-8 text-xs font-medium whitespace-nowrap";
