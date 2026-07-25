@@ -137,10 +137,20 @@ Deno.serve(async (req) => {
   try {
     const event = await verifyWebhook(req, env);
     const origin = req.headers.get("origin") || `https://${url.host}`;
-    if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
-      await fulfill(event.data.object, env, origin);
-    } else {
-      console.log("Unhandled event:", event.type);
+    switch (event.type) {
+      case "checkout.session.completed":
+      case "checkout.session.async_payment_succeeded":
+        await fulfill(event.data.object, env, origin);
+        break;
+      case "customer.subscription.created":
+      case "customer.subscription.updated":
+        await upsertSubscription(event.data.object, env);
+        break;
+      case "customer.subscription.deleted":
+        await markSubscriptionCanceled(event.data.object, env);
+        break;
+      default:
+        console.log("Unhandled event:", event.type);
     }
     return new Response(JSON.stringify({ received: true }), {
       status: 200, headers: { "Content-Type": "application/json" },
