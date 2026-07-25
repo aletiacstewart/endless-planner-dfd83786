@@ -47,7 +47,7 @@ export function CartSummary({
         </p>
       </div>
 
-      {includedCover && (
+      {includedCover ? (
         <div className="rounded-lg border border-primary/40 bg-primary/5 p-3 space-y-2">
           <p className="text-[10px] uppercase tracking-wide font-bold text-primary">
             Included with activation
@@ -68,6 +68,16 @@ export function CartSummary({
             Tap any other cover in the grid to switch which one is included.
           </p>
         </div>
+      ) : (
+        <div className="rounded-lg border border-dashed border-border p-4 text-center space-y-1">
+          <p className="text-[10px] uppercase tracking-wide font-bold text-muted-foreground">
+            Included with activation
+          </p>
+          <p className="text-sm font-medium">Choose your cover</p>
+          <p className="text-[11px] text-muted-foreground">
+            Pick any cover from the grid to include with your activation. Its matching page icon set comes with it.
+          </p>
+        </div>
       )}
 
 
@@ -75,14 +85,19 @@ export function CartSummary({
         <div className="flex justify-between">
           <div>
             <div>{activationLabel}</div>
-            {includedCover && (
+            {includedCover ? (
               <div className="text-[11px] text-muted-foreground">
                 Includes cover: <span className="text-foreground">{includedCover.name}</span>
+              </div>
+            ) : (
+              <div className="text-[11px] text-muted-foreground">
+                No cover selected yet
               </div>
             )}
           </div>
           <div>${activationPriceUSD.toFixed(2)}</div>
         </div>
+
 
         {extraPackIds.length > 0 && (
           <div className="pt-2 border-t border-border space-y-1">
