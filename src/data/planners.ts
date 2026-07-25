@@ -31,7 +31,7 @@ export const PLANNERS: PlannerDef[] = [
       "25+ guided pages — calendars, habits, health, goals & reflection",
       "Two-way sync between your daily, monthly, and yearly trackers",
       "Includes 1 cover & matching icon set with activation",
-      "Add more covers anytime — $10 each, volume discounts apply",
+      "Add more covers anytime — $5 each, volume discounts apply",
       "Cloud backup + restore on any device (phone, tablet, desktop)",
     ],
     available: true,

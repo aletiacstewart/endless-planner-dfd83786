@@ -80,7 +80,7 @@ export function CoverCard({
             </Button>
           ) : isExtra ? (
             <Button size="sm" variant="outline" className="w-full" onClick={onRemoveExtra}>
-              <X className="w-3.5 h-3.5 mr-1" /> Remove ($10)
+              <X className="w-3.5 h-3.5 mr-1" /> Remove ($5)
             </Button>
           ) : (
             <div className="flex flex-col gap-1.5">
@@ -93,7 +93,7 @@ export function CoverCard({
                 className="w-full"
                 onClick={onAddExtra}
               >
-                <Plus className="w-3.5 h-3.5 mr-1" /> Or add for $10
+                <Plus className="w-3.5 h-3.5 mr-1" /> Or add for $5
               </Button>
             </div>
           )}
@@ -106,7 +106,7 @@ export function CoverCard({
         open={previewOpen}
         onOpenChange={setPreviewOpen}
         isSelected={isExtra || isIncluded}
-        price={10}
+        price={5}
         onToggle={() => {
           if (isIncluded) return;
           if (isExtra) onRemoveExtra();
