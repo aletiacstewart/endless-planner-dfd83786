@@ -129,7 +129,7 @@ export function CartSummary({
         )}
         {extraPackIds.length === 0 && (
           <p className="text-[11px] text-muted-foreground text-center">
-            Add 3+ covers for 10% off · 5 covers, 5th is free · 6+ for 25% off
+            Buy 5 or more covers and save 10%
           </p>
         )}
       </div>

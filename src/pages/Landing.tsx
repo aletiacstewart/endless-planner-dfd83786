@@ -196,7 +196,7 @@ export default function Landing() {
             {[
               { q: "Where is my data stored?", a: "On your device and backed up to our cloud so you can restore on any device. Export a JSON backup any time from Settings." },
               { q: "What if I get a new phone?", a: "Sign in on the new device and your planner restores from the cloud automatically. Your purchase covers unlimited devices." },
-              { q: "How does the pricing work?", a: "$19.97 one-time gets you the planner and 1 cover & matching icon set of your choice. Extra covers are $5 each — buy 3+ and save 10%, buy 5 and the 5th is free, buy 6+ and save 25%. No subscription." },
+              { q: "How does the pricing work?", a: "$19.97 one-time gets you the planner and 1 cover & matching icon set of your choice. Extra covers are $5 each — buy 5 or more and save 10%. No subscription." },
               { q: "Which devices are supported?", a: "Anything with a modern browser — iPhone, iPad, Android, Mac, Windows, Linux. The planner installs as an app via your browser's 'Add to Home Screen' or 'Install' option." },
               { q: "Refunds?", a: "Because activation grants immediate digital access, purchases are non-refundable. Reach out if something isn't working and we'll make it right." },
             ].map((f) => (

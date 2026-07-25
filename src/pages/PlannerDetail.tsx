@@ -86,7 +86,7 @@ export default function PlannerDetail() {
             ))}
           </ul>
           <p className="text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">One-time ${planner.priceUSD.toFixed(2)}</span> activation includes 1 cover of your choice. Add more for <span className="font-medium text-foreground">$5 each</span> — 3+ save 10%, 5th free, 6+ save 25%.
+            <span className="font-medium text-foreground">One-time ${planner.priceUSD.toFixed(2)}</span> activation includes 1 cover of your choice. Add more for <span className="font-medium text-foreground">$5 each</span> — buy 5+ and save 10%.
           </p>
         </div>
       </section>
