@@ -12,11 +12,30 @@ export default function ThankYou() {
   useEffect(() => {
     const sessionId = params.get("session_id");
     const planner = params.get("planner");
-    if (!sessionId || !planner) {
+    const isSub = params.get("sub") === "1";
+
+    if (!sessionId) {
       setStatus("error");
       setMessage("Missing session details.");
       return;
     }
+
+    // Subscription checkout: the webhook has already recorded the sub row.
+    if (isSub) {
+      setStatus("ok");
+      setMessage("Your subscription is active. Cloud sync is now enabled across all your devices.");
+      return;
+    }
+
+    // Pack-only checkout: no planner id, the webhook has already emailed unlock codes.
+    if (!planner) {
+      setStatus("ok");
+      setMessage("Check your email — your unlock codes are on their way.");
+      return;
+    }
+
+    // Planner activation checkout: fall through to finalize-purchase (belt-and-suspenders in
+    // case the webhook was delayed).
     (async () => {
       try {
         const { data, error } = await supabase.functions.invoke("finalize-purchase", {

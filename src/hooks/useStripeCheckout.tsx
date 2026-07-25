@@ -8,6 +8,8 @@ interface CheckoutOptions {
   customerEmail?: string;
   returnUrl?: string;
   packIds?: string[];
+  selectedCoverId?: string;
+  userId?: string;
 }
 
 export function useStripeCheckout() {
