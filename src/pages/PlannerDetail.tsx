@@ -16,7 +16,7 @@ export default function PlannerDetail() {
   const planner = getPlanner(plannerId);
   const { openCheckout, checkoutElement, closeCheckout, isOpen } = useStripeCheckout();
   const [email, setEmail] = useState("");
-  const [includedCoverId, setIncludedCoverId] = useState<string>(COVERS[0]?.id ?? "");
+  const [includedCoverId, setIncludedCoverId] = useState<string>("");
   const [extraPackIds, setExtraPackIds] = useState<string[]>([]);
   const [filter, setFilter] = useState<CoverCollection | "all">("all");
 
@@ -138,8 +138,9 @@ export default function PlannerDetail() {
             email={email}
             onEmailChange={setEmail}
             onCheckout={buy}
-            disabled={!planner.available}
+            disabled={!planner.available || !includedCoverId}
           />
+
         </div>
       </section>
 
