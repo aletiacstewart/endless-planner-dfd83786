@@ -214,20 +214,20 @@ async function flushQueue() {
 // ---------- public push API ----------
 
 export async function pushEntry(entry: PlannerEntry) {
-  if (!currentUserId) return;
-  if (inboundIds.has(entry.id)) return; // came from realtime, don't echo
+  if (!currentUserId || !hasActiveSub) return;
+  if (inboundIds.has(entry.id)) return;
   const ok = navigator.onLine && (await pushOp({ kind: "entry-upsert", entry }, currentUserId));
   if (!ok) await enqueue({ kind: "entry-upsert", entry });
 }
 
 export async function pushDelete(id: string) {
-  if (!currentUserId) return;
+  if (!currentUserId || !hasActiveSub) return;
   const ok = navigator.onLine && (await pushOp({ kind: "entry-delete", id }, currentUserId));
   if (!ok) await enqueue({ kind: "entry-delete", id });
 }
 
 export async function pushSettings(settings: UserSettings) {
-  if (!currentUserId) return;
+  if (!currentUserId || !hasActiveSub) return;
   const ok = navigator.onLine && (await pushOp({ kind: "settings", settings }, currentUserId));
   if (!ok) await enqueue({ kind: "settings", settings });
 }
