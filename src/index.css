@@ -138,6 +138,12 @@
     letter-spacing: 0.01em;
   }
 
+  /* Editorial storefront face — used on Landing / PlannerDetail. */
+  .font-storefront {
+    font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+    letter-spacing: -0.01em;
+  }
+
   .font-script {
     font-family: 'Caveat', cursive;
   }
