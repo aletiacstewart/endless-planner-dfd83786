@@ -93,6 +93,8 @@ export default function Settings() {
 
         <AccountSection />
 
+        <SubscriptionSection />
+
         <BackupSection />
 
         <Link to="/app" className="block text-center text-sm text-muted-foreground underline pt-2">
