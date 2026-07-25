@@ -1,99 +1,85 @@
 ## Goal
 
-Turn the planner page into a creative shopping cart. The $19.97 one-time activation **includes 1 cover of the buyer's choice** (and its matching icon set). Every additional cover is a $10 one-time add-on with its own preview and "Add to cart" button. A sticky cart summary sits alongside the grid and totals the order in real time. The monthly subscription is removed.
+Transform Endless Planner into a Bloom-caliber storefront + planner experience with a full themed sticker system and theme-specific page icons for every one of your 37 covers.
 
-## Pricing model (agreed)
+## Credit & time reality check (please read before approving)
 
-- Planner activation: **$19.97 one-time**, includes **1 cover + icon set of the buyer's choice**.
-- Each additional cover + matching icon set: **$10 one-time**.
-- Volume discounts apply to the **extra** covers only (the included cover is not counted):
-  - 3+ extras: 10% off extras subtotal
-  - Exactly 5 extras: 5th extra free
-  - 6+ extras: 25% off extras subtotal
-- Monthly $10 subscription: **removed** from checkout, UI, and data.
+Under "all-in-one big batch" this plan generates a very large asset volume:
 
-## Page layout — PlannerDetail
+- **Stickers**: 37 covers × ~60 stickers = **~2,220 sticker PNGs**
+- **Page icons**: audit + regenerate ~20 icons × 37 covers = **up to ~740 icons**
+- **Total**: ~2,960 AI image generations
 
-```text
-+-------------------------------------------------------------+
-| Header: Endless Planner              All planners           |
-+-------------------------------------------------------------+
-| Planner name + tagline + highlights                         |
-| "Your activation includes 1 cover. Add more for $10 each."  |
-+---------------------------------+---------------------------+
-| Cover grid (2 / 3 / 4 columns)  |  Sticky cart summary      |
-|  [cover card] [cover card] ...  |  - Activation   $19.97    |
-|   preview                       |    (incl. cover: <name>)  |
-|   name                          |  - Extra: name   $10.00 x |
-|   icon strip                    |  - Extra: name   $10.00 x |
-|   [Included] / [Add $10] /      |  - Discount    -$x.xx     |
-|   [Make this the included one]  |  Total          $xx.xx    |
-|                                 |  email input              |
-|                                 |  [Checkout]               |
-+---------------------------------+---------------------------+
-| What's inside (existing page list)                          |
-+-------------------------------------------------------------+
-```
+That will consume a substantial chunk of image-gen credits and image generation is the bottleneck by far — the code changes will land quickly; the asset generation is what will span multiple credit top-ups. I'll batch aggressively but you should expect to top up mid-run. If credits run out I'll pause, tell you exactly which theme I stopped on, and resume next turn.
 
-- Each `CoverCard` shows one of three states:
-  - **Included** (this is the free-with-activation cover) — outlined/primary badge, button reads "Included with activation" and is disabled.
-  - **In cart as extra** — button reads "Remove ($10)".
-  - **Not selected** — buttons: primary "Add for $10", secondary link "Make this the included one" (swaps this cover into the included slot; the previously included cover, if it was pinned, moves out of the cart entirely).
-- The included cover always exists — one is auto-selected on load (first cover) so activation is fulfillable.
-- Sidebar is `sticky top-6` on `md+`; on mobile it collapses to a bottom bar showing total + Checkout.
+All new binaries land as CDN `.asset.json` pointers, not committed PNGs, so the repo stays small.
 
-## Files touched
+## Deliverables
 
-### New
+### 1. Storefront redesign (Bloom-style)
 
-- `src/components/cover/CoverCard.tsx` — product tile: preview + name + icon strip + state-aware button(s) + "Included" badge.
-- `src/components/cover/CartSummary.tsx` — activation row (with included cover name), one row per extra, discount row, total, email input, Checkout button. Uses `calcPackTotalUSD` for the extras subtotal.
+- Capture current `/` and `/wellness-journey` in Playwright, then run 3 rendered design directions locked to your existing palette + type (I'll ask for a fresh visual-preferences round only if the current tokens feel off after audit).
+- You pick one; I implement pixel-matched: product-grid Landing, category filters (Botanical / Gothic / Faith / Patriotic / Feathers / Dragons / Sirens / Moon / Crystals), big lifestyle cover images, sticky cart drawer, refined typography, generous whitespace, subtle motion.
+- Rebuilds: `Landing.tsx`, `PlannerDetail.tsx`, `CoverCard.tsx`, `CartSummary.tsx`, `CoverSlideshow.tsx`, `CoverIconStrip.tsx`.
 
-### Modified
+### 2. Sticker system (60 per theme)
 
-- `src/pages/PlannerDetail.tsx`
-  - Remove `CoverSlideshow`, `CoverSelect`, hero `CoverIconStrip`, and the separate "Add more covers" section.
-  - State: `includedCoverId` (defaults to `COVERS[0].id`), `extraPackIds: string[]` (excludes `includedCoverId`).
-  - Render responsive grid of `CoverCard`s over all `COVERS`, wired to those two state pieces.
-  - `CartSummary` in a sticky column receives `includedCoverId`, `extraPackIds`, `email`, `onCheckout`.
-  - `buy()` sends `priceId: planner.priceId` (activation), `packIds: extraPackIds`, `plannerId`, `selectedCoverId: includedCoverId`, `customerEmail`. No `monthlyPriceId`.
-- `src/components/cover/CoverPackPicker.tsx` — delete (replaced by grid of `CoverCard`s). Drop the `CoverPackSummary` export too.
-- `src/data/planners.ts` — drop `monthlyPriceId` / `monthlyPriceUSD` fields. `priceId` remains the activation lookup key; `priceUSD` stays at 19.97.
-- `src/data/coverPacks.ts` — `calcPackTotalUSD` unchanged; add a small `calcPackDiscountLabel(n)` helper for the cart's discount row.
+Each cover pack gets a **~60-sticker set** in 6 categories (10 each): banners, washi tape strips, motif spot art (theme-specific), floral/decorative accents, functional icons (checks, arrows, stars, hearts), and mood/word stickers.
 
-### Stripe / backend
+- New `StickerLibraryDialog` component: tabs by category, grid of sticker previews, click-to-drop onto current page.
+- Extend `StickerLayer.tsx` to render themed sticker PNGs (not just emoji), keep drag/resize/rotate.
+- New table `user_sticker_unlocks` and `sticker_sets` registry in `src/data/stickers.ts`.
+- Gate: stickers unlocked only for covers the user owns (via existing `user_packs` + activation cover). Sticker picker filters to owned themes.
+- Sync unlocked stickers via existing `sync.ts` reconcile path (behaves like packs).
 
-- `supabase/functions/create-checkout/index.ts`
-  - Always `mode: "payment"`; remove the `monthlyPriceId` / subscription branch.
-  - Line items: activation price (`planner.priceId`) + `cover_pack_flat` × count of **extras** (the included cover is not billed).
-  - Volume-discount coupon logic unchanged, applied to the extras only.
-  - Metadata: `planner_id`, `includes_planner: "true"`, `pack_ids: <extras>`, `selected_cover_id: <includedCoverId>`.
-- `supabase/functions/payments-webhook/index.ts`
-  - Fulfillment unchanged in shape. The planner purchase row is written as today; the included cover is tracked via existing `selected_cover_id` metadata (already read in webhook and stored). Extras continue to write to `pack_purchases`.
-- No product/price changes in Stripe. Existing activation price + `cover_pack_flat` cover this model.
+### 3. Page icons — theme-specific for every cover
 
-### Content copy
+- Audit each of the 37 covers' current icon set against its theme.
+- Regenerate any icon that reads "generic" — dragons pages show dragons, feathers show feathers, patriotic shows flags/stars/Texas, sirens stay ink-on-cream, moon covers stay celestial, etc.
+- Keep the ~20 planner page slots (goals, daily tracker, gratitude, wellness, reflection, etc.); only the artwork changes.
+- Register in existing `src/lib/coverIcons.ts` map (no schema change).
 
-- Landing planner card and PlannerDetail hero: "One-time $19.97 activation includes 1 cover of your choice. Add more for $10 each — 3+ save 10%, 5th free, 6+ save 25%."
-- Discount row in cart: existing tiered labels.
-- Checkout button: `Checkout — $YY.YY` (disabled until email valid; activation + included cover mean the cart is never truly empty).
+### 4. In-planner experience polish
 
-## Behaviour details
+- Decorative page frames per theme (subtle border art matching the cover).
+- Themed section dividers and "chapter" headers.
+- Softer paper background option per theme (already partially in place — polish it).
+- Improved `RichTextField` styling, sticker snap-to-grid toggle, minor motion when placing stickers.
 
-- On load, the first cover is auto-marked as included; user can promote any other cover with "Make this the included one".
-- Promoting a new included cover: the previously included cover reverts to "Not selected" (not auto-added as an extra).
-- If a cover is currently an extra and the user promotes it, it leaves the extras list.
-- Discounts recompute live from `extraPackIds.length`.
-- `AdminPlanner` bypass still opens the planner without purchase.
+### 5. Asset pipeline
 
-## Out of scope
+- All generated stickers + icons go through `lovable-assets create` → `.asset.json` pointers.
+- One-time migration of the existing 900 raw PNGs under `src/assets/` to CDN pointers so the repo shrinks and Vite build stays fast.
 
-- Schema changes for `purchases` / `pack_purchases`.
-- Personalization, entry, or sync system changes.
-- Bringing back a monthly subscription (can be added later as a separate optional line item).
+## Order of operations
+
+1. Screenshot current storefront → `design--create_directions` → present 3 options → you pick.
+2. Implement chosen storefront redesign (code + layout only, existing assets).
+3. Build sticker library UI + entitlement wiring (code, no assets yet).
+4. Migrate existing binaries to CDN pointers.
+5. Generate page icons theme-by-theme (in parallel batches of ~8 per turn).
+6. Generate stickers theme-by-theme (in parallel batches of ~10 per turn).
+7. Polish in-planner frames/dividers.
+8. QA the flow end-to-end and hand you a testing script.
+
+Steps 5 and 6 are the credit-heavy ones and will drive most of the wall clock.
+
+## What stays the same
+
+- Pricing model ($19.97 activation + 1 cover included, $5/extra cover with stickers now bundled, $10/mo Cloud sync).
+- Auth, Stripe checkout, webhooks, subscription gating, device caps — all untouched.
+- Your data model for entries and syncing.
 
 ## Technical notes
 
-- Volume discounts remain computed **server-side** in `create-checkout` via an on-the-fly Stripe coupon; the client shows an estimate.
-- `includedCoverId` and `extraPackIds` are the cart's single source of truth. Invariant enforced in state setters: `includedCoverId ∉ extraPackIds`.
-- Mobile bottom bar uses `fixed bottom-0` with safe-area padding; hidden on `md+`.
+- Sticker registry: `src/data/stickers.ts` exports `STICKER_SETS: Record<CoverId, StickerSet>` where each set = `{ category: StickerCategory; asset: AssetJson; tags: string[] }[]`.
+- `user_sticker_unlocks` isn't strictly needed since stickers travel with covers via `user_packs` + `user_planner_unlocks`; entitlement helper `isCoverUnlocked(coverId)` will gate access. No new migration required.
+- Sticker PNGs generated with transparent background at 512×512, then referenced by `.asset.json`.
+- Design tokens locked into `index.css`; no hardcoded colors in components.
+
+## How you'll test after each phase
+
+- Phase 1 (storefront): Preview `/` and `/wellness-journey` — grid, filters, cart drawer, mobile responsiveness.
+- Phase 2 (stickers UI): Open any planner entry, click the sticker button, browse categories, drop a sticker onto the page, resize/rotate/delete it.
+- Phase 3 (icons): Rotate through covers in Settings → each page's icon reflects the selected theme.
+- Phase 4 (entitlement): Buy a second cover pack in test mode → its stickers + icons unlock immediately without reload (realtime sync).
