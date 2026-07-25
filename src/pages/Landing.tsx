@@ -114,7 +114,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto">
           <h3 className="font-display text-3xl text-center mb-2">{COVERS.length}+ covers to choose from</h3>
           <p className="text-center text-muted-foreground mb-10">
-            Every planner unlocks the full cover library. Switch any time.
+            Pick one cover with activation, add more anytime for $10 each.
           </p>
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
             {COVERS.map((c) => (
