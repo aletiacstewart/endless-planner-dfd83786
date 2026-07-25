@@ -9,12 +9,14 @@ interface Props {
   customerEmail?: string;
   returnUrl?: string;
   packIds?: string[];
+  selectedCoverId?: string;
+  userId?: string;
 }
 
-export function StripeEmbeddedCheckout({ plannerId, priceId, quantity, customerEmail, returnUrl, packIds }: Props) {
+export function StripeEmbeddedCheckout(props: Props) {
   const fetchClientSecret = async (): Promise<string> => {
     const { data, error } = await supabase.functions.invoke("create-checkout", {
-      body: { plannerId, priceId, quantity, customerEmail, returnUrl, packIds, environment: getStripeEnvironment() },
+      body: { ...props, environment: getStripeEnvironment() },
     });
     if (error || !data?.clientSecret) throw new Error(error?.message || "Failed to create checkout session");
     return data.clientSecret;

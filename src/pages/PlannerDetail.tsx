@@ -10,12 +10,14 @@ import { CartSummary } from "@/components/cover/CartSummary";
 import { COLLECTIONS, COVERS, type CoverCollection } from "@/data/covers";
 import { calcPackTotalUSD } from "@/data/coverPacks";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function PlannerDetail() {
   const { plannerId = "" } = useParams();
   const planner = getPlanner(plannerId);
+  const { user } = useAuth();
   const { openCheckout, checkoutElement, closeCheckout, isOpen } = useStripeCheckout();
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(user?.email ?? "");
   const [includedCoverId, setIncludedCoverId] = useState<string>("");
   const [extraPackIds, setExtraPackIds] = useState<string[]>([]);
   const [filter, setFilter] = useState<CoverCollection | "all">("all");
@@ -52,13 +54,12 @@ export default function PlannerDetail() {
     openCheckout({
       priceId: planner.priceId,
       quantity: 1,
-      customerEmail: email,
+      customerEmail: email || user?.email,
+      userId: user?.id,
       returnUrl: `${window.location.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}&planner=${planner.id}`,
-      ...({
-        packIds: extraPackIds,
-        plannerId: planner.id,
-        selectedCoverId: includedCoverId,
-      } as any),
+      packIds: extraPackIds,
+      plannerId: planner.id,
+      selectedCoverId: includedCoverId,
     });
   };
 

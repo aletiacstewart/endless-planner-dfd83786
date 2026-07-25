@@ -1,15 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, ImageIcon, Download, Upload, Cloud, CloudOff, LogOut, RefreshCw } from "lucide-react";
+import { ArrowLeft, ImageIcon, Download, Upload, Cloud, CloudOff, LogOut, RefreshCw, CreditCard, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CoverImage } from "@/components/cover/CoverImage";
 import { CoverPicker } from "@/components/cover/CoverPicker";
 import { useUserSettings } from "@/hooks/useUserSettings";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 import { getCover } from "@/data/covers";
 import { exportAll, importAll } from "@/lib/db";
 import { getLastSyncAt, signOut as syncSignOut } from "@/lib/sync";
+import { getStripeEnvironment } from "@/lib/stripe";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export default function Settings() {
@@ -89,6 +92,8 @@ export default function Settings() {
         </section>
 
         <AccountSection />
+
+        <SubscriptionSection />
 
         <BackupSection />
 
@@ -259,6 +264,107 @@ function AccountSection() {
           <LogOut className="w-4 h-4 mr-2" /> Sign out
         </Button>
       </div>
+    </section>
+  );
+}
+
+function SubscriptionSection() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { subscription, isActive, loading } = useSubscription();
+  const [busy, setBusy] = useState(false);
+
+  if (!user) return null;
+  if (loading) return null;
+
+  const openPortal = async () => {
+    setBusy(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-portal-session", {
+        body: {
+          returnUrl: window.location.origin + "/settings",
+          environment: getStripeEnvironment(),
+        },
+      });
+      if (error || !data?.url) throw new Error(error?.message || "Couldn't open billing portal");
+      window.open(data.url, "_blank", "noopener,noreferrer");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't open billing portal");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const formatDate = (iso: string | null) => {
+    if (!iso) return "—";
+    return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  };
+
+  if (!subscription) {
+    return (
+      <section className="planner-card space-y-3">
+        <div className="flex items-center gap-2">
+          <CreditCard className="w-5 h-5 text-muted-foreground" />
+          <h2 className="font-display text-xl">Cloud sync subscription</h2>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Subscribe to $10/month Cloud to keep your planner synced across every device, with automatic cloud backups.
+        </p>
+        <Button className="w-full" onClick={() => navigate("/subscribe")}>
+          Subscribe to Cloud sync
+        </Button>
+      </section>
+    );
+  }
+
+  const statusLabel: Record<string, string> = {
+    active: "Active",
+    trialing: "Trial",
+    past_due: "Payment past due",
+    canceled: "Canceled",
+    incomplete: "Incomplete",
+    unpaid: "Unpaid",
+    paused: "Paused",
+  };
+
+  return (
+    <section className="planner-card space-y-3">
+      <div className="flex items-center gap-2">
+        <CreditCard className="w-5 h-5 text-primary" />
+        <h2 className="font-display text-xl">Cloud sync subscription</h2>
+      </div>
+      <div className="text-sm space-y-1">
+        <p>
+          Status:{" "}
+          <span className={`font-medium ${isActive ? "text-primary" : "text-destructive"}`}>
+            {statusLabel[subscription.status] ?? subscription.status}
+          </span>
+        </p>
+        {subscription.cancel_at_period_end && subscription.current_period_end && (
+          <p className="text-xs text-muted-foreground">
+            Cancels on {formatDate(subscription.current_period_end)}
+          </p>
+        )}
+        {!subscription.cancel_at_period_end && subscription.current_period_end && isActive && (
+          <p className="text-xs text-muted-foreground">
+            Renews {formatDate(subscription.current_period_end)}
+          </p>
+        )}
+        {subscription.status === "past_due" && (
+          <p className="text-xs text-destructive">
+            Update your card in the billing portal to keep Cloud sync running.
+          </p>
+        )}
+      </div>
+      <Button variant="outline" className="w-full" onClick={openPortal} disabled={busy}>
+        {busy ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CreditCard className="w-4 h-4 mr-2" />}
+        Manage subscription
+      </Button>
+      {!isActive && (
+        <Button className="w-full" onClick={() => navigate("/subscribe")}>
+          Resubscribe
+        </Button>
+      )}
     </section>
   );
 }

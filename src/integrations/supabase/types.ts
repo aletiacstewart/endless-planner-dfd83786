@@ -412,6 +412,11 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      has_active_subscription: {
+        Args: { check_env?: string; user_uuid: string }
+        Returns: boolean
+      }
+      link_user_purchases: { Args: never; Returns: Json }
       move_to_dlq: {
         Args: {
           dlq_name: string

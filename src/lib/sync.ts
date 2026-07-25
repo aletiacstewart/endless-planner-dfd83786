@@ -30,8 +30,36 @@ const META_CURRENT_USER = "sync:current-user";
 const DATA_CHANGED_EVENT = "planner-data-changed";
 
 let currentUserId: string | null = null;
+let hasActiveSub = false;
 let inboundIds = new Set<string>(); // entry ids we just received via realtime — don't re-push
 let realtimeChannel: ReturnType<typeof supabase.channel> | null = null;
+
+async function refreshSubStatus(userId: string): Promise<boolean> {
+  try {
+    const env = (await import("./stripe")).getStripeEnvironment();
+    const { data } = await supabase
+      .from("subscriptions")
+      .select("status, current_period_end")
+      .eq("user_id", userId)
+      .eq("environment", env)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (!data) return (hasActiveSub = false);
+    const end = data.current_period_end ? new Date(data.current_period_end).getTime() : null;
+    const within = end === null || end > Date.now();
+    hasActiveSub =
+      (["active", "trialing", "past_due"].includes(data.status) && within) ||
+      (data.status === "canceled" && end !== null && end > Date.now());
+    return hasActiveSub;
+  } catch {
+    return (hasActiveSub = false);
+  }
+}
+
+export function hasCloudSyncEntitlement(): boolean {
+  return hasActiveSub;
+}
 
 // ---------- public API ----------
 
@@ -186,20 +214,20 @@ async function flushQueue() {
 // ---------- public push API ----------
 
 export async function pushEntry(entry: PlannerEntry) {
-  if (!currentUserId) return;
-  if (inboundIds.has(entry.id)) return; // came from realtime, don't echo
+  if (!currentUserId || !hasActiveSub) return;
+  if (inboundIds.has(entry.id)) return;
   const ok = navigator.onLine && (await pushOp({ kind: "entry-upsert", entry }, currentUserId));
   if (!ok) await enqueue({ kind: "entry-upsert", entry });
 }
 
 export async function pushDelete(id: string) {
-  if (!currentUserId) return;
+  if (!currentUserId || !hasActiveSub) return;
   const ok = navigator.onLine && (await pushOp({ kind: "entry-delete", id }, currentUserId));
   if (!ok) await enqueue({ kind: "entry-delete", id });
 }
 
 export async function pushSettings(settings: UserSettings) {
-  if (!currentUserId) return;
+  if (!currentUserId || !hasActiveSub) return;
   const ok = navigator.onLine && (await pushOp({ kind: "settings", settings }, currentUserId));
   if (!ok) await enqueue({ kind: "settings", settings });
 }
@@ -345,11 +373,16 @@ async function reconcilePlannerUnlocks(userId: string) {
 }
 
 async function fullReconcile(userId: string) {
-  await reconcileEntries(userId);
-  await reconcileSettings(userId);
+  // Always sync paid-for unlocks (planners + cover packs) so users can restore
+  // purchases on any device without an active Cloud subscription.
   await reconcilePacks(userId);
   await reconcilePlannerUnlocks(userId);
-  await flushQueue();
+  // Entries + settings + queue flush are gated behind an active subscription.
+  if (hasActiveSub) {
+    await reconcileEntries(userId);
+    await reconcileSettings(userId);
+    await flushQueue();
+  }
   await setLastSyncAt(Date.now());
   emitDataChanged();
 }
@@ -444,12 +477,33 @@ async function handleSignIn(userId: string) {
     const db = await getDB();
     await db.put("meta", { key: META_CURRENT_USER, value: userId });
   } catch {}
+  await refreshSubStatus(userId);
   await fullReconcile(userId);
-  startRealtime(userId);
+  if (hasActiveSub) startRealtime(userId);
+
+  // React to subscription changes without needing a page reload.
+  supabase
+    .channel(`sync-sub-${userId}`)
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "subscriptions", filter: `user_id=eq.${userId}` },
+      async () => {
+        const wasActive = hasActiveSub;
+        await refreshSubStatus(userId);
+        if (hasActiveSub && !wasActive) {
+          await fullReconcile(userId);
+          startRealtime(userId);
+        } else if (!hasActiveSub && wasActive) {
+          stopRealtime();
+        }
+      },
+    )
+    .subscribe();
 }
 
 function handleSignOut() {
   currentUserId = null;
+  hasActiveSub = false;
   stopRealtime();
 }
 

@@ -1,25 +1,39 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { ArrowLeft, Check } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
+import { toast } from "sonner";
 
 export default function Subscribe() {
-  const [email, setEmail] = useState("");
+  const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
+  const { isActive, loading: subLoading } = useSubscription();
   const { openCheckout, checkoutElement, closeCheckout, isOpen } = useStripeCheckout();
 
-  const subscribe = () => {
-    if (!email || !email.includes("@")) {
-      alert("Enter your email to subscribe.");
-      return;
+  useEffect(() => {
+    if (!authLoading && !user) {
+      toast.message("Sign in to subscribe to Cloud sync");
+      navigate("/auth", { replace: true, state: { next: "/subscribe" } });
     }
+  }, [user, authLoading, navigate]);
+
+  const subscribe = () => {
+    if (!user?.email) return;
     openCheckout({
       priceId: "endless_planner_cloud_monthly",
-      customerEmail: email,
+      customerEmail: user.email,
+      userId: user.id,
       returnUrl: `${window.location.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}&sub=1`,
     });
   };
+
+  if (authLoading || subLoading) {
+    return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>;
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -33,9 +47,7 @@ export default function Subscribe() {
 
       <section className="px-6 py-12 max-w-xl mx-auto">
         <h1 className="font-display text-3xl text-center mb-2">Endless Planner Cloud</h1>
-        <p className="text-center text-muted-foreground mb-8">
-          $10/month — cancel anytime.
-        </p>
+        <p className="text-center text-muted-foreground mb-8">$10/month — cancel anytime.</p>
 
         <ul className="space-y-2 mb-8">
           {[
@@ -51,16 +63,21 @@ export default function Subscribe() {
           ))}
         </ul>
 
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
-          className="w-full px-4 py-3 rounded-md border border-input bg-background mb-3"
-        />
-        <Button size="lg" className="w-full" onClick={subscribe}>
-          Subscribe — $10/month
-        </Button>
+        {isActive ? (
+          <div className="planner-card text-center space-y-3">
+            <p className="text-sm">You're already subscribed to Cloud sync.</p>
+            <Button variant="outline" onClick={() => navigate("/settings")}>Manage in Settings</Button>
+          </div>
+        ) : (
+          <>
+            <p className="text-xs text-muted-foreground mb-3 text-center">
+              Signed in as <span className="font-medium">{user?.email}</span>
+            </p>
+            <Button size="lg" className="w-full" onClick={subscribe}>
+              Subscribe — $10/month
+            </Button>
+          </>
+        )}
       </section>
 
       {isOpen && (
