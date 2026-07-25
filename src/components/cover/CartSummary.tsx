@@ -147,8 +147,8 @@ export function CartSummary({
         />
       </div>
 
-      <Button size="lg" className="w-full" onClick={onCheckout} disabled={disabled || !emailValid}>
-        Checkout — ${total.toFixed(2)}
+      <Button size="lg" className="w-full" onClick={onCheckout} disabled={disabled || !emailValid || !includedCover}>
+        {includedCover ? `Checkout — $${total.toFixed(2)}` : "Choose a cover to continue"}
       </Button>
       <p className="text-[11px] text-muted-foreground text-center inline-flex items-center justify-center gap-1 w-full">
         <Cloud className="w-3 h-3" /> Cloud backup & multi-device install included
