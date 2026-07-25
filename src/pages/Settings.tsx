@@ -1,15 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, ImageIcon, Download, Upload, Cloud, CloudOff, LogOut, RefreshCw } from "lucide-react";
+import { ArrowLeft, ImageIcon, Download, Upload, Cloud, CloudOff, LogOut, RefreshCw, CreditCard, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CoverImage } from "@/components/cover/CoverImage";
 import { CoverPicker } from "@/components/cover/CoverPicker";
 import { useUserSettings } from "@/hooks/useUserSettings";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 import { getCover } from "@/data/covers";
 import { exportAll, importAll } from "@/lib/db";
 import { getLastSyncAt, signOut as syncSignOut } from "@/lib/sync";
+import { getStripeEnvironment } from "@/lib/stripe";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export default function Settings() {
