@@ -147,7 +147,7 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
         <div className="text-xs text-muted-foreground text-center">
           {selectedPackIds.length} pack{selectedPackIds.length === 1 ? "" : "s"} selected · packs total <strong className="text-foreground">${total.toFixed(2)}</strong>
           <span className="block mt-0.5">
-            {getDiscountLabel(selectedPackIds.length) || "$10 per pack"}
+            {getDiscountLabel(selectedPackIds.length) || "$5 per pack"}
           </span>
         </div>
       )}
