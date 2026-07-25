@@ -79,6 +79,7 @@ const App = () => {
           <Route path="/" element={<Landing />} />
           <Route path="/planner/:plannerId" element={<PlannerDetail />} />
           <Route path="/packs" element={<Packs />} />
+          <Route path="/subscribe" element={<Subscribe />} />
           <Route path="/unlock" element={<Unlock />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin-planner" element={<AdminPlanner />} />
