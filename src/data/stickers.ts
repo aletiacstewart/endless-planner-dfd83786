@@ -108,6 +108,24 @@ const changeOfLifeSet: StickerSet = {
   icons: colByCategory("icons"),
 };
 
+// Themed PNG sticker library for garden (60 pieces).
+const gardenStickerModules = import.meta.glob("../assets/stickers/garden/*.png", {
+  eager: true,
+  query: "?url",
+  import: "default",
+}) as Record<string, string>;
+const gardenByCategory = (cat: StickerCategory): StickerAsset[] =>
+  Array.from({ length: 15 }, (_, i) => {
+    const match = Object.entries(gardenStickerModules).find(([p]) => p.endsWith(`/${cat}-${i}.png`));
+    return match ? img(match[1]) : em("✨");
+  });
+const gardenPngSet: StickerSet = {
+  motifs: gardenByCategory("motifs"),
+  banners: gardenByCategory("banners"),
+  washi: gardenByCategory("washi"),
+  icons: gardenByCategory("icons"),
+};
+
 const scrapbookSet: StickerSet = {
   motifs: [em("📎"), em("📌"), em("🖇️"), em("✂️"), em("📮"), em("💌"), em("💗"), em("💫"), em("🌸"), em("🦋"), em("🌈"), em("⭐"), em("✨"), em("🎀"), em("🏷️")],
   banners: [em("🎀"), em("🏷️"), em("📌"), em("📎"), em("💌"), em("📖"), em("📓"), em("📔"), em("📒"), em("📝"), em("🗒️"), em("🖇️"), em("🎗️"), em("💭"), em("🪄")],
