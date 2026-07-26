@@ -386,7 +386,11 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
+        title: "Reflection",
+        columns: 2,
         fields: [
+          { key: "gratitude", label: "Grateful for", type: "gratitude-list", max: 3 },
+          { key: "day_rating", label: "How the day felt", type: "mood-rating" },
           { key: "daily_notes", label: "Wellness Notes", type: "textarea", rows: 5, span: 2 },
         ],
       },
