@@ -64,7 +64,18 @@
       "home-info",
       "weekly-cleaning",
       "meal-planning",
-      "mood-journal"
+      "mood-journal",
+      "therapy-session",
+      "coping-toolkit"
+    ],
+    "dove-ink": [
+      "my-goals",
+      "yearly-calendar",
+      "monthly-calendar",
+      "weekly-calendar",
+      "daily-tracker",
+      "complete-tracker",
+      "yearly-habit-tracker"
     ]
   },
   "stickers": {
