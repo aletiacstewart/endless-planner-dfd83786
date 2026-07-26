@@ -478,6 +478,56 @@ export function FieldRenderer({ field, value, allValues, onChange, onChangeAny, 
         </div>
       );
     }
+    case "priority-list":
+      return (
+        <PriorityList
+          value={value as { done: boolean; text: string }[]}
+          count={field.max ?? 3}
+          label={field.label}
+          onChange={onChange}
+        />
+      );
+    case "hourly-timeline":
+      return (
+        <HourlyTimeline
+          value={value as Record<string, string>}
+          label={field.label}
+          onChange={onChange}
+        />
+      );
+    case "note-style":
+      return (
+        <NoteStyleField
+          value={value as { style: string; body: string }}
+          label={field.label}
+          onChange={onChange}
+        />
+      );
+    case "smart-goal":
+      return (
+        <SmartGoal
+          value={value as Record<string, string>}
+          label={field.label}
+          onChange={onChange}
+        />
+      );
+    case "mood-log":
+      return (
+        <MoodLog
+          value={value as Record<string, number>}
+          label={field.label}
+          onChange={onChange}
+        />
+      );
+    case "gratitude-list":
+      return (
+        <GratitudeList
+          value={value as string[]}
+          count={field.max ?? 3}
+          label={field.label}
+          onChange={onChange}
+        />
+      );
     default:
       return null;
   }
