@@ -90,6 +90,8 @@ export const COVER_STYLE_OVERRIDE = {
   "english-rose-dew": "Soft cottage-garden palette — dusty pink, sage, cream — delicate PINK english roses with dew drops and gentle ink linework. Absolutely NO dragonflies, NO insects, NO butterflies.",
   "cream-ribbons": "Warm ivory background with flowing CREAM SATIN RIBBONS softly curling around the subject, delicate gold-thread accents, elegant and heirloom. Absolutely NO gemstones, NO crystal facets, NO jewelry.",
   "dove-raven-roses": "Cream paper background with rich red rose accents. Every icon features BOTH a small WHITE DOVE and a small BLACK RAVEN — both birds always visible together, painterly heirloom style. Not a single-bird composition.",
+  "black-moon-flora": "Celestial night palette — deep indigo, warm gold, ivory highlights, luminous full-moon halo with delicate starfield and soft feathered wing accents, matches the Luminous Hummingbird Celestial Wings icon set exactly.",
+  "dove-ink": "Cream paper background with rich red rose accents. Every icon features BOTH a small WHITE DOVE and a small BLACK RAVEN — both birds always visible together, painterly heirloom style. Not a single-bird composition.",
 };
 
 export const STICKER_CATEGORY_PROMPT = {
