@@ -103,6 +103,8 @@ import blackRoseMoon from "@/assets/covers/black-rose-moon.png.asset.json";
 import midnightIrisMoon from "@/assets/covers/midnight-iris-moon.png.asset.json";
 import blackLilyMoon from "@/assets/covers/black-lily-moon.png.asset.json";
 import swallowtailMoon from "@/assets/covers/swallowtail-moon.png.asset.json";
+import irisStarlightMoon from "@/assets/covers/iris-starlight-moon.png.asset.json";
+import sparrowMoonLights from "@/assets/covers/sparrow-moon-lights.png.asset.json";
 import gildedRose from "@/assets/covers/gilded-rose.png.asset.json";
 import scrapbookBotanical from "@/assets/covers/scrapbook-botanical.png.asset.json";
 import midnightMothBloom from "@/assets/covers/midnight-moth-bloom.png.asset.json";
@@ -1207,6 +1209,20 @@ export const COVERS: Cover[] = [
     name: "Swallowtail Moon",
     collection: "celestial-birds-insects",
     image: swallowtailMoon.url,
+    palette: paletteCelestialGold,
+  },
+  {
+    id: "iris-starlight-moon",
+    name: "Iris Starlight Moon",
+    collection: "black-moon",
+    image: irisStarlightMoon.url,
+    palette: paletteCelestialGold,
+  },
+  {
+    id: "sparrow-moon-lights",
+    name: "Sparrow Moon Lights",
+    collection: "sparrow",
+    image: sparrowMoonLights.url,
     palette: paletteCelestialGold,
   },
   {
