@@ -29,8 +29,7 @@ import {
 import { toCss } from "@/hooks/useThemedSwatches";
 import { toast } from "sonner";
 
-/** Page types that render as a two-page planner spread. */
-const SPREAD_PAGE_TYPES = new Set(["daily-tracker", "complete-tracker"]);
+/** All interior entry pages render as a two-page planner spread on lg+. */
 
 export default function Entry() {
   const { entryId = "" } = useParams();
