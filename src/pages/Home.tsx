@@ -124,7 +124,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen pb-24" style={{ background: "var(--gradient-paper)" }}>
-      {/* Cover hero — show the full artwork, no aggressive cropping. */}
+      {/* Cover hero — tap to flip the planner open into today's spread. */}
       <div className="relative w-full">
         <Link
           to="/settings"
@@ -134,24 +134,41 @@ export default function Home() {
           <Icons.Settings className="w-5 h-5" />
         </Link>
 
-        <div className="relative mx-auto w-full aspect-square max-w-md overflow-hidden rounded-2xl shadow-xl">
-          <CoverImage
-            cover={cover}
-            plannerName={plannerName}
-            ownerName={settings?.ownerName}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-b from-transparent via-black/30 to-black/70" />
-          <div className="absolute inset-x-0 bottom-0 px-5 pb-5">
-            <h1 className="font-display text-3xl sm:text-4xl font-semibold text-white drop-shadow-lg">
-              {plannerName}
-            </h1>
-            {settings?.ownerName && (
-              <p className="font-script text-xl text-white/90 drop-shadow">
-                {settings.ownerName}
+        <div className="cover-open-stage relative mx-auto w-full aspect-square max-w-md">
+          {opening && (
+            <div className="cover-open-inside absolute inset-0 rounded-2xl paper-dot border border-border/60 shadow-inner flex items-center justify-center">
+              <p className="font-script text-2xl text-primary/70">opening today…</p>
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={opening ? undefined : openToday}
+            aria-label={`Open ${plannerName}`}
+            className={`relative w-full h-full overflow-hidden rounded-2xl shadow-xl block ${opening ? "cover-open-flip" : "transition-transform hover:-rotate-1"}`}
+          >
+            <CoverImage
+              cover={cover}
+              plannerName={plannerName}
+              ownerName={settings?.ownerName}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-b from-transparent via-black/30 to-black/70" />
+            {/* Book spine highlight on the hinge */}
+            <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-2 bg-gradient-to-r from-black/40 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 px-5 pb-5 text-left">
+              <h1 className="font-display text-3xl sm:text-4xl font-semibold text-white drop-shadow-lg">
+                {plannerName}
+              </h1>
+              {settings?.ownerName && (
+                <p className="font-script text-xl text-white/90 drop-shadow">
+                  {settings.ownerName}
+                </p>
+              )}
+              <p className="font-script text-sm text-white/80 mt-2 drop-shadow">
+                tap to open
               </p>
-            )}
-          </div>
+            </div>
+          </button>
         </div>
       </div>
 
