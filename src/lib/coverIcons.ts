@@ -1116,6 +1116,10 @@ export const COVER_ICONS: Record<string, Record<string, string>> = {
     "self-care-checklist": prSelfCareChecklist, "cleaning-checklist": prCleaningChecklist,
     recipe: prRecipe, notes: prNotes, "workout-tracker": prWorkoutTracker,
     medications: prMedications, "medical-records": prMedicalRecords, "yearly-focus": prYearlyFocus,
+    "brain-dump": prBrainDump, "fitness-tracker": prFitnessTracker, "adhd-toolkit": prAdhdToolkit,
+    "budget-monthly": prBudgetMonthly, "debt-tracker": prDebtTracker, "savings-goals": prSavingsGoals,
+    "home-info": prHomeInfo, "weekly-cleaning": prWeeklyCleaning, "meal-planning": prMealPlanning,
+    "mood-journal": prMoodJournal, "therapy-session": prTherapySession, "coping-toolkit": prCopingToolkit,
   }),
   "texas-horned-lizard": pack({
     "my-goals": thlMyGoals, "yearly-calendar": thlYearlyCalendar, "monthly-calendar": thlMonthlyCalendar,
