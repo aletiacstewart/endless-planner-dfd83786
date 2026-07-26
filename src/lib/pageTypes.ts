@@ -88,16 +88,19 @@ export interface PageTypeDef {
   summary?: (values: Record<string, unknown>) => string;
 }
 
-const goalKeys = Array.from({ length: 12 }, (_, i) => `goal_${i + 1}`);
+const goalKeys = Array.from({ length: 6 }, (_, i) => `goal_${i + 1}`);
 
 export const PAGE_TYPES: PageTypeDef[] = [
   {
     id: "my-goals",
     name: "My Goals",
     shortName: "Goals",
-    description: "Capture up to 12 goals with why, how you'll feel, and action steps.",
+    description: "Six SMART goals with milestones, obstacles, and a weekly review.",
     icon: "Target",
     sections: [
+      {
+        fields: [{ key: "year", label: "Year", type: "year", placeholder: "2026", span: 2 }],
+      },
       ...goalKeys.map((k, i) => ({
         title: `Goal ${i + 1}`,
         fields: [
@@ -107,24 +110,43 @@ export const PAGE_TYPES: PageTypeDef[] = [
             type: "textarea" as const,
             rows: 2,
             placeholder: "What do you want to achieve?",
+            span: 2,
           },
           {
-            key: `why_${i + 1}`,
-            label: "Why I want this",
-            type: "text" as const,
-            placeholder: "Why does this matter?",
+            key: `smart_${i + 1}`,
+            label: "SMART breakdown",
+            type: "smart-goal" as const,
+            span: 2,
           },
           {
-            key: `feel_${i + 1}`,
-            label: "How I'll feel when I reach it",
-            type: "text" as const,
-            placeholder: "Describe the feeling",
+            key: `milestones_${i + 1}`,
+            label: "Milestones",
+            type: "priority-list" as const,
+            max: 4,
+            span: 2,
           },
           {
-            key: `action_${i + 1}`,
+            key: `obstacles_${i + 1}`,
+            label: "Obstacles",
+            type: "textarea" as const,
+            rows: 2,
+          },
+          {
+            key: `actions_${i + 1}`,
             label: "Action steps",
-            type: "text" as const,
-            placeholder: "First step",
+            type: "textarea" as const,
+            rows: 2,
+          },
+          {
+            key: `deadline_${i + 1}`,
+            label: "Deadline",
+            type: "date" as const,
+          },
+          {
+            key: `review_${i + 1}`,
+            label: "Weekly review",
+            type: "textarea" as const,
+            rows: 2,
           },
         ],
       })),
@@ -132,7 +154,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         fields: [
           {
             key: "reward",
-            label: "Reward for achieving all goals",
+            label: "Reward for reaching all goals",
             type: "textarea",
             rows: 3,
             placeholder: "How will you celebrate?",
