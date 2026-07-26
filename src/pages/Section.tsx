@@ -1,10 +1,11 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react";
+import { ChevronLeft, Plus, Trash2 } from "lucide-react";
 import { getPageType } from "@/lib/pageTypes";
 import { getPageImage } from "@/lib/pageImages";
 import { createEntry, deleteEntry, listEntries, type PlannerEntry } from "@/lib/db";
 import { Button } from "@/components/ui/button";
+import { SideTabs } from "@/components/planner/SideTabs";
 import { toast } from "sonner";
 import { useUserSettings } from "@/hooks/useUserSettings";
 
@@ -40,59 +41,99 @@ export default function Section() {
     toast.success("Entry deleted");
   };
 
+  const coverImage = getPageImage(pageType.id, settings?.coverId);
+
   return (
-    <div className="min-h-screen pb-24" style={{ background: "var(--gradient-paper)" }}>
+    <div className="min-h-screen pb-32 lg:pb-24 lg:pr-24" style={{ background: "var(--gradient-paper)" }}>
       <header className="px-5 pt-8 pb-4">
         <Link to="/app" className="inline-flex items-center text-sm text-muted-foreground mb-3">
           <ChevronLeft className="w-4 h-4" /> Home
         </Link>
-        {getPageImage(pageType.id, settings?.coverId) && (
-          <img
-            src={getPageImage(pageType.id, settings?.coverId)}
-            alt={pageType.name}
-            className="w-full max-w-md mx-auto rounded-2xl shadow-lg mb-4 aspect-square object-cover"
-          />
-        )}
-        <h1 className="section-title">{pageType.name}</h1>
-        <p className="text-sm text-muted-foreground mt-1">{pageType.description}</p>
+        <div className="rounded-2xl planner-band px-5 py-4 flex items-center justify-between gap-4">
+          <div className="min-w-0">
+            <p className="font-script text-xl text-primary/80 leading-none">collection</p>
+            <h1 className="section-title mt-1 truncate">{pageType.name}</h1>
+            <p className="text-sm text-muted-foreground mt-1">{pageType.description}</p>
+          </div>
+          {coverImage && (
+            <img
+              src={coverImage}
+              alt=""
+              className="hidden sm:block w-20 h-20 rounded-xl object-cover shadow-md shrink-0"
+            />
+          )}
+        </div>
       </header>
 
-      <main className="px-5 space-y-3">
-        <Button onClick={addNew} className="w-full" size="lg">
-          <Plus className="w-4 h-4 mr-1" />
-          {pageType.id === "daily-tracker" ? "Add a daily" : `Add another ${pageType.shortName}`}
-        </Button>
+      <main className="px-4 lg:px-8">
+        <div className="relative rounded-3xl paper-dot shadow-[var(--shadow-soft)] border border-border/60 overflow-hidden p-5 lg:p-10">
+          <div
+            aria-hidden
+            className="hidden lg:block absolute inset-y-0 left-1/2 -translate-x-1/2 w-8 spread-spine z-0 pointer-events-none"
+          />
 
-        {entries.length === 0 ? (
-          <div className="planner-card text-center py-10">
-            <p className="text-sm text-muted-foreground">No entries yet. Tap Add to begin.</p>
+          <div className="relative z-10 flex items-center justify-between mb-5">
+            <p className="font-script text-lg text-primary/80">
+              {entries.length} {entries.length === 1 ? "sheet" : "sheets"}
+            </p>
+            <Button onClick={addNew} size="sm" className="rounded-full">
+              <Plus className="w-4 h-4 mr-1" />
+              New {pageType.shortName.toLowerCase()}
+            </Button>
           </div>
-        ) : (
-          entries.map((e) => (
-            <div key={e.id} className="planner-card flex items-center gap-2">
-              <Link to={`/entry/${e.id}`} className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">
-                  {pageType.summary?.(e.values) || "Untitled"}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Updated {new Date(e.updatedAt).toLocaleString()}
-                </p>
-              </Link>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => remove(e.id)}
-                aria-label="Delete entry"
-              >
-                <Trash2 className="w-4 h-4 text-destructive" />
+
+          {entries.length === 0 ? (
+            <div className="relative z-10 text-center py-16">
+              <p className="font-script text-2xl text-primary/70 mb-2">a fresh page awaits</p>
+              <p className="text-sm text-muted-foreground mb-5">
+                No {pageType.shortName.toLowerCase()} entries yet.
+              </p>
+              <Button onClick={addNew} size="lg" className="rounded-full">
+                <Plus className="w-4 h-4 mr-1" /> Start your first
               </Button>
-              <Link to={`/entry/${e.id}`}>
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
-              </Link>
             </div>
-          ))
-        )}
+          ) : (
+            <ul className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {entries.map((e, idx) => {
+                const title = pageType.summary?.(e.values) || "Untitled";
+                return (
+                  <li
+                    key={e.id}
+                    className="group relative rounded-2xl bg-card/90 border border-border/60 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-soft)] hover:-translate-y-0.5 transition-all overflow-hidden"
+                  >
+                    <Link to={`/entry/${e.id}`} className="block p-4 pr-10 min-h-[112px]">
+                      <p className="font-script text-primary/70 text-sm leading-none">
+                        sheet {String(idx + 1).padStart(2, "0")}
+                      </p>
+                      <p className="font-display text-lg mt-2 line-clamp-2">{title}</p>
+                      <p className="text-[11px] uppercase tracking-widest text-muted-foreground mt-3">
+                        {new Date(e.updatedAt).toLocaleDateString(undefined, {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </p>
+                    </Link>
+                    <div
+                      aria-hidden
+                      className="absolute top-0 right-0 h-full w-2 bg-primary/20 group-hover:bg-primary/40 transition-colors"
+                    />
+                    <button
+                      onClick={() => remove(e.id)}
+                      aria-label="Delete entry"
+                      className="absolute bottom-2 right-3 p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
       </main>
+
+      <SideTabs activePageType={pageType.id} />
     </div>
   );
 }
