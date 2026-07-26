@@ -43,12 +43,8 @@ export const defaultStickerSet: StickerSet = {
 
 // -- Theme sets ---------------------------------------------------------------
 
-const gardenSet: StickerSet = {
-  motifs: [em("🌸"), em("🌷"), em("🌺"), em("🌻"), em("🌼"), em("🌹"), em("🥀"), em("💐"), em("🌾"), em("🌿"), em("🍀"), em("🍃"), em("🌱"), em("🪴"), em("🦋")],
-  banners: [em("🎀"), em("🏷️"), em("📌"), em("💌"), em("📖"), em("📓"), em("🪄"), em("💭"), em("📝"), em("🗒️"), em("📎"), em("🎗️"), em("💐"), em("🪻"), em("🌸")],
-  washi: [em("🌿"), em("🍃"), em("〰️"), em("➰"), em("🌾"), em("🌱"), em("🍀"), em("🌼"), em("🌸"), em("🌷"), em("🌺"), em("🌹"), em("🪷"), em("🪻"), em("💮")],
-  icons: [em("☀️"), em("🌦️"), em("💧"), em("🐝"), em("🐞"), em("🦋"), em("🌈"), em("🌤️"), em("🐛"), em("🦔"), em("🐇"), em("🌸"), em("🕊️"), em("📚"), em("🍵")],
-};
+// Placeholder — real garden set is loaded from PNGs below.
+const gardenSet: StickerSet = defaultStickerSet;
 
 const celestialSet: StickerSet = {
   motifs: [em("🌙"), em("🌛"), em("🌜"), em("🌚"), em("🌝"), em("⭐"), em("✨"), em("💫"), em("🌟"), em("☄️"), em("🌠"), em("🪐"), em("🌌"), em("☀️"), em("🌞")],
