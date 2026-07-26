@@ -100,7 +100,7 @@ export default function Entry() {
   }
 
   const meta = getMeta(entry);
-  const asSpread = SPREAD_PAGE_TYPES.has(pageType.id);
+  const asSpread = true;
 
   const onChange = (key: string, value: FieldValue) => {
     setEntry({ ...entry, values: { ...entry.values, [key]: value } });
