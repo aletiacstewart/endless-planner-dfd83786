@@ -24,6 +24,18 @@ import prWorkoutTracker from "@/assets/page-icons/patriotic-roses/workout-tracke
 import prMedications from "@/assets/page-icons/patriotic-roses/medications.jpg";
 import prMedicalRecords from "@/assets/page-icons/patriotic-roses/medical-records.jpg";
 import prYearlyFocus from "@/assets/page-icons/patriotic-roses/yearly-focus.jpg";
+import prBrainDump from "@/assets/page-icons/patriotic-roses/brain-dump.jpg";
+import prFitnessTracker from "@/assets/page-icons/patriotic-roses/fitness-tracker.jpg";
+import prAdhdToolkit from "@/assets/page-icons/patriotic-roses/adhd-toolkit.jpg";
+import prBudgetMonthly from "@/assets/page-icons/patriotic-roses/budget-monthly.jpg";
+import prDebtTracker from "@/assets/page-icons/patriotic-roses/debt-tracker.jpg";
+import prSavingsGoals from "@/assets/page-icons/patriotic-roses/savings-goals.jpg";
+import prHomeInfo from "@/assets/page-icons/patriotic-roses/home-info.jpg";
+import prWeeklyCleaning from "@/assets/page-icons/patriotic-roses/weekly-cleaning.jpg";
+import prMealPlanning from "@/assets/page-icons/patriotic-roses/meal-planning.jpg";
+import prMoodJournal from "@/assets/page-icons/patriotic-roses/mood-journal.jpg";
+import prTherapySession from "@/assets/page-icons/patriotic-roses/therapy-session.jpg";
+import prCopingToolkit from "@/assets/page-icons/patriotic-roses/coping-toolkit.jpg";
 
 // Texas Horned Lizard
 import thlMyGoals from "@/assets/page-icons/texas-horned-lizard/my-goals.jpg";
