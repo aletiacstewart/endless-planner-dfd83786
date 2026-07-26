@@ -1102,6 +1102,279 @@ export const PAGE_TYPES: PageTypeDef[] = [
     ],
     summary: (v) => (v.date as string) || (v.focus_word as string) || "ADHD toolkit",
   },
+
+  // ============ BUDGET PLANNER ============
+  {
+    id: "budget-monthly",
+    name: "Monthly Budget",
+    shortName: "Budget",
+    description: "Income, fixed expenses, variable spending, and what's left.",
+    icon: "Wallet",
+    sections: [
+      {
+        columns: 2,
+        fields: [
+          { key: "month", label: "Month", type: "month" },
+          { key: "target_savings", label: "Savings goal ($)", type: "number" },
+        ],
+      },
+      {
+        title: "Income",
+        fields: [
+          { key: "income", label: "Source / Amount", type: "measurement-grid", span: 2 },
+        ],
+      },
+      {
+        title: "Fixed expenses",
+        fields: [
+          { key: "fixed", label: "Bill / Due / Amount / Paid", type: "measurement-grid", span: 2 },
+        ],
+      },
+      {
+        title: "Variable spending",
+        fields: [
+          { key: "variable", label: "Category / Budgeted / Actual", type: "measurement-grid", span: 2 },
+        ],
+      },
+      {
+        title: "Reflection",
+        columns: 2,
+        fields: [
+          { key: "wins", label: "Money wins", type: "textarea", rows: 3 },
+          { key: "leaks", label: "Money leaks", type: "textarea", rows: 3 },
+          { key: "next", label: "Next month — one change", type: "textarea", rows: 2, span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => (v.month as string) || "Monthly budget",
+  },
+  {
+    id: "debt-tracker",
+    name: "Debt Tracker",
+    shortName: "Debt",
+    description: "Balances, minimums, and payoff progress.",
+    icon: "TrendingDown",
+    sections: [
+      {
+        fields: [
+          { key: "debts", label: "Creditor / Balance / APR / Min / Paid", type: "measurement-grid", span: 2 },
+        ],
+      },
+      {
+        columns: 2,
+        fields: [
+          { key: "strategy", label: "Strategy (snowball/avalanche)", type: "text" },
+          { key: "payoff_date", label: "Target debt-free date", type: "date" },
+          { key: "notes", label: "Notes", type: "textarea", rows: 4, span: 2 },
+        ],
+      },
+    ],
+    summary: () => "Debt tracker",
+  },
+  {
+    id: "savings-goals",
+    name: "Savings Goals",
+    shortName: "Savings",
+    description: "Sinking funds and long-term savings goals.",
+    icon: "PiggyBank",
+    sections: [
+      {
+        fields: [
+          { key: "goals", label: "Goal / Target / Saved / Deadline", type: "measurement-grid", span: 2 },
+        ],
+      },
+      {
+        fields: [
+          { key: "notes", label: "Notes", type: "textarea", rows: 4, span: 2 },
+        ],
+      },
+    ],
+    summary: () => "Savings goals",
+  },
+
+  // ============ HOME MANAGEMENT ============
+  {
+    id: "home-info",
+    name: "Household Info",
+    shortName: "Home Info",
+    description: "Emergency contacts, utilities, and important accounts.",
+    icon: "Home",
+    sections: [
+      {
+        columns: 2,
+        fields: [
+          { key: "address", label: "Address", type: "text", span: 2 },
+          { key: "emergency", label: "Emergency contact", type: "text" },
+          { key: "emergency_phone", label: "Phone", type: "text" },
+        ],
+      },
+      {
+        title: "Utilities & services",
+        fields: [
+          { key: "utilities", label: "Service / Provider / Account / Due", type: "measurement-grid", span: 2 },
+        ],
+      },
+      {
+        title: "Important accounts",
+        fields: [
+          { key: "accounts", label: "Account / Contact / Notes", type: "measurement-grid", span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => (v.address as string) || "Household info",
+  },
+  {
+    id: "weekly-cleaning",
+    name: "Weekly Cleaning",
+    shortName: "Cleaning Week",
+    description: "Zone-based weekly cleaning by day.",
+    icon: "Sparkles",
+    sections: [
+      {
+        fields: [{ key: "week_of", label: "Week of", type: "date", span: 2 }],
+      },
+      {
+        title: "Daily zones",
+        columns: 2,
+        fields: [
+          { key: "monday", label: "Monday", type: "checkbox-group", options: ["Kitchen", "Trash", "Dishes", "Laundry", "Floors"] },
+          { key: "tuesday", label: "Tuesday", type: "checkbox-group", options: ["Bathrooms", "Mirrors", "Toilets", "Sinks"] },
+          { key: "wednesday", label: "Wednesday", type: "checkbox-group", options: ["Bedrooms", "Sheets", "Dust", "Vacuum"] },
+          { key: "thursday", label: "Thursday", type: "checkbox-group", options: ["Living areas", "Vacuum", "Dust", "Windows"] },
+          { key: "friday", label: "Friday", type: "checkbox-group", options: ["Kitchen deep", "Fridge", "Stove", "Sweep"] },
+          { key: "saturday", label: "Saturday", type: "checkbox-group", options: ["Errands", "Groceries", "Yard", "Cars"] },
+          { key: "sunday", label: "Sunday", type: "checkbox-group", options: ["Reset", "Meal prep", "Plan week", "Rest"] },
+        ],
+      },
+    ],
+    summary: (v) => (v.week_of ? `Cleaning ${v.week_of}` : "Weekly cleaning"),
+  },
+  {
+    id: "meal-planning",
+    name: "Meal Plan & Grocery",
+    shortName: "Meal Plan",
+    description: "Weekly meals + a grocery list that stays with them.",
+    icon: "ShoppingCart",
+    sections: [
+      {
+        fields: [{ key: "week_of", label: "Week of", type: "date", span: 2 }],
+      },
+      {
+        title: "This week's meals",
+        fields: [
+          { key: "meals", label: "Day / Breakfast / Lunch / Dinner", type: "measurement-grid", span: 2 },
+        ],
+      },
+      {
+        title: "Grocery list",
+        columns: 2,
+        fields: [
+          { key: "produce", label: "Produce", type: "ingredients-list" },
+          { key: "protein", label: "Protein", type: "ingredients-list" },
+          { key: "pantry", label: "Pantry", type: "ingredients-list" },
+          { key: "other", label: "Other", type: "ingredients-list" },
+        ],
+      },
+    ],
+    summary: (v) => (v.week_of ? `Meals ${v.week_of}` : "Meal plan"),
+  },
+
+  // ============ MENTAL HEALTH ============
+  {
+    id: "mood-journal",
+    name: "Mood Journal",
+    shortName: "Mood",
+    description: "Track how you're feeling and what shaped it.",
+    icon: "Heart",
+    sections: [
+      {
+        columns: 2,
+        fields: [
+          { key: "date", label: "Date", type: "date" },
+          { key: "mood", label: "Overall mood", type: "mood-rating" },
+          { key: "energy", label: "Energy", type: "rating", max: 5 },
+          { key: "anxiety", label: "Anxiety", type: "rating", max: 5 },
+        ],
+      },
+      {
+        title: "Today's feelings",
+        fields: [
+          { key: "feelings", label: "Name what you feel", type: "checkbox-group", options: ["Calm", "Happy", "Grateful", "Sad", "Anxious", "Angry", "Overwhelmed", "Lonely", "Hopeful", "Tired"], span: 2 },
+        ],
+      },
+      {
+        columns: 2,
+        fields: [
+          { key: "triggers", label: "What triggered it", type: "textarea", rows: 4 },
+          { key: "coping", label: "What helped", type: "textarea", rows: 4 },
+          { key: "gratitude", label: "Grateful for", type: "gratitude-list", max: 3, span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => (v.date as string) || "Mood entry",
+  },
+  {
+    id: "therapy-session",
+    name: "Therapy Session Notes",
+    shortName: "Therapy",
+    description: "Prep, reflect, and track between-session homework.",
+    icon: "MessageCircle",
+    sections: [
+      {
+        columns: 2,
+        fields: [
+          { key: "date", label: "Session date", type: "date" },
+          { key: "therapist", label: "Therapist", type: "text" },
+        ],
+      },
+      {
+        title: "Bring to session",
+        fields: [
+          { key: "topics", label: "Topics to discuss", type: "priority-list", max: 5, span: 2 },
+        ],
+      },
+      {
+        title: "During / after",
+        fields: [
+          { key: "insights", label: "Insights", type: "note-style", span: 2 },
+        ],
+      },
+      {
+        title: "Homework",
+        fields: [
+          { key: "homework", label: "Between-session practices", type: "priority-list", max: 5, span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => (v.date as string) || "Therapy notes",
+  },
+  {
+    id: "coping-toolkit",
+    name: "Coping Toolkit",
+    shortName: "Coping",
+    description: "The tools that work for you, ready when you need them.",
+    icon: "LifeBuoy",
+    sections: [
+      {
+        columns: 2,
+        fields: [
+          { key: "grounding", label: "Grounding (5-4-3-2-1, breath)", type: "textarea", rows: 4 },
+          { key: "movement", label: "Movement that helps", type: "textarea", rows: 4 },
+          { key: "people", label: "People I can call", type: "textarea", rows: 4 },
+          { key: "places", label: "Places that soothe", type: "textarea", rows: 4 },
+          { key: "words", label: "Words / mantras", type: "textarea", rows: 4 },
+          { key: "avoid", label: "Things to avoid when low", type: "textarea", rows: 4 },
+        ],
+      },
+      {
+        title: "Crisis plan",
+        fields: [
+          { key: "crisis", label: "Steps if things get dark", type: "textarea", rows: 6, span: 2 },
+        ],
+      },
+    ],
+    summary: () => "Coping toolkit",
+  },
 ];
 
 export function getPageType(id: string): PageTypeDef | undefined {
