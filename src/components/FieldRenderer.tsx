@@ -1912,3 +1912,337 @@ function AddDoctorDialog({
     </Dialog>
   );
 }
+
+/* -------------------------------------------------------------------------- */
+/*  PriorityList — Top 3 (or N) numbered rows: checkbox + text                */
+/* -------------------------------------------------------------------------- */
+
+function PriorityList({
+  value,
+  count,
+  label,
+  onChange,
+}: {
+  value: { done: boolean; text: string }[] | undefined;
+  count: number;
+  label: string;
+  onChange: (v: { done: boolean; text: string }[]) => void;
+}) {
+  const rows = Array.from({ length: count }, (_, i) => value?.[i] ?? { done: false, text: "" });
+  const update = (i: number, patch: Partial<{ done: boolean; text: string }>) => {
+    const next = rows.map((r, idx) => (idx === i ? { ...r, ...patch } : r));
+    onChange(next);
+  };
+  return (
+    <div>
+      <label className="field-label block mb-1.5">{label}</label>
+      <ol className="space-y-2">
+        {rows.map((r, i) => (
+          <li key={i} className="flex items-center gap-2">
+            <span className="font-script text-primary/70 text-lg w-5 shrink-0">{i + 1}</span>
+            <Checkbox checked={r.done} onCheckedChange={(c) => update(i, { done: !!c })} />
+            <Input
+              value={r.text}
+              onChange={(e) => update(i, { text: e.target.value })}
+              placeholder={`Priority ${i + 1}`}
+              className={cn("bg-background/60 flex-1", r.done && "line-through text-muted-foreground")}
+            />
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  HourlyTimeline — text slot per hour (6am–10pm by default)                 */
+/* -------------------------------------------------------------------------- */
+
+function HourlyTimeline({
+  value,
+  label,
+  onChange,
+}: {
+  value: Record<string, string> | undefined;
+  label: string;
+  onChange: (v: Record<string, string>) => void;
+}) {
+  const v = value ?? {};
+  const hours = Array.from({ length: 17 }, (_, i) => i + 6); // 6..22
+  const fmt = (h: number) => {
+    const ap = h >= 12 ? "PM" : "AM";
+    const hh = ((h + 11) % 12) + 1;
+    return `${hh} ${ap}`;
+  };
+  return (
+    <div>
+      <label className="field-label block mb-1.5">{label}</label>
+      <div className="rounded-md border border-border/60 bg-background/40 divide-y divide-border/40">
+        {hours.map((h) => (
+          <div key={h} className="flex items-center gap-2 px-2 py-1">
+            <span className="w-14 shrink-0 text-[11px] uppercase tracking-widest text-muted-foreground">
+              {fmt(h)}
+            </span>
+            <Input
+              value={v[String(h)] ?? ""}
+              onChange={(e) => onChange({ ...v, [String(h)]: e.target.value })}
+              className="bg-transparent border-0 h-8 flex-1 px-1 text-sm focus-visible:ring-0"
+              placeholder="—"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  NoteStyleField — paper style picker + rich body on that paper             */
+/* -------------------------------------------------------------------------- */
+
+function NoteStyleField({
+  value,
+  label,
+  onChange,
+}: {
+  value: { style: string; body: string } | undefined;
+  label: string;
+  onChange: (v: { style: string; body: string }) => void;
+}) {
+  const style = value?.style ?? "lined";
+  const body = value?.body ?? "";
+  const styles = [
+    { id: "blank", label: "Blank" },
+    { id: "lined", label: "Lined" },
+    { id: "dot", label: "Dot grid" },
+    { id: "cornell", label: "Cornell" },
+  ];
+  const paperBg =
+    style === "lined"
+      ? "repeating-linear-gradient(0deg, transparent 0 27px, hsl(var(--foreground) / 0.12) 27px 28px)"
+      : style === "dot"
+        ? "radial-gradient(hsl(var(--foreground) / 0.2) 1px, transparent 1px)"
+        : undefined;
+  const paperSize = style === "dot" ? "18px 18px" : style === "lined" ? "100% 28px" : undefined;
+
+  if (style === "cornell") {
+    const cues = value ? (value as unknown as { cues?: string }).cues ?? "" : "";
+    const summary = value ? (value as unknown as { summary?: string }).summary ?? "" : "";
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="field-label">{label}</label>
+          <StylePicker style={style} styles={styles} onChange={(s) => onChange({ ...(value ?? { body: "" }), style: s })} />
+        </div>
+        <div className="rounded-md border border-border/60 bg-background/40 overflow-hidden">
+          <div className="grid grid-cols-[1fr_2fr] min-h-[220px]">
+            <Textarea
+              value={cues}
+              onChange={(e) => onChange({ ...(value ?? { body: "" }), style, cues: e.target.value } as never)}
+              placeholder="Cues / questions"
+              className="rounded-none border-0 border-r border-border/60 resize-none bg-transparent text-sm"
+            />
+            <Textarea
+              value={body}
+              onChange={(e) => onChange({ ...(value ?? { body: "" }), style, body: e.target.value })}
+              placeholder="Notes"
+              className="rounded-none border-0 resize-none bg-transparent text-sm"
+              style={{
+                backgroundImage:
+                  "repeating-linear-gradient(0deg, transparent 0 27px, hsl(var(--foreground) / 0.12) 27px 28px)",
+                backgroundSize: "100% 28px",
+              }}
+            />
+          </div>
+          <Textarea
+            value={summary}
+            onChange={(e) => onChange({ ...(value ?? { body: "" }), style, summary: e.target.value } as never)}
+            placeholder="Summary"
+            rows={2}
+            className="rounded-none border-0 border-t border-border/60 resize-none bg-transparent text-sm"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1.5">
+        <label className="field-label">{label}</label>
+        <StylePicker style={style} styles={styles} onChange={(s) => onChange({ ...(value ?? { body: "" }), style: s })} />
+      </div>
+      <Textarea
+        value={body}
+        rows={14}
+        onChange={(e) => onChange({ style, body: e.target.value })}
+        className="bg-background/40 resize-none leading-7"
+        style={{
+          backgroundImage: paperBg,
+          backgroundSize: paperSize,
+        }}
+        placeholder="Start writing…"
+      />
+    </div>
+  );
+}
+
+function StylePicker({
+  style,
+  styles,
+  onChange,
+}: {
+  style: string;
+  styles: { id: string; label: string }[];
+  onChange: (id: string) => void;
+}) {
+  return (
+    <div className="flex gap-1">
+      {styles.map((s) => (
+        <button
+          key={s.id}
+          type="button"
+          onClick={() => onChange(s.id)}
+          className={cn(
+            "px-2 h-7 rounded-full border text-[11px] font-medium transition-colors",
+            style === s.id
+              ? "bg-primary text-primary-foreground border-primary"
+              : "bg-background/60 border-input text-muted-foreground hover:text-foreground"
+          )}
+        >
+          {s.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  SmartGoal — structured Specific / Measurable / Achievable / Relevant / Time */
+/* -------------------------------------------------------------------------- */
+
+function SmartGoal({
+  value,
+  label,
+  onChange,
+}: {
+  value: Record<string, string> | undefined;
+  label: string;
+  onChange: (v: Record<string, string>) => void;
+}) {
+  const v = value ?? {};
+  const set = (k: string, val: string) => onChange({ ...v, [k]: val });
+  const rows: [string, string, string][] = [
+    ["specific", "Specific", "What exactly do I want?"],
+    ["measurable", "Measurable", "How will I measure it?"],
+    ["achievable", "Achievable", "Is it realistic?"],
+    ["relevant", "Relevant", "Why does it matter?"],
+    ["time", "Time-bound", "By when?"],
+  ];
+  return (
+    <div>
+      <label className="field-label block mb-1.5">{label}</label>
+      <div className="rounded-md border border-border/60 bg-background/40 divide-y divide-border/40">
+        {rows.map(([k, l, ph]) => (
+          <div key={k} className="grid grid-cols-[90px_1fr] gap-2 items-start p-2">
+            <span className="font-display text-sm text-primary/80 pt-1.5">{l}</span>
+            <Textarea
+              value={v[k] ?? ""}
+              onChange={(e) => set(k, e.target.value)}
+              rows={2}
+              placeholder={ph}
+              className="bg-transparent border-0 resize-none text-sm focus-visible:ring-0 min-h-0"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  MoodLog — 7-day mood face row (S M T W T F S)                             */
+/* -------------------------------------------------------------------------- */
+
+function MoodLog({
+  value,
+  label,
+  onChange,
+}: {
+  value: Record<string, number> | undefined;
+  label: string;
+  onChange: (v: Record<string, number>) => void;
+}) {
+  const days = ["S", "M", "T", "W", "T", "F", "S"];
+  const v = value ?? {};
+  const icons = [Angry, Frown, Meh, Smile, Laugh];
+  return (
+    <div>
+      <label className="field-label block mb-1.5">{label}</label>
+      <div className="grid grid-cols-7 gap-1.5">
+        {days.map((d, i) => {
+          const cur = v[String(i)] ?? 0;
+          const next = ((cur % 5) + 1);
+          const Icon = cur > 0 ? icons[cur - 1] : Meh;
+          return (
+            <button
+              key={i}
+              type="button"
+              onClick={() => onChange({ ...v, [String(i)]: cur >= 5 ? 0 : next })}
+              className={cn(
+                "flex flex-col items-center gap-1 py-1.5 rounded-md border transition-colors",
+                cur > 0
+                  ? "bg-accent/20 border-accent text-accent-foreground"
+                  : "bg-background/60 border-input text-muted-foreground"
+              )}
+            >
+              <span className="text-[10px] uppercase tracking-widest">{d}</span>
+              <Icon className="w-4 h-4" />
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  GratitudeList — numbered text rows                                        */
+/* -------------------------------------------------------------------------- */
+
+function GratitudeList({
+  value,
+  count,
+  label,
+  onChange,
+}: {
+  value: string[] | undefined;
+  count: number;
+  label: string;
+  onChange: (v: string[]) => void;
+}) {
+  const rows = Array.from({ length: count }, (_, i) => value?.[i] ?? "");
+  const set = (i: number, s: string) => {
+    const next = rows.slice();
+    next[i] = s;
+    onChange(next);
+  };
+  return (
+    <div>
+      <label className="field-label block mb-1.5">{label}</label>
+      <ol className="space-y-2">
+        {rows.map((r, i) => (
+          <li key={i} className="flex items-center gap-2">
+            <span className="font-script text-primary/70 text-lg w-5 shrink-0">{i + 1}</span>
+            <Input
+              value={r}
+              onChange={(e) => set(i, e.target.value)}
+              placeholder="I'm grateful for…"
+              className="bg-background/60 flex-1"
+            />
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
