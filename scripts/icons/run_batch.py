@@ -123,9 +123,8 @@ def gen_icons(cover_id, collection, limit=10**9):
         if pid in done: continue
         if made >= limit: return made
         out = ROOT / f"src/assets/page-icons/{cover_id}/{pid}.jpg"
-        if out.exists():
-            prog["icons"][cover_id].append(pid); save_progress(prog); continue
         print(f"[icons] {cover_id}/{pid}", flush=True)
+
         try:
             run_one(icon_prompt(cover_id, collection, pid), out)
             prog["icons"][cover_id].append(pid); save_progress(prog); made += 1
