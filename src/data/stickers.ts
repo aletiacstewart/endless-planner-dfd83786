@@ -92,11 +92,24 @@ const patrioticSet: StickerSet = {
   icons: [em("☀️"), em("🌵"), em("🐎"), em("🌾"), em("🦅"), em("🕊️"), em("🌹"), em("🏵️"), em("🎇"), em("🎆"), em("🇺🇸"), em("⭐"), em("🌟"), em("❤️"), em("💙")],
 };
 
+// Themed PNG sticker library for change-of-life (60 pieces). Vite resolves
+// `?url` imports to hashed public URLs at build time.
+const colStickerModules = import.meta.glob("../assets/stickers/change-of-life/*.png", {
+  eager: true,
+  query: "?url",
+  import: "default",
+}) as Record<string, string>;
+const img = (src: string): StickerAsset => ({ kind: "img", src });
+const colByCategory = (cat: StickerCategory): StickerAsset[] =>
+  Array.from({ length: 15 }, (_, i) => {
+    const match = Object.entries(colStickerModules).find(([p]) => p.endsWith(`/${cat}-${i}.png`));
+    return match ? img(match[1]) : em("✨");
+  });
 const changeOfLifeSet: StickerSet = {
-  motifs: [em("🐞"), em("🦋"), em("🌸"), em("🌷"), em("🌻"), em("🌼"), em("🍃"), em("🌿"), em("🌱"), em("💐"), em("🪷"), em("💗"), em("💖"), em("🌈"), em("☀️")],
-  banners: [em("🎀"), em("🏷️"), em("💌"), em("📖"), em("📓"), em("🪄"), em("💭"), em("📝"), em("🗒️"), em("📎"), em("🎗️"), em("🌸"), em("🐞"), em("🦋"), em("💐")],
-  washi: [em("🌿"), em("🍃"), em("〰️"), em("➰"), em("🌾"), em("🌱"), em("🌼"), em("🌸"), em("🌷"), em("🌺"), em("🪷"), em("💮"), em("✧"), em("✦"), em("・")],
-  icons: [em("🧘"), em("💧"), em("🍵"), em("☕"), em("🕯️"), em("📿"), em("📚"), em("📖"), em("💗"), em("🌈"), em("☀️"), em("🌤️"), em("🦋"), em("🐞"), em("🌸")],
+  motifs: colByCategory("motifs"),
+  banners: colByCategory("banners"),
+  washi: colByCategory("washi"),
+  icons: colByCategory("icons"),
 };
 
 const scrapbookSet: StickerSet = {
