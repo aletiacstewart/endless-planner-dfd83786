@@ -27,7 +27,13 @@ export type FieldType =
   | "yearly-habit-grid" // 12 month rows: Begin/Break + label + 31 check cells
   | "med-list" // compact medication list: # + Name + Reason + Doctor rows
   | "doctor-picker" // dropdown bound to the shared Doctors directory + add-new dialog
-  | "paired-compact"; // single label with two small Start/Finish inputs side-by-side
+  | "paired-compact" // single label with two small Start/Finish inputs side-by-side
+  | "priority-list" // N numbered rows of checkbox + text (Top priorities)
+  | "hourly-timeline" // hourly schedule slots with text per hour
+  | "note-style" // paper-style picker (blank/lined/dot/cornell) + rich body
+  | "smart-goal" // structured SMART goal block
+  | "mood-log" // 7-day weekday mood face row
+  | "gratitude-list"; // 3 numbered gratitude text rows
 
 export interface FieldDef {
   key: string;
