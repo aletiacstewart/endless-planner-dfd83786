@@ -1,64 +1,57 @@
-## Problem
+# Planner Expansion — 20 PDFs → Sections + New Planners
 
-Two issues on interior spread pages:
+Goal: match the structure of the uploaded PDFs, rendered inside our existing paper/spine/side-tab planner theme. Interactive fields (auto-totals, progress bars, computed stats) where the source page needs them. Ship in three category phases.
 
-1. **Wide grids clip inside a half-page**: `yearly-habit-grid` (Jan–Dec × 31 days) and similar wide fields (`habit-grid`, month/week grids) are forced into the right half of the two-page spread, so days ~15–31 fall off the page.
-2. **Right-edge side tabs are invisible**: on desktop, `SideTabs` uses `translate-x-[calc(100%-2.5rem)]` which pushes each tab off-screen until hover, and the tab strip sits behind the entry padding — you only see a red sliver ("Yea…") as in the screenshot.
+## What becomes what
 
-## What to change
+Change-of-Life planner gets new sections; three PDFs graduate into their own planner products.
 
-### 1. Full-bleed wide sections in `PlannerSpread`
+| Source PDF | Destination |
+|---|---|
+| Brain Dump Bundle | New section: **Brain Dump** |
+| Notes A4 | New section: **Notes** (multi-style) |
+| Goal Planner Bundle | Upgrade existing **My Goals** layout |
+| Self-Care Wellness | Upgrade existing **Self-Care** layout |
+| Monthly Calendar (minimalist) | Upgrade existing **Monthly Calendar** |
+| Fitness / Weight Loss | New section: **Fitness Tracker** |
+| ADHD Planner | New section: **ADHD Toolkit** |
+| All-In-One Digital Planner | Reference — pull best patterns into base spread system |
+| Ultimate Annual Budget | New **Budget Planner** product |
+| Home Management Binder | New **Home Management** planner product |
+| Mental Health Planner + Bundle + Anxiety + Depression + Introvert + Self-Control + 300 Prompts | New **Mental Health Planner** product |
 
-Extend `PageTypeDef` sections with an optional `fullBleed?: boolean` flag. In `PlannerSpread`, split sections into three ordered buckets:
+## Phase A — Redesign existing pages (Batch 1 style transfer)
 
-- `leftSections`: normal sections up to the split
-- `bleedSections`: any full-bleed sections in their original order
-- `rightSections`: remaining normal sections
+Match structure of the PDFs on pages we already ship, keep current styling.
 
-Render structure:
+1. **My Goals** — SMART goal grid, milestones checklist, "why it matters" prompt, deadline, obstacles, action steps, weekly review row (from Goal Planner Bundle).
+2. **Self-Care** — categorized checklists (physical/emotional/spiritual/social), weekly self-care ritual grid, mood log, sleep + water + gratitude row (from Self-Care Wellness).
+3. **Monthly Calendar** — clean minimalist month grid + goals column + notes column + habit strip (from White Minimalist Monthly Calendar).
+4. **Notes** — 4 new note styles: dot-grid, lined, cornell, blank (from Notes A4). Chosen per entry.
+5. **Daily Tracker** — pull All-In-One patterns: top 3 priorities, hourly timeline, water tracker, mood ring, appointment strip.
 
-```text
-+--------------------------+
-| left  |  spine  | right  |  ← normal two-column
-+--------------------------+
-|      full-bleed row      |  ← spans both pages, no spine
-+--------------------------+
-```
+## Phase B — New sections in the current planner
 
-Full-bleed rows drop the center spine, use `col-span-2`, and wrap their children in `overflow-x-auto` so any residual overflow still scrolls rather than clips. If a page has only full-bleed sections, render as a single wide page (no spine).
+6. **Brain Dump** — quick-capture spread: freeform area, "categorize later" tags, action extract column, priority stars.
+7. **Fitness Tracker** — weight log with computed trend (start/current/goal/lost), measurements grid (arms/waist/hips/thighs) with delta, weekly workout log, activity minutes bar, calorie summary.
+8. **ADHD Toolkit** — daily brain state check-in, task dump → "must / should / could" bucketing, focus session timer log, dopamine menu, transitions checklist, wins column.
 
-Mark as `fullBleed: true` in `src/lib/pageTypes.ts`:
+## Phase C — Three new standalone planners
 
-- `yearly-habit-tracker` → `yearly_habits` (yearly-habit-grid)
-- `yearly-calendar` → the 12-month notes grid section
-- `monthly-calendar` → month grid
-- `weekly-calendar` → the week grid section
-- `daily-tracker` & `complete-tracker` → `month_calendar` (habit-grid) and any `habit-grid` sections
-- `weight-tracker`, `measurement-tracker`, `blood-sugar-tracker`, `blood-pressure-tracker`, `oxygen-tracker` → their multi-week tracker sections
+Each gets a catalog entry, cover picker, side-tab set, and its own section list. Sold like the Change-of-Life planner.
 
-Anything not explicitly flagged keeps the current two-column behavior.
+9. **Budget Planner** — Annual Overview, Monthly Budget (income − expenses with auto-total and remaining), Category Breakdown (fixed / variable / savings / debt), Bill Tracker, Savings Goals with progress bars, Debt Payoff tracker with balance rolldown, Net Worth snapshot, Year-in-review chart.
+10. **Home Management** — Household Info, Emergency Contacts, Cleaning Schedule (daily/weekly/monthly/seasonal), Meal Planner + Grocery List, Recipe cards, Home Maintenance log, Repair log, Warranties & Manuals, Important Dates, Password vault-style page.
+11. **Mental Health Planner** — Mood tracker with color grid and computed averages, Anxiety log (trigger / thought / evidence / reframe / rating before-after), Depression check-in (energy/sleep/appetite/social sliders), Introvert recharge planner (social battery meter, boundary scripts), Self-Control activities (urge log, replacement behavior, coping menu), Journal Prompts library (300 prompts from the three prompt PDFs, tagged Anxiety / Self-Reflective / Mental Health, with "prompt of the day" and freeform entry).
 
-### 2. Fix SideTabs visibility
+## Technical notes
 
-Rework `src/components/planner/SideTabs.tsx`:
+- New page kinds needed in `src/lib/pageTypes.ts`: `note-styled` (dot/lined/cornell), `hourly-timeline`, `smart-goal`, `weight-log`, `measurement-log`, `budget-grid`, `debt-tracker`, `savings-goal`, `mood-grid`, `anxiety-log`, `prompt-journal`, `bill-tracker`, `meal-plan`, `cleaning-schedule`.
+- Field renderer additions in `src/components/FieldRenderer.tsx` for each new type. Auto-math derived in the render layer from `allValues` (already supported by `onChangeAny`).
+- New planners registered in `src/data/planners.ts` with their own `pageIds`, cover series, and Stripe product entries. Reuse existing sync, entry storage, cover pack, and unlock flows unchanged.
+- Side-tab groups updated per planner so each product shows only its own sections.
+- Prompt library ships as static JSON under `src/data/prompts/` and gets surfaced via a `prompt-journal` field type; entries store the prompt id + user response.
 
-- Anchor the desktop rail at `right-2` (not `right-0`) and remove the hover-only translate — always show the full pill with icon + `shortName`.
-- Give the rail a translucent card background and shadow so it stays legible over paper backgrounds.
-- Keep the strip inside `max-h-[80vh] overflow-y-auto` so long tab lists scroll instead of overflowing off screen.
-- Increase the reserved right padding on the Entry container from `lg:pr-24` to `lg:pr-40` so the spread never sits under the tabs.
-- Active tab keeps the filled primary style; inactive tabs use `bg-card/90` with border, always fully visible.
-- Mobile bottom strip is already fine — leave as is, just verify padding.
+## Deliverable per phase
 
-### 3. Audit pass
-
-After the change, open one entry of each page type and confirm:
-
-- No horizontal clipping on `lg` (1280px+) or `xl` (1440px+).
-- All 31 day columns render for habit / yearly-habit grids.
-- Side rail tabs are fully visible on the right, don't overlap content, and remain clickable.
-
-## Technical details
-
-- Files touched: `src/lib/pageTypes.ts` (type + flags), `src/components/planner/PlannerSpread.tsx` (bucket + render), `src/components/planner/SideTabs.tsx` (visibility), `src/pages/Entry.tsx` (right padding). No renderer changes needed — `PageRenderer` already handles wide grids; we're only giving them room.
-- No data/schema/RLS changes.
-- Non-goal: redesigning the grids themselves or changing mobile layout beyond padding.
+Each phase ends with: updated `pageTypes` + `FieldRenderer`, live entry pages, side-tab wiring, and (for phase C) a new planner card on the storefront. I'll show you Phase A before starting Phase B, and Phase B before starting Phase C.
