@@ -1,0 +1,184 @@
+// Shared prompt library for cover icons + stickers.
+// Consumed by the Node generation scripts in ../generate-*.mjs.
+//
+// PRINCIPLE: every page id has a distinct SUBJECT list (what the icon shows).
+// Every collection has a STYLE modifier (palette, texture, mood). The final
+// prompt = SUBJECT + STYLE + universal negative prompt. This is what makes
+// icons "page-specific" and "cover-related" instead of generic.
+
+export const UNIVERSAL_NEGATIVE = [
+  "no text",
+  "no letters",
+  "no words",
+  "no typography",
+  "no numbers",
+  "no digits",
+  "no calendar grid",
+  "no date labels",
+  "no month names",
+  "no day names",
+  "no watermark",
+  "no logo",
+  "no signature",
+  "no captions",
+  "no writing of any kind",
+].join(", ");
+
+// -- Page subjects ------------------------------------------------------------
+// Each page id maps to a short, evocative subject description.
+// Kept intentionally symbolic so icons stay clean and not literal.
+
+export const PAGE_SUBJECTS: Record<string, string> = {
+  "my-goals":
+    "a single glowing shooting star arcing over a small compass rose, symbolizing personal goals",
+  "yearly-calendar":
+    "four small nested rings representing the four seasons — spring bud, summer sun, autumn leaf, winter snowflake — arranged as a circular emblem",
+  "monthly-calendar":
+    "a graceful crescent-to-full moon phase arc, five moons in a soft curve, celestial and clean",
+  "weekly-calendar":
+    "seven small round pebbles arranged in a gentle horizontal row, meditative and balanced",
+  "daily-tracker":
+    "a small hourglass beside a rising sun with soft rays, symbolizing one day",
+  "complete-tracker":
+    "a small treasure chest with a wax seal bearing a stylized checkmark motif",
+  "yearly-habit-tracker":
+    "a circular growing vine wreath with small buds along its length, forming a full ring",
+  "weight-tracker":
+    "a delicate balance scale holding a feather on one side and a smooth pebble on the other",
+  "measurement-tracker":
+    "a softly coiled measuring ribbon shaped like a decorative curl",
+  "blood-sugar-tracker":
+    "a single translucent honey droplet resting on a curled leaf",
+  "blood-pressure-tracker":
+    "a small stylized anatomical heart with three concentric soft rings radiating outward",
+  "oxygen-tracker":
+    "a pair of lung-shaped leaves joined at the stem, symbolizing breath",
+  "self-care-checklist":
+    "a small round bathtub with a lit candle beside it and a steaming teacup, cozy trio",
+  "cleaning-checklist":
+    "a slender broom crossed with a folded stack of linen and a small spray bottle",
+  recipe:
+    "a wooden spoon, a sprig of fresh herbs, and a small round bowl, arranged as a still life",
+  notes:
+    "a single feather quill resting on a folded blank parchment sheet — the parchment is completely blank",
+  "workout-tracker":
+    "a small kettlebell wrapped with a laurel sprig, symbolizing strength",
+  medications:
+    "a small amber pill vial next to a sprig of herbs, apothecary aesthetic",
+  "medical-records":
+    "a folded chart with a small emblem — a plus-cross sigil, no letters — resting on top",
+  "yearly-focus":
+    "an ornate compass rose emblem with a single guiding star at true north — no letters or cardinal marks",
+};
+
+export const PAGE_IDS = Object.keys(PAGE_SUBJECTS);
+
+// -- Collection styles --------------------------------------------------------
+// One entry per CoverCollection. The style paragraph is prepended to every
+// prompt for covers in that collection.
+
+export const COLLECTION_STYLE: Record<string, string> = {
+  classic:
+    "Patriotic still-life style — deep navy, cream, and rich red palette with soft gold highlights, painterly, elegant, refined vintage Americana feel.",
+  "black-moon":
+    "Moonlit black background with luminous gold and cream detailing, celestial and reverent, painted like a night-sky illustration with soft glow around the subject.",
+  "celestial-birds-insects":
+    "Ethereal celestial palette — indigo, dusk blue, warm gold, ivory — with soft starfield backdrop, refined watercolor + gold-leaf feel.",
+  garden:
+    "Botanical illustration style — soft blush, sage green, warm cream, with delicate ink linework and gentle watercolor washes, like a vintage flora plate.",
+  sparrow:
+    "Warm dusk palette — golden amber, twilight blue, ivory — sparrow silhouettes and soft feather textures, storybook illustration feel.",
+  "celestial-florals":
+    "Ivory and gold-leaf palette with silvery moonlight highlights, floral + celestial fusion, delicate and airy.",
+  "sky-wings-arrows":
+    "Sky-blue to sunset-gold gradient background with cloud wisps, feathered edges, arrow motifs, feels like an heirloom emblem.",
+  scrapbook:
+    "Vintage scrapbook aesthetic — cream paper, torn edges, subtle washi-tape accents, hand-drawn ink outlines with soft pastel fills.",
+  affirmations:
+    "Warm ivory paper background with hand-lettered ornamental flourishes (no readable text), muted rose + dusty gold accents, gentle and reverent.",
+  faith:
+    "Sacred and reverent — cream, gold-leaf, deep burgundy palette, subtle radiant halo behind the subject, chapel-window softness.",
+  chronicles:
+    "Old-world manuscript feel — parchment cream, sepia ink, faded gold accents, tarot-card composition, softly textured background.",
+  "change-of-life":
+    "Wellness journey palette — soft blush, sage, dusty rose, ivory — botanical + butterfly motifs woven in, dreamy and gentle, watercolor + gouache feel.",
+  "pop-art":
+    "Pop-art palette — bold cerulean, magenta, sun yellow, ivory — clean flat color, subtle halftone dots, playful and modern.",
+  grit:
+    "Grit-and-grace mono palette — warm charcoal, bone ivory, hints of ochre — cracked-plaster texture, brave and quiet.",
+  feathers:
+    "Cloud-soft sky background with a single hero object rendered as iridescent feather barbs, jewel-tone accents matching the specific cover (emerald, phoenix orange, sapphire, amethyst, crimson, or gold).",
+  dragons:
+    "Sunset ember palette — burnt orange, deep gold, oxblood, obsidian — subject rendered with scaled or forged texture, heraldic and cinematic.",
+  "gothic-sirens":
+    "Deep-sea gothic palette — abyss black, pearl ivory, muted teal, bone white — cathedral-shell textures, mournful and reverent.",
+};
+
+export const DEFAULT_COLLECTION_STYLE =
+  "Refined editorial illustration, soft warm palette, hand-crafted feel, gentle painted textures, museum-quality.";
+
+// -- Per-cover overrides ------------------------------------------------------
+// Only set for covers whose palette is meaningfully different from their
+// collection default (e.g. jewel-tone feathers, specific dragon variants).
+
+export const COVER_STYLE_OVERRIDE: Record<string, string> = {
+  "feather-emerald":
+    "Cloud-soft sky background with a single hero object rendered from iridescent EMERALD-GREEN feather barbs, luminous jewel-tone highlights.",
+  "feather-phoenix":
+    "Cloud-soft sky background with a single hero object rendered from iridescent PHOENIX-ORANGE and crimson feather barbs, ember highlights.",
+  "feather-sapphire":
+    "Cloud-soft sky background with a single hero object rendered from iridescent SAPPHIRE-BLUE feather barbs, cool jewel highlights.",
+  "feather-amethyst":
+    "Cloud-soft sky background with a single hero object rendered from iridescent AMETHYST-PURPLE feather barbs, soft violet glow.",
+  "feather-crimson":
+    "Cloud-soft sky background with a single hero object rendered from iridescent DEEP-CRIMSON feather barbs, ruby highlights.",
+  "feather-gold":
+    "Cloud-soft sky background with a single hero object rendered from iridescent WARM-GOLD feather barbs, sunlit highlights.",
+  "wellness-roots":
+    "Wellness palette anchored in DEEP SAGE and warm terracotta, botanical roots and soft earth textures.",
+  "wellness-river":
+    "Wellness palette anchored in COOL RIVER BLUE and soft ivory, flowing water textures and river-stones.",
+  "wellness-bloom":
+    "Wellness palette anchored in BLUSH PINK and warm gold, blooming florals and butterfly wings.",
+  "wellness-still-water":
+    "Wellness palette anchored in MISTY LAVENDER and pale sage, mirror-still water textures and reflected light.",
+};
+
+// -- Sticker prompts ----------------------------------------------------------
+// Each collection gets 4 sticker categories × 15 pieces.
+// The category informs the visual role; the collection informs the theme.
+
+export const STICKER_CATEGORY_PROMPT: Record<string, string> = {
+  motifs:
+    "single hero motif sticker — the most iconic decorative object of the theme, rendered as die-cut clip art, centered, generous white margin",
+  banners:
+    "single ribbon-banner or tag sticker — an ornamental banner or label shape decorated with the theme (blank surface, absolutely NO text inside), centered, die-cut",
+  washi:
+    "single repeating-pattern washi-tape sticker — a horizontal strip of theme-inspired pattern with slightly torn edges, centered on a plain background",
+  icons:
+    "single small utility icon sticker (like a leaf, star, heart, key, tea cup, candle) reimagined in the theme's palette and texture, die-cut, centered",
+};
+
+export function buildIconPrompt(coverId: string, collection: string, pageId: string): string {
+  const subject = PAGE_SUBJECTS[pageId] ?? `a symbolic emblem for ${pageId}`;
+  const style =
+    COVER_STYLE_OVERRIDE[coverId] ?? COLLECTION_STYLE[collection] ?? DEFAULT_COLLECTION_STYLE;
+  return [
+    `Small square editorial ICON illustration: ${subject}.`,
+    `Style: ${style}`,
+    "Composition: single centered subject, generous negative space, soft vignette, painterly finish, feels hand-crafted by a master illustrator, museum-quality craftsmanship.",
+    `Strictly: ${UNIVERSAL_NEGATIVE}.`,
+  ].join(" ");
+}
+
+export function buildStickerPrompt(collection: string, category: string, variantIndex: number): string {
+  const style = COLLECTION_STYLE[collection] ?? DEFAULT_COLLECTION_STYLE;
+  const role = STICKER_CATEGORY_PROMPT[category] ?? "themed sticker";
+  return [
+    `Die-cut STICKER piece #${variantIndex + 1} for a planner sticker library.`,
+    `Role: ${role}.`,
+    `Theme: ${style}`,
+    "Rendering: clean vector-illustration or gouache feel with a subtle die-cut white halo edge, centered on a plain solid off-white background, no drop shadow, no scene, just the sticker.",
+    `Strictly: ${UNIVERSAL_NEGATIVE}.`,
+  ].join(" ");
+}

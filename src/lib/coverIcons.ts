@@ -1563,6 +1563,13 @@ export const COVER_ICONS: Record<string, Record<string, string>> = {
   "gothic-siren-haloed-conch": pack(GOTHIC_SIRENS_SHARED_ICONS),
 };
 
+// Fallback aliases for covers without a dedicated pack yet — each points at a
+// sibling from the same collection so the UI never 404s while themed art is
+// being generated in follow-up build turns.
+if (COVER_ICONS["pecan-tree-moon"]) COVER_ICONS["iris-starlight-moon"] = COVER_ICONS["pecan-tree-moon"];
+if (COVER_ICONS["mockingbird-moon"]) COVER_ICONS["sparrow-moon-lights"] = COVER_ICONS["mockingbird-moon"];
+if (COVER_ICONS["pastel-clipboard"]) COVER_ICONS["dreamscape"] = COVER_ICONS["pastel-clipboard"];
+
 
 export function getCoverPageIcon(coverId: string | null | undefined, pageId: string): string | undefined {
   if (!coverId) return undefined;
