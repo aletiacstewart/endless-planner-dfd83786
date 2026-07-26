@@ -481,51 +481,51 @@ export function FieldRenderer({ field, value, allValues, onChange, onChangeAny, 
     case "priority-list":
       return (
         <PriorityList
-          value={value as { done: boolean; text: string }[]}
+          value={value as unknown as { done: boolean; text: string }[]}
           count={field.max ?? 3}
           label={field.label}
-          onChange={onChange}
+          onChange={(v) => onChange(v as unknown as FieldValue)}
         />
       );
     case "hourly-timeline":
       return (
         <HourlyTimeline
-          value={value as Record<string, string>}
+          value={value as unknown as Record<string, string>}
           label={field.label}
-          onChange={onChange}
+          onChange={(v) => onChange(v as unknown as FieldValue)}
         />
       );
     case "note-style":
       return (
         <NoteStyleField
-          value={value as { style: string; body: string }}
+          value={value as unknown as { style: string; body: string }}
           label={field.label}
-          onChange={onChange}
+          onChange={(v) => onChange(v as unknown as FieldValue)}
         />
       );
     case "smart-goal":
       return (
         <SmartGoal
-          value={value as Record<string, string>}
+          value={value as unknown as Record<string, string>}
           label={field.label}
-          onChange={onChange}
+          onChange={(v) => onChange(v as unknown as FieldValue)}
         />
       );
     case "mood-log":
       return (
         <MoodLog
-          value={value as Record<string, number>}
+          value={value as unknown as Record<string, number>}
           label={field.label}
-          onChange={onChange}
+          onChange={(v) => onChange(v as unknown as FieldValue)}
         />
       );
     case "gratitude-list":
       return (
         <GratitudeList
-          value={value as string[]}
+          value={value as unknown as string[]}
           count={field.max ?? 3}
           label={field.label}
-          onChange={onChange}
+          onChange={(v) => onChange(v as unknown as FieldValue)}
         />
       );
     default:
