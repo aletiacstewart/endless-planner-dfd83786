@@ -43,12 +43,8 @@ export const defaultStickerSet: StickerSet = {
 
 // -- Theme sets ---------------------------------------------------------------
 
-const gardenSet: StickerSet = {
-  motifs: [em("🌸"), em("🌷"), em("🌺"), em("🌻"), em("🌼"), em("🌹"), em("🥀"), em("💐"), em("🌾"), em("🌿"), em("🍀"), em("🍃"), em("🌱"), em("🪴"), em("🦋")],
-  banners: [em("🎀"), em("🏷️"), em("📌"), em("💌"), em("📖"), em("📓"), em("🪄"), em("💭"), em("📝"), em("🗒️"), em("📎"), em("🎗️"), em("💐"), em("🪻"), em("🌸")],
-  washi: [em("🌿"), em("🍃"), em("〰️"), em("➰"), em("🌾"), em("🌱"), em("🍀"), em("🌼"), em("🌸"), em("🌷"), em("🌺"), em("🌹"), em("🪷"), em("🪻"), em("💮")],
-  icons: [em("☀️"), em("🌦️"), em("💧"), em("🐝"), em("🐞"), em("🦋"), em("🌈"), em("🌤️"), em("🐛"), em("🦔"), em("🐇"), em("🌸"), em("🕊️"), em("📚"), em("🍵")],
-};
+// Placeholder — real garden set is loaded from PNGs below.
+const gardenSet: StickerSet = defaultStickerSet;
 
 const celestialSet: StickerSet = {
   motifs: [em("🌙"), em("🌛"), em("🌜"), em("🌚"), em("🌝"), em("⭐"), em("✨"), em("💫"), em("🌟"), em("☄️"), em("🌠"), em("🪐"), em("🌌"), em("☀️"), em("🌞")],
@@ -112,6 +108,24 @@ const changeOfLifeSet: StickerSet = {
   icons: colByCategory("icons"),
 };
 
+// Themed PNG sticker library for garden (60 pieces).
+const gardenStickerModules = import.meta.glob("../assets/stickers/garden/*.png", {
+  eager: true,
+  query: "?url",
+  import: "default",
+}) as Record<string, string>;
+const gardenByCategory = (cat: StickerCategory): StickerAsset[] =>
+  Array.from({ length: 15 }, (_, i) => {
+    const match = Object.entries(gardenStickerModules).find(([p]) => p.endsWith(`/${cat}-${i}.png`));
+    return match ? img(match[1]) : em("✨");
+  });
+const gardenPngSet: StickerSet = {
+  motifs: gardenByCategory("motifs"),
+  banners: gardenByCategory("banners"),
+  washi: gardenByCategory("washi"),
+  icons: gardenByCategory("icons"),
+};
+
 const scrapbookSet: StickerSet = {
   motifs: [em("📎"), em("📌"), em("🖇️"), em("✂️"), em("📮"), em("💌"), em("💗"), em("💫"), em("🌸"), em("🦋"), em("🌈"), em("⭐"), em("✨"), em("🎀"), em("🏷️")],
   banners: [em("🎀"), em("🏷️"), em("📌"), em("📎"), em("💌"), em("📖"), em("📓"), em("📔"), em("📒"), em("📝"), em("🗒️"), em("🖇️"), em("🎗️"), em("💭"), em("🪄")],
@@ -122,8 +136,8 @@ const scrapbookSet: StickerSet = {
 // -- Registry -----------------------------------------------------------------
 
 export const STICKER_SETS: Partial<Record<CoverCollection, StickerSet>> = {
-  garden: gardenSet,
-  "celestial-florals": { ...gardenSet, motifs: [...celestialSet.motifs.slice(0, 8), ...gardenSet.motifs.slice(0, 7)] },
+  garden: gardenPngSet,
+  "celestial-florals": { ...gardenPngSet, motifs: [...celestialSet.motifs.slice(0, 8), ...gardenPngSet.motifs.slice(0, 7)] },
   "celestial-birds-insects": { ...featherWingSet, motifs: [...celestialSet.motifs.slice(0, 8), ...featherWingSet.motifs.slice(0, 7)] },
   "black-moon": celestialSet,
   "sky-wings-arrows": featherWingSet,
