@@ -103,6 +103,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       ...goalKeys.map((k, i) => ({
         title: `Goal ${i + 1}`,
+        columns: 2 as const,
         fields: [
           {
             key: k,
@@ -110,20 +111,20 @@ export const PAGE_TYPES: PageTypeDef[] = [
             type: "textarea" as const,
             rows: 2,
             placeholder: "What do you want to achieve?",
-            span: 2,
+            span: 2 as const,
           },
           {
             key: `smart_${i + 1}`,
             label: "SMART breakdown",
             type: "smart-goal" as const,
-            span: 2,
+            span: 2 as const,
           },
           {
             key: `milestones_${i + 1}`,
             label: "Milestones",
             type: "priority-list" as const,
             max: 4,
-            span: 2,
+            span: 2 as const,
           },
           {
             key: `obstacles_${i + 1}`,
