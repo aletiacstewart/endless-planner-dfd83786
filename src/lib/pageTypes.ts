@@ -970,6 +970,138 @@ export const PAGE_TYPES: PageTypeDef[] = [
     ],
     summary: (v) => ((v.yearly_focus as string) || "").slice(0, 60) || (v.year ? `Focus ${v.year}` : "Yearly focus"),
   },
+  {
+    id: "brain-dump",
+    name: "Brain Dump",
+    shortName: "Brain Dump",
+    description: "Empty your head, then sort what matters from what can wait.",
+    icon: "Brain",
+    sections: [
+      {
+        columns: 2,
+        fields: [
+          { key: "date", label: "Date", type: "date" },
+          { key: "mood", label: "Mood", type: "mood-rating" },
+        ],
+      },
+      {
+        title: "Everything on your mind",
+        fields: [
+          { key: "dump", label: "Dump", type: "note-style", span: 2 },
+        ],
+      },
+      {
+        title: "Sort it out",
+        columns: 2,
+        fields: [
+          { key: "do_now", label: "Do now", type: "priority-list", max: 5 },
+          { key: "do_later", label: "Do later", type: "priority-list", max: 5 },
+          { key: "delegate", label: "Delegate / ask for help", type: "textarea", rows: 3 },
+          { key: "let_go", label: "Let go", type: "textarea", rows: 3 },
+        ],
+      },
+    ],
+    summary: (v) => (v.date as string) || "Brain dump",
+  },
+  {
+    id: "fitness-tracker",
+    name: "Fitness Tracker",
+    shortName: "Fitness",
+    description: "Workouts, cardio, water, and how the body felt.",
+    icon: "Dumbbell",
+    sections: [
+      {
+        columns: 2,
+        fields: [
+          { key: "date", label: "Date", type: "date" },
+          { key: "weight", label: "Weight", type: "text" },
+          { key: "goal", label: "Today's goal", type: "text", span: 2 },
+        ],
+      },
+      {
+        title: "Strength",
+        fields: [
+          {
+            key: "strength",
+            label: "Exercise / Sets x Reps / Weight",
+            type: "measurement-grid",
+            span: 2,
+          },
+        ],
+      },
+      {
+        title: "Cardio & activity",
+        columns: 2,
+        fields: [
+          { key: "cardio_type", label: "Cardio type", type: "text" },
+          { key: "cardio_duration", label: "Duration (min)", type: "number" },
+          { key: "cardio_distance", label: "Distance", type: "text" },
+          { key: "steps", label: "Steps", type: "number" },
+        ],
+      },
+      {
+        title: "Fuel & recovery",
+        columns: 2,
+        fields: [
+          { key: "water", label: "Water (glasses)", type: "rating", max: 10 },
+          { key: "sleep_hours", label: "Sleep (hours)", type: "text" },
+          { key: "energy", label: "Energy", type: "rating", max: 5 },
+          { key: "soreness", label: "Soreness", type: "rating", max: 5 },
+          { key: "notes", label: "How it felt", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => (v.date as string) || (v.goal as string) || "Workout",
+  },
+  {
+    id: "adhd-toolkit",
+    name: "ADHD Daily Toolkit",
+    shortName: "ADHD",
+    description: "One page, one day — anchor priorities, time-block, and celebrate wins.",
+    icon: "Zap",
+    sections: [
+      {
+        columns: 2,
+        fields: [
+          { key: "date", label: "Date", type: "date" },
+          { key: "med_taken", label: "Meds taken", type: "checkbox" },
+          { key: "focus_word", label: "One-word intention", type: "text", span: 2 },
+        ],
+      },
+      {
+        title: "The 3 that matter today",
+        fields: [
+          { key: "big_three", label: "Big 3", type: "priority-list", max: 3, span: 2 },
+        ],
+      },
+      {
+        title: "Time-block the day",
+        fields: [
+          { key: "schedule", label: "Hourly plan", type: "hourly-timeline", span: 2 },
+        ],
+      },
+      {
+        title: "Brain state check-ins",
+        columns: 2,
+        fields: [
+          { key: "morning_mood", label: "Morning mood", type: "mood-rating" },
+          { key: "midday_mood", label: "Midday mood", type: "mood-rating" },
+          { key: "evening_mood", label: "Evening mood", type: "mood-rating" },
+          { key: "focus_level", label: "Overall focus", type: "rating", max: 5 },
+        ],
+      },
+      {
+        title: "Distractions & wins",
+        columns: 2,
+        fields: [
+          { key: "distractions", label: "What pulled me away", type: "textarea", rows: 4 },
+          { key: "wins", label: "Wins (however small)", type: "textarea", rows: 4 },
+          { key: "tomorrow", label: "Set up tomorrow — one thing", type: "textarea", rows: 2, span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => (v.date as string) || (v.focus_word as string) || "ADHD toolkit",
+  },
 ];
 
 export function getPageType(id: string): PageTypeDef | undefined {
