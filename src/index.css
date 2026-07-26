@@ -233,6 +233,28 @@
       hsl(var(--accent) / 0.10));
     border-bottom: 1px solid hsl(var(--border));
   }
+
+  /* Cover-open animation — flips the planner cover on the y-axis like a book. */
+  .cover-open-stage { perspective: 2000px; }
+  .cover-open-flip {
+    transform-origin: left center;
+    will-change: transform, opacity;
+    animation: cover-open 780ms cubic-bezier(0.65, 0.02, 0.35, 1) forwards;
+    box-shadow: 8px 12px 30px -8px hsl(var(--primary) / 0.35);
+  }
+  @keyframes cover-open {
+    0%   { transform: rotateY(0deg);    opacity: 1; }
+    70%  { transform: rotateY(-140deg); opacity: 0.9; }
+    100% { transform: rotateY(-170deg); opacity: 0; }
+  }
+  .cover-open-inside {
+    animation: cover-inside-fade 780ms ease-out both;
+  }
+  @keyframes cover-inside-fade {
+    0%   { opacity: 0; transform: scale(0.96); }
+    60%  { opacity: 0.6; }
+    100% { opacity: 1; transform: scale(1); }
+  }
 }
 
 /* -------------------------------------------------------------------------- */
