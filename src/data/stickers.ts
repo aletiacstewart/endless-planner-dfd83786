@@ -136,8 +136,8 @@ const scrapbookSet: StickerSet = {
 // -- Registry -----------------------------------------------------------------
 
 export const STICKER_SETS: Partial<Record<CoverCollection, StickerSet>> = {
-  garden: gardenSet,
-  "celestial-florals": { ...gardenSet, motifs: [...celestialSet.motifs.slice(0, 8), ...gardenSet.motifs.slice(0, 7)] },
+  garden: gardenPngSet,
+  "celestial-florals": { ...gardenPngSet, motifs: [...celestialSet.motifs.slice(0, 8), ...gardenPngSet.motifs.slice(0, 7)] },
   "celestial-birds-insects": { ...featherWingSet, motifs: [...celestialSet.motifs.slice(0, 8), ...featherWingSet.motifs.slice(0, 7)] },
   "black-moon": celestialSet,
   "sky-wings-arrows": featherWingSet,
