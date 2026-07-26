@@ -35,10 +35,10 @@ export function SideTabs({ activePageType }: Props) {
 
   return (
     <>
-      {/* Desktop: right-edge vertical tab stack */}
+      {/* Desktop: right-edge vertical tab rail — always fully visible. */}
       <nav
         aria-label="Planner sections"
-        className="hidden lg:flex flex-col gap-2 fixed right-0 top-1/2 -translate-y-1/2 z-30 pr-1"
+        className="hidden lg:flex flex-col gap-1.5 fixed right-2 top-1/2 -translate-y-1/2 z-30 max-h-[85vh] overflow-y-auto no-scrollbar rounded-2xl bg-card/85 backdrop-blur border border-border shadow-[var(--shadow-card)] p-1.5"
       >
         {PAGE_TYPES.map((pt) => {
           const Icon =
@@ -52,11 +52,10 @@ export function SideTabs({ activePageType }: Props) {
               aria-label={pt.name}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "group flex items-center gap-2 rounded-l-2xl border border-r-0 pl-3 pr-4 py-2 text-xs font-medium",
-                "transition-all duration-200 shadow-[var(--shadow-card)]",
+                "group flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium transition-colors",
                 active
-                  ? "bg-primary text-primary-foreground border-primary translate-x-0"
-                  : "bg-card text-foreground border-border translate-x-[calc(100%-2.5rem)] hover:translate-x-0",
+                  ? "bg-primary text-primary-foreground"
+                  : "text-foreground hover:bg-muted",
               )}
             >
               <Icon className="w-4 h-4 shrink-0" />
