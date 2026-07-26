@@ -1,10 +1,14 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { Check, ChevronLeft, Loader2, Trash2 } from "lucide-react";
-import { deleteEntry, getEntry, type PlannerEntry } from "@/lib/db";
+import { useEffect, useMemo, useState } from "react";
+import { Check, ChevronLeft, ChevronRight, Loader2, Trash2 } from "lucide-react";
+import { deleteEntry, getEntry, listEntries, type PlannerEntry } from "@/lib/db";
 import { getPageType, type FieldValue } from "@/lib/pageTypes";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { PageRenderer } from "@/components/PageRenderer";
+import { PlannerSpread } from "@/components/planner/PlannerSpread";
+import { SideTabs } from "@/components/planner/SideTabs";
+import { PageFlip } from "@/components/planner/PageFlip";
+import { useSwipeNav } from "@/hooks/useSwipeNav";
 import { Button } from "@/components/ui/button";
 import { EntryPersonalization } from "@/components/entry/EntryPersonalization";
 import { StickerLayer } from "@/components/entry/StickerLayer";
@@ -25,10 +29,15 @@ import {
 import { toCss } from "@/hooks/useThemedSwatches";
 import { toast } from "sonner";
 
+/** Page types that render as a two-page planner spread. */
+const SPREAD_PAGE_TYPES = new Set(["daily-tracker", "complete-tracker"]);
+
 export default function Entry() {
   const { entryId = "" } = useParams();
   const navigate = useNavigate();
   const [entry, setEntry] = useState<PlannerEntry | null>(null);
+  const [siblings, setSiblings] = useState<PlannerEntry[]>([]);
+  const [flipDir, setFlipDir] = useState<"next" | "prev">("next");
 
   useEffect(() => {
     getEntry(entryId).then((e) => {
@@ -46,7 +55,37 @@ export default function Entry() {
     });
   }, [entryId]);
 
+  // Load same-page-type siblings for prev/next navigation.
+  useEffect(() => {
+    if (!entry) return;
+    listEntries(entry.pageType).then(setSiblings);
+  }, [entry?.pageType]);
+
   const { state: saveState, linkedSummary } = useAutoSave(entry);
+
+  const { prevEntry, nextEntry } = useMemo(() => {
+    if (!entry || siblings.length < 2) return { prevEntry: null, nextEntry: null };
+    // Order: newest first (listEntries returns by updatedAt desc). "Prev" = older, "Next" = newer.
+    const idx = siblings.findIndex((e) => e.id === entry.id);
+    if (idx < 0) return { prevEntry: null, nextEntry: null };
+    return {
+      prevEntry: siblings[idx + 1] ?? null,
+      nextEntry: siblings[idx - 1] ?? null,
+    };
+  }, [entry, siblings]);
+
+  const goPrev = () => {
+    if (!prevEntry) return;
+    setFlipDir("prev");
+    navigate(`/entry/${prevEntry.id}`);
+  };
+  const goNext = () => {
+    if (!nextEntry) return;
+    setFlipDir("next");
+    navigate(`/entry/${nextEntry.id}`);
+  };
+
+  useSwipeNav({ onPrev: goPrev, onNext: goNext });
 
   if (!entry) {
     return (
@@ -62,6 +101,7 @@ export default function Entry() {
   }
 
   const meta = getMeta(entry);
+  const asSpread = SPREAD_PAGE_TYPES.has(pageType.id);
 
   const onChange = (key: string, value: FieldValue) => {
     setEntry({ ...entry, values: { ...entry.values, [key]: value } });
@@ -109,7 +149,6 @@ export default function Entry() {
       : undefined;
 
   const styleVars: React.CSSProperties = {
-    // Typography variables consumed by scoped CSS in index.css
     ["--entry-title-font" as string]: FONT_STACKS[titleSpec.font ?? "serif"],
     ["--entry-title-size" as string]: TITLE_SIZE_REM[titleSpec.size ?? "md"],
     ["--entry-title-color" as string]: titleSpec.color ? toCss(titleSpec.color) : "inherit",
@@ -127,10 +166,20 @@ export default function Entry() {
     color: "var(--entry-body-color)",
   };
 
+  // Format date/day label for the editorial header band.
+  const dateVal = (entry.values.date as string | undefined) ?? "";
+  const dateObj = dateVal ? new Date(dateVal) : null;
+  const dayLabel = dateObj && !isNaN(dateObj.getTime())
+    ? dateObj.toLocaleDateString(undefined, { weekday: "long" })
+    : "today";
+  const fullDate = dateObj && !isNaN(dateObj.getTime())
+    ? dateObj.toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })
+    : new Date().toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
+
   return (
     <div
       data-entry-styled
-      className="min-h-screen pb-24"
+      className="min-h-screen pb-32 lg:pb-24 lg:pr-24"
       style={{
         background: pageBg,
         backgroundImage: patternBg ? `${patternBg}${bg.color ? "" : ""}` : undefined,
@@ -139,7 +188,7 @@ export default function Entry() {
         ...styleVars,
       }}
     >
-      <header className="px-5 pt-8 pb-4 sticky top-0 z-20 backdrop-blur bg-background/70 border-b border-border">
+      <header className="px-5 pt-6 pb-4 sticky top-0 z-20 backdrop-blur bg-background/70 border-b border-border">
         <div className="flex items-center justify-between">
           <Link
             to={`/section/${pageType.id}`}
@@ -157,7 +206,22 @@ export default function Entry() {
             </Button>
           </div>
         </div>
-        <h1 className="section-title mt-2">{pageType.name}</h1>
+
+        {asSpread ? (
+          <div className="mt-3 rounded-2xl planner-band px-5 py-4 flex items-end justify-between gap-4">
+            <div className="min-w-0">
+              <p className="font-script text-xl text-primary/80 leading-none">{dayLabel}</p>
+              <h1 className="section-title mt-1 truncate">{pageType.name}</h1>
+            </div>
+            <div className="text-right shrink-0">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground">{fullDate.split(",")[0]}</p>
+              <p className="font-display text-lg">{fullDate.split(",").slice(1).join(",").trim() || fullDate}</p>
+            </div>
+          </div>
+        ) : (
+          <h1 className="section-title mt-2">{pageType.name}</h1>
+        )}
+
         {pageType.id === "complete-tracker" && linkedSummary.length > 0 && (
           <p className="text-xs text-muted-foreground mt-1">
             Auto-synced to: {linkedSummary.join(", ")}
@@ -172,19 +236,55 @@ export default function Entry() {
       </header>
 
       <main
-        className="px-5 mt-4 relative"
+        className="px-4 lg:px-8 mt-6 relative"
         style={{
           borderLeft: accent ? `${accentW} solid ${accent}` : undefined,
           marginLeft: accent ? "0.25rem" : undefined,
           paddingLeft: accent ? "1rem" : undefined,
         }}
       >
-        <PageRenderer pageType={pageType} values={entry.values} onChange={onChange} />
+        <PageFlip flipKey={entry.id} direction={flipDir}>
+          {asSpread ? (
+            <PlannerSpread pageType={pageType} values={entry.values} onChange={onChange} />
+          ) : (
+            <PageRenderer pageType={pageType} values={entry.values} onChange={onChange} />
+          )}
+        </PageFlip>
+
         <StickerLayer
           stickers={meta.stickers ?? []}
           onChange={(stickers) => onMetaChange({ stickers })}
         />
+
+        {/* Prev/Next flip controls */}
+        {(prevEntry || nextEntry) && (
+          <div className="flex items-center justify-between mt-6 px-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={goPrev}
+              disabled={!prevEntry}
+              aria-label="Previous entry"
+            >
+              <ChevronLeft className="w-4 h-4 mr-1" /> Prev
+            </Button>
+            <p className="text-xs text-muted-foreground font-script">
+              swipe or press ← / →
+            </p>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={goNext}
+              disabled={!nextEntry}
+              aria-label="Next entry"
+            >
+              Next <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          </div>
+        )}
       </main>
+
+      <SideTabs activePageType={pageType.id} />
     </div>
   );
 }

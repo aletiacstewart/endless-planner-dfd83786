@@ -186,6 +186,53 @@
   /* Hide scrollbar on personalization toolbar strip */
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* ---- Digital planner surfaces ---- */
+
+  /* Dotted paper: subtle emerald dot grid over cream. */
+  .paper-dot {
+    background-color: hsl(var(--paper));
+    background-image: radial-gradient(hsl(var(--primary) / 0.14) 1px, transparent 1.4px);
+    background-size: 20px 20px;
+    background-position: 0 0;
+  }
+
+  /* Center spine — soft double shadow, only visible on wide screens. */
+  .spread-spine {
+    background: linear-gradient(90deg,
+      transparent 0%,
+      hsl(var(--foreground) / 0.06) 40%,
+      hsl(var(--foreground) / 0.14) 50%,
+      hsl(var(--foreground) / 0.06) 60%,
+      transparent 100%);
+  }
+
+  /* Inside a spread, cards go semi-transparent so the dot grid reads through. */
+  .paper-dot .planner-card {
+    background-color: hsl(var(--card) / 0.72);
+    backdrop-filter: blur(2px);
+    border-color: hsl(var(--border) / 0.5);
+  }
+
+  /* Page-flip animation — plays each time the inner div is remounted via key. */
+  .page-flip-stage { perspective: 1600px; }
+  .page-flip-in {
+    animation: page-flip-in 380ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    transform-origin: center left;
+    will-change: transform, opacity;
+  }
+  @keyframes page-flip-in {
+    0%   { transform: rotateY(var(--flip-from, 6deg)); opacity: 0; }
+    100% { transform: rotateY(0deg);                   opacity: 1; }
+  }
+
+  /* Editorial band above a spread page header. */
+  .planner-band {
+    background: linear-gradient(90deg,
+      hsl(var(--primary) / 0.10),
+      hsl(var(--accent) / 0.10));
+    border-bottom: 1px solid hsl(var(--border));
+  }
 }
 
 /* -------------------------------------------------------------------------- */
