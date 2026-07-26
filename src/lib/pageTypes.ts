@@ -296,6 +296,20 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
+        title: "Top 3 priorities",
+        description: "The three things that matter most today.",
+        fields: [
+          { key: "priorities", label: "Top priorities", type: "priority-list", max: 3, span: 2 },
+        ],
+      },
+      {
+        title: "Hourly schedule",
+        description: "Time-block the day.",
+        fields: [
+          { key: "hourly", label: "Schedule", type: "hourly-timeline", span: 2 },
+        ],
+      },
+      {
         title: "Meals",
         fields: [
           { key: "breakfast", label: "Breakfast", type: "text", span: 2 },
