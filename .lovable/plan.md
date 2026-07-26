@@ -1,57 +1,65 @@
-# Planner Expansion — 20 PDFs → Sections + New Planners
+# Add page icons for the 12 new pages across every cover
 
-Goal: match the structure of the uploaded PDFs, rendered inside our existing paper/spine/side-tab planner theme. Interactive fields (auto-totals, progress bars, computed stats) where the source page needs them. Ship in three category phases.
+## Scope
 
-## What becomes what
+Twelve pages were added in the last few turns and none of the 45 existing icon packs have art for them:
 
-Change-of-Life planner gets new sections; three PDFs graduate into their own planner products.
+Phase B pages: `brain-dump`, `fitness-tracker`, `adhd-toolkit`
+Phase C pages: `budget-monthly`, `debt-tracker`, `savings-goals`, `home-info`, `weekly-cleaning`, `meal-planning`, `mood-journal`, `therapy-session`, `coping-toolkit`
 
-| Source PDF | Destination |
-|---|---|
-| Brain Dump Bundle | New section: **Brain Dump** |
-| Notes A4 | New section: **Notes** (multi-style) |
-| Goal Planner Bundle | Upgrade existing **My Goals** layout |
-| Self-Care Wellness | Upgrade existing **Self-Care** layout |
-| Monthly Calendar (minimalist) | Upgrade existing **Monthly Calendar** |
-| Fitness / Weight Loss | New section: **Fitness Tracker** |
-| ADHD Planner | New section: **ADHD Toolkit** |
-| All-In-One Digital Planner | Reference — pull best patterns into base spread system |
-| Ultimate Annual Budget | New **Budget Planner** product |
-| Home Management Binder | New **Home Management** planner product |
-| Mental Health Planner + Bundle + Anxiety + Depression + Introvert + Self-Control + 300 Prompts | New **Mental Health Planner** product |
+Existing icon packs (in `src/assets/page-icons/`): 45 (patriotic-roses, texas-horned-lizard, starlit-cactus, pecan-tree-moon, dragons, feather-*, gothic-*, dove-ink, dreamscape, faith*, gilded, golden-wheat-moon, hummingbird-garden, and ~30 others).
 
-## Phase A — Redesign existing pages (Batch 1 style transfer)
+**Total images to generate: 45 packs × 12 pages = 540 icons.**
 
-Match structure of the PDFs on pages we already ship, keep current styling.
+## Approach
 
-1. **My Goals** — SMART goal grid, milestones checklist, "why it matters" prompt, deadline, obstacles, action steps, weekly review row (from Goal Planner Bundle).
-2. **Self-Care** — categorized checklists (physical/emotional/spiritual/social), weekly self-care ritual grid, mood log, sleep + water + gratitude row (from Self-Care Wellness).
-3. **Monthly Calendar** — clean minimalist month grid + goals column + notes column + habit strip (from White Minimalist Monthly Calendar).
-4. **Notes** — 4 new note styles: dot-grid, lined, cornell, blank (from Notes A4). Chosen per entry.
-5. **Daily Tracker** — pull All-In-One patterns: top 3 priorities, hourly timeline, water tracker, mood ring, appointment strip.
+Reuse the existing pipeline in `scripts/icons/`:
+- `prompts.ts` / `prompts.mjs` — subject prompts per `pageId` + style prompts per pack.
+- `gen_image.py` — Gemini 3.1 Flash image generator.
+- `run_batch.py` — checkpointed batch runner that skips already-generated files.
 
-## Phase B — New sections in the current planner
+Steps:
 
-6. **Brain Dump** — quick-capture spread: freeform area, "categorize later" tags, action extract column, priority stars.
-7. **Fitness Tracker** — weight log with computed trend (start/current/goal/lost), measurements grid (arms/waist/hips/thighs) with delta, weekly workout log, activity minutes bar, calorie summary.
-8. **ADHD Toolkit** — daily brain state check-in, task dump → "must / should / could" bucketing, focus session timer log, dopamine menu, transitions checklist, wins column.
+1. **Extend `scripts/icons/prompts.ts`** with 12 new subject prompt templates. Each names concrete objects to render (no text, no numbers) matching the page's function:
+   - `brain-dump` — tangled thought bubbles / scribbled paper crumpled and sorted
+   - `fitness-tracker` — dumbbell + water bottle + jump rope
+   - `adhd-toolkit` — fidget spinner, timer, 3 checkboxes, colored tabs
+   - `budget-monthly` — coin stacks + calendar + envelope
+   - `debt-tracker` — descending stack of chained coins breaking free
+   - `savings-goals` — piggy bank + gold coins + upward arrow
+   - `home-info` — house silhouette + key ring + address book
+   - `weekly-cleaning` — bucket, spray bottle, folded cloth
+   - `meal-planning` — grocery bag, produce, weekly menu card
+   - `mood-journal` — face silhouette with soft gradient hearts
+   - `therapy-session` — two facing chairs + notebook + tissue box
+   - `coping-toolkit` — anchor, breath waves, hand on heart
 
-## Phase C — Three new standalone planners
+2. **Regenerate `prompts.mjs`** from `prompts.ts` so `run_batch.py` picks up the new subjects.
 
-Each gets a catalog entry, cover picker, side-tab set, and its own section list. Sold like the Change-of-Life planner.
+3. **Run `run_batch.py` in phases** to keep credit spend visible:
+   - Phase 1 — 4 packs (patriotic-roses, dragons, feather-emerald, gothic-sirens) × 12 = 48 images. Verify quality, adjust prompts if needed.
+   - Phase 2 — remaining 41 packs × 12 = 492 images.
+   - Runner is checkpointed; interrupts and reruns are safe.
 
-9. **Budget Planner** — Annual Overview, Monthly Budget (income − expenses with auto-total and remaining), Category Breakdown (fixed / variable / savings / debt), Bill Tracker, Savings Goals with progress bars, Debt Payoff tracker with balance rolldown, Net Worth snapshot, Year-in-review chart.
-10. **Home Management** — Household Info, Emergency Contacts, Cleaning Schedule (daily/weekly/monthly/seasonal), Meal Planner + Grocery List, Recipe cards, Home Maintenance log, Repair log, Warranties & Manuals, Important Dates, Password vault-style page.
-11. **Mental Health Planner** — Mood tracker with color grid and computed averages, Anxiety log (trigger / thought / evidence / reframe / rating before-after), Depression check-in (energy/sleep/appetite/social sliders), Introvert recharge planner (social battery meter, boundary scripts), Self-Control activities (urge log, replacement behavior, coping menu), Journal Prompts library (300 prompts from the three prompt PDFs, tagged Anxiety / Self-Reflective / Mental Health, with "prompt of the day" and freeform entry).
+4. **Wire imports into `src/lib/coverIcons.ts`** — for each pack, add 12 `import` lines and 12 entries in that pack's `makePack` map. The file is currently ~1,577 lines; the additions extend it by ~1,080 lines (24 per pack × 45 packs).
 
-## Technical notes
+5. **Update `src/lib/pageImages.ts`** default fallback with 12 patriotic-roses imports (the default pack).
 
-- New page kinds needed in `src/lib/pageTypes.ts`: `note-styled` (dot/lined/cornell), `hourly-timeline`, `smart-goal`, `weight-log`, `measurement-log`, `budget-grid`, `debt-tracker`, `savings-goal`, `mood-grid`, `anxiety-log`, `prompt-journal`, `bill-tracker`, `meal-plan`, `cleaning-schedule`.
-- Field renderer additions in `src/components/FieldRenderer.tsx` for each new type. Auto-math derived in the render layer from `allValues` (already supported by `onChangeAny`).
-- New planners registered in `src/data/planners.ts` with their own `pageIds`, cover series, and Stripe product entries. Reuse existing sync, entry storage, cover pack, and unlock flows unchanged.
-- Side-tab groups updated per planner so each product shows only its own sections.
-- Prompt library ships as static JSON under `src/data/prompts/` and gets surfaced via a `prompt-journal` field type; entries store the prompt id + user response.
+6. **Typecheck + build** — confirm no broken imports.
 
-## Deliverable per phase
+## Options for scope control
 
-Each phase ends with: updated `pageTypes` + `FieldRenderer`, live entry pages, side-tab wiring, and (for phase C) a new planner card on the storefront. I'll show you Phase A before starting Phase B, and Phase B before starting Phase C.
+- **Full run (recommended)** — 540 icons, ~$8-15 in image credits at current Gemini pricing. Every cover fully supports every page.
+- **Default pack only** — 12 icons for `patriotic-roses`, other packs fall through to the default. Fastest, cheapest, keeps parity later.
+- **Themed subset** — pick 8-10 flagship packs (dragons, gothic-sirens, feather series, patriotic-roses, dreamscape, faith, hummingbird-garden, dove-ink) and generate for those only. ~120 images.
+
+## Technical details
+
+- Images saved as `.jpg` under `src/assets/page-icons/<pack-id>/<page-id>.jpg`.
+- Batch runner already handles rate limits and resumes on failure.
+- Aliases in `coverIcons.ts` already fall back to `patriotic-roses` when a pack is missing an icon, so mid-generation state doesn't break the UI.
+- Prompts explicitly forbid text/numbers/watermarks — matches the existing pack style.
+
+## Question before starting
+
+Which option — full run, default pack only, or themed subset? If themed subset, please confirm the pack list.

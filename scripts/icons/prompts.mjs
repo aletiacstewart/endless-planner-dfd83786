@@ -30,6 +30,18 @@ export const PAGE_SUBJECTS = {
   medications: "a small amber pill vial next to a sprig of herbs, apothecary aesthetic",
   "medical-records": "a folded chart with a small emblem — a plus-cross sigil, no letters — resting on top",
   "yearly-focus": "an ornate compass rose emblem with a single guiding star at true north — no letters or cardinal marks",
+  "brain-dump": "a soft cloud-shaped thought bubble tangled with delicate ribbons unspooling into a small folded paper — mind emptying onto the page, symbolic and airy",
+  "fitness-tracker": "a small hand-weight resting beside a laurel sprig and a slender water flask, symbolic strength still-life",
+  "adhd-toolkit": "a small sand-timer beside three tiny check-bullet dots and a coiled fidget spiral, symbolic focus toolkit",
+  "budget-monthly": "three neatly stacked coin discs beside a small folded envelope with a wax seal, symbolic monthly budget still-life",
+  "debt-tracker": "a descending chain of three linked coin discs with the lowest link opening — freedom from debt, symbolic emblem",
+  "savings-goals": "a small round piggy-bank silhouette with a single golden coin arcing above it, symbolic saving emblem",
+  "home-info": "a small pitched-roof house silhouette with a decorative key crossed in front, symbolic hearth emblem",
+  "weekly-cleaning": "a small pail, a folded linen cloth, and a slender spray bottle arranged as a still-life trio, symbolic weekly reset",
+  "meal-planning": "a small paper grocery sack with a sprig of leafy greens and a round apple resting beside it, symbolic still-life",
+  "mood-journal": "a soft feminine profile silhouette with three tiny hearts drifting like breath — symbolic emblem of felt emotion",
+  "therapy-session": "two small facing armchair silhouettes with a slender lamp between them, symbolic quiet conversation",
+  "coping-toolkit": "a small anchor with three gentle concentric ripple rings radiating outward, symbolic grounding emblem",
 };
 
 export const COLLECTION_STYLE = {

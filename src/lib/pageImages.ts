@@ -20,6 +20,18 @@ import workoutTracker from "@/assets/page-icons/patriotic-roses/workout-tracker.
 import medications from "@/assets/page-icons/patriotic-roses/medications.jpg";
 import medicalRecords from "@/assets/page-icons/patriotic-roses/medical-records.jpg";
 import yearlyFocus from "@/assets/page-icons/patriotic-roses/yearly-focus.jpg";
+import brainDump from "@/assets/page-icons/patriotic-roses/brain-dump.jpg";
+import fitnessTracker from "@/assets/page-icons/patriotic-roses/fitness-tracker.jpg";
+import adhdToolkit from "@/assets/page-icons/patriotic-roses/adhd-toolkit.jpg";
+import budgetMonthly from "@/assets/page-icons/patriotic-roses/budget-monthly.jpg";
+import debtTracker from "@/assets/page-icons/patriotic-roses/debt-tracker.jpg";
+import savingsGoals from "@/assets/page-icons/patriotic-roses/savings-goals.jpg";
+import homeInfo from "@/assets/page-icons/patriotic-roses/home-info.jpg";
+import weeklyCleaning from "@/assets/page-icons/patriotic-roses/weekly-cleaning.jpg";
+import mealPlanning from "@/assets/page-icons/patriotic-roses/meal-planning.jpg";
+import moodJournal from "@/assets/page-icons/patriotic-roses/mood-journal.jpg";
+import therapySession from "@/assets/page-icons/patriotic-roses/therapy-session.jpg";
+import copingToolkit from "@/assets/page-icons/patriotic-roses/coping-toolkit.jpg";
 
 export const PAGE_IMAGES: Record<string, string> = {
   "my-goals": myGoals,
@@ -42,6 +54,18 @@ export const PAGE_IMAGES: Record<string, string> = {
   medications,
   "medical-records": medicalRecords,
   "yearly-focus": yearlyFocus,
+  "brain-dump": brainDump,
+  "fitness-tracker": fitnessTracker,
+  "adhd-toolkit": adhdToolkit,
+  "budget-monthly": budgetMonthly,
+  "debt-tracker": debtTracker,
+  "savings-goals": savingsGoals,
+  "home-info": homeInfo,
+  "weekly-cleaning": weeklyCleaning,
+  "meal-planning": mealPlanning,
+  "mood-journal": moodJournal,
+  "therapy-session": therapySession,
+  "coping-toolkit": copingToolkit,
 };
 
 export function getPageImage(id: string, coverId?: string | null): string | undefined {
