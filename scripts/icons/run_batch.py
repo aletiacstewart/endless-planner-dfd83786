@@ -22,6 +22,11 @@ PAGE_IDS = [
     "measurement-tracker", "blood-sugar-tracker", "blood-pressure-tracker",
     "oxygen-tracker", "self-care-checklist", "cleaning-checklist", "recipe",
     "notes", "workout-tracker", "medications", "medical-records", "yearly-focus",
+    # Phase B / C additions
+    "brain-dump", "fitness-tracker", "adhd-toolkit",
+    "budget-monthly", "debt-tracker", "savings-goals",
+    "home-info", "weekly-cleaning", "meal-planning",
+    "mood-journal", "therapy-session", "coping-toolkit",
 ]
 
 sys.path.insert(0, str(ROOT / "scripts/icons"))
