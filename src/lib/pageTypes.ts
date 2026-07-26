@@ -756,32 +756,63 @@ export const PAGE_TYPES: PageTypeDef[] = [
     id: "self-care-checklist",
     name: "Self-Care Check List",
     shortName: "Self-Care",
-    description: "Physical, emotional, and spiritual self-care across the year.",
+    description: "A weekly self-care ritual — categorized checklists, mood, sleep, and gratitude.",
     icon: "HeartHandshake",
     sections: [
       {
-        fields: [{ key: "year", label: "Year", type: "year" }],
-      },
-      {
-        title: "Physical Self-Care",
+        columns: 2,
         fields: [
-          { key: "physical", label: "Physical", type: "daily-month-grid", span: 2 },
+          { key: "week_of", label: "Week of", type: "date" },
+          { key: "focus_word", label: "Focus this week", type: "text" },
         ],
       },
       {
-        title: "Emotional Self-Care",
-        fields: [
-          { key: "emotional", label: "Emotional", type: "daily-month-grid", span: 2 },
+        title: "This week's self-care",
+        groups: [
+          {
+            title: "Physical",
+            fields: [
+              { key: "phys_checklist", label: "Physical", type: "checkbox-group", options: ["Move", "Sleep 8h", "Hydrate", "Nourish", "Sunlight", "Stretch"] },
+              { key: "phys_notes", label: "Notes", type: "textarea", rows: 3 },
+            ],
+          },
+          {
+            title: "Emotional",
+            fields: [
+              { key: "emo_checklist", label: "Emotional", type: "checkbox-group", options: ["Journal", "Feel it", "Cry if needed", "Talk it out", "Set a boundary", "Rest"] },
+              { key: "emo_notes", label: "Notes", type: "textarea", rows: 3 },
+            ],
+          },
+          {
+            title: "Spiritual",
+            fields: [
+              { key: "spir_checklist", label: "Spiritual", type: "checkbox-group", options: ["Pray", "Meditate", "Nature", "Read", "Gratitude", "Silence"] },
+              { key: "spir_notes", label: "Notes", type: "textarea", rows: 3 },
+            ],
+          },
+          {
+            title: "Social",
+            fields: [
+              { key: "soc_checklist", label: "Social", type: "checkbox-group", options: ["Call someone", "Say no", "Ask for help", "Quality time", "Alone time", "Community"] },
+              { key: "soc_notes", label: "Notes", type: "textarea", rows: 3 },
+            ],
+          },
         ],
+        fields: [],
       },
       {
-        title: "Spiritual Self-Care",
+        title: "How the week felt",
+        columns: 2,
         fields: [
-          { key: "spiritual", label: "Spiritual", type: "daily-month-grid", span: 2 },
+          { key: "mood_log", label: "Daily mood (S M T W T F S — tap to cycle)", type: "mood-log", span: 2 },
+          { key: "water_log", label: "Water (glasses/day avg)", type: "text" },
+          { key: "sleep_log", label: "Sleep (hours/night avg)", type: "text" },
+          { key: "gratitude", label: "Grateful for", type: "gratitude-list", max: 3, span: 2 },
+          { key: "week_reflection", label: "Weekly reflection", type: "textarea", rows: 4, span: 2 },
         ],
       },
     ],
-    summary: (v) => (v.year ? `Self-care ${v.year}` : "Self-care check list"),
+    summary: (v) => (v.week_of ? `Self-care ${v.week_of}` : "Self-care week"),
   },
   {
     id: "cleaning-checklist",
