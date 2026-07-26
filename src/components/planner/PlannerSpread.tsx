@@ -21,6 +21,7 @@ export function PlannerSpread({ pageType, values, onChange, split, className }: 
   const mid = split ?? Math.ceil(sections.length / 2);
   const leftPage: PageTypeDef = { ...pageType, sections: sections.slice(0, mid) };
   const rightPage: PageTypeDef = { ...pageType, sections: sections.slice(mid) };
+  const singleSection = sections.length <= 1;
 
   return (
     <div
@@ -29,19 +30,26 @@ export function PlannerSpread({ pageType, values, onChange, split, className }: 
         className,
       )}
     >
-      {/* Spine */}
-      <div
-        aria-hidden
-        className="hidden lg:block absolute inset-y-0 left-1/2 -translate-x-1/2 w-8 spread-spine z-10 pointer-events-none"
-      />
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 p-5 lg:p-10">
-        <div className="min-w-0 lg:pr-6">
-          <PageRenderer pageType={leftPage} values={values} onChange={onChange} />
+      {!singleSection && (
+        <div
+          aria-hidden
+          className="hidden lg:block absolute inset-y-0 left-1/2 -translate-x-1/2 w-8 spread-spine z-10 pointer-events-none"
+        />
+      )}
+      {singleSection ? (
+        <div className="p-5 lg:p-10">
+          <PageRenderer pageType={pageType} values={values} onChange={onChange} />
         </div>
-        <div className="min-w-0 lg:pl-6">
-          <PageRenderer pageType={rightPage} values={values} onChange={onChange} />
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 p-5 lg:p-10">
+          <div className="min-w-0 lg:pr-6">
+            <PageRenderer pageType={leftPage} values={values} onChange={onChange} />
+          </div>
+          <div className="min-w-0 lg:pl-6">
+            <PageRenderer pageType={rightPage} values={values} onChange={onChange} />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
