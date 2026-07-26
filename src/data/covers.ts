@@ -1003,7 +1003,7 @@ export const COVERS: Cover[] = [
 
   {
     id: "patriotic-roses",
-    name: "Patriotic Roses",
+    name: "Red Patriotic Roses",
     collection: "classic",
     image: patrioticRoses.url,
     palette: palettePatrioticRed,
