@@ -1212,6 +1212,20 @@ export const COVERS: Cover[] = [
     palette: paletteCelestialGold,
   },
   {
+    id: "iris-starlight-moon",
+    name: "Iris Starlight Moon",
+    collection: "black-moon",
+    image: irisStarlightMoon.url,
+    palette: paletteCelestialGold,
+  },
+  {
+    id: "sparrow-moon-lights",
+    name: "Sparrow Moon Lights",
+    collection: "sparrow",
+    image: sparrowMoonLights.url,
+    palette: paletteCelestialGold,
+  },
+  {
     id: "gilded-rose",
     name: "Gilded Rose",
     collection: "scrapbook",
