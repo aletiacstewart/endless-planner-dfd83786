@@ -45,7 +45,8 @@
       "weight-tracker",
       "measurement-tracker",
       "blood-sugar-tracker",
-      "blood-pressure-tracker"
+      "blood-pressure-tracker",
+      "oxygen-tracker"
     ]
   },
   "stickers": {
