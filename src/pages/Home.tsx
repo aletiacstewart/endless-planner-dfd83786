@@ -34,6 +34,7 @@ export default function Home() {
   const [totalEntries, setTotalEntries] = useState(0);
   const [showReminder, setShowReminder] = useState(false);
   const [showCoverNudge, setShowCoverNudge] = useState(false);
+  const [opening, setOpening] = useState(false);
   const backupRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
