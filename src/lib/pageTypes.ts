@@ -27,7 +27,13 @@ export type FieldType =
   | "yearly-habit-grid" // 12 month rows: Begin/Break + label + 31 check cells
   | "med-list" // compact medication list: # + Name + Reason + Doctor rows
   | "doctor-picker" // dropdown bound to the shared Doctors directory + add-new dialog
-  | "paired-compact"; // single label with two small Start/Finish inputs side-by-side
+  | "paired-compact" // single label with two small Start/Finish inputs side-by-side
+  | "priority-list" // N numbered rows of checkbox + text (Top priorities)
+  | "hourly-timeline" // hourly schedule slots with text per hour
+  | "note-style" // paper-style picker (blank/lined/dot/cornell) + rich body
+  | "smart-goal" // structured SMART goal block
+  | "mood-log" // 7-day weekday mood face row
+  | "gratitude-list"; // 3 numbered gratitude text rows
 
 export interface FieldDef {
   key: string;
@@ -82,18 +88,22 @@ export interface PageTypeDef {
   summary?: (values: Record<string, unknown>) => string;
 }
 
-const goalKeys = Array.from({ length: 12 }, (_, i) => `goal_${i + 1}`);
+const goalKeys = Array.from({ length: 6 }, (_, i) => `goal_${i + 1}`);
 
 export const PAGE_TYPES: PageTypeDef[] = [
   {
     id: "my-goals",
     name: "My Goals",
     shortName: "Goals",
-    description: "Capture up to 12 goals with why, how you'll feel, and action steps.",
+    description: "Six SMART goals with milestones, obstacles, and a weekly review.",
     icon: "Target",
     sections: [
+      {
+        fields: [{ key: "year", label: "Year", type: "year", placeholder: "2026", span: 2 }],
+      },
       ...goalKeys.map((k, i) => ({
         title: `Goal ${i + 1}`,
+        columns: 2 as const,
         fields: [
           {
             key: k,
@@ -101,24 +111,43 @@ export const PAGE_TYPES: PageTypeDef[] = [
             type: "textarea" as const,
             rows: 2,
             placeholder: "What do you want to achieve?",
+            span: 2 as const,
           },
           {
-            key: `why_${i + 1}`,
-            label: "Why I want this",
-            type: "text" as const,
-            placeholder: "Why does this matter?",
+            key: `smart_${i + 1}`,
+            label: "SMART breakdown",
+            type: "smart-goal" as const,
+            span: 2 as const,
           },
           {
-            key: `feel_${i + 1}`,
-            label: "How I'll feel when I reach it",
-            type: "text" as const,
-            placeholder: "Describe the feeling",
+            key: `milestones_${i + 1}`,
+            label: "Milestones",
+            type: "priority-list" as const,
+            max: 4,
+            span: 2 as const,
           },
           {
-            key: `action_${i + 1}`,
+            key: `obstacles_${i + 1}`,
+            label: "Obstacles",
+            type: "textarea" as const,
+            rows: 2,
+          },
+          {
+            key: `actions_${i + 1}`,
             label: "Action steps",
-            type: "text" as const,
-            placeholder: "First step",
+            type: "textarea" as const,
+            rows: 2,
+          },
+          {
+            key: `deadline_${i + 1}`,
+            label: "Deadline",
+            type: "date" as const,
+          },
+          {
+            key: `review_${i + 1}`,
+            label: "Weekly review",
+            type: "textarea" as const,
+            rows: 2,
           },
         ],
       })),
@@ -126,7 +155,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         fields: [
           {
             key: "reward",
-            label: "Reward for achieving all goals",
+            label: "Reward for reaching all goals",
             type: "textarea",
             rows: 3,
             placeholder: "How will you celebrate?",
@@ -185,13 +214,25 @@ export const PAGE_TYPES: PageTypeDef[] = [
         fields: [{ key: "calendar", label: "Calendar grid", type: "calendar-grid", span: 2 }],
       },
       {
-        title: "Monthly goals & notes",
+        title: "Monthly priorities",
+        fields: [
+          { key: "priorities", label: "Top 5 priorities this month", type: "priority-list", max: 5, span: 2 },
+        ],
+      },
+      {
+        title: "Monthly focus",
         columns: 1,
         fields: [
-          { key: "goal_1", label: "Goal 1", type: "textarea", rows: 2 },
-          { key: "goal_2", label: "Goal 2", type: "textarea", rows: 2 },
-          { key: "notes", label: "Notes", type: "textarea", rows: 4 },
+          { key: "focus_word", label: "Focus / word of the month", type: "text", span: 2 },
+          { key: "goal_1", label: "Goal 1", type: "textarea", rows: 2, span: 2 },
+          { key: "goal_2", label: "Goal 2", type: "textarea", rows: 2, span: 2 },
+          { key: "notes", label: "Notes", type: "textarea", rows: 4, span: 2 },
         ],
+      },
+      {
+        title: "Habits this month",
+        description: "Mark daily habits across the month.",
+        fields: [{ key: "habits", label: "Habits", type: "habit-grid", span: 2 }],
       },
     ],
     summary: (v) => [v.month, v.year].filter(Boolean).join(" ") || "Monthly calendar",
@@ -252,6 +293,20 @@ export const PAGE_TYPES: PageTypeDef[] = [
         fields: [
           { key: "daily_goal", label: "Daily Goal", type: "textarea", rows: 3 },
           { key: "daily_habit", label: "Daily Habit Tracker", type: "success-fail" },
+        ],
+      },
+      {
+        title: "Top 3 priorities",
+        description: "The three things that matter most today.",
+        fields: [
+          { key: "priorities", label: "Top priorities", type: "priority-list", max: 3, span: 2 },
+        ],
+      },
+      {
+        title: "Hourly schedule",
+        description: "Time-block the day.",
+        fields: [
+          { key: "hourly", label: "Schedule", type: "hourly-timeline", span: 2 },
         ],
       },
       {
@@ -331,7 +386,11 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
+        title: "Reflection",
+        columns: 2,
         fields: [
+          { key: "gratitude", label: "Grateful for", type: "gratitude-list", max: 3 },
+          { key: "day_rating", label: "How the day felt", type: "mood-rating" },
           { key: "daily_notes", label: "Wellness Notes", type: "textarea", rows: 5, span: 2 },
         ],
       },
@@ -697,32 +756,63 @@ export const PAGE_TYPES: PageTypeDef[] = [
     id: "self-care-checklist",
     name: "Self-Care Check List",
     shortName: "Self-Care",
-    description: "Physical, emotional, and spiritual self-care across the year.",
+    description: "A weekly self-care ritual — categorized checklists, mood, sleep, and gratitude.",
     icon: "HeartHandshake",
     sections: [
       {
-        fields: [{ key: "year", label: "Year", type: "year" }],
-      },
-      {
-        title: "Physical Self-Care",
+        columns: 2,
         fields: [
-          { key: "physical", label: "Physical", type: "daily-month-grid", span: 2 },
+          { key: "week_of", label: "Week of", type: "date" },
+          { key: "focus_word", label: "Focus this week", type: "text" },
         ],
       },
       {
-        title: "Emotional Self-Care",
-        fields: [
-          { key: "emotional", label: "Emotional", type: "daily-month-grid", span: 2 },
+        title: "This week's self-care",
+        groups: [
+          {
+            title: "Physical",
+            fields: [
+              { key: "phys_checklist", label: "Physical", type: "checkbox-group", options: ["Move", "Sleep 8h", "Hydrate", "Nourish", "Sunlight", "Stretch"] },
+              { key: "phys_notes", label: "Notes", type: "textarea", rows: 3 },
+            ],
+          },
+          {
+            title: "Emotional",
+            fields: [
+              { key: "emo_checklist", label: "Emotional", type: "checkbox-group", options: ["Journal", "Feel it", "Cry if needed", "Talk it out", "Set a boundary", "Rest"] },
+              { key: "emo_notes", label: "Notes", type: "textarea", rows: 3 },
+            ],
+          },
+          {
+            title: "Spiritual",
+            fields: [
+              { key: "spir_checklist", label: "Spiritual", type: "checkbox-group", options: ["Pray", "Meditate", "Nature", "Read", "Gratitude", "Silence"] },
+              { key: "spir_notes", label: "Notes", type: "textarea", rows: 3 },
+            ],
+          },
+          {
+            title: "Social",
+            fields: [
+              { key: "soc_checklist", label: "Social", type: "checkbox-group", options: ["Call someone", "Say no", "Ask for help", "Quality time", "Alone time", "Community"] },
+              { key: "soc_notes", label: "Notes", type: "textarea", rows: 3 },
+            ],
+          },
         ],
+        fields: [],
       },
       {
-        title: "Spiritual Self-Care",
+        title: "How the week felt",
+        columns: 2,
         fields: [
-          { key: "spiritual", label: "Spiritual", type: "daily-month-grid", span: 2 },
+          { key: "mood_log", label: "Daily mood (S M T W T F S — tap to cycle)", type: "mood-log", span: 2 },
+          { key: "water_log", label: "Water (glasses/day avg)", type: "text" },
+          { key: "sleep_log", label: "Sleep (hours/night avg)", type: "text" },
+          { key: "gratitude", label: "Grateful for", type: "gratitude-list", max: 3, span: 2 },
+          { key: "week_reflection", label: "Weekly reflection", type: "textarea", rows: 4, span: 2 },
         ],
       },
     ],
-    summary: (v) => (v.year ? `Self-care ${v.year}` : "Self-care check list"),
+    summary: (v) => (v.week_of ? `Self-care ${v.week_of}` : "Self-care week"),
   },
   {
     id: "cleaning-checklist",
@@ -779,17 +869,20 @@ export const PAGE_TYPES: PageTypeDef[] = [
     id: "notes",
     name: "Notes",
     shortName: "Note",
-    description: "Free-form notes and journaling.",
+    description: "Free-form notes — pick your paper: blank, lined, dot grid, or Cornell.",
     icon: "NotebookPen",
     sections: [
       {
         fields: [
           { key: "title", label: "Title", type: "text", span: 2 },
-          { key: "body", label: "Notes", type: "textarea", rows: 16, span: 2 },
+          { key: "note", label: "Notes", type: "note-style", span: 2 },
         ],
       },
     ],
-    summary: (v) => (v.title as string) || (v.body as string)?.slice(0, 60) || "Untitled note",
+    summary: (v) => {
+      const n = v.note as { body?: string } | undefined;
+      return (v.title as string) || n?.body?.slice(0, 60) || "Untitled note";
+    },
   },
   {
     id: "workout-tracker",
