@@ -46,7 +46,9 @@
       "measurement-tracker",
       "blood-sugar-tracker",
       "blood-pressure-tracker",
-      "oxygen-tracker"
+      "oxygen-tracker",
+      "self-care-checklist",
+      "cleaning-checklist"
     ]
   },
   "stickers": {
