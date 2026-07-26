@@ -45,12 +45,12 @@ export const PAGE_SUBJECTS = {
 };
 
 export const COLLECTION_STYLE = {
-  classic: "Patriotic still-life style — deep navy, cream, and rich red palette with soft gold highlights, painterly, elegant, refined vintage Americana feel.",
-  "black-moon": "Moonlit black background with luminous gold and cream detailing, celestial and reverent, painted like a night-sky illustration with soft glow around the subject.",
-  "celestial-birds-insects": "Ethereal celestial palette — indigo, dusk blue, warm gold, ivory — with soft starfield backdrop, refined watercolor + gold-leaf feel.",
-  garden: "Botanical illustration style — soft blush, sage green, warm cream, with delicate ink linework and gentle watercolor washes, like a vintage flora plate.",
-  sparrow: "Warm dusk palette — golden amber, twilight blue, ivory — sparrow silhouettes and soft feather textures, storybook illustration feel.",
-  "celestial-florals": "Ivory and gold-leaf palette with silvery moonlight highlights, floral + celestial fusion, delicate and airy.",
+  classic: "Patriotic still-life style — deep navy, cream, and rich red palette with soft gold highlights, painterly, elegant, refined vintage Americana feel. Red roses when florals appear.",
+  "black-moon": "Celestial night palette — deep indigo with warm gold and ivory highlights, softly glowing full-moon backdrop with delicate starfield, painterly and reverent. Composition mirrors the Luminous Hummingbird Celestial Wings icon set: single centered emblem with subtle wing/feather or moon-arc accent, gold-leaf detailing.",
+  "celestial-birds-insects": "Ethereal celestial palette — indigo, dusk blue, warm gold, ivory — with soft starfield backdrop, refined watercolor + gold-leaf feel, feathered accents.",
+  garden: "Botanical illustration style — soft blush, sage green, warm cream, with delicate ink linework and gentle watercolor washes, like a vintage flora plate. No dragonflies unless the cover explicitly features one.",
+  sparrow: "Warm dusk palette — golden amber, twilight blue, ivory — small sparrow silhouettes perched on branches with soft moon and lantern glow, storybook illustration feel.",
+  "celestial-florals": "Ivory and gold-leaf palette with silvery moonlight highlights, floral + celestial fusion, delicate and airy. No gemstones or crystal facets.",
   "sky-wings-arrows": "Sky-blue to sunset-gold gradient background with cloud wisps, feathered edges, arrow motifs, feels like an heirloom emblem.",
   scrapbook: "Vintage scrapbook aesthetic — cream paper, torn edges, subtle washi-tape accents, hand-drawn ink outlines with soft pastel fills.",
   affirmations: "Warm ivory paper background with hand-lettered ornamental flourishes (no readable text), muted rose + dusty gold accents, gentle and reverent.",
@@ -60,23 +60,36 @@ export const COLLECTION_STYLE = {
   "pop-art": "Pop-art palette — bold cerulean, magenta, sun yellow, ivory — clean flat color, subtle halftone dots, playful and modern.",
   grit: "Grit-and-grace mono palette — warm charcoal, bone ivory, hints of ochre — cracked-plaster texture, brave and quiet.",
   feathers: "Cloud-soft sky background with a single hero object rendered as iridescent feather barbs, jewel-tone accents matching the specific cover.",
-  dragons: "Sunset ember palette — burnt orange, deep gold, oxblood, obsidian — subject rendered with scaled or forged texture, heraldic and cinematic.",
-  "gothic-sirens": "Deep-sea gothic palette — abyss black, pearl ivory, muted teal, bone white — cathedral-shell textures, mournful and reverent.",
+  dragons: "Cinematic heraldic dragon fantasy — moody sunset ember palette of burnt orange, deep gold, oxblood, obsidian black. Every subject is silhouetted or entwined with a stylized dragon form (scales, wings, curled tail, forged filigree) rendered with realistic scaled texture and dramatic rim-light against a sunset or ember sky. Serious, mature, painterly — NOT whimsical, NOT cute, NOT cartoon.",
+  "gothic-sirens": "Gothic siren ink-on-parchment style — cream/ivory paper background lightly aged with soft sepia edges (matching the siren cover paper), the subject rendered in pure BLACK INK with fine engraved linework and stippling, occasional touches of muted teal or bone-white shell texture. Mournful, reverent, cathedral-quiet.",
 };
 
 export const DEFAULT_COLLECTION_STYLE = "Refined editorial illustration, soft warm palette, hand-crafted feel, gentle painted textures, museum-quality.";
 
 export const COVER_STYLE_OVERRIDE = {
-  "feather-emerald": "Cloud-soft sky background with a hero object rendered from iridescent EMERALD-GREEN feather barbs, luminous jewel highlights.",
-  "feather-phoenix": "Cloud-soft sky background with a hero object rendered from iridescent PHOENIX-ORANGE and crimson feather barbs.",
-  "feather-sapphire": "Cloud-soft sky background with a hero object rendered from iridescent SAPPHIRE-BLUE feather barbs.",
-  "feather-amethyst": "Cloud-soft sky background with a hero object rendered from iridescent AMETHYST-PURPLE feather barbs.",
-  "feather-crimson": "Cloud-soft sky background with a hero object rendered from iridescent DEEP-CRIMSON feather barbs.",
-  "feather-gold": "Cloud-soft sky background with a hero object rendered from iridescent WARM-GOLD feather barbs.",
+  "feather-emerald": "Cloud-soft sky background, single hero object rendered from iridescent EMERALD-GREEN feather barbs, luminous jewel highlights.",
+  "feather-phoenix": "Cloud-soft sky background, single hero object rendered from iridescent PHOENIX-ORANGE and crimson feather barbs, ember highlights.",
+  "feather-sapphire": "Cloud-soft sky background, single hero object rendered from iridescent SAPPHIRE-BLUE feather barbs on a cool blue-cream sky — every accent is BLUE, absolutely no orange or warm tones.",
+  "feather-amethyst": "Cloud-soft sky background, single hero object rendered from iridescent AMETHYST-PURPLE feather barbs.",
+  "feather-crimson": "Cloud-soft sky background, single hero object rendered from iridescent DEEP-CRIMSON feather barbs.",
+  "feather-gold": "Warm ivory sky background, single hero object rendered from iridescent RICH YELLOW-GOLD feather barbs, sunlit gold highlights — every accent is GOLD/YELLOW, absolutely no orange, red, or ember tones.",
   "wellness-roots": "Wellness palette anchored in DEEP SAGE and warm terracotta.",
   "wellness-river": "Wellness palette anchored in COOL RIVER BLUE and soft ivory.",
   "wellness-bloom": "Wellness palette anchored in BLUSH PINK and warm gold with blooming florals and butterflies.",
   "wellness-still-water": "Wellness palette anchored in MISTY LAVENDER and pale sage.",
+  "patriotic-roses": "Patriotic still-life — deep navy, cream, and rich RED rose accents with soft gold highlights, painterly Americana. Roses are always RED.",
+  "patriotic-blue-rose": "Patriotic still-life — deep navy, cream, and BLUE rose accents with soft gold highlights, painterly Americana. Composition mirrors the red patriotic pack exactly but every rose is BLUE — absolutely no red roses.",
+  "red-rose-moonlight": "Moonlit deep-charcoal background with a luminous cream moon and RED rose accents, soft gold light, painterly and romantic. Roses are always RED.",
+  "white-rose-moonlight": "Moonlit deep-charcoal background with a luminous cream moon and WHITE rose accents, soft silver-gold light, painterly and romantic. Roses are always WHITE — absolutely no red or pink roses.",
+  "black-dahlia-moon": "Celestial night palette — deep indigo, warm gold, ivory highlights, luminous full-moon halo with delicate starfield and soft feathered wing accents, matches the Luminous Hummingbird Celestial Wings icon set.",
+  "black-rose-moon": "Celestial night palette — deep indigo, warm gold, ivory highlights, luminous full-moon halo with delicate starfield and soft feathered wing accents, matches the Luminous Hummingbird Celestial Wings icon set.",
+  "black-lily-moon": "Celestial night palette — deep indigo, warm gold, ivory highlights, luminous full-moon halo with delicate starfield and soft feathered wing accents, matches the Luminous Hummingbird Celestial Wings icon set.",
+  "midnight-iris-moon": "Celestial night palette — deep indigo, warm gold, ivory highlights, luminous full-moon halo with delicate starfield and soft feathered wing accents, matches the Luminous Hummingbird Celestial Wings icon set.",
+  "swallowtail-moon": "Celestial night palette — deep indigo, warm gold, ivory highlights, luminous full-moon halo with delicate starfield and a soft swallowtail-butterfly wing accent, matches the Luminous Hummingbird Celestial Wings icon set.",
+  "sparrow-moon-lights": "Warm dusk palette — golden amber, twilight blue, ivory — every icon features a small dark sparrow silhouette perched on a slender branch beside a soft glowing moon and tiny paper lanterns, storybook illustration feel.",
+  "english-rose-dew": "Soft cottage-garden palette — dusty pink, sage, cream — delicate PINK english roses with dew drops and gentle ink linework. Absolutely NO dragonflies, NO insects, NO butterflies.",
+  "cream-ribbons": "Warm ivory background with flowing CREAM SATIN RIBBONS softly curling around the subject, delicate gold-thread accents, elegant and heirloom. Absolutely NO gemstones, NO crystal facets, NO jewelry.",
+  "dove-raven-roses": "Cream paper background with rich red rose accents. Every icon features BOTH a small WHITE DOVE and a small BLACK RAVEN — both birds always visible together, painterly heirloom style. Not a single-bird composition.",
 };
 
 export const STICKER_CATEGORY_PROMPT = {
