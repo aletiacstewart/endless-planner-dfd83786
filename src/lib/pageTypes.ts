@@ -214,13 +214,25 @@ export const PAGE_TYPES: PageTypeDef[] = [
         fields: [{ key: "calendar", label: "Calendar grid", type: "calendar-grid", span: 2 }],
       },
       {
-        title: "Monthly goals & notes",
+        title: "Monthly priorities",
+        fields: [
+          { key: "priorities", label: "Top 5 priorities this month", type: "priority-list", max: 5, span: 2 },
+        ],
+      },
+      {
+        title: "Monthly focus",
         columns: 1,
         fields: [
-          { key: "goal_1", label: "Goal 1", type: "textarea", rows: 2 },
-          { key: "goal_2", label: "Goal 2", type: "textarea", rows: 2 },
-          { key: "notes", label: "Notes", type: "textarea", rows: 4 },
+          { key: "focus_word", label: "Focus / word of the month", type: "text", span: 2 },
+          { key: "goal_1", label: "Goal 1", type: "textarea", rows: 2, span: 2 },
+          { key: "goal_2", label: "Goal 2", type: "textarea", rows: 2, span: 2 },
+          { key: "notes", label: "Notes", type: "textarea", rows: 4, span: 2 },
         ],
+      },
+      {
+        title: "Habits this month",
+        description: "Mark daily habits across the month.",
+        fields: [{ key: "habits", label: "Habits", type: "habit-grid", span: 2 }],
       },
     ],
     summary: (v) => [v.month, v.year].filter(Boolean).join(" ") || "Monthly calendar",
