@@ -1,76 +1,64 @@
-# Digital Planner Redesign
+## Problem
 
-Reshape the interior of the app so opening an entry feels like opening a Bloom digital dot journal — a two-page spread on dotted paper, colored side tabs to jump between sections, elegant serif/hand-lettered headers, and smooth page-flip transitions. Inspired by Bloom, but keeps our emerald + cream identity and our topic set.
+Two issues on interior spread pages:
 
-## Rollout order
+1. **Wide grids clip inside a half-page**: `yearly-habit-grid` (Jan–Dec × 31 days) and similar wide fields (`habit-grid`, month/week grids) are forced into the right half of the two-page spread, so days ~15–31 fall off the page.
+2. **Right-edge side tabs are invisible**: on desktop, `SideTabs` uses `translate-x-[calc(100%-2.5rem)]` which pushes each tab off-screen until hover, and the tab strip sits behind the entry padding — you only see a red sliver ("Yea…") as in the screenshot.
 
-1. **Daily Tracker** first as the reference implementation.
-2. Then all other interior entry pages.
-3. Then section list pages (turn into a tabbed spread of entries).
-4. Then Home (planner cover + spine open animation into the spread).
+## What to change
 
-## Visual system
+### 1. Full-bleed wide sections in `PlannerSpread`
 
-- **Paper**: cream `--paper` base, subtle dot grid (radial-gradient dots, 20px pitch, low-opacity emerald). Optional light emerald spine shadow down the middle on wide screens.
-- **Typography**: keep Cormorant Garamond for section titles, add Caveat as script accent for date/day labels, Inter for body. Tighter tracking, larger display sizes.
-- **Color-blocked headers**: each page gets a soft emerald or accent band with the page title in serif + a script sub-label ("today", "this week").
-- **Side tabs**: vertical stack of colored tabs on the right edge, each tab = a page type (Daily, Goals, Gratitude, Reflection, …). Active tab lifts out; inactive tabs peek. Tabs work as nav and always visible on desktop; collapse to a bottom sheet on mobile.
-- **Dot grid** shows through inside every card; cards become nearly borderless (just a soft shadow) so it reads as one continuous page.
+Extend `PageTypeDef` sections with an optional `fullBleed?: boolean` flag. In `PlannerSpread`, split sections into three ordered buckets:
 
-## Layout — spread
+- `leftSections`: normal sections up to the split
+- `bleedSections`: any full-bleed sections in their original order
+- `rightSections`: remaining normal sections
 
-On desktop (≥ lg):
+Render structure:
 
 ```text
-┌────────────────────────────┬────────────────────────────┬──┐
-│  LEFT PAGE                 │  RIGHT PAGE                │T │
-│  header band               │  header band (continued)   │A │
-│  primary section(s)        │  secondary section(s)      │B │
-│  dot grid                  │  dot grid                  │S │
-└────────────────────────────┴────────────────────────────┴──┘
++--------------------------+
+| left  |  spine  | right  |  ← normal two-column
++--------------------------+
+|      full-bleed row      |  ← spans both pages, no spine
++--------------------------+
 ```
 
-- Spread = two equal columns with a faint center spine gradient.
-- `PageRenderer` splits `pageType.sections` across left/right using a new `side?: "left" | "right"` hint on each section (default: alternate, or auto-split by index).
-- On tablet/mobile: single column, spine hidden, side tabs collapse into a floating tab strip.
+Full-bleed rows drop the center spine, use `col-span-2`, and wrap their children in `overflow-x-auto` so any residual overflow still scrolls rather than clips. If a page has only full-bleed sections, render as a single wide page (no spine).
 
-## Interactions
+Mark as `fullBleed: true` in `src/lib/pageTypes.ts`:
 
-- **Page flip**: navigating between entries (or between page types via tabs) animates a horizontal page-turn (Framer Motion / `motion`, ~350ms, ease-out, subtle shadow sweep). Swipe left/right on touch = prev/next entry.
-- **Tab jump**: clicking a side tab animates to that page type's most recent entry (or a new blank one) with the same flip transition.
-- **Sticker/pen affordances** stay from current personalization system, but move into a floating toolbar on the spine so it feels like tools sitting on the planner.
-- Keyboard: ← / → flip pages.
+- `yearly-habit-tracker` → `yearly_habits` (yearly-habit-grid)
+- `yearly-calendar` → the 12-month notes grid section
+- `monthly-calendar` → month grid
+- `weekly-calendar` → the week grid section
+- `daily-tracker` & `complete-tracker` → `month_calendar` (habit-grid) and any `habit-grid` sections
+- `weight-tracker`, `measurement-tracker`, `blood-sugar-tracker`, `blood-pressure-tracker`, `oxygen-tracker` → their multi-week tracker sections
 
-## Daily Tracker mapping (reference)
+Anything not explicitly flagged keeps the current two-column behavior.
 
-Left page: date band + mood/energy checkboxes + wellness checkbox groups.
-Right page: today's focus (rich text), gratitude, notes.
-Header band uses accent color from the active cover theme (already exposed via `useCoverTheme`).
+### 2. Fix SideTabs visibility
 
-## Files to add / change (technical)
+Rework `src/components/planner/SideTabs.tsx`:
 
-New:
-- `src/components/planner/PlannerSpread.tsx` — two-column spread wrapper, spine, dot-grid background.
-- `src/components/planner/SideTabs.tsx` — vertical tabbed nav bound to page types; mobile bottom variant.
-- `src/components/planner/PageFlip.tsx` — Framer Motion wrapper for enter/exit page-turn animation, keyed by entryId.
-- `src/hooks/useSwipeNav.ts` — touch swipe → prev/next.
+- Anchor the desktop rail at `right-2` (not `right-0`) and remove the hover-only translate — always show the full pill with icon + `shortName`.
+- Give the rail a translucent card background and shadow so it stays legible over paper backgrounds.
+- Keep the strip inside `max-h-[80vh] overflow-y-auto` so long tab lists scroll instead of overflowing off screen.
+- Increase the reserved right padding on the Entry container from `lg:pr-24` to `lg:pr-40` so the spread never sits under the tabs.
+- Active tab keeps the filled primary style; inactive tabs use `bg-card/90` with border, always fully visible.
+- Mobile bottom strip is already fine — leave as is, just verify padding.
 
-Change:
-- `src/lib/pageTypes.ts` — add optional `side?: "left" | "right"` to `Section`, and `tabColor?: string` to `PageTypeDef`. Add helpers to get prev/next entry of same type.
-- `src/components/PageRenderer.tsx` — render left/right buckets when inside a spread; keep current stacked mode as fallback.
-- `src/pages/Entry.tsx` — wrap main in `PlannerSpread` + `PageFlip`; move `EntryPersonalization` into a floating spine toolbar; render `SideTabs`.
-- `src/index.css` — add `.paper-dot` (dot-grid bg), `.spread-spine` (center gradient shadow), tune `.planner-card` to be borderless-on-paper inside spreads.
-- `src/pages/Section.tsx` (phase 3) — convert entry list to a tabbed spread of "sheets".
-- `src/pages/Home.tsx` (phase 4) — planner-cover open animation into last-viewed spread.
+### 3. Audit pass
 
-Non-goals:
-- No changes to data model, sync, Stripe/entitlements, or covers/icons/stickers content.
-- No new backend work.
+After the change, open one entry of each page type and confirm:
 
-## Acceptance
+- No horizontal clipping on `lg` (1280px+) or `xl` (1440px+).
+- All 31 day columns render for habit / yearly-habit grids.
+- Side rail tabs are fully visible on the right, don't overlap content, and remain clickable.
 
-- Daily Tracker on desktop shows a two-page spread on a dotted cream paper, with side tabs on the right and a floating personalization toolbar on the spine.
-- Flipping between daily entries animates a page turn; swipe works on touch.
-- Side tabs jump between page types and stay visible when collapsed.
-- Mobile shows single-column with a bottom tab strip; still animates on nav.
-- Other page types still render (unchanged) until phase 2 migrates them.
+## Technical details
+
+- Files touched: `src/lib/pageTypes.ts` (type + flags), `src/components/planner/PlannerSpread.tsx` (bucket + render), `src/components/planner/SideTabs.tsx` (visibility), `src/pages/Entry.tsx` (right padding). No renderer changes needed — `PageRenderer` already handles wide grids; we're only giving them room.
+- No data/schema/RLS changes.
+- Non-goal: redesigning the grids themselves or changing mobile layout beyond padding.
