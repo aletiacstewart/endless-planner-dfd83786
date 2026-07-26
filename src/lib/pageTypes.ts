@@ -869,17 +869,20 @@ export const PAGE_TYPES: PageTypeDef[] = [
     id: "notes",
     name: "Notes",
     shortName: "Note",
-    description: "Free-form notes and journaling.",
+    description: "Free-form notes — pick your paper: blank, lined, dot grid, or Cornell.",
     icon: "NotebookPen",
     sections: [
       {
         fields: [
           { key: "title", label: "Title", type: "text", span: 2 },
-          { key: "body", label: "Notes", type: "textarea", rows: 16, span: 2 },
+          { key: "note", label: "Notes", type: "note-style", span: 2 },
         ],
       },
     ],
-    summary: (v) => (v.title as string) || (v.body as string)?.slice(0, 60) || "Untitled note",
+    summary: (v) => {
+      const n = v.note as { body?: string } | undefined;
+      return (v.title as string) || n?.body?.slice(0, 60) || "Untitled note";
+    },
   },
   {
     id: "workout-tracker",
