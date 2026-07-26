@@ -116,12 +116,9 @@ export default function Home() {
     const existing = dailies.find(
       (e) => (e.values.date as string | undefined)?.slice(0, 10) === iso,
     );
-    if (existing) {
-      navigate(`/entry/${existing.id}`);
-    } else {
-      const created = await createEntry("daily-tracker", { date: iso });
-      navigate(`/entry/${created.id}`);
-    }
+    const target = existing ?? (await createEntry("daily-tracker", { date: iso }));
+    setOpening(true);
+    window.setTimeout(() => navigate(`/entry/${target.id}`), 720);
   };
 
 
