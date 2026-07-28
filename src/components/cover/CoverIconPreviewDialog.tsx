@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { CoverImage } from "@/components/cover/CoverImage";
 import { COVERS, COLLECTIONS } from "@/data/covers";
-import { COVER_ICONS } from "@/lib/coverIcons";
+import { getCoverIconPack } from "@/lib/coverIcons";
 import { PAGE_IMAGES } from "@/lib/pageImages";
 import { PAGE_TYPES } from "@/lib/pageTypes";
 import { isCoverIncluded } from "@/data/coverPacks";
