@@ -4,7 +4,6 @@ import { ArrowLeft, ShoppingBag } from "lucide-react";
 import { getPlanner } from "@/data/planners";
 import { getPageType } from "@/lib/pageTypes";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
-import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { CoverCard } from "@/components/cover/CoverCard";
 import { CartSummary } from "@/components/cover/CartSummary";
 import { COLLECTIONS, COVERS, type CoverCollection, getCover } from "@/data/covers";
@@ -74,7 +73,6 @@ export default function PlannerDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <PaymentTestModeBanner />
 
       {/* Header */}
       <header className="px-6 md:px-12 py-5 flex items-center justify-between border-b border-primary/10">
