@@ -1321,16 +1321,6 @@ export const COVER_ICONS: Record<string, Record<string, string>> = {
     recipe: smRecipe, notes: smNotes, "workout-tracker": smWorkoutTracker,
     medications: smMedications, "medical-records": smMedicalRecords, "yearly-focus": smYearlyFocus,
   }),
-  "ivory-ribbons": pack({
-    "my-goals": riMyGoals, "yearly-calendar": riYearlyCalendar, "monthly-calendar": riMonthlyCalendar,
-    "weekly-calendar": riWeeklyCalendar, "daily-tracker": riDailyTracker, "complete-tracker": riCompleteTracker,
-    "yearly-habit-tracker": riYearlyHabitTracker, "weight-tracker": riWeightTracker,
-    "measurement-tracker": riMeasurementTracker, "blood-sugar-tracker": riBloodSugarTracker,
-    "blood-pressure-tracker": riBloodPressureTracker, "oxygen-tracker": riOxygenTracker,
-    "self-care-checklist": riSelfCareChecklist, "cleaning-checklist": riCleaningChecklist,
-    recipe: riRecipe, notes: riNotes, "workout-tracker": riWorkoutTracker,
-    medications: riMedications, "medical-records": riMedicalRecords, "yearly-focus": riYearlyFocus,
-  }),
   "midnight-ribbons": pack({
     "my-goals": rmMyGoals, "yearly-calendar": rmYearlyCalendar, "monthly-calendar": rmMonthlyCalendar,
     "weekly-calendar": rmWeeklyCalendar, "daily-tracker": rmDailyTracker, "complete-tracker": rmCompleteTracker,
