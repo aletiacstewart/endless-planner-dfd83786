@@ -1558,7 +1558,27 @@ if (COVER_ICONS["mockingbird-moon"]) COVER_ICONS["sparrow-moon-lights"] = COVER_
 if (COVER_ICONS["pastel-clipboard"]) COVER_ICONS["dreamscape"] = COVER_ICONS["pastel-clipboard"];
 
 
+// Dynamic per-cover folder resolver.
+// If a `src/assets/page-icons/<coverId>/<pageId>.jpg` file exists on disk, it
+// wins over the static COVER_ICONS map. Lets newly-generated dedicated folders
+// (e.g. feather-sapphire, cream-ribbons, english-rose-dew) light up without
+// having to hand-wire another 20-import block per cover.
+const DYNAMIC_ICONS = import.meta.glob<{ default: string }>(
+  "@/assets/page-icons/*/*.jpg",
+  { eager: true, import: "default" }
+) as Record<string, string>;
+
+const DYNAMIC_MAP: Record<string, Record<string, string>> = {};
+for (const [path, url] of Object.entries(DYNAMIC_ICONS)) {
+  // path form: /src/assets/page-icons/<coverId>/<pageId>.jpg
+  const m = /\/page-icons\/([^/]+)\/([^/]+)\.jpg$/.exec(path);
+  if (!m) continue;
+  const [, coverId, pageId] = m;
+  (DYNAMIC_MAP[coverId] ??= {})[pageId] = url as unknown as string;
+}
+
 export function getCoverPageIcon(coverId: string | null | undefined, pageId: string): string | undefined {
   if (!coverId) return undefined;
-  return COVER_ICONS[coverId]?.[pageId];
+  return DYNAMIC_MAP[coverId]?.[pageId] ?? COVER_ICONS[coverId]?.[pageId];
 }
+
