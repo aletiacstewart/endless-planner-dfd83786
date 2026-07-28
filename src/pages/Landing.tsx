@@ -108,7 +108,11 @@ export default function Landing() {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 lg:gap-x-10 gap-y-10">
           {previewCovers.map((c) => (
-            <Link key={c.id} to={`/planner/${flagshipPlanner.id}`} className="group cursor-pointer block">
+            <Link
+              key={c.id}
+              to={`/planner/${flagshipPlanner.id}?cover=${encodeURIComponent(c.id)}`}
+              className="group cursor-pointer block"
+            >
               <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-secondary mb-4 transition-all duration-700 group-hover:shadow-2xl group-hover:shadow-primary/10">
                 <img
                   src={c.image}

@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Link, useParams, Navigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams, useSearchParams, Navigate } from "react-router-dom";
 import { ArrowLeft, ShoppingBag } from "lucide-react";
 import { getPlanner } from "@/data/planners";
 import { getPageType } from "@/lib/pageTypes";
@@ -13,6 +13,8 @@ import { useAuth } from "@/hooks/useAuth";
 
 export default function PlannerDetail() {
   const { plannerId = "" } = useParams();
+  const [searchParams] = useSearchParams();
+  const preselectCover = searchParams.get("cover") ?? "";
   const planner = getPlanner(plannerId);
   const { user } = useAuth();
   const { openCheckout, checkoutElement, closeCheckout, isOpen } = useStripeCheckout();
@@ -20,6 +22,14 @@ export default function PlannerDetail() {
   const [includedCoverId, setIncludedCoverId] = useState<string>("");
   const [extraPackIds, setExtraPackIds] = useState<string[]>([]);
   const [filter, setFilter] = useState<CoverCollection | "all">("all");
+
+  useEffect(() => {
+    if (preselectCover && !includedCoverId && COVERS.some((c) => c.id === preselectCover)) {
+      setIncludedCoverId(preselectCover);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preselectCover]);
+
 
   const availableCollections = useMemo(() => {
     const used = new Set(COVERS.map((c) => c.collection));
