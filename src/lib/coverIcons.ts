@@ -367,27 +367,8 @@ import smMedications from "@/assets/page-icons/sun-moon-storm/medications.jpg";
 import smMedicalRecords from "@/assets/page-icons/sun-moon-storm/medical-records.jpg";
 import smYearlyFocus from "@/assets/page-icons/sun-moon-storm/yearly-focus.jpg";
 
-// Ribbons Ivory (shared: ivory-ribbons)
-import riMyGoals from "@/assets/page-icons/ribbons-ivory/my-goals.jpg";
-import riYearlyCalendar from "@/assets/page-icons/ribbons-ivory/yearly-calendar.jpg";
-import riMonthlyCalendar from "@/assets/page-icons/ribbons-ivory/monthly-calendar.jpg";
-import riWeeklyCalendar from "@/assets/page-icons/ribbons-ivory/weekly-calendar.jpg";
-import riDailyTracker from "@/assets/page-icons/ribbons-ivory/daily-tracker.jpg";
-import riCompleteTracker from "@/assets/page-icons/ribbons-ivory/complete-tracker.jpg";
-import riYearlyHabitTracker from "@/assets/page-icons/ribbons-ivory/yearly-habit-tracker.jpg";
-import riWeightTracker from "@/assets/page-icons/ribbons-ivory/weight-tracker.jpg";
-import riMeasurementTracker from "@/assets/page-icons/ribbons-ivory/measurement-tracker.jpg";
-import riBloodSugarTracker from "@/assets/page-icons/ribbons-ivory/blood-sugar-tracker.jpg";
-import riBloodPressureTracker from "@/assets/page-icons/ribbons-ivory/blood-pressure-tracker.jpg";
-import riOxygenTracker from "@/assets/page-icons/ribbons-ivory/oxygen-tracker.jpg";
-import riSelfCareChecklist from "@/assets/page-icons/ribbons-ivory/self-care-checklist.jpg";
-import riCleaningChecklist from "@/assets/page-icons/ribbons-ivory/cleaning-checklist.jpg";
-import riRecipe from "@/assets/page-icons/ribbons-ivory/recipe.jpg";
-import riNotes from "@/assets/page-icons/ribbons-ivory/notes.jpg";
-import riWorkoutTracker from "@/assets/page-icons/ribbons-ivory/workout-tracker.jpg";
-import riMedications from "@/assets/page-icons/ribbons-ivory/medications.jpg";
-import riMedicalRecords from "@/assets/page-icons/ribbons-ivory/medical-records.jpg";
-import riYearlyFocus from "@/assets/page-icons/ribbons-ivory/yearly-focus.jpg";
+
+
 
 // Ribbons Midnight (shared: midnight-ribbons)
 import rmMyGoals from "@/assets/page-icons/ribbons-midnight/my-goals.jpg";
