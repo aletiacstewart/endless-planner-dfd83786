@@ -1149,13 +1149,6 @@ export const COVERS: Cover[] = [
     palette: paletteSunMoonStorm,
   },
   {
-    id: "ivory-ribbons",
-    name: "Ivory Ribbons",
-    collection: "celestial-florals",
-    image: ivoryRibbons.url,
-    palette: paletteIvory,
-  },
-  {
     id: "midnight-ribbons",
     name: "Midnight Ribbons",
     collection: "scrapbook",
