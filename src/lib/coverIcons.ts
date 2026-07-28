@@ -367,27 +367,8 @@ import smMedications from "@/assets/page-icons/sun-moon-storm/medications.jpg";
 import smMedicalRecords from "@/assets/page-icons/sun-moon-storm/medical-records.jpg";
 import smYearlyFocus from "@/assets/page-icons/sun-moon-storm/yearly-focus.jpg";
 
-// Ribbons Ivory (shared: ivory-ribbons)
-import riMyGoals from "@/assets/page-icons/ribbons-ivory/my-goals.jpg";
-import riYearlyCalendar from "@/assets/page-icons/ribbons-ivory/yearly-calendar.jpg";
-import riMonthlyCalendar from "@/assets/page-icons/ribbons-ivory/monthly-calendar.jpg";
-import riWeeklyCalendar from "@/assets/page-icons/ribbons-ivory/weekly-calendar.jpg";
-import riDailyTracker from "@/assets/page-icons/ribbons-ivory/daily-tracker.jpg";
-import riCompleteTracker from "@/assets/page-icons/ribbons-ivory/complete-tracker.jpg";
-import riYearlyHabitTracker from "@/assets/page-icons/ribbons-ivory/yearly-habit-tracker.jpg";
-import riWeightTracker from "@/assets/page-icons/ribbons-ivory/weight-tracker.jpg";
-import riMeasurementTracker from "@/assets/page-icons/ribbons-ivory/measurement-tracker.jpg";
-import riBloodSugarTracker from "@/assets/page-icons/ribbons-ivory/blood-sugar-tracker.jpg";
-import riBloodPressureTracker from "@/assets/page-icons/ribbons-ivory/blood-pressure-tracker.jpg";
-import riOxygenTracker from "@/assets/page-icons/ribbons-ivory/oxygen-tracker.jpg";
-import riSelfCareChecklist from "@/assets/page-icons/ribbons-ivory/self-care-checklist.jpg";
-import riCleaningChecklist from "@/assets/page-icons/ribbons-ivory/cleaning-checklist.jpg";
-import riRecipe from "@/assets/page-icons/ribbons-ivory/recipe.jpg";
-import riNotes from "@/assets/page-icons/ribbons-ivory/notes.jpg";
-import riWorkoutTracker from "@/assets/page-icons/ribbons-ivory/workout-tracker.jpg";
-import riMedications from "@/assets/page-icons/ribbons-ivory/medications.jpg";
-import riMedicalRecords from "@/assets/page-icons/ribbons-ivory/medical-records.jpg";
-import riYearlyFocus from "@/assets/page-icons/ribbons-ivory/yearly-focus.jpg";
+
+
 
 // Ribbons Midnight (shared: midnight-ribbons)
 import rmMyGoals from "@/assets/page-icons/ribbons-midnight/my-goals.jpg";
@@ -1321,16 +1302,6 @@ export const COVER_ICONS: Record<string, Record<string, string>> = {
     recipe: smRecipe, notes: smNotes, "workout-tracker": smWorkoutTracker,
     medications: smMedications, "medical-records": smMedicalRecords, "yearly-focus": smYearlyFocus,
   }),
-  "ivory-ribbons": pack({
-    "my-goals": riMyGoals, "yearly-calendar": riYearlyCalendar, "monthly-calendar": riMonthlyCalendar,
-    "weekly-calendar": riWeeklyCalendar, "daily-tracker": riDailyTracker, "complete-tracker": riCompleteTracker,
-    "yearly-habit-tracker": riYearlyHabitTracker, "weight-tracker": riWeightTracker,
-    "measurement-tracker": riMeasurementTracker, "blood-sugar-tracker": riBloodSugarTracker,
-    "blood-pressure-tracker": riBloodPressureTracker, "oxygen-tracker": riOxygenTracker,
-    "self-care-checklist": riSelfCareChecklist, "cleaning-checklist": riCleaningChecklist,
-    recipe: riRecipe, notes: riNotes, "workout-tracker": riWorkoutTracker,
-    medications: riMedications, "medical-records": riMedicalRecords, "yearly-focus": riYearlyFocus,
-  }),
   "midnight-ribbons": pack({
     "my-goals": rmMyGoals, "yearly-calendar": rmYearlyCalendar, "monthly-calendar": rmMonthlyCalendar,
     "weekly-calendar": rmWeeklyCalendar, "daily-tracker": rmDailyTracker, "complete-tracker": rmCompleteTracker,
@@ -1587,7 +1558,27 @@ if (COVER_ICONS["mockingbird-moon"]) COVER_ICONS["sparrow-moon-lights"] = COVER_
 if (COVER_ICONS["pastel-clipboard"]) COVER_ICONS["dreamscape"] = COVER_ICONS["pastel-clipboard"];
 
 
+// Dynamic per-cover folder resolver.
+// If a `src/assets/page-icons/<coverId>/<pageId>.jpg` file exists on disk, it
+// wins over the static COVER_ICONS map. Lets newly-generated dedicated folders
+// (e.g. feather-sapphire, cream-ribbons, english-rose-dew) light up without
+// having to hand-wire another 20-import block per cover.
+const DYNAMIC_ICONS = import.meta.glob<string>(
+  "@/assets/page-icons/*/*.jpg",
+  { eager: true, import: "default", query: "?url" }
+);
+
+const DYNAMIC_MAP: Record<string, Record<string, string>> = {};
+for (const [path, url] of Object.entries(DYNAMIC_ICONS)) {
+  // path form: /src/assets/page-icons/<coverId>/<pageId>.jpg
+  const m = /\/page-icons\/([^/]+)\/([^/]+)\.jpg$/.exec(path);
+  if (!m) continue;
+  const [, coverId, pageId] = m;
+  (DYNAMIC_MAP[coverId] ??= {})[pageId] = url as string;
+}
+
 export function getCoverPageIcon(coverId: string | null | undefined, pageId: string): string | undefined {
   if (!coverId) return undefined;
-  return COVER_ICONS[coverId]?.[pageId];
+  return DYNAMIC_MAP[coverId]?.[pageId] ?? COVER_ICONS[coverId]?.[pageId];
 }
+

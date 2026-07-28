@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
-import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { toast } from "sonner";
@@ -37,7 +36,6 @@ export default function Subscribe() {
 
   return (
     <div className="min-h-screen bg-background">
-      <PaymentTestModeBanner />
       <header className="px-6 py-4 flex items-center justify-between border-b border-border">
         <Link to="/" className="font-display text-xl">Endless Planner</Link>
         <Link to="/settings" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1">

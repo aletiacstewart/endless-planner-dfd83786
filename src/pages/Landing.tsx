@@ -4,7 +4,6 @@ import { Cloud, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { COVERS, COLLECTIONS, type CoverCollection } from "@/data/covers";
 import { PLANNERS } from "@/data/planners";
-import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { cn } from "@/lib/utils";
 
 export default function Landing() {
@@ -37,7 +36,6 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-background font-storefront-body">
-      <PaymentTestModeBanner />
 
       {/* Header */}
       <header className="px-6 md:px-12 py-5 flex items-center justify-between border-b border-primary/10">

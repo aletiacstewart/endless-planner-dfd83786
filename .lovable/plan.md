@@ -1,49 +1,59 @@
-# Regenerate icon packs to match covers
+# Icon Accuracy Pass + Cleanup
 
-Eleven targeted fixes to the icon packs. Every fix follows the same pipeline: update the style prompt in `scripts/icons/prompts.ts` for the affected pack(s), regenerate `prompts.mjs`, delete the stale JPGs under `src/assets/page-icons/<pack>/`, and re-run `scripts/icons/run_batch.py` for that pack. Because `coverIcons.ts` already imports every icon by path, no code changes are required unless a pack is being renamed or added.
+## 1. Remove "Preview is in test mode" banner
+- Delete `<PaymentTestModeBanner />` usage from `PlannerDetail.tsx`, `Subscribe.tsx`, `Packs.tsx`.
+- Delete `src/components/PaymentTestModeBanner.tsx`.
 
-## Fixes
+## 2. Remove Ivory Ribbons cover (duplicate of Midnight Ribbons)
+- Remove `ivory-ribbons` entry + import from `src/data/covers.ts`.
+- Remove `ivory-ribbons` pack block and `ribbons-ivory` imports from `src/lib/coverIcons.ts`.
+- Delete `src/assets/covers/ivory-ribbons.png.asset.json` and `src/assets/page-icons/ribbons-ivory/`.
+- Remove from `src/data/coverPacks.ts` if referenced.
 
-1. **White Rose Moonlight** (`white-rose-moonlight`) — rewrite style prompt so every rose in every icon is a WHITE rose (currently generating red). Regenerate all 32 pages.
+## 3. Prompt rewrites in `scripts/icons/prompts.ts` + `prompts.mjs`
 
-2. **Rename Patriotic Roses → Red Patriotic Roses** — in `src/data/covers.ts` update the display name from "Patriotic Roses" to "Red Patriotic Roses". Rewrite the `patriotic-roses` style prompt to mirror the `patriotic-blue-rose` composition (flag backdrop + rose beside/around the subject), but with RED roses instead of blue. Regenerate all 32 icons. Pack folder id stays `patriotic-roses` to avoid touching every import in `coverIcons.ts` and `pageImages.ts`.
+Per-collection style directives — each collection gets a distinct visual DNA drawn from its cover, no two share a look:
 
-3. **Black Moon covers + Swallowtail Moon → Celestial Wings style** — clone the `luminous-hummingbird` (Celestial Wings) style prompt for these packs and regenerate:
-   - `black-lily-moon`
-   - `black-dahlia-moon`
-   - `black-rose-moon`
-   - `red-rose-moonlight`
-   - `swallowtail-moon`
-   - Any other "moon" pack the user meant — will confirm the exact list before generating (see question below).
-   Each keeps its own subject motif (lily, dahlia, rose, swallowtail) but adopts the Celestial Wings dark-with-warm-bokeh treatment.
+| Collection | New style direction |
+|---|---|
+| patriotic-roses (Red), patriotic-blue-rose (Blue), patriotic-white-rose (White) | Match image 2 aesthetic: rich cinematic flatlay — flag drapery + rose color of the set + subject object centered (open book, journal, wreath, scale, glucometer, candle, broom, etc.). Never mix rose colors between packs. |
+| rose-cross-stars ("Rose Cross & Stars") | Same flatlay language as patriotic set but replace flag with cross/star iconography on deep burgundy + red roses — currently mixed, redo cleanly. |
+| woven-heart-cross | Rustic woven-heart + cross flatlays on linen; no shared imagery with rose-cross-stars. |
+| dove-white-roses | Every icon features a white dove + white/blush roses, no ravens, no random subjects. |
+| dove-raven-roses ("Dove & Raven") | Every icon MUST include BOTH a white dove AND a black raven with red roses. |
+| english-rose-dew | Pink/peach English garden roses + dew + soft botanical; **explicitly ban dragonflies and any insects**. |
+| cream-ribbons | Only cream/ivory silk ribbons + parchment; **ban gemstones, gold bullion, jewels**. |
+| feather-emerald | Redo — deep emerald feather matching cover (currently off). |
+| feather-sapphire | Blue feathers on sky/cloud background (currently purple — wrong). Ban purple/violet. |
+| feather-gold | Warm gold/yellow feathers (not orange). |
+| feather-amethyst / crimson / phoenix | Confirm color-lock per cover; no cross-contamination. |
+| black-dahlia-moon, black-rose-moon, black-lily-moon, midnight-iris-moon, swallowtail-moon, midnight-moth-bloom, monarch-moon, moth-dragonfly-lotus | Dark celestial background (indigo/black + gold moon + stars) for EVERY icon; subject = the specific flora/fauna of that cover only. No mixing between them. |
+| sparrow-moon-lights | Every icon features a **sparrow** (not mockingbird) + string lights + moon. |
+| mockingbird-moon | Mockingbird only; keep separate from sparrow set. |
+| white-rose-moonlight | White roses only under moonlight. Ban red/pink roses. |
+| red-rose-moonlight | Red roses only. |
+| faith-affirmations-bright | Pull palette from cover stickers — bright rainbow pastels, hand-lettered sticker vibe, cheerful. |
+| faith-affirmations-muted | Muted sage/blush/cream sticker vibe. |
+| dragons (10 covers: onyx, thornwood, ember, curling-ember, skull-ember, filigree, sovereign, heart-flame, twin-flame, whirlwind, winged-cross) | **Not flags.** Each cover gets its own cinematic dragon-themed flatlay: subject object (book, scroll, timepiece, apothecary bottle, candle, quill) staged with dragon-scale textures, hoard elements, and the exact palette from that cover (onyx=black/silver; ember=red/orange embers; thornwood=forest green/bronze; filigree=ivory/gold; sovereign=purple/gold; heart-flame=crimson; twin-flame=twin fire tones; whirlwind=stormy grey/blue; winged-cross=gothic gold/black). |
+| gothic-sirens (10 covers) | **Not flags.** Each siren cover keeps the SAME background as its cover (cathedral stone / deep sea / bone / etc.) with subject objects rendered in silhouetted black ink over that background. Per-cover palette lock. |
 
-4. **Sparrow Moon Lights** (`sparrow-moon-lights`) — currently every icon is a sparrow-on-branch. Rewrite prompt so the sparrow appears on/inside the actual subject for each page (piggy bank, dumbbell, calendar grid, etc.), matching how the cover itself is styled. Regenerate all 32.
+Update `PAGE_SUBJECTS` prompt fragments as needed to remove flag defaults for dragon/siren packs.
 
-5. **English Rose** (`english-rose-dew`) — remove dragonfly from the style prompt. Regenerate all 32 (the dragonfly currently appears in most icons).
+## 4. Regenerate
 
-6. **Cream Ribbons** (`cream-ribbons`) — remove gemstone/jewelry motif from the style prompt; use cream silk ribbon accents on ivory background instead. Regenerate all 32.
+Clear checkpoint entries + `src/assets/page-icons/<pack>/` folders for every collection above (~26 packs × 20 pages ≈ 520 icons). Relaunch `scripts/icons/run_batch.py` in the background writing to `/tmp/regen.log`. Placeholder-from-`patriotic-roses` will be copied first so Vite build stays green while regen runs.
 
-7. **Dove & Raven** (`dove-raven-roses`) — style prompt currently favors the raven. Rewrite so BOTH the white dove and the black raven appear together in every icon, with red roses. Regenerate all 32.
+## 5. Verification pass
+After regen finishes, spot-check every affected folder in `CoverIconPreviewDialog` grid to confirm palette + subject match. Fix any stragglers with a targeted rerun.
 
-8. **Sapphire Feather** (`feather-sapphire`) — currently generating amber/gold. Rewrite prompt for sapphire-BLUE feathers and blue color palette. Regenerate all 32.
+## Files touched
+- `src/components/PaymentTestModeBanner.tsx` (delete)
+- `src/pages/{PlannerDetail,Subscribe,Packs}.tsx`
+- `src/data/covers.ts`, `src/data/coverPacks.ts`
+- `src/lib/coverIcons.ts`
+- `scripts/icons/prompts.ts`, `scripts/icons/prompts.mjs`
+- `src/assets/page-icons/*` (regen)
 
-9. **Gold Feather** (`feather-gold`) — currently generating orange-tinted. Rewrite prompt for GOLD/yellow feathers and gold palette (not orange, not amber). Regenerate all 32.
-
-10. **All Dragon packs** — the 11 dragon packs (`dragon-curling-ember`, `dragon-filigree`, `dragon-heart-flame`, `dragon-onyx`, `dragon-skull-ember`, `dragon-sovereign`, `dragon-thornwood`, `dragon-twin-flame`, `dragon-whirlwind`, `dragon-winged-cross`, `dragons`) are producing minimalist/cartoon silhouettes. Rewrite each style prompt to reference the actual cover art (detailed illustrated dragon, painterly, matching cover palette). Regenerate all 32 icons per pack × 11 packs = 352 icons.
-
-11. **All Gothic Siren packs** — 9 packs (`gothic-siren-cathedral-throne`, `gothic-siren-conch-skull`, `gothic-siren-haloed-conch`, `gothic-siren-horned-queen`, `gothic-siren-nautilus`, `gothic-siren-ribbed-crown`, `gothic-siren-skeleton`, `gothic-siren-webbed`, `gothic-siren-winged-fae`, `gothic-siren-cathedral-nautilus`). Rewrite prompts so each uses its own cover art as the background and renders the page subject in solid black silhouette in front. Regenerate all 32 × 10 = 320 icons.
-
-## Volume + credit estimate
-
-Approximate icons to regenerate: 32 pages × ~28 packs ≈ **~900 icons**. The bulk (11 dragons + 10 sirens = 21 packs = ~670) comes from fixes 10 and 11. Runner is checkpointed; safe to interrupt and resume.
-
-## Execution order
-
-1. Small, cheap fixes first so quality can be verified on style-prompt changes before spending on large batches:
-   Fix 5 (english-rose), 6 (cream-ribbons), 8 (sapphire), 9 (gold), 1 (white rose moonlight), 7 (dove-raven), 4 (sparrow-moon-lights), 2 (red patriotic).
-2. Pilot one dragon pack (fix 10) and one siren pack (fix 11), review, then run the rest.
-3. Fix 3 (black moon + swallowtail) after confirming the pack list.
-
-## Question before starting
-
-For fix 3, "all the black moon covers" — should I include `red-rose-moonlight` and `white-rose-moonlight` in that Celestial Wings restyle group, or only the covers whose IDs start with `black-` (`black-lily-moon`, `black-dahlia-moon`, `black-rose-moon`) plus `swallowtail-moon`? Note fix 1 already restyles `white-rose-moonlight` separately, so it would be excluded from group 3 either way.
+## Notes
+- Missing reference images: your message points at "image 3–8" but only 2 images were attached this turn. I'll use the descriptions in the message + prior batches; if any pack looks off after regen, resend the specific reference and I'll re-tune just that pack.
+- Regen is long-running (~1–2 hours for 500+ icons). I'll launch and background it, and you can ping "status" anytime.

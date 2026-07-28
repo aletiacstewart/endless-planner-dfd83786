@@ -4,7 +4,6 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CoverPackPicker, CoverPackSummary } from "@/components/cover/CoverPackPicker";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
-import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { isPackUnlocked } from "@/lib/unlock";
 
 export default function Packs() {
@@ -37,7 +36,6 @@ export default function Packs() {
 
   return (
     <div className="min-h-screen bg-background">
-      <PaymentTestModeBanner />
       <header className="px-6 py-4 flex items-center justify-between border-b border-border">
         <Link to="/" className="font-display text-xl">Endless Planner</Link>
         <Link to="/settings" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1">
