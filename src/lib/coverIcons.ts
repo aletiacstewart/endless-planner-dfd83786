@@ -1563,10 +1563,10 @@ if (COVER_ICONS["pastel-clipboard"]) COVER_ICONS["dreamscape"] = COVER_ICONS["pa
 // wins over the static COVER_ICONS map. Lets newly-generated dedicated folders
 // (e.g. feather-sapphire, cream-ribbons, english-rose-dew) light up without
 // having to hand-wire another 20-import block per cover.
-const DYNAMIC_ICONS = import.meta.glob<{ default: string }>(
+const DYNAMIC_ICONS = import.meta.glob<string>(
   "@/assets/page-icons/*/*.jpg",
-  { eager: true, import: "default" }
-) as Record<string, string>;
+  { eager: true, import: "default", query: "?url" }
+);
 
 const DYNAMIC_MAP: Record<string, Record<string, string>> = {};
 for (const [path, url] of Object.entries(DYNAMIC_ICONS)) {
