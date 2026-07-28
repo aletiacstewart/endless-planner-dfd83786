@@ -1579,6 +1579,6 @@ export function getCover(id: string | null | undefined): Cover {
 }
 
 export function getCoversByCollection(collection: CoverCollection | "all"): Cover[] {
-  if (collection === "all") return COVERS;
-  return COVERS.filter((c) => c.collection === collection);
+  const list = collection === "all" ? COVERS : COVERS.filter((c) => c.collection === collection);
+  return [...list].sort((a, b) => a.name.localeCompare(b.name));
 }
