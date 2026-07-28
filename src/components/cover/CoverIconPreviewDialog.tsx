@@ -41,7 +41,7 @@ export function CoverIconPreviewDialog({
 
   const collectionLabel =
     COLLECTIONS.find((c) => c.id === cover.collection)?.label ?? "";
-  const customIcons = COVER_ICONS[cover.id] ?? null;
+  const customIcons = getCoverIconPack(cover.id);
   const iconEntries = customIcons
     ? Object.entries(customIcons)
     : Object.entries(PAGE_IMAGES);
