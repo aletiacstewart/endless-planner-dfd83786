@@ -209,7 +209,25 @@
       "yearly-calendar",
       "monthly-calendar",
       "weekly-calendar",
-      "daily-tracker"
+      "daily-tracker",
+      "complete-tracker",
+      "yearly-habit-tracker",
+      "weight-tracker",
+      "measurement-tracker",
+      "blood-sugar-tracker",
+      "blood-pressure-tracker",
+      "oxygen-tracker",
+      "self-care-checklist",
+      "cleaning-checklist",
+      "recipe",
+      "notes",
+      "workout-tracker",
+      "medications",
+      "medical-records",
+      "yearly-focus",
+      "brain-dump",
+      "fitness-tracker",
+      "adhd-toolkit"
     ]
   },
   "stickers": {
