@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { CoverImage } from "@/components/cover/CoverImage";
 import { COVERS, COLLECTIONS } from "@/data/covers";
-import { COVER_ICONS } from "@/lib/coverIcons";
+import { getCoverIconPack } from "@/lib/coverIcons";
 import { PAGE_IMAGES } from "@/lib/pageImages";
 import { PAGE_TYPES } from "@/lib/pageTypes";
 import { isCoverIncluded } from "@/data/coverPacks";
@@ -41,7 +41,7 @@ export function CoverIconPreviewDialog({
 
   const collectionLabel =
     COLLECTIONS.find((c) => c.id === cover.collection)?.label ?? "";
-  const customIcons = COVER_ICONS[cover.id] ?? null;
+  const customIcons = getCoverIconPack(cover.id);
   const iconEntries = customIcons
     ? Object.entries(customIcons)
     : Object.entries(PAGE_IMAGES);

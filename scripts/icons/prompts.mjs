@@ -90,8 +90,37 @@ export const COVER_STYLE_OVERRIDE = {
   "english-rose-dew": "Soft cottage-garden palette — dusty pink, sage, cream — delicate PINK english roses with dew drops and gentle ink linework. Absolutely NO dragonflies, NO insects, NO butterflies.",
   "cream-ribbons": "Warm ivory background with flowing CREAM SATIN RIBBONS softly curling around the subject, delicate gold-thread accents, elegant and heirloom. Absolutely NO gemstones, NO crystal facets, NO jewelry.",
   "dove-raven-roses": "Cream paper background with rich red rose accents. Every icon features BOTH a small WHITE DOVE and a small BLACK RAVEN — both birds always visible together, painterly heirloom style. Not a single-bird composition.",
+  "dove-white-roses": "Cream paper background with soft blush and ivory tones. Every icon features a single WHITE DOVE with delicate WHITE roses — painterly heirloom style, reverent and peaceful. Absolutely no ravens or other birds.",
+  "rose-cross-stars": "Deep burgundy and cream flatlay with rich red roses, a small ornate CROSS, and scattered gold STARS around each subject. Sacred still-life aesthetic. Absolutely NO flags.",
+  "woven-heart-cross": "Rustic linen and natural jute background with a small woven raffia HEART and a wooden CROSS beside each subject object. Warm sepia and cream palette. Absolutely NO flags, NO roses.",
+  "patriotic-white-rose": "Patriotic still-life — deep navy, cream, and WHITE rose accents with soft gold highlights, painterly Americana. Composition mirrors the red patriotic pack exactly but every rose is WHITE — absolutely no red or blue roses.",
+  "faith-affirmations-bright": "Bright cheerful sticker-book palette drawn from the cover: pastel rainbow (peach, buttercream, sky blue, mint, blush, lavender) with hand-lettered ornamental flourishes (no readable text), joyful and playful. Feels like modern faith-sticker art.",
   "black-moon-flora": "Celestial night palette — deep indigo, warm gold, ivory highlights, luminous full-moon halo with delicate starfield and soft feathered wing accents, matches the Luminous Hummingbird Celestial Wings icon set exactly.",
   "dove-ink": "Cream paper background with rich red rose accents. Every icon features BOTH a small WHITE DOVE and a small BLACK RAVEN — both birds always visible together, painterly heirloom style. Not a single-bird composition.",
+
+  // Dragons — per-cover cinematic flatlays with distinct palettes drawn from each cover
+  "dragon-onyx": "Cinematic flatlay: subject object rendered on a slate/obsidian surface with polished BLACK ONYX scales, tarnished SILVER filigree, and cold moonlight rim. Palette: deep black, gunmetal, cool silver. Serious heraldic mood. No cartoon, no cute.",
+  "dragon-thornwood": "Cinematic flatlay: subject object nested in mossy FOREST GREEN thorns, aged BRONZE dragon-scale accents, dark oak wood, dew highlights. Palette: forest green, bronze, moss, walnut. Serious woodland-dragon mood.",
+  "dragon-curling-ember": "Cinematic flatlay: subject object wrapped in glowing EMBER coils, curled ORANGE-RED dragon tail, drifting sparks and ash. Palette: burnt orange, ember red, molten gold, charcoal. Serious fire-forge mood.",
+  "dragon-skull-ember": "Cinematic flatlay: subject object staged beside a small dragon SKULL and glowing embers, bone ivory + rust red palette. Palette: bone, ash, rust, ember red. Serious gothic dragon-crypt mood.",
+  "dragon-filigree": "Cinematic flatlay: subject object framed with ornate IVORY and GOLD FILIGREE dragon scrollwork, warm parchment surface. Palette: ivory, gilded gold, warm cream. Serious heraldic-manuscript mood.",
+  "dragon-sovereign": "Cinematic flatlay: subject object crowned with regal PURPLE velvet drapery, ornate GOLD dragon crest, deep royal palette. Palette: royal purple, imperial gold, midnight navy. Serious sovereign mood.",
+  "dragon-heart-flame": "Cinematic flatlay: subject object cradled in a stylized CRIMSON heart-flame with soft golden glow, deep red silk backdrop. Palette: crimson, blood red, warm gold. Serious devotional-flame mood.",
+  "dragon-twin-flame": "Cinematic flatlay: subject object flanked by TWO facing dragon flames — one warm gold, one cool teal — mirrored composition. Palette: gold + teal + charcoal. Serious dual-flame mood.",
+  "dragon-whirlwind": "Cinematic flatlay: subject object caught in swirling STORM CLOUDS with lightning glints and grey-blue dragon coils. Palette: storm grey, slate blue, silver-white. Serious tempest mood.",
+  "dragon-winged-cross": "Cinematic flatlay: subject object beneath a small gothic CROSS with outstretched dragon wings, black + oxidized gold. Palette: obsidian black, tarnished gold, deep ruby. Serious gothic-cathedral mood.",
+
+  // Gothic Sirens — per-cover: SAME background aesthetic as the siren cover, subject objects rendered as silhouetted BLACK INK
+  "gothic-siren-cathedral-throne": "Aged sepia parchment background evoking a stone cathedral throne. Subject rendered as pure BLACK INK silhouette with fine stippling. Palette: bone, sepia, ink black. Cathedral-quiet.",
+  "gothic-siren-nautilus": "Deep-sea teal and bone-white nautilus-shell background with faint spiral texture. Subject rendered as pure BLACK INK silhouette. Palette: deep teal, bone, ink black.",
+  "gothic-siren-horned-queen": "Aged parchment with faint horned crown filigree. Subject rendered as pure BLACK INK silhouette with heavy stippling. Palette: cream, ash, ink black.",
+  "gothic-siren-ribbed-crown": "Bone-cream background with subtle ribbed-crown ridges. Subject rendered as pure BLACK INK silhouette. Palette: bone, ivory, ink black.",
+  "gothic-siren-winged-fae": "Misty grey-cream background with faint feathered wing shadow. Subject rendered as pure BLACK INK silhouette. Palette: mist grey, cream, ink black.",
+  "gothic-siren-cathedral-nautilus": "Aged sepia parchment with faint cathedral arch AND nautilus spiral overlay. Subject rendered as pure BLACK INK silhouette. Palette: sepia, bone, ink black.",
+  "gothic-siren-conch-skull": "Warm bone-ivory background with faint conch-shell and skull motif texture. Subject rendered as pure BLACK INK silhouette. Palette: bone, warm ivory, ink black.",
+  "gothic-siren-webbed": "Cool ash-grey background with faint webbed-membrane texture. Subject rendered as pure BLACK INK silhouette. Palette: ash, pale blue-grey, ink black.",
+  "gothic-siren-skeleton": "Cold bone-white background with faint skeletal-ribcage texture. Subject rendered as pure BLACK INK silhouette. Palette: bone white, cool grey, ink black.",
+  "gothic-siren-haloed-conch": "Warm ivory background with faint gilded halo behind a conch-shell motif. Subject rendered as pure BLACK INK silhouette with a touch of tarnished gold halo. Palette: warm ivory, dim gold, ink black.",
 };
 
 export const STICKER_CATEGORY_PROMPT = {
