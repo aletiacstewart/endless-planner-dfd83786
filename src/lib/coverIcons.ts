@@ -1574,7 +1574,7 @@ for (const [path, url] of Object.entries(DYNAMIC_ICONS)) {
   const m = /\/page-icons\/([^/]+)\/([^/]+)\.jpg$/.exec(path);
   if (!m) continue;
   const [, coverId, pageId] = m;
-  (DYNAMIC_MAP[coverId] ??= {})[pageId] = url as unknown as string;
+  (DYNAMIC_MAP[coverId] ??= {})[pageId] = url as string;
 }
 
 export function getCoverPageIcon(coverId: string | null | undefined, pageId: string): string | undefined {
