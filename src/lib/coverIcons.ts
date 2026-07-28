@@ -1582,3 +1582,11 @@ export function getCoverPageIcon(coverId: string | null | undefined, pageId: str
   return DYNAMIC_MAP[coverId]?.[pageId] ?? COVER_ICONS[coverId]?.[pageId];
 }
 
+/** Merged view: dedicated folder wins per-page, static pack fills the rest. */
+export function getCoverIconPack(coverId: string): Record<string, string> | null {
+  const dyn = DYNAMIC_MAP[coverId];
+  const stat = COVER_ICONS[coverId];
+  if (!dyn && !stat) return null;
+  return { ...(stat ?? {}), ...(dyn ?? {}) };
+}
+
