@@ -94,7 +94,6 @@ import threeCrosses from "@/assets/covers/three-crosses.png.asset.json";
 import gatesOfHeaven from "@/assets/covers/gates-of-heaven.png.asset.json";
 import dreamscape from "@/assets/covers/dreamscape.png.asset.json";
 import sunMoonStorm from "@/assets/covers/sun-moon-storm.png.asset.json";
-import ivoryRibbons from "@/assets/covers/ivory-ribbons.png.asset.json";
 import midnightRibbons from "@/assets/covers/midnight-ribbons.png.asset.json";
 import luminousHummingbird from "@/assets/covers/luminous-hummingbird.png.asset.json";
 import luminousDragonfly from "@/assets/covers/luminous-dragonfly.png.asset.json";
