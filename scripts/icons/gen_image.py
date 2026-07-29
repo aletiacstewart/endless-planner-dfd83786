@@ -13,10 +13,22 @@ MODEL = os.environ.get("GEN_MODEL", "google/gemini-3.1-flash-image")
 KEY = os.environ["LOVABLE_API_KEY"]
 ENDPOINT = "https://ai.gateway.lovable.dev/v1/images/generations"
 
+def build_content(prompt: str):
+    ref_path = os.environ.get("GEN_REFERENCE_IMAGE")
+    if not ref_path:
+        return prompt
+    mime = "image/png" if ref_path.lower().endswith(".png") else "image/jpeg"
+    with open(ref_path, "rb") as f:
+        b64 = base64.b64encode(f.read()).decode()
+    return [
+        {"type": "text", "text": f"Use the attached image ONLY as the visual style reference for palette, softness, background, ribbon treatment, framing, and painterly aesthetic. Do not copy its subject unless requested. {prompt}"},
+        {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{b64}"}},
+    ]
+
 def gen(prompt: str) -> bytes:
     body = {
         "model": MODEL,
-        "messages": [{"role": "user", "content": prompt}],
+        "messages": [{"role": "user", "content": build_content(prompt)}],
         "modalities": ["image", "text"],
         "stream": False,
     }
