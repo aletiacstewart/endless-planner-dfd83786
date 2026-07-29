@@ -20,13 +20,22 @@ No edits to checkout, Stripe, or webhooks are needed.
 Use a kebab-case `pack-id` (e.g. `sunflower-meadow`).
 
 ```text
-src/assets/covers/<pack-id>.jpg                    ← cover art (required)
-src/assets/cover-icons/<pack-id>/                  ← icon folder (one PNG per page id)
-    measurement-tracker.png
-    weight-tracker.png
-    habit-tracker.png
+src/assets/covers/<pack-id>.png(.asset.json)   ← cover art (required)
+public/page-icons/<pack-id>/                   ← icon folder, one JPG per page id
+    measurement-tracker.jpg
+    weight-tracker.jpg
     ...
 ```
+
+Page icons are plain static files served from `public/` (no bundler imports).
+Keep them ≤512 px / ~80 quality — large source renders must be downsized first,
+otherwise the dev server and the published bundle get very slow.
+
+After adding a folder, register it in `src/data/iconPacks.ts`:
+`ICON_FOLDERS["<pack-id>"] = [...page ids]`, and optionally point other covers
+at it via `COVER_ICON_FOLDER["<other-cover>"] = "<pack-id>"`.
+
+
 
 Cover art: ~1024x1024 JPG works well.
 Icons: PNG with transparent background, ~512x512.
