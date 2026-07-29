@@ -38,7 +38,7 @@ def load_prompts():
     return None
 
 # Inline the prompt builders in Python to avoid TS/JS bridge
-UNIVERSAL_NEGATIVE = "no text, no letters, no words, no typography, no numbers, no digits, no calendar grid, no date labels, no month names, no day names, no watermark, no logo, no signature, no captions, no writing of any kind"
+UNIVERSAL_NEGATIVE = "no text, no letters, no words, no typography, no numbers, no digits, no calendar grid, no date labels, no month names, no day names, no watermark, no logo, no signature, no captions, no writing of any kind, no compass letters, no N E S W marks, no roman numerals, no tiny written marks"
 
 def load_js_maps():
     """Extract PAGE_SUBJECTS/COLLECTION_STYLE/COVER_STYLE_OVERRIDE/STICKER_CATEGORY_PROMPT from prompts.mjs."""
@@ -114,9 +114,12 @@ def gen_stickers(collection, limit=10**9):
                 print(f"  failed: {e}", flush=True)
     return made
 
-def gen_icons(cover_id, collection, limit=10**9):
+def gen_icons(cover_id, collection, limit=10**9, force=False):
     prog = load_progress()
     prog["icons"].setdefault(cover_id, [])
+    if force:
+        prog["icons"][cover_id] = []
+        save_progress(prog)
     done = set(prog["icons"][cover_id])
     made = 0
     for pid in PAGE_IDS:
@@ -135,12 +138,15 @@ def gen_icons(cover_id, collection, limit=10**9):
 if __name__ == "__main__":
     args = sys.argv[1:]
     limit = 10**9
+    force = False
     if "--limit" in args:
         i = args.index("--limit"); limit = int(args[i+1]); del args[i:i+2]
+    if "--force" in args:
+        args.remove("--force"); force = True
     mode = args[0]
     if mode == "stickers":
         n = gen_stickers(args[1], limit); print(f"done, made {n}")
     elif mode == "icons":
-        n = gen_icons(args[1], args[2], limit); print(f"done, made {n}")
+        n = gen_icons(args[1], args[2], limit, force); print(f"done, made {n}")
     else:
         print("usage: run_batch.py stickers <collection> | icons <coverId> <collection>")

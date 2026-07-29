@@ -22,6 +22,10 @@ export const UNIVERSAL_NEGATIVE = [
   "no signature",
   "no captions",
   "no writing of any kind",
+  "no compass letters",
+  "no N E S W marks",
+  "no roman numerals",
+  "no tiny written marks",
 ].join(", ");
 
 // -- Page subjects ------------------------------------------------------------
@@ -30,7 +34,7 @@ export const UNIVERSAL_NEGATIVE = [
 
 export const PAGE_SUBJECTS: Record<string, string> = {
   "my-goals":
-    "a single glowing shooting star arcing over a small compass rose, symbolizing personal goals",
+    "a single glowing shooting star arcing over a blank round medallion with a simple eight-point guiding star motif — no letters or marks anywhere",
   "yearly-calendar":
     "four small nested rings representing the four seasons — spring bud, summer sun, autumn leaf, winter snowflake — arranged as a circular emblem",
   "monthly-calendar":
@@ -68,7 +72,7 @@ export const PAGE_SUBJECTS: Record<string, string> = {
   "medical-records":
     "a folded chart with a small emblem — a plus-cross sigil, no letters — resting on top",
   "yearly-focus":
-    "an ornate compass rose emblem with a single guiding star at true north — no letters or cardinal marks",
+    "an ornate blank round focus medallion with a single guiding star at the top and soft radiant rings — no letters, no cardinal marks, no symbols that look like writing",
   "brain-dump":
     "a soft cloud-shaped thought bubble tangled with delicate ribbons unspooling into a small folded paper — mind emptying onto the page, symbolic and airy",
   "fitness-tracker":
@@ -165,9 +169,9 @@ export const COVER_STYLE_OVERRIDE: Record<string, string> = {
   "wellness-still-water":
     "Wellness palette anchored in MISTY LAVENDER and pale sage, mirror-still water textures and reflected light.",
   "patriotic-roses":
-    "Patriotic still-life — deep navy, cream, and rich RED rose accents with soft gold highlights, painterly Americana. Roses are always RED.",
+    "MATCH THE SAME AESTHETIC FOR EVERY ICON IN THIS PACK: soft cream parchment square, warm ivory vignette, airy watercolor-and-gouache planner icon, delicate blue-grey shadow bloom, centered subject wrapped with a thin flowing satin ribbon and paired with two or three velvety RED garden roses. Elegant keepsake stationery mood like a handmade heirloom planner sticker, not photography, not dark cinematic flatlay. Absolutely no American flags, no flag fabric, no stars, no navy background, no black background, no harsh contrast, no mixed rose colors. Roses are always RED.",
   "patriotic-blue-rose":
-    "Patriotic still-life — deep navy, cream, and BLUE rose accents with soft gold highlights, painterly Americana. Composition mirrors the red patriotic pack exactly but every rose is BLUE — absolutely no red roses.",
+    "MATCH THE SAME AESTHETIC FOR EVERY ICON IN THIS PACK: soft cream parchment square, warm ivory vignette, airy watercolor-and-gouache planner icon, delicate blue-grey shadow bloom, centered subject wrapped with a thin flowing satin ribbon and paired with two or three velvety BLUE garden roses. Elegant keepsake stationery mood like a handmade heirloom planner sticker, not photography, not dark cinematic flatlay. Absolutely no American flags, no flag fabric, no stars, no navy background, no black background, no harsh contrast, no red roses, no mixed rose colors. Roses are always BLUE.",
   "red-rose-moonlight":
     "Moonlit deep-charcoal background with a luminous cream moon and RED rose accents, soft gold light, painterly and romantic. Roses are always RED.",
   "white-rose-moonlight":
@@ -190,6 +194,8 @@ export const COVER_STYLE_OVERRIDE: Record<string, string> = {
     "Warm ivory background with flowing CREAM SATIN RIBBONS softly curling around the subject, delicate gold-thread accents, elegant and heirloom. Absolutely NO gemstones, NO crystal facets, NO jewelry.",
   "dove-raven-roses":
     "Cream paper background with rich red rose accents. Every icon features BOTH a small WHITE DOVE and a small BLACK RAVEN — both birds always visible together, painterly heirloom style. Not a single-bird composition.",
+  "patriotic-white-rose":
+    "MATCH THE SAME AESTHETIC FOR EVERY ICON IN THIS PACK: soft cream parchment square, warm ivory vignette, airy watercolor-and-gouache planner icon, delicate blue-grey shadow bloom, centered subject wrapped with a thin flowing satin ribbon and paired with two or three velvety WHITE garden roses. Elegant keepsake stationery mood like a handmade heirloom planner sticker, not photography, not dark cinematic flatlay. Absolutely no American flags, no flag fabric, no stars, no navy background, no black background, no harsh contrast, no red roses, no blue roses, no mixed rose colors. Roses are always WHITE.",
   // Folder-name aliases (some packs are shared across multiple covers via a single folder)
   "black-moon-flora":
     "Celestial night palette — deep indigo, warm gold, ivory highlights, luminous full-moon halo with delicate starfield and soft feathered wing accents, matches the Luminous Hummingbird Celestial Wings icon set exactly.",
