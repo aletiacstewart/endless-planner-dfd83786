@@ -7,10 +7,11 @@ export const UNIVERSAL_NEGATIVE = [
   "no text", "no letters", "no words", "no typography", "no numbers", "no digits",
   "no calendar grid", "no date labels", "no month names", "no day names",
   "no watermark", "no logo", "no signature", "no captions", "no writing of any kind",
+  "no compass letters", "no N E S W marks", "no roman numerals", "no tiny written marks",
 ].join(", ");
 
 export const PAGE_SUBJECTS = {
-  "my-goals": "a single glowing shooting star arcing over a small compass rose, symbolizing personal goals",
+  "my-goals": "a single glowing shooting star arcing over a blank round medallion with a simple eight-point guiding star motif — no letters or marks anywhere",
   "yearly-calendar": "four small nested rings representing the four seasons — spring bud, summer sun, autumn leaf, winter snowflake — arranged as a circular emblem",
   "monthly-calendar": "a graceful crescent-to-full moon phase arc, five moons in a soft curve, celestial and clean",
   "weekly-calendar": "seven small round pebbles arranged in a gentle horizontal row, meditative and balanced",
@@ -29,7 +30,7 @@ export const PAGE_SUBJECTS = {
   "workout-tracker": "a small kettlebell wrapped with a laurel sprig, symbolizing strength",
   medications: "a small amber pill vial next to a sprig of herbs, apothecary aesthetic",
   "medical-records": "a folded chart with a small emblem — a plus-cross sigil, no letters — resting on top",
-  "yearly-focus": "an ornate compass rose emblem with a single guiding star at true north — no letters or cardinal marks",
+  "yearly-focus": "an ornate blank round focus medallion with a single guiding star at the top and soft radiant rings — no letters, no cardinal marks, no symbols that look like writing",
   "brain-dump": "a soft cloud-shaped thought bubble tangled with delicate ribbons unspooling into a small folded paper — mind emptying onto the page, symbolic and airy",
   "fitness-tracker": "a small hand-weight resting beside a laurel sprig and a slender water flask, symbolic strength still-life",
   "adhd-toolkit": "a small sand-timer beside three tiny check-bullet dots and a coiled fidget spiral, symbolic focus toolkit",

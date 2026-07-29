@@ -22,6 +22,10 @@ export const UNIVERSAL_NEGATIVE = [
   "no signature",
   "no captions",
   "no writing of any kind",
+  "no compass letters",
+  "no N E S W marks",
+  "no roman numerals",
+  "no tiny written marks",
 ].join(", ");
 
 // -- Page subjects ------------------------------------------------------------
@@ -30,7 +34,7 @@ export const UNIVERSAL_NEGATIVE = [
 
 export const PAGE_SUBJECTS: Record<string, string> = {
   "my-goals":
-    "a single glowing shooting star arcing over a small compass rose, symbolizing personal goals",
+    "a single glowing shooting star arcing over a blank round medallion with a simple eight-point guiding star motif — no letters or marks anywhere",
   "yearly-calendar":
     "four small nested rings representing the four seasons — spring bud, summer sun, autumn leaf, winter snowflake — arranged as a circular emblem",
   "monthly-calendar":
@@ -68,7 +72,7 @@ export const PAGE_SUBJECTS: Record<string, string> = {
   "medical-records":
     "a folded chart with a small emblem — a plus-cross sigil, no letters — resting on top",
   "yearly-focus":
-    "an ornate compass rose emblem with a single guiding star at true north — no letters or cardinal marks",
+    "an ornate blank round focus medallion with a single guiding star at the top and soft radiant rings — no letters, no cardinal marks, no symbols that look like writing",
   "brain-dump":
     "a soft cloud-shaped thought bubble tangled with delicate ribbons unspooling into a small folded paper — mind emptying onto the page, symbolic and airy",
   "fitness-tracker":

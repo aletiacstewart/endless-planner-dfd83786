@@ -38,7 +38,7 @@ def load_prompts():
     return None
 
 # Inline the prompt builders in Python to avoid TS/JS bridge
-UNIVERSAL_NEGATIVE = "no text, no letters, no words, no typography, no numbers, no digits, no calendar grid, no date labels, no month names, no day names, no watermark, no logo, no signature, no captions, no writing of any kind"
+UNIVERSAL_NEGATIVE = "no text, no letters, no words, no typography, no numbers, no digits, no calendar grid, no date labels, no month names, no day names, no watermark, no logo, no signature, no captions, no writing of any kind, no compass letters, no N E S W marks, no roman numerals, no tiny written marks"
 
 def load_js_maps():
     """Extract PAGE_SUBJECTS/COLLECTION_STYLE/COVER_STYLE_OVERRIDE/STICKER_CATEGORY_PROMPT from prompts.mjs."""
