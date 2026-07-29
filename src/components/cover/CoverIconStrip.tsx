@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { PAGE_TYPES } from "@/lib/pageTypes";
-import { getPageImage } from "@/lib/pageImages";
+import { getCoverIconPack } from "@/lib/coverIcons";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -10,18 +10,18 @@ type Props = {
 
 /**
  * Static grid of all page icons that ship with the given cover.
- * Updates when `coverId` changes so it stays in sync with the cover slideshow.
+ * Only shows icons that belong to THIS cover's pack — no cross-set fallbacks.
  */
 export function CoverIconStrip({ coverId, className }: Props) {
-  const items = useMemo(
-    () =>
-      PAGE_TYPES.map((p) => ({
-        id: p.id,
-        name: p.name,
-        src: getPageImage(p.id, coverId),
-      })).filter((i) => Boolean(i.src)),
-    [coverId]
-  );
+  const items = useMemo(() => {
+    const pack = coverId ? getCoverIconPack(coverId) : null;
+    if (!pack) return [];
+    return PAGE_TYPES.map((p) => ({
+      id: p.id,
+      name: p.name,
+      src: pack[p.id],
+    })).filter((i): i is { id: string; name: string; src: string } => Boolean(i.src));
+  }, [coverId]);
 
   if (items.length === 0) return null;
 
