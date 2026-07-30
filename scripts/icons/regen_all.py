@@ -197,8 +197,13 @@ if __name__ == "__main__":
     workers = 6
     if "--workers" in args:
         i = args.index("--workers"); workers = int(args[i + 1]); del args[i:i + 2]
+    limit = None
+    if "--limit" in args:
+        i = args.index("--limit"); limit = int(args[i + 1]); del args[i:i + 2]
     mode = args[0] if args else "plan"
     todo = plan(only)
+    if limit:
+        todo = todo[:limit]
     if mode == "plan":
         from collections import Counter
         c = Counter(x[0]["id"] for x in todo)
