@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Rewrite src/data/iconPacks.ts from the folders on disk.
 
-Every cover that has its own folder is mapped to itself; covers without one
-keep their legacy shared folder so nothing 404s mid-migration.
+Every cover that has its own folder is mapped to itself. Covers without an
+exact folder are left unmapped so the app never borrows another cover's icons.
 """
 import json, re, pathlib
 
@@ -20,15 +20,10 @@ for d in sorted(ICONS.iterdir()):
 src = (ROOT / "src/data/covers.ts").read_text()
 cover_ids = [m for m in re.findall(r'^\s*id: "([a-z0-9-]+)",$', src, re.M)]
 
-old = PACKS.read_text()
-legacy = dict(re.findall(r'"([a-z0-9-]+)": "([a-z0-9-]+)"', old.split("COVER_ICON_FOLDER")[1]))
-
 mapping = {}
 for cid in cover_ids:
     if cid in folders:
         mapping[cid] = cid
-    elif legacy.get(cid) in folders:
-        mapping[cid] = legacy[cid]
 
 out = [
     "// AUTO-GENERATED — icon folders live in public/page-icons/<folder>/<page>.jpg",

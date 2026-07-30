@@ -85,7 +85,7 @@ export function CoverCard({
               {collectionLabel}
             </p>
             <p className="text-[10px] text-muted-foreground mt-1">
-              Cover + 20 page icons + 60 stickers
+              Cover + matching page icons + stickers
             </p>
           </div>
           <span
