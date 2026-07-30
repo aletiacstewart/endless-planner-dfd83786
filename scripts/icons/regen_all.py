@@ -103,7 +103,10 @@ def prompt_for(cover, page):
         "linework and mood exactly, and weave in its signature motif subtly, but draw the requested subject — "
         "do not reproduce the cover itself. "
         "Composition: single centered subject, generous negative space, soft vignette, painterly hand-crafted finish, "
-        f"museum-quality craftsmanship. Strictly: {NEGATIVE}."
+        "fully painted edge-to-edge background in the cover's palette — no transparent areas, no white cut-out corners, "
+        "no plain flat white backdrop, the background must fill the entire square. "
+        f"Museum-quality craftsmanship. Strictly: {NEGATIVE}."
+
     )
 
 
