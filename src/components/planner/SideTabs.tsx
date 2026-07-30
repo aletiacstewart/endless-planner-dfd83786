@@ -71,6 +71,17 @@ export function SideTabs({ activePageType }: Props) {
     return <Icon className={cn(size, "shrink-0")} />;
   };
 
+  const addTab = async (pageTypeId: string) => {
+    if (busy) return;
+    setBusy(pageTypeId);
+    try {
+      const created = await createEntry(pageTypeId);
+      navigate(`/entry/${created.id}`);
+    } finally {
+      setBusy(null);
+    }
+  };
+
   return (
     <>
       {/* Desktop: right-edge vertical tab rail — always fully visible. */}
@@ -81,21 +92,34 @@ export function SideTabs({ activePageType }: Props) {
         {PAGE_TYPES.map((pt) => {
           const active = pt.id === activePageType;
           return (
-            <button
+            <div
               key={pt.id}
-              onClick={() => openTab(pt.id)}
-              aria-label={pt.name}
-              aria-current={active ? "page" : undefined}
               className={cn(
-                "group flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-medium transition-colors",
-                active
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-muted",
+                "group flex items-center rounded-xl transition-colors",
+                active ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted",
               )}
             >
-              {renderIcon(pt, "w-6 h-6")}
-              <span className="whitespace-nowrap">{pt.shortName}</span>
-            </button>
+              <button
+                onClick={() => openTab(pt.id)}
+                aria-label={pt.name}
+                aria-current={active ? "page" : undefined}
+                className="flex flex-1 items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-medium"
+              >
+                {renderIcon(pt, "w-6 h-6")}
+                <span className="whitespace-nowrap">{pt.shortName}</span>
+              </button>
+              <button
+                onClick={() => addTab(pt.id)}
+                aria-label={`New ${pt.shortName} sheet`}
+                title={`New ${pt.shortName} sheet`}
+                className={cn(
+                  "mr-1 rounded-lg p-1 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100",
+                  active ? "hover:bg-primary-foreground/20" : "hover:bg-background",
+                )}
+              >
+                <Icons.Plus className="w-3.5 h-3.5" />
+              </button>
+            </div>
           );
         })}
       </nav>
@@ -109,21 +133,33 @@ export function SideTabs({ activePageType }: Props) {
           {PAGE_TYPES.map((pt) => {
             const active = pt.id === activePageType;
             return (
-              <button
+              <div
                 key={pt.id}
-                onClick={() => openTab(pt.id)}
-                aria-label={pt.name}
-                aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 shrink-0 min-w-[64px]",
-                  active
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground",
+                  "relative flex shrink-0 rounded-xl",
+                  active ? "bg-primary text-primary-foreground" : "text-muted-foreground",
                 )}
               >
-                {renderIcon(pt, "w-6 h-6")}
-                <span className="text-[10px] leading-none">{pt.shortName}</span>
-              </button>
+                <button
+                  onClick={() => openTab(pt.id)}
+                  aria-label={pt.name}
+                  aria-current={active ? "page" : undefined}
+                  className="flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 min-w-[64px]"
+                >
+                  {renderIcon(pt, "w-6 h-6")}
+                  <span className="text-[10px] leading-none">{pt.shortName}</span>
+                </button>
+                <button
+                  onClick={() => addTab(pt.id)}
+                  aria-label={`New ${pt.shortName} sheet`}
+                  className={cn(
+                    "absolute -top-1 -right-1 rounded-full border border-border p-0.5 shadow-sm",
+                    active ? "bg-primary-foreground text-primary" : "bg-card text-foreground",
+                  )}
+                >
+                  <Icons.Plus className="w-3 h-3" />
+                </button>
+              </div>
             );
           })}
         </div>
@@ -131,3 +167,4 @@ export function SideTabs({ activePageType }: Props) {
     </>
   );
 }
+
