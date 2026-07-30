@@ -31,7 +31,7 @@ export function CartSummary({
   className,
 }: Props) {
   const includedCover = getCover(includedCoverId);
-  const extrasSubtotal = extraPackIds.length * 10;
+  const extrasSubtotal = extraPackIds.length * 5;
   const extrasDiscounted = calcPackTotalUSD(extraPackIds);
   const discountAmount = +(extrasSubtotal - extrasDiscounted).toFixed(2);
   const total = +(activationPriceUSD + extrasDiscounted).toFixed(2);
