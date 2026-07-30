@@ -176,8 +176,21 @@ def dup_hashes():
     return {h for h, fs in seen.items() if len(fs) > 1}
 
 
-def plan(only=None):
+DONE_LOG = pathlib.Path("/tmp/regen_done.txt")
+
+
+def done_set():
+    if not DONE_LOG.exists():
+        return set()
+    return set(DONE_LOG.read_text().split())
+
+
+def plan(only=None, force=False, fill_only=None):
+    """force: rebuild every page for the `only` covers (minus checkpointed ones).
+    fill_only: set of cover ids that should only get their MISSING pages."""
     dups = dup_hashes()
+    already = done_set() if force else set()
+    fill_only = fill_only or set()
     todo = []
     for c in covers():
         if only and c["id"] not in only:
@@ -185,7 +198,11 @@ def plan(only=None):
         folder = ICONS / c["id"]
         for page in PAGES:
             f = folder / f"{page}.jpg"
-            if f.exists() and hashlib.md5(f.read_bytes()).hexdigest() not in dups:
+            key = f"{c['id']}/{page}"
+            if force and c["id"] not in fill_only:
+                if key in already:
+                    continue
+            elif f.exists() and hashlib.md5(f.read_bytes()).hexdigest() not in dups:
                 continue
             todo.append((c, page))
     return todo
@@ -206,6 +223,8 @@ def run(todo, workers=6):
             png = gen(prompt_for(c, page), ref)
             write_icon(png, ICONS / c["id"] / f"{page}.jpg")
             done[0] += 1
+            with open(DONE_LOG, "a") as fh:
+                fh.write(f"{c['id']}/{page}\n")
             lock_print(f"[{done[0]}/{total}] {c['id']}/{page}")
         except Exception as e:  # noqa
             lock_print(f"FAIL {c['id']}/{page}: {e}")
@@ -219,6 +238,16 @@ if __name__ == "__main__":
     only = None
     if "--only" in args:
         i = args.index("--only"); only = set(args[i + 1].split(",")); del args[i:i + 2]
+    if "--targets" in args:
+        i = args.index("--targets")
+        only = set(pathlib.Path(args[i + 1]).read_text().split())
+        del args[i:i + 2]
+    fill_only = set()
+    if "--fill-only" in args:
+        i = args.index("--fill-only"); fill_only = set(args[i + 1].split(",")); del args[i:i + 2]
+    force = "--force" in args
+    if force:
+        args.remove("--force")
     workers = 6
     if "--workers" in args:
         i = args.index("--workers"); workers = int(args[i + 1]); del args[i:i + 2]
@@ -226,7 +255,7 @@ if __name__ == "__main__":
     if "--limit" in args:
         i = args.index("--limit"); limit = int(args[i + 1]); del args[i:i + 2]
     mode = args[0] if args else "plan"
-    todo = plan(only)
+    todo = plan(only, force=force, fill_only=fill_only)
     if limit:
         todo = todo[:limit]
     if mode == "plan":
@@ -237,3 +266,4 @@ if __name__ == "__main__":
         print("TOTAL", len(todo))
     else:
         run(todo, workers)
+
