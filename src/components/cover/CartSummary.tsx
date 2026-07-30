@@ -31,7 +31,7 @@ export function CartSummary({
   className,
 }: Props) {
   const includedCover = getCover(includedCoverId);
-  const extrasSubtotal = extraPackIds.length * 10;
+  const extrasSubtotal = extraPackIds.length * 5;
   const extrasDiscounted = calcPackTotalUSD(extraPackIds);
   const discountAmount = +(extrasSubtotal - extrasDiscounted).toFixed(2);
   const total = +(activationPriceUSD + extrasDiscounted).toFixed(2);
@@ -69,7 +69,7 @@ export function CartSummary({
                 {includedCover.name}
               </div>
               <div className="text-[11px] text-primary/60">
-                Cover + 20 page icons + 60 stickers
+                Cover + matching page icons + stickers
               </div>
             </div>
           </div>
@@ -110,9 +110,12 @@ export function CartSummary({
             {extraPackIds.map((id) => {
               const c = getCover(id);
               return (
-                <div key={id} className="flex justify-between text-primary/70">
-                  <span className="truncate pr-2">Extra: {c?.name ?? id}</span>
-                  <span>$5.00</span>
+                <div key={id} className="space-y-1 rounded-sm border border-primary/10 p-2">
+                  <div className="flex justify-between text-primary/70">
+                    <span className="truncate pr-2">Extra: {c?.name ?? id}</span>
+                    <span>$5.00</span>
+                  </div>
+                  <CoverIconStrip coverId={id} />
                 </div>
               );
             })}

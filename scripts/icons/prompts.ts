@@ -196,7 +196,8 @@ export const COVER_STYLE_OVERRIDE: Record<string, string> = {
     "Cream paper background with rich red rose accents. Every icon features BOTH a small WHITE DOVE and a small BLACK RAVEN — both birds always visible together, painterly heirloom style. Not a single-bird composition.",
   "patriotic-white-rose":
     "MATCH THE SAME AESTHETIC FOR EVERY ICON IN THIS PACK: soft cream parchment square, warm ivory vignette, airy watercolor-and-gouache planner icon, delicate blue-grey shadow bloom, centered subject wrapped with a thin flowing satin ribbon and paired with two or three velvety WHITE garden roses. Elegant keepsake stationery mood like a handmade heirloom planner sticker, not photography, not dark cinematic flatlay. Absolutely no American flags, no flag fabric, no stars, no navy background, no black background, no harsh contrast, no red roses, no blue roses, no mixed rose colors. Roses are always WHITE.",
-  // Folder-name aliases (some packs are shared across multiple covers via a single folder)
+  // Legacy folder-name style references used by older generated assets only.
+  // Do not use these as cross-cover manifest aliases.
   "black-moon-flora":
     "Celestial night palette — deep indigo, warm gold, ivory highlights, luminous full-moon halo with delicate starfield and soft feathered wing accents, matches the Luminous Hummingbird Celestial Wings icon set exactly.",
   "dove-ink":

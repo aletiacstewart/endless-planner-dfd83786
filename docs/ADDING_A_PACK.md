@@ -1,7 +1,7 @@
 # Adding a New Cover & Icon Pack
 
 A "pack" = **one cover** + **one matching set of page icons**, sold as a paid add-on
-($4.99 first pack, $2.99 each additional).
+($5 each; 5+ packs get 10% off).
 
 The whole system is data-driven: drop assets into the right folders, add three
 data entries, and the pack appears automatically in:
@@ -31,17 +31,23 @@ Page icons are plain static files served from `public/` (no bundler imports).
 Keep them ≤512 px / ~80 quality — large source renders must be downsized first,
 otherwise the dev server and the published bundle get very slow.
 
-After adding a folder, register it in `src/data/iconPacks.ts`:
-`ICON_FOLDERS["<pack-id>"] = [...page ids]`, and optionally point other covers
-at it via `COVER_ICON_FOLDER["<other-cover>"] = "<pack-id>"`.
+After adding a folder, regenerate `src/data/iconPacks.ts` with:
+
+```bash
+python3 scripts/icons/write_manifest.py
+python3 scripts/icons/validate_manifest.py
+```
+
+Each cover must use an exact folder match: `public/page-icons/<cover-id>/`.
+Do not point one cover at another cover's icon folder.
 
 
 
 Cover art: ~1024x1024 JPG works well.
 Icons: PNG with transparent background, ~512x512.
 
-You only need to provide icons for pages you want themed — any missing icon
-falls back to the default in `src/lib/pageImages.ts`.
+You only need to provide icons for pages you want themed. Missing icons are left
+blank/neutral; the app must not borrow another cover's artwork.
 
 ### Valid page ids (use these as filenames)
 
@@ -85,31 +91,17 @@ palette if no existing one matches.
 
 ## Step 3 — Register the matching icons
 
-Edit `src/lib/coverIcons.ts`:
+Place JPG files in `public/page-icons/<pack-id>/` using the valid page ids as
+filenames, then run the manifest commands from Step 1. No imports are needed.
 
-1. Import each icon (one line per page):
-   ```ts
-   import smMeasurement from "@/assets/cover-icons/sunflower-meadow/measurement-tracker.png";
-   import smWeight      from "@/assets/cover-icons/sunflower-meadow/weight-tracker.png";
-   // ...
-   ```
-2. Add a block to `COVER_ICONS`:
-   ```ts
-   "sunflower-meadow": {
-     "measurement-tracker": smMeasurement,
-     "weight-tracker": smWeight,
-     // ...
-   },
-   ```
-
-If you skip this file entirely, the pack will still work — it'll just use the
-default icon set until icons are added.
+If a cover has no exact icon folder, it will show no borrowed page icons until
+its own folder is added.
 
 ---
 
 ## That's it
 
-- The pack is automatically a **paid add-on** at $4.99 / $2.99.
+- The pack is automatically a **paid add-on** at $5.
 - To make a pack **free / included with planner purchase**, add its id to
   `INCLUDED_PACK_IDS` in `src/data/coverPacks.ts`.
 

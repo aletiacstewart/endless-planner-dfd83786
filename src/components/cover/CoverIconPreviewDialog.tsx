@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { CoverImage } from "@/components/cover/CoverImage";
 import { COVERS, COLLECTIONS } from "@/data/covers";
 import { getCoverIconPack } from "@/lib/coverIcons";
-import { PAGE_IMAGES } from "@/lib/pageImages";
 import { PAGE_TYPES } from "@/lib/pageTypes";
 import { isCoverIncluded } from "@/data/coverPacks";
 import { isPackUnlocked } from "@/lib/unlock";
@@ -42,9 +41,7 @@ export function CoverIconPreviewDialog({
   const collectionLabel =
     COLLECTIONS.find((c) => c.id === cover.collection)?.label ?? "";
   const customIcons = getCoverIconPack(cover.id);
-  const iconEntries = customIcons
-    ? Object.entries(customIcons)
-    : Object.entries(PAGE_IMAGES);
+  const iconEntries = customIcons ? Object.entries(customIcons) : [];
 
   const included = isCoverIncluded(cover.id);
   const owned = isPackUnlocked(cover.id);
@@ -67,32 +64,38 @@ export function CoverIconPreviewDialog({
               <DialogDescription>
                 {customIcons
                   ? `Includes ${iconEntries.length} matching page icons.`
-                  : "This cover uses the default page icon set."}
+                  : "Matching page icons are not installed for this cover yet."}
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
 
-        <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-2">
-          {iconEntries.map(([pageId, src]) => (
-            <div
-              key={pageId}
-              className="flex flex-col items-center text-center gap-1"
-            >
-              <div className="w-full aspect-square rounded-md bg-muted/40 flex items-center justify-center p-2 border border-border">
-                <img
-                  src={src as string}
-                  alt={PAGE_LABELS[pageId] ?? pageId}
-                  className="max-w-full max-h-full object-contain"
-                  loading="lazy"
-                />
+        {iconEntries.length > 0 ? (
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-2">
+            {iconEntries.map(([pageId, src]) => (
+              <div
+                key={pageId}
+                className="flex flex-col items-center text-center gap-1"
+              >
+                <div className="w-full aspect-square rounded-md bg-muted/40 flex items-center justify-center p-2 border border-border">
+                  <img
+                    src={src as string}
+                    alt={PAGE_LABELS[pageId] ?? pageId}
+                    className="max-w-full max-h-full object-contain"
+                    loading="lazy"
+                  />
+                </div>
+                <p className="text-[11px] text-muted-foreground truncate w-full">
+                  {PAGE_LABELS[pageId] ?? pageId}
+                </p>
               </div>
-              <p className="text-[11px] text-muted-foreground truncate w-full">
-                {PAGE_LABELS[pageId] ?? pageId}
-              </p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-md border border-dashed border-border bg-muted/30 p-6 text-center text-sm text-muted-foreground">
+            No cover-specific page icons are installed for this cover yet.
+          </div>
+        )}
 
         {onToggle && (
           <div className="pt-2 border-t border-border mt-2">
