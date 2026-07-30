@@ -107,15 +107,32 @@ def prompt_for(cover, page):
     )
 
 
+def _body(prompt, b64):
+    """Lite model takes the Vertex generateContent shape; others take chat shape."""
+    if MODEL.endswith("-lite-image"):
+        return {
+            "model": MODEL,
+            "contents": [{"role": "user", "parts": [
+                {"text": prompt},
+                {"inlineData": {"mimeType": "image/jpeg", "data": b64}},
+            ]}],
+            "generationConfig": {"responseModalities": ["TEXT", "IMAGE"]},
+        }
+    return {
+        "model": MODEL,
+        "messages": [{"role": "user", "content": [
+            {"type": "text", "text": prompt},
+            {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{b64}"}},
+        ]}],
+        "modalities": ["image", "text"],
+        "stream": False,
+    }
+
+
 def gen(prompt, ref):
     with open(ref, "rb") as f:
         b64 = base64.b64encode(f.read()).decode()
-    content = [
-        {"type": "text", "text": prompt},
-        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{b64}"}},
-    ]
-    body = {"model": MODEL, "messages": [{"role": "user", "content": content}],
-            "modalities": ["image", "text"], "stream": False}
+    body = _body(prompt, b64)
     last = ""
     for attempt in range(3):
         try:
@@ -125,10 +142,15 @@ def gen(prompt, ref):
             if r.status_code == 200:
                 return base64.b64decode(r.json()["data"][0]["b64_json"])
             last = f"HTTP {r.status_code} {r.text[:200]}"
+            if r.status_code == 402:
+                raise RuntimeError(last)
         except Exception as e:  # noqa
             last = str(e)
+            if "402" in last:
+                raise
         time.sleep(3 + attempt * 4)
     raise RuntimeError(last)
+
 
 
 def write_icon(png, out: pathlib.Path):
