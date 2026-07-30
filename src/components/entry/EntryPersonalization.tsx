@@ -19,6 +19,7 @@ import { useThemedSwatches, toCss } from "@/hooks/useThemedSwatches";
 import { useUserSettings } from "@/hooks/useUserSettings";
 import { StickerLibraryDialog } from "@/components/entry/StickerLibraryDialog";
 import { ColorSwatchGrid } from "@/components/entry/ColorSwatchGrid";
+import { getRecentStickers, saveRecentSticker, type RecentSticker } from "@/lib/recentStickers";
 import type { StickerAsset } from "@/data/stickers";
 import {
   FONT_LABELS,
