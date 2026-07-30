@@ -1,6 +1,6 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { Check, ChevronLeft, ChevronRight, Loader2, Trash2 } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Loader2, Redo2, Trash2, Undo2 } from "lucide-react";
 import { deleteEntry, getEntry, listEntries, type PlannerEntry } from "@/lib/db";
 import { getPageType, type FieldValue } from "@/lib/pageTypes";
 import { useAutoSave } from "@/hooks/useAutoSave";
@@ -12,6 +12,8 @@ import { useSwipeNav } from "@/hooks/useSwipeNav";
 import { Button } from "@/components/ui/button";
 import { EntryPersonalization } from "@/components/entry/EntryPersonalization";
 import { StickerLayer } from "@/components/entry/StickerLayer";
+import { EntryThumbnailRail } from "@/components/entry/EntryThumbnailRail";
+import { useEntryHistory } from "@/hooks/useEntryHistory";
 import {
   getMeta,
   withMeta,
@@ -61,6 +63,12 @@ export default function Entry() {
   }, [entry?.pageType]);
 
   const { state: saveState, linkedSummary } = useAutoSave(entry);
+  const { commit, undo, redo, canUndo, canRedo } = useEntryHistory(entry, setEntry);
+  /** Every user edit goes through here so it lands in the undo stack. */
+  const update = (next: PlannerEntry) => {
+    if (!entry) return;
+    commit(entry, next);
+  };
 
   const { prevEntry, nextEntry } = useMemo(() => {
     if (!entry || siblings.length < 2) return { prevEntry: null, nextEntry: null };
@@ -103,13 +111,13 @@ export default function Entry() {
   const asSpread = true;
 
   const onChange = (key: string, value: FieldValue) => {
-    setEntry({ ...entry, values: { ...entry.values, [key]: value } });
+    update({ ...entry, values: { ...entry.values, [key]: value } });
   };
-  const onMetaChange = (patch: Partial<EntryMeta>) => setEntry(withMeta(entry, patch));
+  const onMetaChange = (patch: Partial<EntryMeta>) => update(withMeta(entry, patch));
   const onTypography = (group: "title" | "subtitle" | "body", patch: Partial<TypoSpec>) =>
-    setEntry(withTypography(entry, group, patch));
+    update(withTypography(entry, group, patch));
   const onReset = () => {
-    setEntry({
+    update({
       ...entry,
       values: { ...entry.values, __meta: {} as unknown as FieldValue },
     });
@@ -195,7 +203,27 @@ export default function Entry() {
           >
             <ChevronLeft className="w-4 h-4" /> {pageType.name}
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={undo}
+              disabled={!canUndo}
+              aria-label="Undo"
+              title="Undo (Ctrl/Cmd+Z)"
+            >
+              <Undo2 className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={redo}
+              disabled={!canRedo}
+              aria-label="Redo"
+              title="Redo (Ctrl/Cmd+Shift+Z)"
+            >
+              <Redo2 className="w-4 h-4" />
+            </Button>
             <span className="text-xs text-muted-foreground inline-flex items-center gap-1">
               {saveState === "saving" && <><Loader2 className="w-3 h-3 animate-spin" /> Saving</>}
               {saveState === "saved" && <><Check className="w-3 h-3" /> Saved</>}
@@ -282,6 +310,19 @@ export default function Entry() {
           </div>
         )}
       </main>
+
+      <EntryThumbnailRail
+        entries={siblings}
+        activeId={entry.id}
+        pageTypeName={pageType.name}
+        onSelect={(id) => {
+          if (id === entry.id) return;
+          const from = siblings.findIndex((e) => e.id === entry.id);
+          const to = siblings.findIndex((e) => e.id === id);
+          setFlipDir(to > from ? "prev" : "next");
+          navigate(`/entry/${id}`);
+        }}
+      />
 
       <SideTabs activePageType={pageType.id} />
     </div>
