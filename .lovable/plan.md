@@ -1,41 +1,38 @@
-## Why your credits went up
+## What the audit found
 
-It wasn't a pricing change. This billing period (Jul 25 – Aug 25) the workspace used 724.7 credits:
+I hashed every folder in `public/page-icons` (123 folders):
 
-- **532.8 — AI image generation** (page-icon runs)
-- 175.4 — build-mode messages
-- 12.0 — plan-mode messages
-- ~0.8 — cloud/database
+- **26 folders are byte-identical placeholder copies** (all 32 files duplicated from another pack): all 10 `dragon-*` covers, all 10 `gothic-siren-*` covers, the generic `dragons` and `gothic-sirens` folders, plus `dove-white-roses`, `dove-raven-roses`, `rose-cross-stars`, `woven-heart-cross`. These are the "not matching the cover" packs.
+- **10 folders are unique but off-theme/wrong style** (generated before the cover-art-as-style-bible pass): Texas Horned Lizard, Starlit Cactus, Pecan Tree Moon, Golden Wheat Moon, Bluebonnet Moon, Monarch Moon, Longhorn Star, Mockingbird Moon, Patriotic White Rose, Live Oak Lights.
+- **`midnight-moth-bloom` has only 14 of 32 icons.**
+- **`feather-emerald`, `feather-crimson`, `feather-amethyst`, `feather-phoenix` have only 20 of 32**; `feather-gold` has 32 but off-style. `feather-sapphire` is complete.
+- **Talkin' Smack / Thinkin' Smack**: full count, but background inconsistency — regenerating both packs is cheaper than hunting individual files.
 
-So ~74% of the spend is generated artwork, not my prompts. Lovable's rates are unchanged: plan mode is 1 credit per message, build mode is usage-based. The cost driver was regenerating thousands of icons repeatedly because covers were sharing/aliasing packs. That root cause is now fixed — icon lookup is strict per cover, so no future run can "un-fix" itself and force another mass regeneration.
+## The fix
 
-**Balance: 400 credits remaining.**
+One background run of `scripts/icons/regen_all.py` using each cover's own artwork as the attached style bible (the method that produced the packs you approved), on the cheap Lite image model.
 
-## Scope of remaining work
+| Group | Folders | Icons |
+|---|---|---|
+| Dragons + Sirens placeholders | 22 | 704 |
+| Dove/Cross placeholders | 4 | 128 |
+| Texas & Moon series off-theme | 10 | 320 |
+| Talkin' / Thinkin' Smack | 2 | 64 |
+| Feathers (all 6, regenerated per cover art) | 6 | 192 |
+| Midnight Moth in Bloom (missing only) | 1 | 18 |
+| **Total** | **45** | **~1,426** |
 
-Only **13 covers** still lack their own pack. Everything else is done and correct.
+Estimated cost ≈ **200–215 credits** at the Lite model's observed rate (~0.14 credits/image, based on the last run: 415 icons for 59 credits).
 
-13 covers x 32 pages = **416 images**.
+## How it runs
 
-## Cost control measures
+1. Add a `--targets` file mode to `scripts/icons/regen_all.py` so the queue is exactly the 45 folders above, and force-overwrite (not skip-if-exists) for the 44 full-rebuild folders while `midnight-moth-bloom` only fills gaps.
+2. Each icon prompt attaches that cover's own art and forbids text, numbers, letters, and calendar grids (existing `NEGATIVE` block), plus an explicit "solid painted background, no transparent or blank corners" clause to fix the Talkin'/Thinkin' background issue.
+3. Run in the background with 6 workers, writing 512px JPEGs straight into `public/page-icons/<coverId>/`, checkpointed so a credit interruption resumes cleanly.
+4. After the run: regenerate `src/data/iconPacks.ts`, run `scripts/icons/validate_manifest.py` to prove zero cross-cover duplicates remain, and report a per-folder count.
 
-1. **Switch the generator model** from `google/gemini-3.1-flash-image` to `google/gemini-3.1-flash-lite-image` (Nano Banana 2 Lite) — same cover-art-as-style-reference workflow, materially cheaper per image. I'll generate one test icon first and visually compare it against a finished pack before committing to the full run. If quality drops, I fall back to the current model and reduce scope instead of overspending.
-2. **Hard spend guard**: the run stops automatically at 400 images or when the gateway returns a credit error, whichever comes first. No open-ended loops.
-3. **One unattended run, minimal messages**: I launch it in the background, check in **twice** (mid-run and at completion) instead of a status message per batch. Message overhead stays ~5–8 credits rather than the 175 spent previously.
-4. **No regeneration of the 65 finished packs.** Untouched.
+## Notes
 
-**Projected total: 60–75 credits for images + ~8 for messages = under the 100 cap.** If the lite model proves cheaper than the estimate, it lands nearer 40.
-
-## Steps
-
-1. Point `scripts/icons/regen_all.py` at the lite image model and adapt the request body to the Vertex `generateContent` shape that model requires (it does not accept the current chat-style body).
-2. Generate 1 test icon for one of the 13 covers; compare to an approved pack. Abort and reassess if it doesn't match.
-3. Queue only the 13 covers missing packs, run with the 400-image ceiling and checkpointing so nothing is ever regenerated twice.
-4. Run `scripts/icons/write_manifest.py`, then `scripts/icons/validate_manifest.py` to confirm all 78 covers map strictly to their own folder and 0 aliases exist.
-5. Report final credit spend so you can see the actual number against the estimate.
-
-## Technical notes
-
-- Icons are resized to 512px and written to `public/page-icons/<cover-id>/` — static URLs, no bundler imports, so the preview stays fast.
-- The checkpoint file means a killed or credit-blocked run resumes exactly where it stopped; no image is ever paid for twice.
-- Covers without a finished pack keep rendering a neutral built-in symbol, never another cover's art — so the store stays sellable even if the run is interrupted.
+- The strict resolver in `src/lib/coverIcons.ts` stays as-is — no cover will borrow another's art at any point during the run.
+- No app/UI code changes; this is asset regeneration plus the manifest rebuild.
+- If credits run out mid-run I'll report exactly which folders completed and resume on your go-ahead.
