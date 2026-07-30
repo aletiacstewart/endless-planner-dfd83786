@@ -24,7 +24,8 @@ import { BuildStamp } from "./components/BuildStamp";
 import { useUserSettings } from "./hooks/useUserSettings";
 import { useCoverTheme } from "./hooks/useCoverTheme";
 import { getCover } from "./data/covers";
-import { isUnlocked } from "./lib/unlock";
+import { useEntitlements } from "./hooks/useEntitlements";
+import { purgeLegacyUnlockKeys } from "./lib/unlock";
 import { PLANNERS } from "./data/planners";
 import { initSync } from "./lib/sync";
 
@@ -34,7 +35,19 @@ const PRIMARY_PLANNER_ID = PLANNERS[0].id;
 
 function RequireUnlock({ children }: { children: React.ReactNode }) {
   const location = useLocation();
-  if (!isUnlocked(PRIMARY_PLANNER_ID)) {
+  const { loading, hasPlanner, userId } = useEntitlements();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-muted-foreground text-sm">
+        Checking your account…
+      </div>
+    );
+  }
+  if (!userId) {
+    return <Navigate to="/auth" replace state={{ from: location }} />;
+  }
+  if (!hasPlanner(PRIMARY_PLANNER_ID)) {
     return <Navigate to="/" replace state={{ from: location }} />;
   }
   return <>{children}</>;
@@ -69,7 +82,7 @@ function PlannerApp() {
 }
 
 const App = () => {
-  useEffect(() => { initSync(); }, []);
+  useEffect(() => { purgeLegacyUnlockKeys(); initSync(); }, []);
   return (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>

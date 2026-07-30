@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
-import { isUnlocked } from "@/lib/unlock";
+import { isUnlocked, refreshUnlocks } from "@/lib/unlock";
 import { PLANNERS } from "@/data/planners";
 import { reconcileNow } from "@/lib/sync";
 import { useAuth } from "@/hooks/useAuth";
@@ -21,9 +21,10 @@ export default function Auth() {
   const [busy, setBusy] = useState(false);
 
   const routeAfterSignIn = async () => {
-    // Claim any anonymous purchases/subscriptions bought with this email.
+    // Claim any anonymous purchases/subscriptions bought with this email, then
+    // pull the server-verified entitlements for this account.
     try { await supabase.rpc("link_user_purchases"); } catch {}
-    // Wait for sync to pull unlocks/settings down before deciding where to go.
+    try { await refreshUnlocks(); } catch {}
     try { await reconcileNow(); } catch {}
     // Support ?next redirect (e.g. from Subscribe page requiring auth)
     const params = new URLSearchParams(window.location.search);

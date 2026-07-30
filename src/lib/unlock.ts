@@ -1,7 +1,13 @@
-import { INCLUDED_PACK_IDS } from "@/data/coverPacks";
+/**
+ * Thin compatibility layer over the server-verified entitlement store.
+ *
+ * IMPORTANT: nothing here grants access. Every check reads state that was
+ * fetched from the database for the signed-in account (see lib/entitlements).
+ * Writing to localStorage cannot unlock anything.
+ */
 
-const KEY = (plannerId: string) => `planner-unlock:${plannerId}`;
-const PACK_KEY = (coverId: string) => `cover-pack-unlock:${coverId}`;
+import { hasPack, hasPlanner, ownedPackIds, refreshEntitlements } from "./entitlements";
+
 const DEVICE_KEY = "planner-device-id";
 
 export function getDeviceId(): string {
@@ -17,42 +23,31 @@ export function getDeviceId(): string {
   }
 }
 
-export function setUnlocked(plannerId: string, code: string) {
-  try { localStorage.setItem(KEY(plannerId), code); } catch {}
-  import("./sync").then((m) => m.pushPlannerUnlock(plannerId, code)).catch(() => {});
-}
-
 export function isUnlocked(plannerId: string): boolean {
-  try { return Boolean(localStorage.getItem(KEY(plannerId))); }
-  catch { return false; }
-}
-
-export function clearUnlock(plannerId: string) {
-  try { localStorage.removeItem(KEY(plannerId)); } catch {}
-}
-
-// ----- Cover & icon packs -----
-
-export function setPackUnlocked(coverId: string, code: string) {
-  try { localStorage.setItem(PACK_KEY(coverId), code); } catch {}
-  import("./sync").then((m) => m.pushPackUnlock(coverId, code)).catch(() => {});
+  return hasPlanner(plannerId);
 }
 
 export function isPackUnlocked(coverId: string): boolean {
-  if ((INCLUDED_PACK_IDS as readonly string[]).includes(coverId)) return true;
-  try { return Boolean(localStorage.getItem(PACK_KEY(coverId))); }
-  catch { return false; }
+  return hasPack(coverId);
 }
 
 export function listOwnedPacks(): string[] {
-  const owned = new Set<string>(INCLUDED_PACK_IDS as readonly string[]);
+  return ownedPackIds();
+}
+
+/** Re-read entitlements from the server (after a purchase or code redemption). */
+export async function refreshUnlocks() {
+  await refreshEntitlements(true);
+}
+
+/** Remove any legacy client-side "unlock" keys left over from older builds. */
+export function purgeLegacyUnlockKeys() {
   try {
+    const stale: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k?.startsWith("cover-pack-unlock:")) {
-        owned.add(k.slice("cover-pack-unlock:".length));
-      }
+      if (k?.startsWith("planner-unlock:") || k?.startsWith("cover-pack-unlock:")) stale.push(k);
     }
+    stale.forEach((k) => localStorage.removeItem(k));
   } catch {}
-  return Array.from(owned);
 }

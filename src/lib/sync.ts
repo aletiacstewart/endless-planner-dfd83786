@@ -15,8 +15,7 @@ type QueueOp =
   | { kind: "entry-upsert"; entry: PlannerEntry }
   | { kind: "entry-delete"; id: string }
   | { kind: "settings"; settings: UserSettings }
-  | { kind: "pack-unlock"; packId: string; code: string }
-  | { kind: "planner-unlock"; plannerId: string; code: string };
+  ;
 
 interface QueueRow {
   key: string;
@@ -181,19 +180,6 @@ async function pushOp(op: QueueOp, userId: string): Promise<boolean> {
         { onConflict: "user_id" }
       );
       if (error) throw error;
-    } else if (op.kind === "pack-unlock") {
-      const { error } = await supabase
-        .from("user_packs")
-        .upsert({ user_id: userId, pack_id: op.packId, unlock_code: op.code }, { onConflict: "user_id,pack_id" });
-      if (error) throw error;
-    } else if (op.kind === "planner-unlock") {
-      const { error } = await supabase
-        .from("user_planner_unlocks")
-        .upsert(
-          { user_id: userId, planner_id: op.plannerId, unlock_code: op.code },
-          { onConflict: "user_id,planner_id" }
-        );
-      if (error) throw error;
     }
     return true;
   } catch (err) {
@@ -233,17 +219,6 @@ export async function pushSettings(settings: UserSettings) {
   if (!ok) await enqueue({ kind: "settings", settings });
 }
 
-export async function pushPackUnlock(packId: string, code: string) {
-  if (!currentUserId) return;
-  const ok = navigator.onLine && (await pushOp({ kind: "pack-unlock", packId, code }, currentUserId));
-  if (!ok) await enqueue({ kind: "pack-unlock", packId, code });
-}
-
-export async function pushPlannerUnlock(plannerId: string, code: string) {
-  if (!currentUserId) return;
-  const ok = navigator.onLine && (await pushOp({ kind: "planner-unlock", plannerId, code }, currentUserId));
-  if (!ok) await enqueue({ kind: "planner-unlock", plannerId, code });
-}
 
 // ---------- reconciliation ----------
 
@@ -318,66 +293,17 @@ async function reconcileSettings(userId: string) {
   }
 }
 
-async function reconcilePacks(userId: string) {
-  const { data, error } = await supabase.from("user_packs").select("pack_id, unlock_code").eq("user_id", userId);
-  if (error) return;
-  for (const row of data ?? []) {
-    if (row.unlock_code) {
-      try {
-        localStorage.setItem(`cover-pack-unlock:${row.pack_id}`, row.unlock_code);
-      } catch {}
-    }
-  }
-  // Push any local packs not yet on server
-  try {
-    const localPacks: { id: string; code: string }[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k?.startsWith("cover-pack-unlock:")) {
-        const id = k.slice("cover-pack-unlock:".length);
-        const code = localStorage.getItem(k) || "";
-        if (code) localPacks.push({ id, code });
-      }
-    }
-    const have = new Set((data ?? []).map((r) => r.pack_id));
-    for (const p of localPacks) {
-      if (!have.has(p.id)) await pushOp({ kind: "pack-unlock", packId: p.id, code: p.code }, userId);
-    }
-  } catch {}
-}
-
-async function reconcilePlannerUnlocks(userId: string) {
-  const { data, error } = await supabase
-    .from("user_planner_unlocks")
-    .select("planner_id, unlock_code")
-    .eq("user_id", userId);
-  if (error) return;
-  for (const row of data ?? []) {
-    try {
-      localStorage.setItem(`planner-unlock:${row.planner_id}`, row.unlock_code);
-    } catch {}
-  }
-  // Push local unlocks not on server
-  try {
-    const have = new Set((data ?? []).map((r) => r.planner_id));
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k?.startsWith("planner-unlock:")) {
-        const id = k.slice("planner-unlock:".length);
-        const code = localStorage.getItem(k) || "";
-        if (code && !have.has(id)) {
-          await pushOp({ kind: "planner-unlock", plannerId: id, code }, userId);
-        }
-      }
-    }
-  } catch {}
+async function reconcileEntitlements() {
+  // Entitlements are owned by the server (Stripe webhook / redeem-code
+  // function). The client only refreshes its verified cache.
+  const { refreshEntitlements } = await import("./entitlements");
+  await refreshEntitlements(true);
 }
 
 async function fullReconcile(userId: string) {
   // Always sync paid-for unlocks (planners + cover packs) so users can restore
   // purchases on any device without an active Cloud subscription.
-  await reconcilePacks(userId);
-  await reconcilePlannerUnlocks(userId);
+  await reconcileEntitlements();
   // Entries + settings + queue flush are gated behind an active subscription.
   if (hasActiveSub) {
     await reconcileEntries(userId);

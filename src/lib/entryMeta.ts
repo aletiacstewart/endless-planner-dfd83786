@@ -15,6 +15,17 @@ export interface Sticker {
   y: number;           // 0-100 (% of container height)
   size: number;        // px
   rot?: number;        // degrees
+  z?: number;          // stacking order (higher = in front)
+}
+
+/** Highest z currently used, so new/raised stickers land on top. */
+export function topStickerZ(stickers: Sticker[] | undefined): number {
+  return (stickers ?? []).reduce((m, s) => Math.max(m, s.z ?? 0), 0);
+}
+
+/** Stickers sorted back-to-front for rendering. */
+export function sortStickers(stickers: Sticker[]): Sticker[] {
+  return [...stickers].sort((a, b) => (a.z ?? 0) - (b.z ?? 0));
 }
 
 export interface TypoSpec {

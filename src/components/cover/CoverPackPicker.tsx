@@ -5,6 +5,7 @@ import { CoverImage } from "@/components/cover/CoverImage";
 import { CoverIconPreviewDialog } from "@/components/cover/CoverIconPreviewDialog";
 import { isCoverIncluded, calcPackTotalUSD, getPackPriceUSD, getDiscountLabel } from "@/data/coverPacks";
 import { isPackUnlocked } from "@/lib/unlock";
+import { useEntitlements } from "@/hooks/useEntitlements";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +22,7 @@ type Props = {
 };
 
 export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact, excludeIds = [] }: Props) {
+  const ent = useEntitlements();
   const [filter, setFilter] = useState<CoverCollection | "all">("all");
   const [previewId, setPreviewId] = useState<string | null>(null);
 
@@ -35,7 +37,7 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
     if (hideOwned) list = list.filter((c) => !isPackUnlocked(c.id));
     if (excludeIds.length) list = list.filter((c) => !excludeIds.includes(c.id));
     return list;
-  }, [filter, hideOwned, excludeIds]);
+  }, [filter, hideOwned, excludeIds, ent.verifiedAt, ent.admin]);
 
   const toggle = (id: string) => {
     if (isCoverIncluded(id)) return;

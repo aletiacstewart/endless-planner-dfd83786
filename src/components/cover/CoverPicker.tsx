@@ -6,6 +6,7 @@ import { CoverImage } from "./CoverImage";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { isPackUnlocked } from "@/lib/unlock";
+import { useEntitlements } from "@/hooks/useEntitlements";
 import { isCoverPaid } from "@/data/coverPacks";
 
 type Props = {
@@ -33,6 +34,7 @@ export function CoverPicker({
   confirmLabel = "Use this cover",
   onConfirm,
 }: Props) {
+  useEntitlements();
   const [filter, setFilter] = useState<CoverCollection | "all">("all");
   const navigate = useNavigate();
 
