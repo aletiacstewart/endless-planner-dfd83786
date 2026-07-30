@@ -1,51 +1,41 @@
-## Priority 0 — Close the payment bypass (ships first)
+## Status of Claude's list
 
-Confirmed today: `isUnlocked()` / `isPackUnlocked()` in `src/lib/unlock.ts` read only `localStorage`, `RequireUnlock` in `src/App.tsx` trusts that, and `src/pages/AdminPlanner.tsx` contains the literal key `let-me-in-2026`. `purchases` and `pack_purchases` are keyed by `email` + `unlock_code` with no `user_id`, so nothing today ties a purchase to a logged-in account.
+Priorities 0–4 were implemented and browser-verified in the previous pass:
 
-Chosen model: **sign-in required to open the planner**, with a **7-day offline grace period**.
+- **P0 Security** — entitlements are server-verified (`src/lib/entitlements.ts` + `redeem-code` edge function, device cap 5), RLS blocks client writes to `user_packs` / `user_planner_unlocks` (confirmed 403 in a live test), the hardcoded admin key is gone and replaced with a `user_roles` RBAC check. **Answer to the plain-language question: No** — editing localStorage or calling client functions no longer grants access; localStorage is only a signed cache with a 7-day offline grace period.
+- **P1** — `SideTabs.tsx` renders themed per-cover icons with Lucide fallback.
+- **P2** — sticker snap guides, layering, recents tray, floating toolbar.
+- **P3** — custom HSL picker + saved personal palette.
+- **P4** — thumbnail rail + undo/redo (Cmd/Ctrl+Z).
 
-Database work (one migration):
-- Add `user_id` to `purchases` and `pack_purchases`, backfilled by the existing `link_user_purchases` routine (matches purchase email to the signed-in account); run linking automatically on every sign-in.
-- New `entitlements` view/table read path so a signed-in user can read only their own rows (row-level security scoped to `auth.uid()`), with grants for `authenticated` and `service_role`. No anonymous read.
-- New `app_role` enum + `user_roles` table + `has_role()` security-definer function. Roles live in their own table, never on profiles.
+So this plan covers **Priority 5 only**.
 
-Backend:
-- New `verify-entitlements` edge function: reads the caller's session from the bearer token (never from request body), returns the planner IDs and pack IDs that account actually owns, plus an admin flag from `has_role`. Redeeming a code becomes a server action that links the code to the caller's `user_id`.
-- Audit `validate-unlock`, `finalize-purchase`, `payments-webhook`, `resend-unlock-code`, and `src/lib/sync.ts` so all unlock/purchase writes happen server-side only.
+## What gets built
 
-Frontend:
-- `src/lib/unlock.ts` becomes a cache in front of the server: it stores the last verified entitlement set with a timestamp; `localStorage` is never the source of truth. Cache older than 7 days without a successful re-verify → locked.
-- `RequireUnlock` awaits auth + entitlement fetch, shows a loading state, redirects unauthenticated users to `/auth`, and purchasers-without-account to a "sign in with your purchase email" flow.
-- All pack gates (`CoverPicker`, `CoverCard`, `CoverPackPicker`, `CoverIconPreviewDialog`, `Packs`) read from the same verified entitlement store.
-- `AdminPlanner.tsx` loses the hardcoded key; it renders only for accounts with the `admin` role, and it grants preview access in the UI without inventing fake purchase rows.
+Seven new page types added to `src/lib/pageTypes.ts` (32 → 39), each following the existing `PageTypeDef` shape with a `summary()` and a short nav name. The Password & Login Tracker is **skipped** per your choice — no credential storage.
 
-Plain-language answer after this ships: **No.** Editing `localStorage` or calling client functions cannot grant access — the cache is validated against server-owned records on every load and the gate fails closed.
+### Batch A — wellness
+| Page | id | Icon | Structure |
+|---|---|---|---|
+| Sleep Tracker | `sleep-tracker` | Moon | `measurement-grid` — Bedtime, Wake time, Hours, Quality (1-5), Notes |
+| Water Intake | `water-tracker` | Droplet | `habit-grid` with 8 cup items across the month |
+| Gratitude Log | `gratitude-log` | Heart | `gratitude-list` (3 rows) + `mood-rating` + short reflection |
+| Emergency / ICE | `emergency-contacts` | Phone | Reference page: `doctor-picker`, `med-list` rows for contacts (name / relationship / phone), allergies, blood type |
 
-## Priority 1 — Themed page icons in planner navigation
+### Batch B — staples
+| Page | id | Icon | Structure |
+|---|---|---|---|
+| Contacts | `contacts` | Users | Non-recurring reference page, `med-list` rows: Name, Phone, Email, Address, Notes |
+| Important Dates | `important-dates` | Cake | `month-tracker`-style grid, 12 months × people |
+| Gift Tracker | `gift-tracker` | Gift | `med-list` rows: Person, Occasion, Gift idea, Budget, Purchased ✓, Wrapped ✓ |
 
-`src/components/planner/SideTabs.tsx` renders generic Lucide icons. Update both the desktop rail and mobile strip to resolve the active cover's icon via `getCoverIconPack(settings.coverId)` (same source `CoverIconStrip` uses), render at ~22px, keep active/inactive styling, and fall back to Lucide only when that cover's pack lacks that page. Icons for the active cover get preloaded once on mount; images use `loading="eager"` for tabs, `decoding="async"`.
+### Wiring
+- All 7 ids appended to the Wellness Journey planner in `src/data/planners.ts` (it maps over `PAGE_TYPES`, so this is automatic).
+- Verify each new field-type/column combo renders correctly in `FieldRenderer.tsx`; add narrow support only where a needed variant is missing (e.g. checkbox columns inside `med-list`).
+- Browser-check each new page renders and saves.
 
-## Priority 2 — Sticker tray, layering, snapping
+## Known follow-up
 
-- `StickerLibraryDialog` becomes a persistent side tray that stays open across placements, with a "Recently used" row (last ~12, persisted per user).
-- `Sticker` in `src/lib/entryMeta.ts` gains `z`; the floating toolbar in `StickerLayer.tsx` gains Bring-to-front / Send-to-back; render order sorts by `z`.
-- Drag shows soft magnetic guides at page center lines and at other stickers' centers (~1.5% pull, draggable past it).
-- Two-finger pinch resizes the selected sticker on touch, alongside the existing +/− buttons.
+Each new page needs a themed icon per cover in `src/lib/coverIcons.ts`. Until those exist, the 7 new tabs fall back to generic Lucide icons in the nav — the exact issue Priority 1 fixed. Generating ~78 covers × 7 icons is a large separate image pass; I'll flag it for a follow-up rather than bundle it here.
 
-## Priority 3 — Custom colors and saved palette
-
-- Each color popover in `EntryPersonalization.tsx` keeps the 6 themed swatches and adds "Custom…" opening a hue/sat/light picker with hex and HSL input.
-- Saved colors persist per user alongside settings and appear as swatches on every page.
-- Everything stays in the `"H S% L%"` token format via the existing `toCss()` helper — no raw hex reaches components.
-
-## Priority 4 — Page thumbnails and undo/redo
-
-- Collapsible thumbnail rail on `src/pages/Entry.tsx` listing every entry of the current page type, click to jump, with drag-to-reorder backed by an `order` field added to entries in `src/lib/db.ts` (defaults preserve current ordering).
-- In-memory undo/redo stack (last 20 `EntryMeta` patches) with buttons plus Cmd/Ctrl+Z and Shift+Cmd/Ctrl+Z, keeping "Reset all" as a separate action.
-
-## Technical notes
-
-- Sequenced: Priority 0 lands and is verified (signed-in fetch shows only that account's entitlements; a forged `localStorage` entry does not unlock) before Priorities 1–4.
-- The migration requires approval before the dependent frontend code is written, so P0 arrives in two steps.
-- Existing customers who bought without an account keep access by signing in with the purchase email or re-entering their unlock code once while signed in.
-- Sticker `z` and the new entry `order` field are optional and backward-compatible with existing stored entries.
+Also still open from Claude's note: Vision Board, Bill Pay Calendar, Travel/Packing, Wish List, Reading List — deferred until you see these live.
