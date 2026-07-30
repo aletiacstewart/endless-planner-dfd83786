@@ -28,7 +28,7 @@ export const PLANNERS: PlannerDef[] = [
     priceId: "wellness_journey_setup",
     pageTypeIds: PAGE_TYPES.map((p) => p.id),
     highlights: [
-      "35+ guided pages — calendars, habits, health, goals, budget, home & mind",
+      "39 guided pages — calendars, habits, health, sleep, goals, budget, home & mind",
       "Budget, debt & savings pages built in",
       "Home management: cleaning zones, meal plan & grocery lists",
       "Mental health: mood journal, therapy prep & coping toolkit",

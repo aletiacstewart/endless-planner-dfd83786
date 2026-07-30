@@ -1375,7 +1375,259 @@ export const PAGE_TYPES: PageTypeDef[] = [
     ],
     summary: () => "Coping toolkit",
   },
+
+  // ============ SLEEP, HYDRATION & GRATITUDE ============
+  {
+    id: "sleep-tracker",
+    name: "Sleep Tracker",
+    shortName: "Sleep",
+    description: "Bedtime, wake time, hours slept and sleep quality across the month.",
+    icon: "Moon",
+    sections: [
+      {
+        columns: 2,
+        fields: [
+          { key: "month", label: "Month", type: "month", placeholder: "January" },
+          { key: "sleep_goal", label: "Nightly goal (hours)", type: "text", compact: true },
+        ],
+      },
+      {
+        title: "Nightly log",
+        description: "One row per night — note bedtime, wake time, total hours and how rested you felt.",
+        fields: [
+          {
+            key: "sleep_log",
+            label: "Sleep log",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 31,
+            rowLabel: "Day",
+            columns: ["Bedtime", "Wake time", "Hours", "Quality (1-5)", "Notes"],
+          },
+        ],
+      },
+      {
+        fields: [
+          { key: "sleep_reflection", label: "What helped me rest", type: "textarea", rows: 4, span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => (v.month ? `Sleep — ${v.month}` : "Sleep tracker"),
+  },
+  {
+    id: "water-tracker",
+    name: "Water Intake Tracker",
+    shortName: "Water",
+    description: "Check off your glasses of water every day of the month.",
+    icon: "Droplet",
+    sections: [
+      {
+        columns: 2,
+        fields: [
+          { key: "month", label: "Month", type: "month", placeholder: "January" },
+          { key: "daily_goal", label: "Daily goal (glasses)", type: "text", compact: true },
+        ],
+      },
+      {
+        title: "Glasses per day",
+        description: "Tick a glass for each cup you drink.",
+        fields: [
+          {
+            key: "water_grid",
+            label: "Water intake",
+            type: "habit-grid",
+            span: 2,
+            defaultItems: ["1", "2", "3", "4", "5", "6", "7", "8"],
+          },
+        ],
+      },
+      {
+        fields: [
+          { key: "water_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => (v.month ? `Water — ${v.month}` : "Water intake"),
+  },
+  {
+    id: "gratitude-log",
+    name: "Gratitude Log",
+    shortName: "Grateful",
+    description: "Three good things and how the day felt — a quick daily ritual.",
+    icon: "Heart",
+    sections: [
+      {
+        columns: 2,
+        fields: [
+          { key: "date", label: "Date", type: "date" },
+          { key: "mood", label: "How the day felt", type: "mood-rating" },
+        ],
+      },
+      {
+        title: "Today I'm grateful for",
+        fields: [
+          { key: "gratitude", label: "Grateful for", type: "gratitude-list", max: 3, span: 2 },
+        ],
+      },
+      {
+        fields: [
+          { key: "gratitude_note", label: "One moment worth remembering", type: "textarea", rows: 4, span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => (v.date as string) || "Gratitude log",
+  },
+  {
+    id: "emergency-contacts",
+    name: "Emergency Contacts (ICE)",
+    shortName: "ICE",
+    description: "In-case-of-emergency contacts, allergies, blood type and your care team.",
+    icon: "Phone",
+    sections: [
+      {
+        columns: 2,
+        fields: [
+          { key: "full_name", label: "Full name", type: "text" },
+          { key: "blood_type", label: "Blood type", type: "text", compact: true },
+          { key: "primary_doctor_id", label: "Primary doctor", type: "doctor-picker", span: 2 },
+        ],
+      },
+      {
+        title: "Emergency contacts",
+        description: "Who should be called first, and in what order.",
+        fields: [
+          {
+            key: "ice_contacts",
+            label: "Contacts",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 8,
+            rowLabel: "#",
+            columns: ["Name", "Relationship", "Phone", "Notes"],
+          },
+        ],
+      },
+      {
+        columns: 2,
+        fields: [
+          { key: "allergies", label: "Known allergies", type: "textarea", rows: 4 },
+          { key: "conditions", label: "Conditions & current medications", type: "textarea", rows: 4 },
+          { key: "insurance", label: "Insurance / policy details", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => (v.full_name as string) || "Emergency contacts",
+  },
+
+  // ============ REFERENCE & OCCASIONS ============
+  {
+    id: "contacts",
+    name: "Contacts",
+    shortName: "Contacts",
+    description: "Your address book — names, numbers, emails and addresses in one place.",
+    icon: "Users",
+    sections: [
+      {
+        fields: [
+          { key: "list_title", label: "List name", type: "text", span: 2, placeholder: "Family, Work, Neighbours…" },
+        ],
+      },
+      {
+        title: "Address book",
+        fields: [
+          {
+            key: "contact_rows",
+            label: "Contacts",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 20,
+            rowLabel: "#",
+            columns: ["Name", "Phone", "Email", "Address", "Notes"],
+          },
+        ],
+      },
+    ],
+    summary: (v) => (v.list_title as string) || "Contacts",
+  },
+  {
+    id: "important-dates",
+    name: "Important Dates",
+    shortName: "Dates",
+    description: "Birthdays and anniversaries marked across all twelve months.",
+    icon: "Cake",
+    sections: [
+      {
+        fields: [{ key: "year", label: "Year", type: "year", placeholder: "2026" }],
+      },
+      {
+        title: "Dates by month",
+        description: "Add a name, then mark the months their date falls in.",
+        fields: [
+          {
+            key: "dates_grid",
+            label: "People & occasions",
+            type: "month-tracker",
+            span: 2,
+            defaultItems: ["", "", "", "", "", "", "", "", "", "", "", ""],
+          },
+        ],
+      },
+      {
+        title: "Details",
+        fields: [
+          {
+            key: "date_details",
+            label: "Who / occasion / day",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 16,
+            rowLabel: "#",
+            columns: ["Name", "Occasion", "Date", "Notes"],
+          },
+        ],
+      },
+    ],
+    summary: (v) => (v.year ? `Important dates ${v.year}` : "Important dates"),
+  },
+  {
+    id: "gift-tracker",
+    name: "Gift Tracker",
+    shortName: "Gifts",
+    description: "Gift ideas, budgets, and what's bought and wrapped.",
+    icon: "Gift",
+    sections: [
+      {
+        columns: 2,
+        fields: [
+          { key: "occasion", label: "Occasion", type: "text", placeholder: "Christmas, birthdays…" },
+          { key: "total_budget", label: "Total budget", type: "text" },
+        ],
+      },
+      {
+        title: "Gift list",
+        description: "Mark the last two columns with an x once purchased and wrapped.",
+        fields: [
+          {
+            key: "gift_rows",
+            label: "Gifts",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 16,
+            rowLabel: "#",
+            columns: ["Person", "Occasion", "Gift idea", "Budget", "Purchased", "Wrapped"],
+          },
+        ],
+      },
+      {
+        fields: [
+          { key: "gift_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => (v.occasion as string) || "Gift tracker",
+  },
 ];
+
 
 export function getPageType(id: string): PageTypeDef | undefined {
   return PAGE_TYPES.find((p) => p.id === id);
