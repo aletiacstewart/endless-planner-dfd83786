@@ -512,6 +512,10 @@ function handleSignOut() {
   currentUserId = null;
   hasActiveSub = false;
   stopRealtime();
+  if (subChannel) {
+    supabase.removeChannel(subChannel);
+    subChannel = null;
+  }
 }
 
 export async function signOut() {
