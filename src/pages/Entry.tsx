@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { Check, ChevronLeft, ChevronRight, Loader2, Redo2, Trash2, Undo2 } from "lucide-react";
-import { deleteEntry, getEntry, listEntries, type PlannerEntry } from "@/lib/db";
+import { Check, ChevronLeft, ChevronRight, Loader2, Plus, Redo2, Trash2, Undo2 } from "lucide-react";
+import { createEntry, deleteEntry, getEntry, listEntries, type PlannerEntry } from "@/lib/db";
 import { getPageType, type FieldValue } from "@/lib/pageTypes";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { PageRenderer } from "@/components/PageRenderer";
@@ -122,6 +122,14 @@ export default function Entry() {
       values: { ...entry.values, __meta: {} as unknown as FieldValue },
     });
     toast.success("Personalization reset");
+  };
+
+  /** Start a fresh sheet of the same page type and jump straight into it. */
+  const addSheet = async () => {
+    const created = await createEntry(entry.pageType);
+    setFlipDir("next");
+    toast.success(`New ${pageType.shortName} sheet`);
+    navigate(`/entry/${created.id}`);
   };
 
   const remove = async () => {
