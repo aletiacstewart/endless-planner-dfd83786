@@ -75,6 +75,7 @@ const App = () => {
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <BuildStamp />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
