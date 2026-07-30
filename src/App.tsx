@@ -20,6 +20,7 @@ import AdminPlanner from "./pages/AdminPlanner.tsx";
 import Auth from "./pages/Auth.tsx";
 import { OnboardingFlow } from "./components/onboarding/OnboardingFlow";
 import { SplashScreen } from "./components/SplashScreen";
+import { BuildStamp } from "./components/BuildStamp";
 import { useUserSettings } from "./hooks/useUserSettings";
 import { useCoverTheme } from "./hooks/useCoverTheme";
 import { getCover } from "./data/covers";
