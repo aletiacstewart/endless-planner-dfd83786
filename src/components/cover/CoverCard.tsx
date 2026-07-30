@@ -4,6 +4,7 @@ import { type Cover, COLLECTIONS } from "@/data/covers";
 import { CoverImage } from "@/components/cover/CoverImage";
 import { CoverIconPreviewDialog } from "@/components/cover/CoverIconPreviewDialog";
 import { isPackUnlocked } from "@/lib/unlock";
+import { useEntitlements } from "@/hooks/useEntitlements";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -24,6 +25,7 @@ export function CoverCard({
   onMakeIncluded,
 }: Props) {
   const [previewOpen, setPreviewOpen] = useState(false);
+  useEntitlements(); // re-render when verified entitlements arrive
   const owned = isPackUnlocked(cover.id);
   const collectionLabel =
     COLLECTIONS.find((c) => c.id === cover.collection)?.label ?? "Collection";

@@ -9,8 +9,8 @@ verify_jwt = false
 [functions.finalize-purchase]
 verify_jwt = false
 
-[functions.validate-unlock]
-verify_jwt = false
+[functions.redeem-code]
+verify_jwt = true
 
 [functions.payments-webhook]
 verify_jwt = false

@@ -13,6 +13,7 @@ import { getCoverIconPack } from "@/lib/coverIcons";
 import { PAGE_TYPES } from "@/lib/pageTypes";
 import { isCoverIncluded } from "@/data/coverPacks";
 import { isPackUnlocked } from "@/lib/unlock";
+import { useEntitlements } from "@/hooks/useEntitlements";
 
 type Props = {
   coverId: string | null;
@@ -44,6 +45,7 @@ export function CoverIconPreviewDialog({
   const iconEntries = customIcons ? Object.entries(customIcons) : [];
 
   const included = isCoverIncluded(cover.id);
+  useEntitlements();
   const owned = isPackUnlocked(cover.id);
 
   return (

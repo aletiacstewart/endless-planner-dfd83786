@@ -1,24 +1,36 @@
 import { useEffect, useRef, useState } from "react";
-import { X, Minus, Plus, RotateCcw, RotateCw } from "lucide-react";
-import type { Sticker } from "@/lib/entryMeta";
+import { X, Minus, Plus, RotateCcw, RotateCw, BringToFront, SendToBack } from "lucide-react";
+import { sortStickers, topStickerZ, type Sticker } from "@/lib/entryMeta";
 
 interface Props {
   stickers: Sticker[];
   onChange: (next: Sticker[]) => void;
 }
 
+/** Positions (in %) stickers snap to while dragging. */
+const SNAP_POINTS = [25, 50, 75];
+const SNAP_TOLERANCE = 1.6;
+
+function snap(value: number): { value: number; guide: number | null } {
+  for (const p of SNAP_POINTS) {
+    if (Math.abs(value - p) <= SNAP_TOLERANCE) return { value: p, guide: p };
+  }
+  return { value, guide: null };
+}
+
 /**
  * Overlay of draggable stickers positioned relative to the parent
- * (which must be `position: relative`). Tap to select → shows delete/size/rotate
- * controls. Double-click also removes.
+ * (which must be `position: relative`). Tap to select → shows delete/size/
+ * rotate/layer controls. Dragging snaps to centre and third guides.
  */
 export function StickerLayer({ stickers, onChange }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [guides, setGuides] = useState<{ x: number | null; y: number | null }>({ x: null, y: null });
 
   // Deselect when clicking outside any sticker
   useEffect(() => {
     if (!selectedId) return;
-    const handler = (e: MouseEvent) => {
+    const handler = (e: MouseEvent | TouchEvent) => {
       const target = e.target as HTMLElement | null;
       if (!target?.closest("[data-sticker]")) setSelectedId(null);
     };
@@ -30,15 +42,41 @@ export function StickerLayer({ stickers, onChange }: Props) {
     };
   }, [selectedId]);
 
+  const update = (next: Sticker) => onChange(stickers.map((x) => (x.id === next.id ? next : x)));
+
+  const bringToFront = (s: Sticker) => update({ ...s, z: topStickerZ(stickers) + 1 });
+  const sendToBack = (s: Sticker) => {
+    const min = stickers.reduce((m, x) => Math.min(m, x.z ?? 0), 0);
+    update({ ...s, z: min - 1 });
+  };
+
   return (
     <div className="pointer-events-none absolute inset-0 z-10">
-      {stickers.map((s) => (
+      {guides.x !== null && (
+        <div
+          className="absolute top-0 bottom-0 w-px bg-primary/60"
+          style={{ left: `${guides.x}%` }}
+          aria-hidden
+        />
+      )}
+      {guides.y !== null && (
+        <div
+          className="absolute left-0 right-0 h-px bg-primary/60"
+          style={{ top: `${guides.y}%` }}
+          aria-hidden
+        />
+      )}
+
+      {sortStickers(stickers).map((s) => (
         <StickerItem
           key={s.id}
           sticker={s}
           selected={selectedId === s.id}
           onSelect={() => setSelectedId(s.id)}
-          onUpdate={(next) => onChange(stickers.map((x) => (x.id === s.id ? next : x)))}
+          onGuides={setGuides}
+          onUpdate={update}
+          onFront={() => bringToFront(s)}
+          onBack={() => sendToBack(s)}
           onRemove={() => {
             onChange(stickers.filter((x) => x.id !== s.id));
             setSelectedId(null);
@@ -55,12 +93,18 @@ function StickerItem({
   onSelect,
   onUpdate,
   onRemove,
+  onFront,
+  onBack,
+  onGuides,
 }: {
   sticker: Sticker;
   selected: boolean;
   onSelect: () => void;
   onUpdate: (s: Sticker) => void;
   onRemove: () => void;
+  onFront: () => void;
+  onBack: () => void;
+  onGuides: (g: { x: number | null; y: number | null }) => void;
 }) {
   const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number; moved: boolean } | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -80,16 +124,19 @@ function StickerItem({
     const dx = ((e.clientX - dragRef.current.startX) / rect.width) * 100;
     const dy = ((e.clientY - dragRef.current.startY) / rect.height) * 100;
     if (Math.abs(dx) + Math.abs(dy) > 0.3) dragRef.current.moved = true;
-    onUpdate({
-      ...sticker,
-      x: Math.max(0, Math.min(96, dragRef.current.origX + dx)),
-      y: Math.max(0, Math.min(98, dragRef.current.origY + dy)),
-    });
+
+    const rawX = Math.max(0, Math.min(96, dragRef.current.origX + dx));
+    const rawY = Math.max(0, Math.min(98, dragRef.current.origY + dy));
+    const sx = snap(rawX);
+    const sy = snap(rawY);
+    onGuides({ x: sx.guide, y: sy.guide });
+    onUpdate({ ...sticker, x: sx.value, y: sy.value });
   };
 
   const onPointerUp = () => {
     dragRef.current = null;
     setDragging(false);
+    onGuides({ x: null, y: null });
   };
 
   const bump = (delta: number) =>
@@ -104,6 +151,7 @@ function StickerItem({
       style={{
         left: `${sticker.x}%`,
         top: `${sticker.y}%`,
+        zIndex: (sticker.z ?? 0) + 100,
       }}
     >
       <div className="relative" style={{ transform: "translate(-50%, -50%)" }}>
@@ -151,6 +199,13 @@ function StickerItem({
             </button>
             <button type="button" onClick={() => rotate(15)} className="w-6 h-6 rounded flex items-center justify-center hover:bg-muted" aria-label="Rotate right">
               <RotateCw className="w-3 h-3" />
+            </button>
+            <span className="w-px h-4 bg-border mx-0.5" />
+            <button type="button" onClick={onFront} className="w-6 h-6 rounded flex items-center justify-center hover:bg-muted" aria-label="Bring to front">
+              <BringToFront className="w-3 h-3" />
+            </button>
+            <button type="button" onClick={onBack} className="w-6 h-6 rounded flex items-center justify-center hover:bg-muted" aria-label="Send to back">
+              <SendToBack className="w-3 h-3" />
             </button>
             <span className="w-px h-4 bg-border mx-0.5" />
             <button type="button" onClick={onRemove} className="w-6 h-6 rounded flex items-center justify-center text-destructive hover:bg-destructive/10" aria-label="Delete sticker">

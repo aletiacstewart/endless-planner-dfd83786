@@ -18,6 +18,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { useThemedSwatches, toCss } from "@/hooks/useThemedSwatches";
 import { useUserSettings } from "@/hooks/useUserSettings";
 import { StickerLibraryDialog } from "@/components/entry/StickerLibraryDialog";
+import { ColorSwatchGrid } from "@/components/entry/ColorSwatchGrid";
 import type { StickerAsset } from "@/data/stickers";
 import {
   FONT_LABELS,
@@ -145,32 +146,12 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
           </PopoverTrigger>
           <PopoverContent className="w-56 p-2" align="start">
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-1 mb-1.5">Card tint</p>
-            <div className="flex flex-wrap gap-1.5">
-              <button
-                type="button"
-                onClick={() => onChange({ sectionTint: undefined })}
-                className={cn(
-                  "w-6 h-6 rounded-full border flex items-center justify-center text-muted-foreground",
-                  !meta.sectionTint ? "border-foreground" : "border-border",
-                )}
-                aria-label="No tint"
-              >
-                <X className="w-3 h-3" />
-              </button>
-              {swatches.map((s) => {
-                const active = meta.sectionTint === s.hsl;
-                return (
-                  <button
-                    key={s.name}
-                    type="button"
-                    onClick={() => onChange({ sectionTint: active ? undefined : s.hsl })}
-                    className={cn("w-6 h-6 rounded-full border", active ? "border-foreground scale-110" : "border-border/60")}
-                    style={{ background: toCss(s.hsl) }}
-                    aria-label={s.name}
-                  />
-                );
-              })}
-            </div>
+            <ColorSwatchGrid
+              value={meta.sectionTint}
+              swatches={swatches}
+              clearLabel="No tint"
+              onChange={(hsl) => onChange({ sectionTint: hsl })}
+            />
           </PopoverContent>
         </Popover>
 
@@ -187,31 +168,13 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
           </PopoverTrigger>
           <PopoverContent className="w-56 p-2" align="start">
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-1 mb-1.5">Stripe color</p>
-            <div className="flex flex-wrap gap-1.5 mb-2">
-              <button
-                type="button"
-                onClick={() => onChange({ color: undefined })}
-                className={cn(
-                  "w-6 h-6 rounded-full border flex items-center justify-center text-muted-foreground",
-                  !meta.color ? "border-foreground" : "border-border",
-                )}
-                aria-label="No accent"
-              >
-                <X className="w-3 h-3" />
-              </button>
-              {swatches.map((s) => {
-                const active = meta.color === s.hsl;
-                return (
-                  <button
-                    key={s.name}
-                    type="button"
-                    onClick={() => onChange({ color: active ? undefined : s.hsl })}
-                    className={cn("w-6 h-6 rounded-full border", active ? "border-foreground scale-110" : "border-border/60")}
-                    style={{ background: toCss(s.hsl) }}
-                    aria-label={s.name}
-                  />
-                );
-              })}
+            <div className="mb-2">
+              <ColorSwatchGrid
+                value={meta.color}
+                swatches={swatches}
+                clearLabel="No accent"
+                onChange={(hsl) => onChange({ color: hsl })}
+              />
             </div>
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-1 mb-1">Width</p>
             <div className="inline-flex rounded-md border border-border overflow-hidden">
@@ -406,32 +369,11 @@ function TypoChip({
           ))}
         </div>
         <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-1 mb-1">Color</p>
-        <div className="flex flex-wrap gap-1.5">
-          <button
-            type="button"
-            onClick={() => onChange({ color: undefined })}
-            className={cn(
-              "w-6 h-6 rounded-full border flex items-center justify-center text-muted-foreground",
-              !spec.color ? "border-foreground" : "border-border",
-            )}
-            aria-label="Default color"
-          >
-            <X className="w-3 h-3" />
-          </button>
-          {swatches.map((s) => {
-            const active = spec.color === s.hsl;
-            return (
-              <button
-                key={s.name}
-                type="button"
-                onClick={() => onChange({ color: active ? undefined : s.hsl })}
-                className={cn("w-6 h-6 rounded-full border", active ? "border-foreground scale-110" : "border-border/60")}
-                style={{ background: toCss(s.hsl) }}
-                aria-label={s.name}
-              />
-            );
-          })}
-        </div>
+        <ColorSwatchGrid
+          value={spec.color}
+          swatches={swatches}
+          onChange={(hsl) => onChange({ color: hsl })}
+        />
       </PopoverContent>
     </Popover>
   );

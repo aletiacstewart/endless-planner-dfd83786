@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Loader2, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { setUnlocked, setPackUnlocked, getDeviceId } from "@/lib/unlock";
+import { getDeviceId, refreshUnlocks } from "@/lib/unlock";
 
 export default function Unlock() {
   const [params] = useSearchParams();
@@ -19,15 +19,19 @@ export default function Unlock() {
     }
     (async () => {
       try {
-        const { data, error } = await supabase.functions.invoke("validate-unlock", {
+        const { data: sess } = await supabase.auth.getSession();
+        if (!sess.session) {
+          navigate(`/auth?next=${encodeURIComponent(`/unlock?code=${code}`)}`, { replace: true });
+          return;
+        }
+        const { data, error } = await supabase.functions.invoke("redeem-code", {
           body: { code, deviceId: getDeviceId() },
         });
-        if (error || !data?.ok) throw new Error(error?.message || "Invalid unlock code");
+        if (error || !data?.ok) throw new Error(data?.error || error?.message || "Invalid unlock code");
+        await refreshUnlocks();
         if (data.type === "pack" && data.pack_id) {
-          setPackUnlocked(data.pack_id, code);
           navigate("/settings?cover=" + encodeURIComponent(data.pack_id), { replace: true });
         } else {
-          setUnlocked(data.planner_id, code);
           navigate("/app", { replace: true });
         }
       } catch (e) {

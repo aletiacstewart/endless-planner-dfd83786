@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { CoverPackPicker, CoverPackSummary } from "@/components/cover/CoverPackPicker";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { isPackUnlocked } from "@/lib/unlock";
+import { useEntitlements } from "@/hooks/useEntitlements";
 
 export default function Packs() {
+  useEntitlements();
   const [searchParams] = useSearchParams();
   const focus = searchParams.get("focus");
   const [packIds, setPackIds] = useState<string[]>(() =>
