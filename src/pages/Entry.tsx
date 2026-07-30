@@ -337,6 +337,7 @@ export default function Entry() {
         entries={siblings}
         activeId={entry.id}
         pageTypeName={pageType.name}
+        onReorder={setSiblings}
         onSelect={(id) => {
           if (id === entry.id) return;
           const from = siblings.findIndex((e) => e.id === entry.id);

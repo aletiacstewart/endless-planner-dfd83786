@@ -61,10 +61,7 @@ export function StickerLibraryDialog({ open, onOpenChange, coverId, onPick }: Pr
             <button
               key={`${a.kind}-${a.src}-${i}`}
               type="button"
-              onClick={() => {
-                onPick(a);
-                onOpenChange(false);
-              }}
+              onClick={() => onPick(a)}
               className="aspect-square rounded-lg border border-border bg-card hover:border-primary hover:bg-primary/5 flex items-center justify-center text-2xl transition-colors"
               title={a.label ?? a.src}
             >
@@ -78,8 +75,16 @@ export function StickerLibraryDialog({ open, onOpenChange, coverId, onPick }: Pr
         </div>
 
         <p className="text-[11px] text-muted-foreground text-center pt-1">
-          Each cover ships with 60 themed stickers across 4 categories. Buy more covers to unlock more sets.
+          Tap as many as you like — the tray stays open. Each cover ships with 60 themed
+          stickers across 4 categories.
         </p>
+        <button
+          type="button"
+          onClick={() => onOpenChange(false)}
+          className="mx-auto rounded-full border border-border px-4 py-1.5 text-xs font-semibold hover:bg-muted"
+        >
+          Done
+        </button>
       </DialogContent>
     </Dialog>
   );

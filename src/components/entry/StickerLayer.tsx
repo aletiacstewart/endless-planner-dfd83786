@@ -107,16 +107,47 @@ function StickerItem({
   onGuides: (g: { x: number | null; y: number | null }) => void;
 }) {
   const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number; moved: boolean } | null>(null);
+  // Active pointers for pinch gestures (two-finger resize on touch devices).
+  const pointersRef = useRef<Map<number, { x: number; y: number }>>(new Map());
+  const pinchRef = useRef<{ dist: number; size: number } | null>(null);
   const [dragging, setDragging] = useState(false);
+
+  const pinchDistance = () => {
+    const pts = [...pointersRef.current.values()];
+    if (pts.length < 2) return 0;
+    return Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+  };
 
   const onPointerDown = (e: React.PointerEvent) => {
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointersRef.current.size === 2) {
+      // Second finger down → switch from drag to pinch-resize.
+      dragRef.current = null;
+      setDragging(false);
+      pinchRef.current = { dist: pinchDistance(), size: sticker.size };
+      onSelect();
+      return;
+    }
     dragRef.current = { startX: e.clientX, startY: e.clientY, origX: sticker.x, origY: sticker.y, moved: false };
     setDragging(true);
     onSelect();
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
+    if (pointersRef.current.has(e.pointerId)) {
+      pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    }
+
+    if (pinchRef.current && pointersRef.current.size >= 2) {
+      const dist = pinchDistance();
+      if (dist > 0 && pinchRef.current.dist > 0) {
+        const next = Math.round((pinchRef.current.size * dist) / pinchRef.current.dist);
+        onUpdate({ ...sticker, size: Math.max(20, Math.min(240, next)) });
+      }
+      return;
+    }
+
     if (!dragRef.current) return;
     const parent = (e.currentTarget as HTMLElement).parentElement;
     if (!parent) return;
@@ -133,11 +164,14 @@ function StickerItem({
     onUpdate({ ...sticker, x: sx.value, y: sy.value });
   };
 
-  const onPointerUp = () => {
+  const onPointerUp = (e: React.PointerEvent) => {
+    pointersRef.current.delete(e.pointerId);
+    if (pointersRef.current.size < 2) pinchRef.current = null;
     dragRef.current = null;
     setDragging(false);
     onGuides({ x: null, y: null });
   };
+
 
   const bump = (delta: number) =>
     onUpdate({ ...sticker, size: Math.max(20, Math.min(160, sticker.size + delta)) });

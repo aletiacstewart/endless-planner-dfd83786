@@ -8,6 +8,8 @@ export interface PlannerEntry {
   title?: string;
   createdAt: number;
   updatedAt: number;
+  /** Manual sort position within its page type (drag-to-reorder in the rail). */
+  order?: number;
   values: Record<string, FieldValue>;
 }
 
@@ -54,10 +56,35 @@ export async function listEntries(pageType?: string): Promise<PlannerEntry[]> {
   const db = await getDB();
   if (pageType) {
     const items = await db.getAllFromIndex("entries", "by-pageType", pageType);
-    return items.sort((a, b) => b.updatedAt - a.updatedAt);
+    return sortEntries(items);
   }
   const all = await db.getAll("entries");
   return all.sort((a, b) => b.updatedAt - a.updatedAt);
+}
+
+/**
+ * Manually ordered entries come first (ascending), everything else falls back
+ * to most-recently-updated so untouched sections behave exactly as before.
+ */
+export function sortEntries(items: PlannerEntry[]): PlannerEntry[] {
+  return [...items].sort((a, b) => {
+    const ao = a.order, bo = b.order;
+    if (ao != null && bo != null) return ao - bo;
+    if (ao != null) return -1;
+    if (bo != null) return 1;
+    return b.updatedAt - a.updatedAt;
+  });
+}
+
+/** Persist a drag-to-reorder result: writes `order` for each id in sequence. */
+export async function setEntryOrder(ids: string[]): Promise<void> {
+  const db = await getDB();
+  for (let i = 0; i < ids.length; i++) {
+    const e = await db.get("entries", ids[i]);
+    if (!e || e.order === i) continue;
+    await db.put("entries", { ...e, order: i });
+    import("./sync").then((m) => m.pushEntry({ ...e, order: i })).catch(() => {});
+  }
 }
 
 export async function getEntry(id: string): Promise<PlannerEntry | undefined> {
