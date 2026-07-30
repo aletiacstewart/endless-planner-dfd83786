@@ -1,29 +1,41 @@
-Plan to fix the icon mixing without regenerating thousands of images:
+## Why your credits went up
 
-1. **Make icon lookup strict by cover**
-   - Change the icon resolver so a cover only uses files from its own exact folder: `public/page-icons/<cover-id>/`.
-   - Remove cross-cover alias behavior like `teal-moth-bloom -> moth-bloom`, `ladybug-forget-me-nots -> ladybug-meadow`, etc.
-   - Remove per-page fallback filling, because that is what allows one cover’s icons to appear under another cover.
+It wasn't a pricing change. This billing period (Jul 25 – Aug 25) the workspace used 724.7 credits:
 
-2. **Stop default icon leakage**
-   - Update planner page image lookup so missing cover-specific icons do not silently fall back to `patriotic-roses`.
-   - If a cover does not have its own icon for a page, the app should show no themed icon or a neutral built-in page symbol instead of another cover’s artwork.
+- **532.8 — AI image generation** (page-icon runs)
+- 175.4 — build-mode messages
+- 12.0 — plan-mode messages
+- ~0.8 — cloud/database
 
-3. **Handle the 13 covers that currently do not have their own icon folders**
-   - I confirmed there are 78 covers total, 65 with their own icon folders, and 13 currently mapped to another folder.
-   - For those 13, the cart/preview should clearly avoid showing borrowed icons. They can still show the cover image, but not another cover’s page icon set.
+So ~74% of the spend is generated artwork, not my prompts. Lovable's rates are unchanged: plan mode is 1 credit per message, build mode is usage-based. The cost driver was regenerating thousands of icons repeatedly because covers were sharing/aliasing packs. That root cause is now fixed — icon lookup is strict per cover, so no future run can "un-fix" itself and force another mass regeneration.
 
-4. **Update the cart and preview UI**
-   - Cart summary and icon preview will only display icons that belong to the selected cover’s exact pack.
-   - Fix wording like “20 page icons” so it matches the actual pack count or says “matching page icons” without a wrong number.
-   - Extra covers in the cart will be listed cleanly without implying they include borrowed icon art.
+**Balance: 400 credits remaining.**
 
-5. **Lock this down with an audit**
-   - Add/update a validation script that fails if any cover maps to a different cover’s icon folder.
-   - Update the manifest generator so it only writes self-mappings and cannot reintroduce shared/cross-cover icon aliases later.
+## Scope of remaining work
 
-6. **Verify**
-   - Check the cart summary and icon preview for several affected covers.
-   - Confirm no selected cover can display another cover’s page icons anymore.
+Only **13 covers** still lack their own pack. Everything else is done and correct.
 
-Technical note: this fixes the wiring issue first. It does not spend credits or regenerate images. The 13 covers without their own finished icon folders will simply stop borrowing from other covers until we intentionally create their own sets.
+13 covers x 32 pages = **416 images**.
+
+## Cost control measures
+
+1. **Switch the generator model** from `google/gemini-3.1-flash-image` to `google/gemini-3.1-flash-lite-image` (Nano Banana 2 Lite) — same cover-art-as-style-reference workflow, materially cheaper per image. I'll generate one test icon first and visually compare it against a finished pack before committing to the full run. If quality drops, I fall back to the current model and reduce scope instead of overspending.
+2. **Hard spend guard**: the run stops automatically at 400 images or when the gateway returns a credit error, whichever comes first. No open-ended loops.
+3. **One unattended run, minimal messages**: I launch it in the background, check in **twice** (mid-run and at completion) instead of a status message per batch. Message overhead stays ~5–8 credits rather than the 175 spent previously.
+4. **No regeneration of the 65 finished packs.** Untouched.
+
+**Projected total: 60–75 credits for images + ~8 for messages = under the 100 cap.** If the lite model proves cheaper than the estimate, it lands nearer 40.
+
+## Steps
+
+1. Point `scripts/icons/regen_all.py` at the lite image model and adapt the request body to the Vertex `generateContent` shape that model requires (it does not accept the current chat-style body).
+2. Generate 1 test icon for one of the 13 covers; compare to an approved pack. Abort and reassess if it doesn't match.
+3. Queue only the 13 covers missing packs, run with the 400-image ceiling and checkpointing so nothing is ever regenerated twice.
+4. Run `scripts/icons/write_manifest.py`, then `scripts/icons/validate_manifest.py` to confirm all 78 covers map strictly to their own folder and 0 aliases exist.
+5. Report final credit spend so you can see the actual number against the estimate.
+
+## Technical notes
+
+- Icons are resized to 512px and written to `public/page-icons/<cover-id>/` — static URLs, no bundler imports, so the preview stays fast.
+- The checkpoint file means a killed or credit-blocked run resumes exactly where it stopped; no image is ever paid for twice.
+- Covers without a finished pack keep rendering a neutral built-in symbol, never another cover's art — so the store stays sellable even if the run is interrupted.
