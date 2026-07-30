@@ -258,6 +258,28 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-72 p-2" align="start">
+            {recents.length > 0 && (
+              <div className="mb-2">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-1 mb-1">Recent</p>
+                <div className="flex gap-1 overflow-x-auto no-scrollbar pb-1">
+                  {recents.map((r) => (
+                    <button
+                      key={`${r.kind}-${r.src}`}
+                      type="button"
+                      onClick={() => addRecent(r)}
+                      title={r.label ?? "Place again"}
+                      className="w-8 h-8 shrink-0 flex items-center justify-center text-lg rounded border border-border hover:border-primary hover:bg-primary/5"
+                    >
+                      {r.kind === "emoji" ? (
+                        <span>{r.src}</span>
+                      ) : (
+                        <img src={r.src} alt={r.label ?? ""} className="w-full h-full object-contain p-0.5" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             <div className="flex gap-1 mb-2 overflow-x-auto no-scrollbar">
               {STICKER_GROUPS.map((g) => (
                 <button
