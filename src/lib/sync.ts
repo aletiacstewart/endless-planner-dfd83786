@@ -33,6 +33,7 @@ let currentUserId: string | null = null;
 let hasActiveSub = false;
 let inboundIds = new Set<string>(); // entry ids we just received via realtime — don't re-push
 let realtimeChannel: ReturnType<typeof supabase.channel> | null = null;
+let subChannel: ReturnType<typeof supabase.channel> | null = null;
 
 async function refreshSubStatus(userId: string): Promise<boolean> {
   try {
@@ -482,7 +483,13 @@ async function handleSignIn(userId: string) {
   if (hasActiveSub) startRealtime(userId);
 
   // React to subscription changes without needing a page reload.
-  supabase
+  // Remove any previous channel first — re-adding callbacks to an already
+  // subscribed channel throws ("cannot add postgres_changes callbacks after subscribe").
+  if (subChannel) {
+    supabase.removeChannel(subChannel);
+    subChannel = null;
+  }
+  subChannel = supabase
     .channel(`sync-sub-${userId}`)
     .on(
       "postgres_changes",
