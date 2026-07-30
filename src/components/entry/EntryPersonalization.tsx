@@ -25,6 +25,7 @@ import {
   FONT_STACKS,
   STICKER_GROUPS,
   newStickerId,
+  topStickerZ,
   getTypo,
   type EntryFont,
   type EntryFontSize,
@@ -70,6 +71,9 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
   const [stickerOpen, setStickerOpen] = useState(false);
   const [stickerTab, setStickerTab] = useState(STICKER_GROUPS[0].id);
   const [libraryOpen, setLibraryOpen] = useState(false);
+  const [recents, setRecents] = useState<RecentSticker[]>(() => getRecentStickers());
+
+  const pushRecent = (r: RecentSticker) => setRecents(saveRecentSticker(r));
 
   const addSticker = (emoji: string) => {
     // Default position: near top-center of the page (user asked for it)
@@ -80,8 +84,10 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
       x: 50 + (Math.random() * 12 - 6),
       y: 6 + Math.random() * 4,
       size: 48,
+      z: topStickerZ(meta.stickers) + 1,
     };
     onChange({ stickers: [...(meta.stickers ?? []), s] });
+    pushRecent({ kind: "emoji", src: emoji });
     setStickerOpen(false);
   };
 
@@ -93,8 +99,25 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
       x: 50 + (Math.random() * 12 - 6),
       y: 6 + Math.random() * 4,
       size: a.kind === "emoji" ? 48 : 96,
+      z: topStickerZ(meta.stickers) + 1,
     };
     onChange({ stickers: [...(meta.stickers ?? []), s] });
+    pushRecent({ kind: a.kind, src: a.src, label: a.label });
+  };
+
+  /** Quick-access tray: re-place any sticker used recently, in one tap. */
+  const addRecent = (r: RecentSticker) => {
+    const s: Sticker = {
+      id: newStickerId(),
+      src: r.src,
+      kind: r.kind,
+      x: 50 + (Math.random() * 12 - 6),
+      y: 6 + Math.random() * 4,
+      size: r.kind === "emoji" ? 48 : 96,
+      z: topStickerZ(meta.stickers) + 1,
+    };
+    onChange({ stickers: [...(meta.stickers ?? []), s] });
+    pushRecent(r);
   };
 
 
