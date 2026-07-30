@@ -236,6 +236,16 @@ export default function Entry() {
               {saveState === "saving" && <><Loader2 className="w-3 h-3 animate-spin" /> Saving</>}
               {saveState === "saved" && <><Check className="w-3 h-3" /> Saved</>}
             </span>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={addSheet}
+              aria-label={`New ${pageType.shortName} sheet`}
+              title="Start a new sheet of this page"
+            >
+              <Plus className="w-4 h-4 sm:mr-1" />
+              <span className="hidden sm:inline">New {pageType.shortName}</span>
+            </Button>
             <Button variant="ghost" size="icon" onClick={remove} aria-label="Delete">
               <Trash2 className="w-4 h-4 text-destructive" />
             </Button>
@@ -291,32 +301,36 @@ export default function Entry() {
           onChange={(stickers) => onMetaChange({ stickers })}
         />
 
-        {/* Prev/Next flip controls */}
-        {(prevEntry || nextEntry) && (
-          <div className="flex items-center justify-between mt-6 px-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={goPrev}
-              disabled={!prevEntry}
-              aria-label="Previous entry"
-            >
-              <ChevronLeft className="w-4 h-4 mr-1" /> Prev
-            </Button>
-            <p className="text-xs text-muted-foreground font-script">
-              swipe or press ← / →
-            </p>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={goNext}
-              disabled={!nextEntry}
-              aria-label="Next entry"
-            >
+        {/* Prev/Next/Add row — always visible so a new sheet is one tap away. */}
+        <div className="flex items-center justify-between mt-6 px-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={goPrev}
+            disabled={!prevEntry}
+            aria-label="Previous entry"
+          >
+            <ChevronLeft className="w-4 h-4 mr-1" /> Prev
+          </Button>
+          <p className="text-xs text-muted-foreground font-script hidden sm:block">
+            swipe or press ← / →
+          </p>
+          {nextEntry ? (
+            <Button variant="ghost" size="sm" onClick={goNext} aria-label="Next entry">
               Next <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
-          </div>
-        )}
+          ) : (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={addSheet}
+              aria-label={`New ${pageType.shortName} sheet`}
+            >
+              <Plus className="w-4 h-4 mr-1" /> New sheet
+            </Button>
+          )}
+        </div>
+
       </main>
 
       <EntryThumbnailRail
