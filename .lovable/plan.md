@@ -1,38 +1,27 @@
-## What the audit found
+# Fix: preview shows a stale version
 
-I hashed every folder in `public/page-icons` (123 folders):
+## What I verified this turn
+- The dev server was down for a moment while starting, then answered normally (HTTP 200).
+- Loading the app in a headless browser against the running server renders the current Landing page — only harmless React Router / ref warnings in the console, no errors, no blank screen.
 
-- **26 folders are byte-identical placeholder copies** (all 32 files duplicated from another pack): all 10 `dragon-*` covers, all 10 `gothic-siren-*` covers, the generic `dragons` and `gothic-sirens` folders, plus `dove-white-roses`, `dove-raven-roses`, `rose-cross-stars`, `woven-heart-cross`. These are the "not matching the cover" packs.
-- **10 folders are unique but off-theme/wrong style** (generated before the cover-art-as-style-bible pass): Texas Horned Lizard, Starlit Cactus, Pecan Tree Moon, Golden Wheat Moon, Bluebonnet Moon, Monarch Moon, Longhorn Star, Mockingbird Moon, Patriotic White Rose, Live Oak Lights.
-- **`midnight-moth-bloom` has only 14 of 32 icons.**
-- **`feather-emerald`, `feather-crimson`, `feather-amethyst`, `feather-phoenix` have only 20 of 32**; `feather-gold` has 32 but off-style. `feather-sapphire` is complete.
-- **Talkin' Smack / Thinkin' Smack**: full count, but background inconsistency — regenerating both packs is cheaper than hunting individual files.
+So the code in the project is fine and serves the current version. That points at cached artifacts in the browser that shows the stale preview, not at the app itself. I have not been able to inspect that browser, so this part of the diagnosis is unconfirmed — step 1 below makes it verifiable rather than guessed.
 
-## The fix
+## Plan
 
-One background run of `scripts/icons/regen_all.py` using each cover's own artwork as the attached style bible (the method that produced the packs you approved), on the cheap Lite image model.
+1. **Add a visible build stamp** so "is this the current version?" becomes a one-second check instead of a guess: inject a build timestamp/commit at build time and render it in a tiny footer line (and log it once to the console). If the stamp is old, it is definitively a cache issue; if it is current, the problem is elsewhere and we look at that instead.
 
-| Group | Folders | Icons |
-|---|---|---|
-| Dragons + Sirens placeholders | 22 | 704 |
-| Dove/Cross placeholders | 4 | 128 |
-| Texas & Moon series off-theme | 10 | 320 |
-| Talkin' / Thinkin' Smack | 2 | 64 |
-| Feathers (all 6, regenerated per cover art) | 6 | 192 |
-| Midnight Moth in Bloom (missing only) | 1 | 18 |
-| **Total** | **45** | **~1,426** |
+2. **Remove the remaining PWA install surface.** `index.html` still links `/manifest.json`, which is what lets browsers keep treating the app as an installable, cache-backed app. Drop the manifest link plus the `apple-mobile-web-app-*` / `mobile-web-app-capable` meta tags, and delete `public/manifest.json`. This stops new stale registrations from ever being created.
 
-Estimated cost ≈ **200–215 credits** at the Lite model's observed rate (~0.14 credits/image, based on the last run: 415 icons for 59 credits).
+3. **Harden the kill-switch path.** Keep `public/sw.js` and `public/service-worker.js` as unregistering workers (they must stay reachable so already-installed workers can be replaced), but make the client-side cleanup in `src/main.tsx` more robust: unregister, delete caches, and only then reload — guarded by a `sessionStorage` flag so it can never loop more than once per session.
 
-## How it runs
+4. **Serve the HTML uncached.** Add `Cache-Control: no-store` response headers for HTML/document requests in the Vite dev server config so the preview shell is never reused from disk cache.
 
-1. Add a `--targets` file mode to `scripts/icons/regen_all.py` so the queue is exactly the 45 folders above, and force-overwrite (not skip-if-exists) for the 44 full-rebuild folders while `midnight-moth-bloom` only fills gaps.
-2. Each icon prompt attaches that cover's own art and forbids text, numbers, letters, and calendar grids (existing `NEGATIVE` block), plus an explicit "solid painted background, no transparent or blank corners" clause to fix the Talkin'/Thinkin' background issue.
-3. Run in the background with 6 workers, writing 512px JPEGs straight into `public/page-icons/<coverId>/`, checkpointed so a credit interruption resumes cleanly.
-4. After the run: regenerate `src/data/iconPacks.ts`, run `scripts/icons/validate_manifest.py` to prove zero cross-cover duplicates remain, and report a per-folder count.
+5. **Give a manual escape hatch.** Support a `?fresh=1` query param that clears CacheStorage + service workers and reloads once, so a hard reset is possible from the preview without devtools.
 
-## Notes
+## Technical notes
+- Files touched: `index.html`, `src/main.tsx`, `vite.config.ts`, a small `src/components/BuildStamp.tsx`, delete `public/manifest.json`.
+- No backend, pricing, icon, or cover logic is touched.
+- After implementing, I will reload the app in a headless browser and confirm the build stamp matches the new build and that no service worker remains registered.
 
-- The strict resolver in `src/lib/coverIcons.ts` stays as-is — no cover will borrow another's art at any point during the run.
-- No app/UI code changes; this is asset regeneration plus the manifest rebuild.
-- If credits run out mid-run I'll report exactly which folders completed and resume on your go-ahead.
+## What you will need to do once
+If a previously-installed worker is still controlling your browser, one hard reload (or opening the preview with `?fresh=1`) is required to hand control over to the new code. After that it stays current on its own.
