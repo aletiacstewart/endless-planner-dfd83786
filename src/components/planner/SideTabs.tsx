@@ -68,8 +68,22 @@ export function SideTabs({ activePageType }: Props) {
     const Icon =
       (Icons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[pt.icon] ??
       Icons.FileText;
-    return <Icon className={cn(size, "shrink-0")} />;
+    // Stopgap until every cover's pack is backfilled: tint the fallback with the
+    // active cover's accent so it reads as on-brand rather than broken art.
+    return (
+      <span
+        aria-hidden
+        className={cn(
+          size,
+          "shrink-0 rounded-[5px] ring-1 ring-border/50 bg-accent-soft text-accent-foreground",
+          "flex items-center justify-center",
+        )}
+      >
+        <Icon className="w-[62%] h-[62%]" />
+      </span>
+    );
   };
+
 
   const addTab = async (pageTypeId: string) => {
     if (busy) return;

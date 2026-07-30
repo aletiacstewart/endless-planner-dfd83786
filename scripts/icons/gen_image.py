@@ -50,7 +50,12 @@ def main():
     png = gen(prompt)
     if out.lower().endswith(".jpg") or out.lower().endswith(".jpeg"):
         img = Image.open(io.BytesIO(png)).convert("RGB")
-        img.save(out, "JPEG", quality=88)
+        # Page icons ship at 512px — keeps the public/ folder (and the install
+        # payload) small; anything larger is wasted on a 40px nav tab.
+        cap = int(os.environ.get("GEN_MAX_PX", "512"))
+        if max(img.size) > cap:
+            img.thumbnail((cap, cap), Image.LANCZOS)
+        img.save(out, "JPEG", quality=88, optimize=True)
     else:
         with open(out, "wb") as f: f.write(png)
     print(f"OK {out} ({len(png)} bytes)", flush=True)

@@ -97,6 +97,20 @@ export const PAGE_SUBJECTS: Record<string, string> = {
     "two small facing armchair silhouettes with a slender lamp between them, symbolic quiet conversation",
   "coping-toolkit":
     "a small anchor with three gentle concentric ripple rings radiating outward, symbolic grounding emblem",
+  "sleep-tracker":
+    "a slim crescent moon cradling three tiny drifting stars above a softly folded pillow, symbolic restful-night emblem",
+  "water-tracker":
+    "a tall slender glass tumbler half-filled with clear water, one droplet suspended above it and a gentle ripple ring below",
+  "gratitude-log":
+    "two cupped open hands holding a small radiant heart with soft light rays, symbolic thankfulness emblem",
+  "emergency-contacts":
+    "a small shield emblem with a simple plus-cross sigil at its center and a slender handset silhouette crossed behind it — no letters",
+  contacts:
+    "a small closed address book with a ribbon marker beside a tiny envelope and a simple silhouette portrait medallion",
+  "important-dates":
+    "a small blank square page torn from a calendar with a single heart pinned to it and two tiny drifting balloons — the page is completely blank",
+  "gift-tracker":
+    "a small wrapped gift box with a flowing satin bow and a tiny blank gift tag on a string — the tag is completely blank",
 };
 
 export const PAGE_IDS = Object.keys(PAGE_SUBJECTS);
