@@ -3,7 +3,35 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
-const buildStamp = new Date().toISOString().slice(0, 16).replace("T", " ");
+const stampNow = () => new Date().toISOString().slice(0, 19).replace("T", " ");
+
+const buildStamp = stampNow();
+
+const VIRTUAL_ID = "virtual:build-stamp";
+const RESOLVED_ID = "\0" + VIRTUAL_ID;
+
+/**
+ * Serves a fresh timestamp on every rebuild. The config-time constant only
+ * ever reflects dev-server boot, which made the stamp look permanently stale.
+ */
+function buildStampPlugin() {
+  return {
+    name: "build-stamp",
+    resolveId(id: string) {
+      return id === VIRTUAL_ID ? RESOLVED_ID : null;
+    },
+    load(id: string) {
+      if (id !== RESOLVED_ID) return null;
+      return `export const stamp = ${JSON.stringify(stampNow())};`;
+    },
+    handleHotUpdate({ server, modules }: { server: any; modules: any[] }) {
+      const mod = server.moduleGraph.getModuleById(RESOLVED_ID);
+      if (!mod) return;
+      server.moduleGraph.invalidateModule(mod);
+      return [...modules, mod];
+    },
+  };
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -22,6 +50,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
+    buildStampPlugin(),
     mode === "development" && componentTagger(),
   ].filter(Boolean),
   resolve: {
