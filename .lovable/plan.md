@@ -1,41 +1,35 @@
-## Status of Claude's list
+# Fix the stale build stamp (and clarify credits)
 
-Priorities 0–4 were implemented and browser-verified in the previous pass:
+## What's wrong
 
-- **P0 Security** — entitlements are server-verified (`src/lib/entitlements.ts` + `redeem-code` edge function, device cap 5), RLS blocks client writes to `user_packs` / `user_planner_unlocks` (confirmed 403 in a live test), the hardcoded admin key is gone and replaced with a `user_roles` RBAC check. **Answer to the plain-language question: No** — editing localStorage or calling client functions no longer grants access; localStorage is only a signed cache with a 7-day offline grace period.
-- **P1** — `SideTabs.tsx` renders themed per-cover icons with Lucide fallback.
-- **P2** — sticker snap guides, layering, recents tray, floating toolbar.
-- **P3** — custom HSL picker + saved personal palette.
-- **P4** — thumbnail rail + undo/redo (Cmd/Ctrl+Z).
+The build marker in the bottom-right corner is frozen. It is generated in `vite.config.ts` with a single `new Date()` call that runs once, when the dev server process starts. Every later edit is hot-reloaded into the running server, so the stamp never advances — it keeps showing the time the server booted, which makes a current preview look stale.
 
-So this plan covers **Priority 5 only**.
+Two smaller issues make it easy to miss:
 
-## What gets built
+- The stamp text is rendered at 10px in `text-muted-foreground/50`, which is nearly invisible against the light Landing page.
+- It sits at `bottom-1 right-2`, where the Lovable badge overlaps it in preview.
 
-Seven new page types added to `src/lib/pageTypes.ts` (32 → 39), each following the existing `PageTypeDef` shape with a `summary()` and a short nav name. The Password & Login Tracker is **skipped** per your choice — no credential storage.
+## The fix
 
-### Batch A — wellness
-| Page | id | Icon | Structure |
-|---|---|---|---|
-| Sleep Tracker | `sleep-tracker` | Moon | `measurement-grid` — Bedtime, Wake time, Hours, Quality (1-5), Notes |
-| Water Intake | `water-tracker` | Droplet | `habit-grid` with 8 cup items across the month |
-| Gratitude Log | `gratitude-log` | Heart | `gratitude-list` (3 rows) + `mood-rating` + short reflection |
-| Emergency / ICE | `emergency-contacts` | Phone | Reference page: `doctor-picker`, `med-list` rows for contacts (name / relationship / phone), allergies, blood type |
+1. Replace the config-time constant with a value that updates on every rebuild:
+   - Add a tiny Vite plugin that serves a virtual module returning a fresh timestamp, and invalidate that module whenever a file under `src/` changes, so HMR pushes a new stamp to the browser.
+   - Keep `__BUILD_STAMP__` working for production builds (build time is correct there).
+2. Make the marker readable: bump contrast and size slightly, move it to `bottom-2 left-2` so it never hides behind the preview badge, and show `HH:MM:SS` so consecutive edits are distinguishable.
+3. Keep the `[build] …` console line so the stamp is verifiable even if the pixel is covered.
 
-### Batch B — staples
-| Page | id | Icon | Structure |
-|---|---|---|---|
-| Contacts | `contacts` | Users | Non-recurring reference page, `med-list` rows: Name, Phone, Email, Address, Notes |
-| Important Dates | `important-dates` | Cake | `month-tracker`-style grid, 12 months × people |
-| Gift Tracker | `gift-tracker` | Gift | `med-list` rows: Person, Occasion, Gift idea, Budget, Purchased ✓, Wrapped ✓ |
+## Verification
 
-### Wiring
-- All 7 ids appended to the Wellness Journey planner in `src/data/planners.ts` (it maps over `PAGE_TYPES`, so this is automatic).
-- Verify each new field-type/column combo renders correctly in `FieldRenderer.tsx`; add narrow support only where a needed variant is missing (e.g. checkbox columns inside `med-list`).
-- Browser-check each new page renders and saves.
+Load the preview, note the stamp, make a trivial edit, and confirm the stamp advances without a server restart — then report both values back to you.
 
-## Known follow-up
+## Credits
 
-Each new page needs a themed icon per cover in `src/lib/coverIcons.ts`. Until those exist, the 7 new tabs fall back to generic Lucide icons in the nav — the exact issue Priority 1 fixed. Generating ~78 covers × 7 icons is a large separate image pass; I'll flag it for a follow-up rather than bundle it here.
+Your workspace balance right now (period Jul 25 – Aug 25): **5.00 credits remaining**, all of them today's daily grant. The monthly (800), rollover (100) and top-up (500) grants are fully consumed; 1,125.24 credits used this period. Build-mode cost is usage-based, so a small fix like this is cheap, but with 5 credits left it is worth batching further work.
 
-Also still open from Claude's note: Vision Board, Bill Pay Calendar, Travel/Packing, Wish List, Reading List — deferred until you see these live.
+Lovable's credit balance cannot be displayed inside your planner app — there is no client-facing API for it. The live number lives in Settings → Plans & credits (or by hovering the credit bar next to the project name). I will state the remaining balance in chat whenever you ask.
+
+## Technical notes
+
+- `vite.config.ts`: replace the module-scope `buildStamp` const with a `virtual:build-stamp` plugin (`resolveId`/`load` + `handleHotUpdate` invalidation); leave `define` in place for production.
+- `src/components/BuildStamp.tsx`: import from the virtual module in dev, fall back to `__BUILD_STAMP__` in production; adjust position and contrast classes.
+- `src/vite-env.d.ts`: add the virtual module declaration.
+- No changes to service workers — `public/sw.js` and `public/service-worker.js` are already kill-switch workers and are not the cause here.
