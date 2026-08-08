@@ -24,9 +24,11 @@ function buildStampPlugin() {
       if (id !== RESOLVED_ID) return null;
       return `export const stamp = ${JSON.stringify(stampNow())};`;
     },
-    handleHotUpdate({ server }: { server: any }) {
+    handleHotUpdate({ server, modules }: { server: any; modules: any[] }) {
       const mod = server.moduleGraph.getModuleById(RESOLVED_ID);
-      if (mod) server.moduleGraph.invalidateModule(mod);
+      if (!mod) return;
+      server.moduleGraph.invalidateModule(mod);
+      return [...modules, mod];
     },
   };
 }
@@ -48,6 +50,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
+    buildStampPlugin(),
     mode === "development" && componentTagger(),
   ].filter(Boolean),
   resolve: {
