@@ -183,6 +183,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
   },
   {
     id: "yearly-calendar",
+    cadence: "year",
     name: "Yearly Calendar",
     shortName: "Year",
     description: "Notes for each month of the year.",
@@ -574,7 +575,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         description: "Tick M (Morning), A (Afternoon), or N (Night) for each medication.",
         page: 2,
         fields: [
-          { key: "med_list", label: "Medications", type: "med-list", rowCount: 12, span: 2 },
+          { key: "med_list", label: "Medications", type: "med-list", rowCount: 20, span: 2 },
         ],
       },
       {
@@ -640,6 +641,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
   },
   {
     id: "yearly-habit-tracker",
+    cadence: "year",
     name: "Yearly Habit Tracker",
     shortName: "Year Habits",
     description: "12 months of habits to begin or break, with daily check-ins.",
@@ -719,6 +721,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
   },
   {
     id: "blood-sugar-tracker",
+    cadence: "year",
     name: "Yearly Blood Sugar Tracker",
     shortName: "Sugar",
     description: "Daily blood sugar readings for the whole year.",
@@ -742,6 +745,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
   },
   {
     id: "blood-pressure-tracker",
+    cadence: "year",
     name: "Yearly Blood Pressure Tracker",
     shortName: "BP",
     description: "Daily blood pressure readings for the whole year.",
@@ -765,6 +769,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
   },
   {
     id: "oxygen-tracker",
+    cadence: "year",
     name: "Yearly Oxygen (O₂) Tracker",
     shortName: "Oxygen",
     description: "Daily oxygen (O₂) readings for the whole year.",
@@ -788,6 +793,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
   },
   {
     id: "self-care-checklist",
+    cadence: "year",
     name: "Self-Care Check List",
     shortName: "Self-Care",
     description: "A weekly self-care ritual — categorized checklists, mood, sleep, and gratitude.",
@@ -852,24 +858,122 @@ export const PAGE_TYPES: PageTypeDef[] = [
     id: "cleaning-checklist",
     name: "Cleaning Check List",
     shortName: "Cleaning",
-    description: "Household chores tracked daily across the year.",
+    description: "Daily cleaning checklist, room by room.",
     icon: "Sparkle",
     sections: [
       {
-        fields: [{ key: "year", label: "Year", type: "year" }],
+        fields: [{ key: "date", label: "Date", type: "date" }],
       },
       {
+        title: "Kitchen",
+        columns: 1,
         fields: [
-          {
-            key: "cleaning",
-            label: "Daily chores",
-            type: "daily-month-grid",
-            span: 2,
-          },
+          { key: "kitchen_tasks", label: "Tasks", type: "checkbox-group", options: ["Dishes", "Counters", "Stovetop", "Sink", "Floor", "Trash", "Fridge"], span: 2 },
+          { key: "kitchen_notes", label: "Notes", type: "text", span: 2 },
+        ],
+      },
+      {
+        title: "Dining Room",
+        columns: 1,
+        fields: [
+          { key: "dining_tasks", label: "Tasks", type: "checkbox-group", options: ["Table wiped", "Chairs", "Floor", "Dust", "Declutter"], span: 2 },
+          { key: "dining_notes", label: "Notes", type: "text", span: 2 },
+        ],
+      },
+      {
+        title: "Living Room",
+        columns: 1,
+        fields: [
+          { key: "living_tasks", label: "Tasks", type: "checkbox-group", options: ["Tidy surfaces", "Dust", "Vacuum", "Cushions", "Trash"], span: 2 },
+          { key: "living_notes", label: "Notes", type: "text", span: 2 },
+        ],
+      },
+      {
+        title: "Primary Bedroom",
+        columns: 1,
+        fields: [
+          { key: "primary_bedroom_tasks", label: "Tasks", type: "checkbox-group", options: ["Make bed", "Change sheets", "Laundry away", "Dust", "Vacuum"], span: 2 },
+          { key: "primary_bedroom_notes", label: "Notes", type: "text", span: 2 },
+        ],
+      },
+      {
+        title: "Bedroom 2",
+        columns: 1,
+        fields: [
+          { key: "bedroom_2_tasks", label: "Tasks", type: "checkbox-group", options: ["Make bed", "Change sheets", "Laundry away", "Dust", "Vacuum"], span: 2 },
+          { key: "bedroom_2_notes", label: "Notes", type: "text", span: 2 },
+        ],
+      },
+      {
+        title: "Bedroom 3",
+        columns: 1,
+        fields: [
+          { key: "bedroom_3_tasks", label: "Tasks", type: "checkbox-group", options: ["Make bed", "Change sheets", "Laundry away", "Dust", "Vacuum"], span: 2 },
+          { key: "bedroom_3_notes", label: "Notes", type: "text", span: 2 },
+        ],
+      },
+      {
+        title: "Bathroom 1",
+        columns: 1,
+        fields: [
+          { key: "bathroom_1_tasks", label: "Tasks", type: "checkbox-group", options: ["Toilet", "Sink", "Mirror", "Shower/Tub", "Floor", "Towels", "Trash"], span: 2 },
+          { key: "bathroom_1_notes", label: "Notes", type: "text", span: 2 },
+        ],
+      },
+      {
+        title: "Bathroom 2",
+        columns: 1,
+        fields: [
+          { key: "bathroom_2_tasks", label: "Tasks", type: "checkbox-group", options: ["Toilet", "Sink", "Mirror", "Shower/Tub", "Floor", "Towels", "Trash"], span: 2 },
+          { key: "bathroom_2_notes", label: "Notes", type: "text", span: 2 },
+        ],
+      },
+      {
+        title: "Laundry",
+        columns: 1,
+        fields: [
+          { key: "laundry_tasks", label: "Tasks", type: "checkbox-group", options: ["Wash", "Dry", "Fold", "Put away", "Lint trap", "Floor"], span: 2 },
+          { key: "laundry_notes", label: "Notes", type: "text", span: 2 },
+        ],
+      },
+      {
+        title: "Hallway / Entry",
+        columns: 1,
+        fields: [
+          { key: "hallway_tasks", label: "Tasks", type: "checkbox-group", options: ["Shoes tidy", "Sweep", "Dust", "Mail sorted"], span: 2 },
+          { key: "hallway_notes", label: "Notes", type: "text", span: 2 },
+        ],
+      },
+      {
+        title: "Office",
+        columns: 1,
+        fields: [
+          { key: "office_tasks", label: "Tasks", type: "checkbox-group", options: ["Desk clear", "Papers filed", "Dust", "Vacuum", "Trash"], span: 2 },
+          { key: "office_notes", label: "Notes", type: "text", span: 2 },
+        ],
+      },
+      {
+        title: "Outside / Porch",
+        columns: 1,
+        fields: [
+          { key: "outside_tasks", label: "Tasks", type: "checkbox-group", options: ["Sweep", "Tidy furniture", "Plants watered", "Trash bins"], span: 2 },
+          { key: "outside_notes", label: "Notes", type: "text", span: 2 },
+        ],
+      },
+      {
+        title: "Other rooms",
+        columns: 1,
+        fields: [
+          { key: "other_room_1", label: "Room", type: "text", span: 2 },
+          { key: "other_room_1_tasks", label: "What was done", type: "text", span: 2 },
+          { key: "other_room_2", label: "Room", type: "text", span: 2 },
+          { key: "other_room_2_tasks", label: "What was done", type: "text", span: 2 },
+          { key: "other_room_3", label: "Room", type: "text", span: 2 },
+          { key: "other_room_3_tasks", label: "What was done", type: "text", span: 2 },
         ],
       },
     ],
-    summary: (v) => (v.year ? `Cleaning ${v.year}` : "Cleaning check list"),
+    summary: (v) => (v.date ? `Cleaning ${v.date}` : "Daily cleaning"),
   },
   {
     id: "recipe",
@@ -920,6 +1024,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
   },
   {
     id: "workout-tracker",
+    cadence: "year",
     name: "Yearly Workout Tracker",
     shortName: "Workout",
     description: "Daily cardio, weights, yoga, stretch and rest days across the year.",
@@ -937,6 +1042,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
   },
   {
     id: "medications",
+    cadence: "list",
     name: "Medications",
     shortName: "Meds",
     description: "Master list of medications — name, reason, doctor and timing. Reference for the Complete Tracker.",
@@ -983,6 +1089,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
   },
   {
     id: "yearly-focus",
+    cadence: "year",
     name: "Yearly Focus",
     shortName: "Focus",
     description: "Your word of the year — a single guiding focus that syncs with the Complete Tracker.",
@@ -1114,7 +1221,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Time-block the day",
         fields: [
-          { key: "schedule", label: "Hourly plan", type: "hourly-timeline", span: 2 },
+          { key: "schedule", label: "Time schedule", type: "time-schedule", span: 2 },
         ],
       },
       {
