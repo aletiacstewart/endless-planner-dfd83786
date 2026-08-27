@@ -1048,7 +1048,7 @@ function CalendarGrid({
   ) : null;
 
   return (
-    <div>
+    <div className={cn(compact && "max-w-2xl")}>
       <div className="grid gap-4 md:grid-cols-[auto_1fr] md:items-start">
         {calendar}
         {inlinePanel}

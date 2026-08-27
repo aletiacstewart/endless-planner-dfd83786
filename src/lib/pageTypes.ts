@@ -954,7 +954,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         columns: 1,
         fields: [
-          { key: "medical_appointment_notes", label: "Medical Appointment Notes", type: "textarea", rows: 6, span: 2 },
+          { key: "medical_appointment_notes", label: "Appointment Notes", type: "textarea", rows: 6, span: 2 },
           { key: "test_results", label: "Test Results", type: "textarea", rows: 6, span: 2 },
           { key: "lab_result_notes", label: "Lab Result Notes", type: "textarea", rows: 6, span: 2 },
         ],
