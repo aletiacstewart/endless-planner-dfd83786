@@ -37,6 +37,8 @@ export type FieldType =
   | "note-style" // paper-style picker (blank/lined/dot/cornell) + rich body
   | "smart-goal" // structured SMART goal block
   | "mood-log" // 7-day weekday mood face row
+  | "select" // native dropdown driven by field.options
+  | "time-select" // dropdown of 15-minute times
   | "gratitude-list"; // 3 numbered gratitude text rows
 
 export interface FieldDef {
@@ -584,6 +586,53 @@ export const PAGE_TYPES: PageTypeDef[] = [
         page: 2,
         fields: [
           { key: "daily_notes", label: "Wellness Notes", type: "textarea", rows: 5, span: 2 },
+        ],
+      },
+      {
+        title: "Sleep",
+        description: "Bedtime, wake time and quality — syncs to your Sleep Tracker.",
+        page: 2,
+        columns: 2,
+        fields: [
+          { key: "bed_time", label: "Bedtime", type: "time-select" },
+          { key: "wake_time", label: "Wake time", type: "time-select" },
+          { key: "sleep_hours", label: "Hours slept", type: "select", options: Array.from({ length: 24 }, (_, i) => String(i + 1)) },
+          { key: "sleep_quality", label: "Quality (1-5)", type: "select", options: ["1", "2", "3", "4", "5"] },
+          { key: "sleep_notes", label: "Sleep notes", type: "text", span: 2 },
+        ],
+      },
+      {
+        title: "Mood Check-In",
+        description: "Overall mood and daily ratings — syncs to your Mood Journal.",
+        page: 2,
+        columns: 2,
+        fields: [
+          { key: "mood_overall", label: "Overall mood", type: "mood-rating" },
+          { key: "energy", label: "Depression", type: "rating", max: 5 },
+          { key: "anxiety", label: "Anxiety", type: "rating", max: 5 },
+          { key: "stress", label: "Stress", type: "rating", max: 5 },
+        ],
+      },
+      {
+        title: "Today's Feels",
+        description: "Name what you feel at each point of the day.",
+        page: 2,
+        columns: 1,
+        fields: [
+          { key: "feelings", label: "Morning — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_morning_other", span: 2 },
+          { key: "feelings_afternoon", label: "Afternoon — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_afternoon_other", span: 2 },
+          { key: "feelings_evening", label: "Evening — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_evening_other", span: 2 },
+          { key: "feelings_night", label: "Night — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_night_other", span: 2 },
+        ],
+      },
+      {
+        title: "Gratitude",
+        description: "Three good things — syncs to your Gratitude Log.",
+        page: 2,
+        columns: 1,
+        fields: [
+          { key: "gratitude", label: "Grateful for", type: "gratitude-list", max: 3, span: 2 },
+          { key: "gratitude_note", label: "One moment worth remembering", type: "textarea", rows: 3, span: 2 },
         ],
       },
       {
