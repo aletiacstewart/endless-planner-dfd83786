@@ -527,6 +527,14 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           onChange={(v) => onChange(v as unknown as FieldValue)}
         />
       );
+    case "time-schedule":
+      return (
+        <TimeSchedule
+          value={value as unknown as { time: string; text: string }[] | Record<string, string>}
+          label={field.label}
+          onChange={(v) => onChange(v as unknown as FieldValue)}
+        />
+      );
     case "hourly-timeline":
       return (
         <HourlyTimeline
@@ -803,13 +811,13 @@ function MedList({
   const isMobile = useIsMobile();
   const data = value ?? {};
   const update = (key: string, v: string) => onChange({ ...data, [key]: v });
-  const cols = "grid-cols-[1.5rem_2fr_2fr_1.5fr_5.25rem]";
+  const cols = "grid-cols-[1.25rem_minmax(0,2fr)_minmax(0,1.4fr)_minmax(0,1.6fr)_minmax(0,1.4fr)_5rem]";
   const slots: { k: "m" | "a" | "n"; label: string }[] = [
     { k: "m", label: "M" },
     { k: "a", label: "A" },
     { k: "n", label: "N" },
   ];
-  const renderTextCell = (n: number, key: "name" | "reason" | "doctor", title: string) => {
+  const renderTextCell = (n: number, key: "name" | "strength" | "reason" | "doctor", title: string) => {
     const k = `${n}_${key}`;
     const v = data[k] ?? "";
     if (isMobile) {
@@ -838,6 +846,7 @@ function MedList({
       <div className={cn("grid gap-x-2 gap-y-1 items-end mb-1", cols)}>
         <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground" />
         <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground px-1">Name</span>
+        <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground px-1">Strength</span>
         <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground px-1">Reason</span>
         <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground px-1">Doctor</span>
         <div className="grid grid-cols-3 gap-1 text-center">
@@ -853,6 +862,7 @@ function MedList({
           <div key={n} className={cn("grid gap-x-2 items-center", cols)}>
             <span className="text-xs text-muted-foreground text-right pr-1">{n}.</span>
             {renderTextCell(n, "name", "Name")}
+            {renderTextCell(n, "strength", "Strength/Dose")}
             {renderTextCell(n, "reason", "Reason")}
             <DoctorPicker
               compact
@@ -1135,7 +1145,7 @@ function HabitGrid({
   const renderTable = (dayStart: number, dayEnd: number, showRemove: boolean) => {
     const days = Array.from({ length: dayEnd - dayStart + 1 }, (_, i) => i + dayStart);
     return (
-      <table className="text-xs border-separate border-spacing-1 w-full">
+      <table className="text-xs border-separate border-spacing-1 w-full table-fixed">
         <thead>
           <tr>
             <th className="text-left font-normal text-muted-foreground pr-2">Habit</th>
@@ -1243,7 +1253,7 @@ function MonthTracker({
   const renderTable = (start: number, end: number) => {
     const slice = months.slice(start, end);
     return (
-      <table className="text-xs border-separate border-spacing-1 w-full">
+      <table className="text-xs border-separate border-spacing-1 w-full table-fixed">
         <thead>
           <tr>
             <th className="text-left font-normal text-muted-foreground pr-2">Activity</th>
@@ -1470,7 +1480,7 @@ function DailyMonthGrid({
     const monthSlice = MONTH_INITIALS.slice(mStart, mEnd);
     const colCount = monthSlice.length;
     return (
-      <table className="text-xs border-separate border-spacing-1 w-full">
+      <table className="text-xs border-separate border-spacing-1 w-full table-fixed">
         <thead>
           <tr>
             <th className="font-normal text-muted-foreground pr-2 w-8 text-left">Day</th>
@@ -1997,6 +2007,103 @@ function PriorityList({
 /* -------------------------------------------------------------------------- */
 /*  HourlyTimeline — text slot per hour (6am–10pm by default)                 */
 /* -------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------- */
+/*  TimeSchedule — add-a-row schedule with 15-minute time dropdowns.          */
+/* -------------------------------------------------------------------------- */
+
+/** "12:00 AM" … "11:45 PM" in 15-minute steps. */
+const TIME_OPTIONS: string[] = Array.from({ length: 96 }, (_, i) => {
+  const h24 = Math.floor(i / 4);
+  const min = (i % 4) * 15;
+  const ap = h24 >= 12 ? "PM" : "AM";
+  const hh = ((h24 + 11) % 12) + 1;
+  return `${hh}:${String(min).padStart(2, "0")} ${ap}`;
+});
+
+const timeIndex = (t: string) => {
+  const i = TIME_OPTIONS.indexOf(t);
+  return i < 0 ? 9999 : i;
+};
+
+type ScheduleRow = { time: string; text: string };
+
+function TimeSchedule({
+  value,
+  label,
+  onChange,
+}: {
+  value: ScheduleRow[] | Record<string, string> | undefined;
+  label: string;
+  onChange: (v: ScheduleRow[]) => void;
+}) {
+  // Migrate legacy hourly maps ({ "6": "walk" }) into rows at their old hour.
+  const rows: ScheduleRow[] = Array.isArray(value)
+    ? value
+    : value && typeof value === "object"
+      ? Object.entries(value)
+          .filter(([, text]) => (text ?? "").trim().length > 0)
+          .map(([h, text]) => ({ time: TIME_OPTIONS[Number(h) * 4] ?? "", text }))
+      : [];
+
+  const list = rows.length > 0 ? rows : [{ time: "", text: "" }, { time: "", text: "" }, { time: "", text: "" }];
+
+  const commit = (next: ScheduleRow[]) =>
+    onChange([...next].sort((a, b) => timeIndex(a.time) - timeIndex(b.time)));
+
+  const setRow = (i: number, patch: Partial<ScheduleRow>) =>
+    commit(list.map((r, idx) => (idx === i ? { ...r, ...patch } : r)));
+  const removeRow = (i: number) => commit(list.filter((_, idx) => idx !== i));
+
+  return (
+    <div>
+      <label className="field-label block mb-1.5">{label}</label>
+      <div className="rounded-md border border-border/60 bg-background/40 divide-y divide-border/40">
+        {list.map((row, i) => (
+          <div key={i} className="flex items-center gap-2 px-2 py-1">
+            <select
+              value={row.time}
+              onChange={(e) => setRow(i, { time: e.target.value })}
+              aria-label={`Row ${i + 1} time`}
+              className="w-[6.5rem] shrink-0 h-8 rounded-md border border-input bg-background/60 px-1 text-xs"
+            >
+              <option value="">Time</option>
+              {TIME_OPTIONS.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+            <Input
+              value={row.text}
+              onChange={(e) => setRow(i, { text: e.target.value })}
+              className="bg-transparent border-0 h-8 flex-1 min-w-0 px-1 text-sm focus-visible:ring-0"
+              placeholder="What's happening…"
+              aria-label={`Row ${i + 1} plan`}
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 shrink-0"
+              onClick={() => removeRow(i)}
+              aria-label={`Remove row ${i + 1}`}
+            >
+              <X className="w-3.5 h-3.5" />
+            </Button>
+          </div>
+        ))}
+      </div>
+      <Button
+        type="button"
+        variant="secondary"
+        size="sm"
+        className="mt-2"
+        onClick={() => commit([...list, { time: "", text: "" }])}
+      >
+        <Plus className="w-3.5 h-3.5 mr-1" /> Add time block
+      </Button>
+    </div>
+  );
+}
 
 function HourlyTimeline({
   value,
