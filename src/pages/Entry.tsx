@@ -134,6 +134,10 @@ export default function Entry() {
     toast.success(`New ${pageType.shortName} sheet`);
     navigate(`/entry/${created.id}`);
   };
+  forwardRef.current = () => {
+    if (nextEntry) goNext();
+    else void addSheet();
+  };
 
   const remove = async () => {
     await deleteEntry(entry.id);
