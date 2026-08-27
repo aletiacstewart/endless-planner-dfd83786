@@ -136,6 +136,26 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           </select>
         </div>
       );
+    case "select":
+    case "time-select": {
+      const opts = field.type === "time-select" ? TIME_OPTIONS : (field.options ?? []);
+      return (
+        <div>
+          {label}
+          <select
+            id={field.key}
+            value={(value as string) ?? ""}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full h-10 rounded-md border border-input bg-background/60 px-3 text-sm"
+          >
+            <option value="">{field.placeholder ?? "Select"}</option>
+            {opts.map((o) => (
+              <option key={o} value={o}>{o}</option>
+            ))}
+          </select>
+        </div>
+      );
+    }
     case "date":
       return (
         <div>
