@@ -20,6 +20,8 @@ export type FieldType =
   | "checkbox-group"
   | "ingredients-list" // dynamic list of strings
   | "calendar-grid" // 31 day cells with notes
+  | "calendar-notes" // read/write list of the day notes captured on a calendar-grid
+  | "month-note-picker" // pick a month/day/year + note, appended to that month's notes
   | "habit-grid" // habits x 31 days (boolean marks)
   | "water-grid" // fixed "Glass N" rows x days of the selected month (boolean marks)
   | "month-tracker" // 12 months x N items grid (boolean marks)
@@ -54,7 +56,15 @@ export interface FieldDef {
   /** For measurement-grid: row-label prefix (e.g. "Wk"). */
   rowLabel?: string;
   /** For measurement-grid: per-column input kind (defaults to "text"). */
-  columnKinds?: ("text" | "occasion" | "date")[];
+  columnKinds?: ("text" | "occasion" | "date" | "time" | "select" | "check")[];
+  /** For measurement-grid "select" columns: the options for that column. */
+  columnOptions?: (string[] | null)[];
+  /** For measurement-grid: per-column width hint so wide text stays on the page. */
+  columnWidths?: ("xs" | "sm" | "md" | "lg")[];
+  /** For measurement-grid: fixed row labels (used instead of row numbers). */
+  rowLabels?: string[];
+  /** For calendar-grid: keep the note editor out of the grid (shown elsewhere). */
+  hideNotePanel?: boolean;
   /** For measurement-grid: allow adding rows beyond rowCount. */
   growable?: boolean;
   /** Label for the add-row button when growable. */
