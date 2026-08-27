@@ -1282,19 +1282,53 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Income",
         fields: [
-          { key: "income", label: "Source / Amount", type: "measurement-grid", span: 2 },
+          {
+            key: "income",
+            label: "Income",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 12,
+            rowLabel: "#",
+            columns: ["Source", "Amount"],
+            columnWidths: ["lg", "sm"],
+            growable: true,
+            addLabel: "Add income",
+          },
         ],
       },
       {
         title: "Fixed expenses",
         fields: [
-          { key: "fixed", label: "Bill / Due / Amount / Paid", type: "measurement-grid", span: 2 },
+          {
+            key: "fixed",
+            label: "Fixed expenses",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 16,
+            rowLabel: "#",
+            columns: ["Bill", "Due", "Amount", "Paid"],
+            columnKinds: ["text", "text", "text", "check"],
+            columnWidths: ["lg", "sm", "sm", "xs"],
+            growable: true,
+            addLabel: "Add bill",
+          },
         ],
       },
       {
         title: "Variable spending",
         fields: [
-          { key: "variable", label: "Category / Budgeted / Actual", type: "measurement-grid", span: 2 },
+          {
+            key: "variable",
+            label: "Variable spending",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 14,
+            rowLabel: "#",
+            columns: ["Category", "Budgeted", "Actual"],
+            columnWidths: ["lg", "sm", "sm"],
+            growable: true,
+            addLabel: "Add category",
+          },
         ],
       },
       {
@@ -1318,7 +1352,19 @@ export const PAGE_TYPES: PageTypeDef[] = [
     sections: [
       {
         fields: [
-          { key: "debts", label: "Creditor / Balance / APR / Min / Paid", type: "measurement-grid", span: 2 },
+          {
+            key: "debts",
+            label: "Debts",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 12,
+            rowLabel: "#",
+            columns: ["Creditor", "Balance", "APR", "Min payment", "Paid"],
+            columnKinds: ["text", "text", "text", "text", "check"],
+            columnWidths: ["md", "sm", "xs", "sm", "xs"],
+            growable: true,
+            addLabel: "Add debt",
+          },
         ],
       },
       {
@@ -1380,13 +1426,35 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Utilities & services",
         fields: [
-          { key: "utilities", label: "Service / Provider / Account / Due", type: "measurement-grid", span: 2 },
+          {
+            key: "utilities",
+            label: "Utilities & services",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 14,
+            rowLabel: "#",
+            columns: ["Service", "Provider", "Account #", "Due date"],
+            columnWidths: ["md", "md", "md", "sm"],
+            growable: true,
+            addLabel: "Add service",
+          },
         ],
       },
       {
         title: "Important accounts",
         fields: [
-          { key: "accounts", label: "Account / Contact / Notes", type: "measurement-grid", span: 2 },
+          {
+            key: "accounts",
+            label: "Important accounts",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 12,
+            rowLabel: "#",
+            columns: ["Account", "Contact", "Notes"],
+            columnWidths: ["md", "md", "lg"],
+            growable: true,
+            addLabel: "Add account",
+          },
         ],
       },
     ],
@@ -1415,6 +1483,26 @@ export const PAGE_TYPES: PageTypeDef[] = [
           { key: "sunday", label: "Sunday", type: "checkbox-group", options: ["Reset", "Meal prep", "Plan week", "Rest"] },
         ],
       },
+      {
+        title: "Cleaning supplies",
+        description: "Tick what you have; note what needs replacing.",
+        columns: 1,
+        fields: [
+          {
+            key: "supplies",
+            label: "On hand",
+            type: "checkbox-group",
+            span: 2,
+            options: [
+              "All-purpose cleaner", "Glass cleaner", "Bathroom cleaner", "Floor cleaner",
+              "Disinfectant wipes", "Sponges", "Scrub brush", "Microfiber cloths",
+              "Paper towels", "Trash bags", "Laundry detergent", "Dryer sheets",
+              "Gloves", "Mop / broom", "Vacuum bags / filters",
+            ],
+          },
+          { key: "supplies_buy", label: "Need to buy", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
     ],
     summary: (v) => (v.week_of ? `Cleaning ${v.week_of}` : "Weekly cleaning"),
   },
@@ -1431,11 +1519,39 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "This week's meals",
         fields: [
-          { key: "meals", label: "Day / Breakfast / Lunch / Dinner", type: "measurement-grid", span: 2 },
+          {
+            key: "meals",
+            label: "Day / Breakfast / Lunch / Dinner",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 7,
+            rowLabel: "Day",
+            rowLabels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+            columns: ["Breakfast", "Lunch", "Dinner"],
+            columnWidths: ["lg", "lg", "lg"],
+          },
         ],
       },
       {
-        title: "Grocery list",
+        title: "Grocery list by meal",
+        description: "What you need to buy for each meal of the week.",
+        fields: [
+          {
+            key: "grocery_by_meal",
+            label: "Ingredients needed",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 7,
+            rowLabel: "Day",
+            rowLabels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+            columns: ["Breakfast", "Lunch", "Dinner"],
+            columnWidths: ["lg", "lg", "lg"],
+          },
+        ],
+      },
+      {
+        title: "Staples",
+        description: "Everything else the household needs this week.",
         columns: 2,
         fields: [
           { key: "produce", label: "Produce", type: "ingredients-list" },
