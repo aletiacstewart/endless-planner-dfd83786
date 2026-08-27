@@ -1725,19 +1725,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
         fields: [{ key: "year", label: "Year", type: "year", placeholder: "2026" }],
       },
       {
-        title: "Dates by month",
-        description: "Add a name, then mark the months their date falls in.",
-        fields: [
-          {
-            key: "dates_grid",
-            label: "People & occasions",
-            type: "month-tracker",
-            span: 2,
-            defaultItems: ["", "", "", "", "", "", "", "", "", "", "", ""],
-          },
-        ],
-      },
-      {
         title: "Details",
         fields: [
           {
@@ -1745,9 +1732,12 @@ export const PAGE_TYPES: PageTypeDef[] = [
             label: "Who / occasion / day",
             type: "measurement-grid",
             span: 2,
-            rowCount: 16,
+            rowCount: 8,
             rowLabel: "#",
-            columns: ["Name", "Occasion", "Date", "Notes"],
+            columns: ["Name/Activity", "Occasion", "Date", "Notes"],
+            columnKinds: ["text", "occasion", "date", "text"],
+            growable: true,
+            addLabel: "Add person",
           },
         ],
       },
