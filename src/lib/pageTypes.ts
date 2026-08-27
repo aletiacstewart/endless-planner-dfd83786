@@ -824,38 +824,36 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "This week's self-care",
-        groups: [
-          {
-            title: "Physical",
-            fields: [
-              { key: "phys_checklist", label: "Physical", type: "checkbox-group", options: ["Move", "Sleep 8h", "Hydrate", "Nourish", "Sunlight", "Stretch"] },
-              { key: "phys_notes", label: "Notes", type: "textarea", rows: 3 },
-            ],
-          },
-          {
-            title: "Emotional",
-            fields: [
-              { key: "emo_checklist", label: "Emotional", type: "checkbox-group", options: ["Journal", "Feel it", "Cry if needed", "Talk it out", "Set a boundary", "Rest"] },
-              { key: "emo_notes", label: "Notes", type: "textarea", rows: 3 },
-            ],
-          },
-          {
-            title: "Spiritual",
-            fields: [
-              { key: "spir_checklist", label: "Spiritual", type: "checkbox-group", options: ["Pray", "Meditate", "Nature", "Read", "Gratitude", "Silence"] },
-              { key: "spir_notes", label: "Notes", type: "textarea", rows: 3 },
-            ],
-          },
-          {
-            title: "Social",
-            fields: [
-              { key: "soc_checklist", label: "Social", type: "checkbox-group", options: ["Call someone", "Say no", "Ask for help", "Quality time", "Alone time", "Community"] },
-              { key: "soc_notes", label: "Notes", type: "textarea", rows: 3 },
-            ],
-          },
+        title: "Physical",
+        columns: 1,
+        fields: [
+          { key: "phys_checklist", label: "Physical", type: "checkbox-group", options: ["Move", "Sleep 8h", "Hydrate", "Nourish", "Sunlight", "Stretch"], span: 2 },
+          { key: "phys_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
         ],
-        fields: [],
+      },
+      {
+        title: "Emotional",
+        columns: 1,
+        fields: [
+          { key: "emo_checklist", label: "Emotional", type: "checkbox-group", options: ["Journal", "Feel it", "Cry if needed", "Talk it out", "Set a boundary", "Rest"], span: 2 },
+          { key: "emo_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+      {
+        title: "Spiritual",
+        columns: 1,
+        fields: [
+          { key: "spir_checklist", label: "Spiritual", type: "checkbox-group", options: ["Pray", "Meditate", "Nature", "Read", "Gratitude", "Silence"], span: 2 },
+          { key: "spir_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+      {
+        title: "Social",
+        columns: 1,
+        fields: [
+          { key: "soc_checklist", label: "Social", type: "checkbox-group", options: ["Call someone", "Say no", "Ask for help", "Quality time", "Alone time", "Community"], span: 2 },
+          { key: "soc_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
+        ],
       },
       {
         title: "How the week felt",
