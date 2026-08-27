@@ -181,6 +181,7 @@ function StickerItem({
   return (
     <div
       data-sticker
+      data-no-swipe
       className="pointer-events-auto absolute"
       style={{
         left: `${sticker.x}%`,
