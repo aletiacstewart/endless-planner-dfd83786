@@ -224,6 +224,28 @@ function combineMeals(src: Record<string, FieldValue>, prefixes: [string, string
 }
 
 /** True if the source has any meaningful value across the listed keys. */
+/**
+ * Field keys shared by the Daily Tracker and the Complete Tracker.
+ * Single source of truth for BOTH sync directions — every key here exists on
+ * both page types, so nothing is written that the other page cannot show.
+ */
+export const DAILY_KEYS = [
+  "date", "weekday", "daily_goal", "daily_habit",
+  "breakfast", "breakfast_notes",
+  "lunch", "lunch_notes",
+  "dinner", "dinner_notes",
+  "snacks", "snacks_notes",
+  "daily_notes",
+  "water", "water_other",
+  "meals", "meals_other",
+  "caffeine", "caffeine_other",
+  "sweets", "sweets_other",
+  "gratitude",
+];
+
+/** Keys shared by the Complete Tracker cleaning block and the Cleaning Check List. */
+export const CLEANING_KEYS = ["cleaning_today", "cleaning_rooms"];
+
 function anyFilled(src: Record<string, FieldValue>, keys: string[]): boolean {
   return keys.some((k) => {
     const v = src[k];
@@ -349,28 +371,13 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
     const v = complete.values;
 
     // 1. Daily Tracker — same-keyed fields, looked up by `date`.
-    const dailyKeys = [
-      "date", "weekday", "daily_goal", "daily_habit",
-      "breakfast", "breakfast_notes",
-      "lunch", "lunch_notes",
-      "dinner", "dinner_notes",
-      "snacks", "snacks_notes",
-      "daily_notes",
-      "water", "water_other",
-      "meals", "meals_other",
-      "caffeine", "caffeine_other",
-      "sweets", "sweets_other",
-      "habits", "habits_other",
-      "mood", "mood_other",
-      "sleep", "sleep_other",
-    ];
-    if (anyFilled(v, dailyKeys)) {
+    if (anyFilled(v, DAILY_KEYS)) {
       const daily = await findOrCreate(
         "daily-tracker",
         (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
         { date: date.iso },
       );
-      await persist(daily, (dst) => copyKeys(v, dst, dailyKeys));
+      await persist(daily, (dst) => copyKeys(v, dst, DAILY_KEYS));
       synced.push("Daily Tracker");
     }
 
@@ -534,19 +541,18 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       synced.push("Mood Journal");
     }
 
-    // 7. Cleaning Check List — daily-month-grid `cleaning`, year-scoped.
-    const cleaningToday = (v.cleaning_today as string | undefined) ?? "";
-    if (cleaningToday.trim()) {
+    // 7. Cleaning Check List — per-day entry, matched by `date`.
+    if (anyFilled(v, CLEANING_KEYS)) {
       const entry = await findOrCreate(
         "cleaning-checklist",
-        (e) => String(e.values.year ?? "") === yearStr,
-        { year: yearStr },
+        (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
+        { date: date.iso },
       );
       await persist(entry, (dst) => {
-        if (!dst.year) dst.year = yearStr;
-        mergeDailyMonthCell(dst, "cleaning", date.day, date.monthIndex, cleaningToday);
+        dst.date = date.iso;
+        copyKeys(v, dst, CLEANING_KEYS);
       });
-      synced.push(`Cleaning (${yearStr})`);
+      synced.push("Cleaning Check List");
     }
 
     // 8. Yearly Calendar — month_<name> textarea per year.
@@ -834,7 +840,7 @@ export async function scaffoldLinkedEntries(complete: PlannerEntry): Promise<str
     const weekIso = isoOf(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate());
 
     // Per-date pages.
-    for (const id of ["daily-tracker", "medical-records"]) {
+    for (const id of ["daily-tracker", "medical-records", "cleaning-checklist"]) {
       await findOrCreate(
         id,
         (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
@@ -870,7 +876,6 @@ export async function scaffoldLinkedEntries(complete: PlannerEntry): Promise<str
       "blood-pressure-tracker",
       "oxygen-tracker",
       "self-care-checklist",
-      "cleaning-checklist",
       "workout-tracker",
     ];
     for (const id of yearly) {
@@ -914,21 +919,6 @@ export async function scaffoldLinkedEntries(complete: PlannerEntry): Promise<str
 // entries that already exist for affected dates (never create new ones).
 // ---------------------------------------------------------------------------
 
-const DAILY_KEYS = [
-  "date", "weekday", "daily_goal", "daily_habit",
-  "breakfast", "breakfast_notes",
-  "lunch", "lunch_notes",
-  "dinner", "dinner_notes",
-  "snacks", "snacks_notes",
-  "daily_notes",
-  "water", "water_other",
-  "meals", "meals_other",
-  "caffeine", "caffeine_other",
-  "sweets", "sweets_other",
-  "habits", "habits_other",
-  "mood", "mood_other",
-  "sleep", "sleep_other",
-];
 
 /** Split "B 110 / L 130 / D 120 / S 90" back into the four meal-prefix keys. */
 function splitMealCell(value: string, prefixes: [string, string, string, string], dst: Record<string, FieldValue>) {
@@ -1151,23 +1141,38 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
       return synced;
     }
 
-    // Cleaning Check List → mirror per-day cell into matching Complete entries.
-    if (entry.pageType === "cleaning-checklist") {
-      const year = Number(v.year ?? "");
-      if (!year) return [];
-      const grid = (v.cleaning as { cells?: Record<string, string> } | undefined)?.cells ?? {};
-      let touched = 0;
-      for (const [cellKey, cellVal] of Object.entries(grid)) {
-        const m = /^(\d+)-(\d+)$/.exec(cellKey);
+    // Water Intake Tracker → per-day glass count back onto each day.
+    if (entry.pageType === "water-tracker") {
+      const monthName = String(v.month ?? "").toLowerCase();
+      const monthIndex = MONTH_LOWER.indexOf(monthName);
+      if (monthIndex < 0) return [];
+      const year = new Date().getFullYear();
+      const marks = (v.water_grid as { marks?: Record<string, boolean> } | undefined)?.marks ?? {};
+      const perDay = new Map<number, number>();
+      for (const [key, on] of Object.entries(marks)) {
+        if (!on) continue;
+        const m = /^(\d+)-(\d+)$/.exec(key);
         if (!m) continue;
-        const day = Number(m[1]);
-        const monthIndex = Number(m[2]);
+        const day = Number(m[2]);
+        perDay.set(day, (perDay.get(day) ?? 0) + 1);
+      }
+      let touched = 0;
+      for (const [day, count] of perDay) {
         const iso = `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
         touched += await updateCompleteForDate(iso, (dst) => {
-          if (cellVal && cellVal.trim()) dst.cleaning_today = cellVal;
-          else delete dst.cleaning_today;
+          const glasses = Math.min(count, 8);
+          dst.water = Array.from({ length: glasses }, (_, i) => String(i + 1));
         });
       }
+      if (touched > 0) synced.push("Complete Tracker (water)");
+      return synced;
+    }
+
+    // Cleaning Check List → mirror the day's cleaning back onto that day.
+    if (entry.pageType === "cleaning-checklist") {
+      const date = parseDate(v.date);
+      if (!date) return [];
+      const touched = await updateCompleteForDate(date.iso, (dst) => copyKeys(v, dst, CLEANING_KEYS));
       if (touched > 0) synced.push("Complete Tracker (cleaning)");
       return synced;
     }

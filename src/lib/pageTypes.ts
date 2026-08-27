@@ -665,9 +665,11 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Cleaning",
-        description: "What you cleaned today — syncs to your yearly Cleaning Check List.",
+        description: "What you cleaned today — syncs to your Cleaning Check List for this day.",
         page: 1,
+        columns: 1,
         fields: [
+          { key: "cleaning_rooms", label: "Rooms cleaned today", type: "checkbox-group", options: ["Kitchen", "Dining Room", "Living Room", "Primary Bedroom", "Bedroom 2", "Bedroom 3", "Bathroom 1", "Bathroom 2", "Laundry", "Hallway / Entry", "Office", "Outside / Porch"], span: 2 },
           { key: "cleaning_today", label: "Cleaning today", type: "textarea", rows: 3, span: 2 },
         ],
       },
@@ -921,6 +923,15 @@ export const PAGE_TYPES: PageTypeDef[] = [
     sections: [
       {
         fields: [{ key: "date", label: "Date", type: "date" }],
+      },
+      {
+        title: "Today at a glance",
+        description: "Syncs both ways with the Cleaning block on your Complete Tracker day.",
+        columns: 1,
+        fields: [
+          { key: "cleaning_rooms", label: "Rooms cleaned today", type: "checkbox-group", options: ["Kitchen", "Dining Room", "Living Room", "Primary Bedroom", "Bedroom 2", "Bedroom 3", "Bathroom 1", "Bathroom 2", "Laundry", "Hallway / Entry", "Office", "Outside / Porch"], span: 2 },
+          { key: "cleaning_today", label: "Cleaning today", type: "textarea", rows: 3, span: 2 },
+        ],
       },
       {
         title: "Kitchen",

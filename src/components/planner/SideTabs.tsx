@@ -89,6 +89,15 @@ export function SideTabs({ activePageType }: Props) {
     if (busy) return;
     setBusy(pageTypeId);
     try {
+      // Single-list pages (e.g. Medications) must never get a second entry.
+      const pt = PAGE_TYPES.find((p) => p.id === pageTypeId);
+      if (pt?.cadence === "list") {
+        const existing = await listEntries(pageTypeId);
+        if (existing.length > 0) {
+          navigate(`/entry/${existing[0].id}`);
+          return;
+        }
+      }
       const created = await createEntry(pageTypeId);
       if (pageTypeId === "complete-tracker") {
         const { scaffoldLinkedEntries } = await import("@/lib/linkedEntries");
