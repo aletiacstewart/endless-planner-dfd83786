@@ -1142,6 +1142,33 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
       return synced;
     }
 
+    // Water Intake Tracker → per-day glass count back onto each day.
+    if (entry.pageType === "water-tracker") {
+      const monthName = String(v.month ?? "").toLowerCase();
+      const monthIndex = MONTH_LOWER.indexOf(monthName);
+      if (monthIndex < 0) return [];
+      const year = new Date().getFullYear();
+      const marks = (v.water_grid as { marks?: Record<string, boolean> } | undefined)?.marks ?? {};
+      const perDay = new Map<number, number>();
+      for (const [key, on] of Object.entries(marks)) {
+        if (!on) continue;
+        const m = /^(\d+)-(\d+)$/.exec(key);
+        if (!m) continue;
+        const day = Number(m[2]);
+        perDay.set(day, (perDay.get(day) ?? 0) + 1);
+      }
+      let touched = 0;
+      for (const [day, count] of perDay) {
+        const iso = `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        touched += await updateCompleteForDate(iso, (dst) => {
+          const glasses = Math.min(count, 8);
+          dst.water = Array.from({ length: glasses }, (_, i) => String(i + 1));
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (water)");
+      return synced;
+    }
+
     // Cleaning Check List → mirror the day's cleaning back onto that day.
     if (entry.pageType === "cleaning-checklist") {
       const date = parseDate(v.date);
