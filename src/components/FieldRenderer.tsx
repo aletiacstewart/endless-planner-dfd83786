@@ -497,6 +497,8 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
         <MedList
           value={value as Record<string, string>}
           rowCount={field.rowCount ?? 12}
+          growable={field.growable}
+          addLabel={field.addLabel}
           onChange={onChange}
         />
       );
