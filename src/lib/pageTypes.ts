@@ -634,16 +634,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "Gratitude",
-        description: "Three good things — syncs to your Gratitude Log.",
-        page: 2,
-        columns: 1,
-        fields: [
-          { key: "gratitude", label: "Grateful for", type: "gratitude-list", max: 3, span: 2 },
-          { key: "gratitude_note", label: "One moment worth remembering", type: "textarea", rows: 3, span: 2 },
-        ],
-      },
-      {
         title: "Medical Records",
         description: "Track appointment notes, test results, and lab notes.",
         page: 2,
