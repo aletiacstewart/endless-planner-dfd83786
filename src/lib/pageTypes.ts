@@ -20,6 +20,8 @@ export type FieldType =
   | "checkbox-group"
   | "ingredients-list" // dynamic list of strings
   | "calendar-grid" // 31 day cells with notes
+  | "calendar-notes" // read/write list of the day notes captured on a calendar-grid
+  | "month-note-picker" // pick a month/day/year + note, appended to that month's notes
   | "habit-grid" // habits x 31 days (boolean marks)
   | "water-grid" // fixed "Glass N" rows x days of the selected month (boolean marks)
   | "month-tracker" // 12 months x N items grid (boolean marks)
@@ -54,7 +56,15 @@ export interface FieldDef {
   /** For measurement-grid: row-label prefix (e.g. "Wk"). */
   rowLabel?: string;
   /** For measurement-grid: per-column input kind (defaults to "text"). */
-  columnKinds?: ("text" | "occasion" | "date")[];
+  columnKinds?: ("text" | "occasion" | "date" | "time" | "select" | "check")[];
+  /** For measurement-grid "select" columns: the options for that column. */
+  columnOptions?: (string[] | null)[];
+  /** For measurement-grid: per-column width hint so wide text stays on the page. */
+  columnWidths?: ("xs" | "sm" | "md" | "lg")[];
+  /** For measurement-grid: fixed row labels (used instead of row numbers). */
+  rowLabels?: string[];
+  /** For calendar-grid: keep the note editor out of the grid (shown elsewhere). */
+  hideNotePanel?: boolean;
   /** For measurement-grid: allow adding rows beyond rowCount. */
   growable?: boolean;
   /** Label for the add-row button when growable. */
@@ -197,7 +207,14 @@ export const PAGE_TYPES: PageTypeDef[] = [
     icon: "CalendarRange",
     sections: [
       {
+        page: 1,
         fields: [{ key: "year", label: "Year", type: "year", placeholder: "2025" }],
+      },
+      {
+        title: "Add a dated note",
+        description: "Pick a day and write a note — it's added to that month's notes.",
+        page: 1,
+        fields: [{ key: "dated_note", label: "Date & note", type: "month-note-picker", span: 2 }],
       },
       {
         title: "Months",
@@ -234,7 +251,14 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Days",
-        fields: [{ key: "calendar", label: "Calendar grid", type: "calendar-grid", span: 2 }],
+        page: 1,
+        fields: [{ key: "calendar", label: "Calendar grid", type: "calendar-grid", span: 2, hideNotePanel: true }],
+      },
+      {
+        title: "Day notes",
+        description: "Every note you added on the calendar, day by day.",
+        page: 2,
+        fields: [{ key: "calendar", label: "Notes by day", type: "calendar-notes", span: 2 }],
       },
       {
         title: "Monthly priorities",
@@ -814,38 +838,36 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "This week's self-care",
-        groups: [
-          {
-            title: "Physical",
-            fields: [
-              { key: "phys_checklist", label: "Physical", type: "checkbox-group", options: ["Move", "Sleep 8h", "Hydrate", "Nourish", "Sunlight", "Stretch"] },
-              { key: "phys_notes", label: "Notes", type: "textarea", rows: 3 },
-            ],
-          },
-          {
-            title: "Emotional",
-            fields: [
-              { key: "emo_checklist", label: "Emotional", type: "checkbox-group", options: ["Journal", "Feel it", "Cry if needed", "Talk it out", "Set a boundary", "Rest"] },
-              { key: "emo_notes", label: "Notes", type: "textarea", rows: 3 },
-            ],
-          },
-          {
-            title: "Spiritual",
-            fields: [
-              { key: "spir_checklist", label: "Spiritual", type: "checkbox-group", options: ["Pray", "Meditate", "Nature", "Read", "Gratitude", "Silence"] },
-              { key: "spir_notes", label: "Notes", type: "textarea", rows: 3 },
-            ],
-          },
-          {
-            title: "Social",
-            fields: [
-              { key: "soc_checklist", label: "Social", type: "checkbox-group", options: ["Call someone", "Say no", "Ask for help", "Quality time", "Alone time", "Community"] },
-              { key: "soc_notes", label: "Notes", type: "textarea", rows: 3 },
-            ],
-          },
+        title: "Physical",
+        columns: 1,
+        fields: [
+          { key: "phys_checklist", label: "Physical", type: "checkbox-group", options: ["Move", "Sleep 8h", "Hydrate", "Nourish", "Sunlight", "Stretch"], span: 2 },
+          { key: "phys_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
         ],
-        fields: [],
+      },
+      {
+        title: "Emotional",
+        columns: 1,
+        fields: [
+          { key: "emo_checklist", label: "Emotional", type: "checkbox-group", options: ["Journal", "Feel it", "Cry if needed", "Talk it out", "Set a boundary", "Rest"], span: 2 },
+          { key: "emo_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+      {
+        title: "Spiritual",
+        columns: 1,
+        fields: [
+          { key: "spir_checklist", label: "Spiritual", type: "checkbox-group", options: ["Pray", "Meditate", "Nature", "Read", "Gratitude", "Silence"], span: 2 },
+          { key: "spir_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+      {
+        title: "Social",
+        columns: 1,
+        fields: [
+          { key: "soc_checklist", label: "Social", type: "checkbox-group", options: ["Call someone", "Say no", "Ask for help", "Quality time", "Alone time", "Community"], span: 2 },
+          { key: "soc_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
+        ],
       },
       {
         title: "How the week felt",
@@ -1272,19 +1294,53 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Income",
         fields: [
-          { key: "income", label: "Source / Amount", type: "measurement-grid", span: 2 },
+          {
+            key: "income",
+            label: "Income",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 12,
+            rowLabel: "#",
+            columns: ["Source", "Amount"],
+            columnWidths: ["lg", "sm"],
+            growable: true,
+            addLabel: "Add income",
+          },
         ],
       },
       {
         title: "Fixed expenses",
         fields: [
-          { key: "fixed", label: "Bill / Due / Amount / Paid", type: "measurement-grid", span: 2 },
+          {
+            key: "fixed",
+            label: "Fixed expenses",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 16,
+            rowLabel: "#",
+            columns: ["Bill", "Due", "Amount", "Paid"],
+            columnKinds: ["text", "text", "text", "check"],
+            columnWidths: ["lg", "sm", "sm", "xs"],
+            growable: true,
+            addLabel: "Add bill",
+          },
         ],
       },
       {
         title: "Variable spending",
         fields: [
-          { key: "variable", label: "Category / Budgeted / Actual", type: "measurement-grid", span: 2 },
+          {
+            key: "variable",
+            label: "Variable spending",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 14,
+            rowLabel: "#",
+            columns: ["Category", "Budgeted", "Actual"],
+            columnWidths: ["lg", "sm", "sm"],
+            growable: true,
+            addLabel: "Add category",
+          },
         ],
       },
       {
@@ -1308,7 +1364,19 @@ export const PAGE_TYPES: PageTypeDef[] = [
     sections: [
       {
         fields: [
-          { key: "debts", label: "Creditor / Balance / APR / Min / Paid", type: "measurement-grid", span: 2 },
+          {
+            key: "debts",
+            label: "Debts",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 12,
+            rowLabel: "#",
+            columns: ["Creditor", "Balance", "APR", "Min payment", "Paid"],
+            columnKinds: ["text", "text", "text", "text", "check"],
+            columnWidths: ["md", "sm", "xs", "sm", "xs"],
+            growable: true,
+            addLabel: "Add debt",
+          },
         ],
       },
       {
@@ -1370,13 +1438,35 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Utilities & services",
         fields: [
-          { key: "utilities", label: "Service / Provider / Account / Due", type: "measurement-grid", span: 2 },
+          {
+            key: "utilities",
+            label: "Utilities & services",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 14,
+            rowLabel: "#",
+            columns: ["Service", "Provider", "Account #", "Due date"],
+            columnWidths: ["md", "md", "md", "sm"],
+            growable: true,
+            addLabel: "Add service",
+          },
         ],
       },
       {
         title: "Important accounts",
         fields: [
-          { key: "accounts", label: "Account / Contact / Notes", type: "measurement-grid", span: 2 },
+          {
+            key: "accounts",
+            label: "Important accounts",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 12,
+            rowLabel: "#",
+            columns: ["Account", "Contact", "Notes"],
+            columnWidths: ["md", "md", "lg"],
+            growable: true,
+            addLabel: "Add account",
+          },
         ],
       },
     ],
@@ -1405,6 +1495,26 @@ export const PAGE_TYPES: PageTypeDef[] = [
           { key: "sunday", label: "Sunday", type: "checkbox-group", options: ["Reset", "Meal prep", "Plan week", "Rest"] },
         ],
       },
+      {
+        title: "Cleaning supplies",
+        description: "Tick what you have; note what needs replacing.",
+        columns: 1,
+        fields: [
+          {
+            key: "supplies",
+            label: "On hand",
+            type: "checkbox-group",
+            span: 2,
+            options: [
+              "All-purpose cleaner", "Glass cleaner", "Bathroom cleaner", "Floor cleaner",
+              "Disinfectant wipes", "Sponges", "Scrub brush", "Microfiber cloths",
+              "Paper towels", "Trash bags", "Laundry detergent", "Dryer sheets",
+              "Gloves", "Mop / broom", "Vacuum bags / filters",
+            ],
+          },
+          { key: "supplies_buy", label: "Need to buy", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
     ],
     summary: (v) => (v.week_of ? `Cleaning ${v.week_of}` : "Weekly cleaning"),
   },
@@ -1421,11 +1531,39 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "This week's meals",
         fields: [
-          { key: "meals", label: "Day / Breakfast / Lunch / Dinner", type: "measurement-grid", span: 2 },
+          {
+            key: "meals",
+            label: "Day / Breakfast / Lunch / Dinner",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 7,
+            rowLabel: "Day",
+            rowLabels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+            columns: ["Breakfast", "Lunch", "Dinner"],
+            columnWidths: ["lg", "lg", "lg"],
+          },
         ],
       },
       {
-        title: "Grocery list",
+        title: "Grocery list by meal",
+        description: "What you need to buy for each meal of the week.",
+        fields: [
+          {
+            key: "grocery_by_meal",
+            label: "Ingredients needed",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 7,
+            rowLabel: "Day",
+            rowLabels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+            columns: ["Breakfast", "Lunch", "Dinner"],
+            columnWidths: ["lg", "lg", "lg"],
+          },
+        ],
+      },
+      {
+        title: "Staples",
+        description: "Everything else the household needs this week.",
         columns: 2,
         fields: [
           { key: "produce", label: "Produce", type: "ingredients-list" },
@@ -1568,6 +1706,14 @@ export const PAGE_TYPES: PageTypeDef[] = [
             rowCount: 31,
             rowLabel: "Day",
             columns: ["Bedtime", "Wake time", "Hours", "Quality (1-5)", "Notes"],
+            columnKinds: ["time", "time", "select", "select", "text"],
+            columnOptions: [
+              null,
+              null,
+              Array.from({ length: 24 }, (_, i) => String(i + 1)),
+              ["1", "2", "3", "4", "5"],
+            ],
+            columnWidths: ["sm", "sm", "xs", "xs", "lg"],
           },
         ],
       },
@@ -1644,6 +1790,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
   },
   {
     id: "emergency-contacts",
+    cadence: "year",
     name: "Emergency Contacts (ICE)",
     shortName: "ICE",
     description: "In-case-of-emergency contacts, allergies, blood type and your care team.",
@@ -1669,6 +1816,9 @@ export const PAGE_TYPES: PageTypeDef[] = [
             rowCount: 8,
             rowLabel: "#",
             columns: ["Name", "Relationship", "Phone", "Notes"],
+            columnWidths: ["md", "sm", "sm", "lg"],
+            growable: true,
+            addLabel: "Add contact",
           },
         ],
       },
@@ -1708,6 +1858,9 @@ export const PAGE_TYPES: PageTypeDef[] = [
             rowCount: 20,
             rowLabel: "#",
             columns: ["Name", "Phone", "Email", "Address", "Notes"],
+            columnWidths: ["md", "sm", "md", "lg", "md"],
+            growable: true,
+            addLabel: "Add contact",
           },
         ],
       },
@@ -1770,6 +1923,10 @@ export const PAGE_TYPES: PageTypeDef[] = [
             rowCount: 16,
             rowLabel: "#",
             columns: ["Person", "Occasion", "Gift idea", "Budget", "Purchased", "Wrapped"],
+            columnKinds: ["text", "text", "text", "text", "check", "check"],
+            columnWidths: ["md", "md", "lg", "sm", "xs", "xs"],
+            growable: true,
+            addLabel: "Add person",
           },
         ],
       },

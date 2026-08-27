@@ -406,6 +406,7 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           month={derivedMonth}
           year={derivedYear}
           compact={field.compact}
+          hidePanel={field.hideNotePanel}
           onChange={onChange}
         />
       );
@@ -447,12 +448,33 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           value={value as Record<string, string>}
           columns={field.columns ?? []}
           columnKinds={field.columnKinds}
+          columnOptions={field.columnOptions}
+          columnWidths={field.columnWidths}
           rowCount={field.rowCount ?? 26}
           rowLabel={field.rowLabel ?? "Row"}
+          rowLabels={field.rowLabels}
           label={field.label}
           growable={field.growable}
           addLabel={field.addLabel}
           onChange={onChange}
+        />
+      );
+    case "calendar-notes":
+      return (
+        <CalendarNotes
+          value={value as Record<string, string>}
+          month={typeof allValues?.month === "string" ? (allValues.month as string) : undefined}
+          year={typeof allValues?.year === "string" ? (allValues.year as string) : undefined}
+          label={field.label}
+          onChange={onChange}
+        />
+      );
+    case "month-note-picker":
+      return (
+        <MonthNotePicker
+          label={field.label}
+          allValues={allValues ?? {}}
+          onChangeAny={onChangeAny}
         />
       );
     case "daily-month-grid":
@@ -938,12 +960,15 @@ function CalendarGrid({
   month,
   year,
   compact,
+  hidePanel,
   onChange,
 }: {
   value: Record<string, string> | null;
   month?: string;
   year?: string;
   compact?: boolean;
+  /** Hide the inline note panel (notes are edited in a dialog / on the other page). */
+  hidePanel?: boolean;
   onChange: (v: FieldValue) => void;
 }) {
   const data = value ?? {};
@@ -1092,7 +1117,7 @@ function CalendarGrid({
 
   // Mobile dialog so small screens still get a full-size editor.
   // IMPORTANT: only mount the Dialog on mobile so the backdrop doesn't dim desktop.
-  const mobileDialog = isMobile ? (
+  const mobileDialog = isMobile || hidePanel ? (
     <Dialog
       open={openDay !== null}
       onOpenChange={(o) => {
@@ -1125,9 +1150,14 @@ function CalendarGrid({
 
   return (
     <div className={cn(compact && "max-w-2xl")}>
-      <div className="grid gap-4 md:grid-cols-[auto_1fr] md:items-start">
+      <div
+        className={cn(
+          "grid gap-4 md:items-start",
+          !hidePanel && "md:grid-cols-[auto_1fr]",
+        )}
+      >
         {calendar}
-        {inlinePanel}
+        {!hidePanel && inlinePanel}
       </div>
       {mobileDialog}
     </div>
@@ -1576,12 +1606,22 @@ function DateCell({
   );
 }
 
+const GRID_COL_WIDTH: Record<string, string> = {
+  xs: "min-w-[3rem] max-w-[4.5rem]",
+  sm: "min-w-[5rem] max-w-[7rem]",
+  md: "min-w-[7rem]",
+  lg: "min-w-[9rem] w-full",
+};
+
 function MeasurementGrid({
   value,
   columns,
   columnKinds,
+  columnOptions,
+  columnWidths,
   rowCount,
   rowLabel,
+  rowLabels,
   label,
   growable,
   addLabel,
@@ -1589,9 +1629,12 @@ function MeasurementGrid({
 }: {
   value: Record<string, string> | null;
   columns: string[];
-  columnKinds?: ("text" | "occasion" | "date")[];
+  columnKinds?: ("text" | "occasion" | "date" | "time" | "select" | "check")[];
+  columnOptions?: (string[] | null)[];
+  columnWidths?: ("xs" | "sm" | "md" | "lg")[];
   rowCount: number;
   rowLabel: string;
+  rowLabels?: string[];
   label: string;
   growable?: boolean;
   addLabel?: string;
@@ -1616,10 +1659,10 @@ function MeasurementGrid({
   };
 
   return (
-    <div>
+    <div className="min-w-0">
       <label className="field-label block mb-2">{label}</label>
       <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
-        <table className="text-xs border-separate border-spacing-1 min-w-full">
+        <table className="text-xs border-separate border-spacing-1 w-full min-w-full table-fixed">
           <thead>
             <tr>
               <th className="text-left font-normal text-muted-foreground pr-2 w-10">
@@ -1635,42 +1678,59 @@ function MeasurementGrid({
           <tbody>
             {Array.from({ length: visibleRows }, (_, i) => i + 1).map((row) => (
               <tr key={row}>
-                <td className="pr-2 text-muted-foreground text-center">
-                  {row}
+                <td className="pr-2 text-muted-foreground text-center whitespace-nowrap">
+                  {rowLabels?.[row - 1] ?? row}
                 </td>
                 {columns.map((c, ci) => {
                   const kind = columnKinds?.[ci] ?? "text";
+                  const width = GRID_COL_WIDTH[columnWidths?.[ci] ?? "md"];
                   const cv = cellValue(row, c);
+                  const rowName = rowLabels?.[row - 1] ?? `${rowLabel} ${row}`;
                   return (
-                    <td key={c}>
+                    <td key={c} className={width}>
                       {kind === "occasion" ? (
                         <OccasionCell
                           value={cv}
                           otherValue={data[`${row}-${c}-other`] ?? ""}
                           onChange={(v) => set(row, c, v)}
                           onOtherChange={(v) => set(row, `${c}-other`, v)}
-                          ariaLabel={`${rowLabel} ${row} ${c}`}
+                          ariaLabel={`${rowName} ${c}`}
                         />
                       ) : kind === "date" ? (
                         <DateCell
                           value={cv}
                           onChange={(v) => set(row, c, v)}
-                          ariaLabel={`${rowLabel} ${row} ${c}`}
+                          ariaLabel={`${rowName} ${c}`}
+                        />
+                      ) : kind === "check" ? (
+                        <div className="flex justify-center">
+                          <Checkbox
+                            checked={cv === "x"}
+                            onCheckedChange={(ck) => set(row, c, ck ? "x" : "")}
+                            aria-label={`${rowName} ${c}`}
+                          />
+                        </div>
+                      ) : kind === "time" || kind === "select" ? (
+                        <GridSelectCell
+                          value={cv}
+                          options={kind === "time" ? TIME_OPTIONS : (columnOptions?.[ci] ?? [])}
+                          onChange={(v) => set(row, c, v)}
+                          ariaLabel={`${rowName} ${c}`}
                         />
                       ) : isMobile ? (
                         <MobileEditButton
                           value={cv}
                           onSave={(nv) => set(row, c, nv)}
-                          title={`${rowLabel} ${row} · ${c}`}
+                          title={`${rowName} · ${c}`}
                           placeholder="—"
-                          className="h-7 text-xs min-w-[4rem]"
-                          ariaLabel={`${rowLabel} ${row} ${c}`}
+                          className="h-7 text-xs w-full"
+                          ariaLabel={`${rowName} ${c}`}
                         />
                       ) : (
                         <Input
                           value={cv}
                           onChange={(e) => set(row, c, e.target.value)}
-                          className="h-7 text-xs min-w-[5rem] bg-background/60"
+                          className="h-7 text-xs w-full bg-background/60"
                         />
                       )}
                     </td>
@@ -1692,6 +1752,174 @@ function MeasurementGrid({
           <Plus className="w-4 h-4 mr-1" /> {addLabel ?? "Add row"}
         </Button>
       )}
+    </div>
+  );
+}
+
+/** Small dropdown cell used for time / fixed-option grid columns. */
+function GridSelectCell({
+  value,
+  options,
+  onChange,
+  ariaLabel,
+}: {
+  value: string;
+  options: string[];
+  onChange: (v: string) => void;
+  ariaLabel: string;
+}) {
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      aria-label={ariaLabel}
+      className="h-7 w-full rounded-md border border-input bg-background/60 px-1 text-xs"
+    >
+      <option value="">—</option>
+      {options.map((o) => (
+        <option key={o} value={o}>
+          {o}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Calendar notes — the day notes of a calendar-grid, listed and editable.    */
+/* -------------------------------------------------------------------------- */
+
+function CalendarNotes({
+  value,
+  month,
+  year,
+  label,
+  onChange,
+}: {
+  value: Record<string, string> | null;
+  month?: string;
+  year?: string;
+  label: string;
+  onChange: (v: FieldValue) => void;
+}) {
+  const data = value ?? {};
+  const now = new Date();
+  const lookup = (month ?? "").trim().toLowerCase();
+  let monthIndex = MONTH_NAMES.indexOf(lookup);
+  if (monthIndex === -1) {
+    const numeric = parseInt(lookup, 10);
+    monthIndex = !Number.isNaN(numeric) && numeric >= 1 && numeric <= 12 ? numeric - 1 : now.getMonth();
+  }
+  const yearNum = (() => {
+    const n = parseInt((year ?? "").trim(), 10);
+    return Number.isNaN(n) || n < 1000 || n > 9999 ? now.getFullYear() : n;
+  })();
+  const monthName = MONTH_NAMES[monthIndex].charAt(0).toUpperCase() + MONTH_NAMES[monthIndex].slice(1);
+
+  const days = Object.keys(data)
+    .map((k) => parseInt(k, 10))
+    .filter((d) => Number.isFinite(d) && (data[String(d)] ?? "").trim().length > 0)
+    .sort((a, b) => a - b);
+
+  return (
+    <div>
+      <label className="field-label block mb-2">{label}</label>
+      {days.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          Tap a day on the calendar to add a note — it shows up here.
+        </p>
+      ) : (
+        <div className="space-y-3">
+          {days.map((d) => (
+            <div key={d} className="rounded-lg border border-border bg-background/60 p-3">
+              <p className="font-display text-sm mb-1.5">
+                {monthName} {d}, {yearNum}
+              </p>
+              <Textarea
+                value={data[String(d)] ?? ""}
+                onChange={(e) => onChange({ ...data, [d]: e.target.value })}
+                rows={3}
+                className="bg-background/60 resize-none"
+                aria-label={`Note for ${monthName} ${d}`}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Month note picker — pick a date, write a note, append to that month.       */
+/* -------------------------------------------------------------------------- */
+
+function MonthNotePicker({
+  label,
+  allValues,
+  onChangeAny,
+}: {
+  label: string;
+  allValues: Record<string, FieldValue>;
+  onChangeAny?: (key: string, v: FieldValue) => void;
+}) {
+  const [date, setDate] = useState<Date | undefined>();
+  const [note, setNote] = useState("");
+
+  const add = () => {
+    if (!date || !note.trim() || !onChangeAny) return;
+    const monthKey = `month_${MONTH_NAMES[date.getMonth()]}`;
+    const current = (allValues[monthKey] as string | undefined) ?? "";
+    const line = `${date.toLocaleDateString(undefined, { month: "short", day: "numeric" })} — ${note.trim()}`;
+    onChangeAny(monthKey, current.trim() ? `${current.trim()}\n${line}` : line);
+    setNote("");
+  };
+
+  return (
+    <div>
+      <label className="field-label block mb-2">{label}</label>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn("w-full sm:w-[220px] justify-start text-left font-normal", !date && "text-muted-foreground")}
+            >
+              <CalendarIcon className="w-4 h-4 mr-2" />
+              {date ? date.toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" }) : "Pick a day"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={setDate}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+            />
+          </PopoverContent>
+        </Popover>
+        <div className="flex-1 min-w-0">
+          <Textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            rows={3}
+            placeholder="What's happening that day?"
+            className="bg-background/60 resize-none"
+            aria-label="Note for the selected day"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="mt-2 rounded-full"
+            onClick={add}
+            disabled={!date || !note.trim()}
+          >
+            <Plus className="w-4 h-4 mr-1" /> Add to month notes
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
