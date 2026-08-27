@@ -410,30 +410,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
             otherKey: "sweets_other",
             span: 2,
           },
-          {
-            key: "habits",
-            label: "Habits (smoking, vaping, dipping, other)",
-            type: "checkbox-group",
-            options: ["1", "2", "3", "4", "5", "6", "7", "8"],
-            otherKey: "habits_other",
-            span: 2,
-          },
-          {
-            key: "mood",
-            label: "Mood",
-            type: "checkbox-group",
-            options: ["Anger", "Fear", "Sadness", "Disgust", "Joy"],
-            otherKey: "mood_other",
-            span: 2,
-          },
-          {
-            key: "sleep",
-            label: "Sleep (hours)",
-            type: "checkbox-group",
-            options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
-            otherKey: "sleep_other",
-            span: 2,
-          },
         ],
       },
       {
@@ -522,9 +498,16 @@ export const PAGE_TYPES: PageTypeDef[] = [
               { key: "meals", label: "Meal intake", type: "checkbox-group", options: ["1","2","3","4","5","6"], otherKey: "meals_other", span: 2 },
               { key: "caffeine", label: "Caffeine / Other", type: "checkbox-group", options: ["1","2","3","4"], otherKey: "caffeine_other" },
               { key: "sweets", label: "Sweets / Savory", type: "checkbox-group", options: ["1","2","3","4"], otherKey: "sweets_other" },
-              { key: "habits", label: "Habits (smoking, vaping, dipping, other)", type: "checkbox-group", options: ["1","2","3","4","5","6","7","8"], otherKey: "habits_other", span: 2 },
-              { key: "mood", label: "Mood", type: "checkbox-group", options: ["Anger","Fear","Sadness","Disgust","Joy"], otherKey: "mood_other", span: 2 },
-              { key: "sleep", label: "Sleep (hours)", type: "checkbox-group", options: ["1","2","3","4","5","6","7","8","9","10","11","12"], otherKey: "sleep_other", span: 2 },
+        ],
+      },
+      {
+        title: "Gratitude",
+        description: "Three good things — syncs to your Gratitude Log.",
+        page: 1,
+        columns: 1,
+        fields: [
+          { key: "gratitude", label: "Grateful for", type: "gratitude-list", max: 3, span: 2 },
+          { key: "gratitude_note", label: "One moment worth remembering", type: "textarea", rows: 3, span: 2 },
         ],
       },
       {
@@ -537,6 +520,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
           { key: "self_spiritual", label: "Spiritual Self-Care", type: "textarea", rows: 3, span: 2 },
         ],
       },
+
       {
         title: "Workout",
         page: 1,
@@ -623,16 +607,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
           { key: "feelings_afternoon", label: "Afternoon — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_afternoon_other", span: 2 },
           { key: "feelings_evening", label: "Evening — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_evening_other", span: 2 },
           { key: "feelings_night", label: "Night — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_night_other", span: 2 },
-        ],
-      },
-      {
-        title: "Gratitude",
-        description: "Three good things — syncs to your Gratitude Log.",
-        page: 2,
-        columns: 1,
-        fields: [
-          { key: "gratitude", label: "Grateful for", type: "gratitude-list", max: 3, span: 2 },
-          { key: "gratitude_note", label: "One moment worth remembering", type: "textarea", rows: 3, span: 2 },
         ],
       },
       {
