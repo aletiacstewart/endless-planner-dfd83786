@@ -540,14 +540,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "Medications",
-        description: "Tick M (Morning), A (Afternoon), or N (Night) for each medication.",
-        page: 2,
-        fields: [
-          { key: "med_list", label: "Medications", type: "med-list", rowCount: 12, span: 2 },
-        ],
-      },
-      {
         title: "Medical Records",
         description: "Track appointment notes, test results, and lab notes.",
         page: 2,
@@ -562,6 +554,14 @@ export const PAGE_TYPES: PageTypeDef[] = [
           { key: "medical_appointment_notes", label: "Appointment Notes", type: "textarea", rows: 5 },
           { key: "test_results", label: "Test Results", type: "textarea", rows: 5 },
           { key: "lab_result_notes", label: "Lab Result Notes", type: "textarea", rows: 5 },
+        ],
+      },
+      {
+        title: "Medicines",
+        description: "Tick M (Morning), A (Afternoon), or N (Night) for each medication.",
+        page: 2,
+        fields: [
+          { key: "med_list", label: "Medications", type: "med-list", rowCount: 12, span: 2 },
         ],
       },
       {
