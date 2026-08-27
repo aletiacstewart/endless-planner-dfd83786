@@ -29,8 +29,10 @@ export function StickerLibraryDialog({ open, onOpenChange, onPick }: Props) {
         <DialogHeader>
           <DialogTitle className="font-storefront text-2xl">Sticker library</DialogTitle>
           <p className="text-xs text-muted-foreground">
-            Themed to your active cover. Tap a sticker to place it on the page.
+            Stickers for every part of your planner — birthdays, meals, health, chores and
+            more. Tap a sticker to place it on the page.
           </p>
+
         </DialogHeader>
 
         <div className="flex gap-1 flex-wrap border-b border-border pb-2">
@@ -70,9 +72,10 @@ export function StickerLibraryDialog({ open, onOpenChange, onPick }: Props) {
         </div>
 
         <p className="text-[11px] text-muted-foreground text-center pt-1">
-          Tap as many as you like — the tray stays open. Each cover ships with 60 themed
-          stickers across 4 categories.
+          Tap as many as you like — the tray stays open. The same library is available with
+          every cover, organised by topic.
         </p>
+
         <button
           type="button"
           onClick={() => onOpenChange(false)}
