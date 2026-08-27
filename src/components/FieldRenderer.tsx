@@ -437,9 +437,12 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
         <MeasurementGrid
           value={value as Record<string, string>}
           columns={field.columns ?? []}
+          columnKinds={field.columnKinds}
           rowCount={field.rowCount ?? 26}
           rowLabel={field.rowLabel ?? "Row"}
           label={field.label}
+          growable={field.growable}
+          addLabel={field.addLabel}
           onChange={onChange}
         />
       );
