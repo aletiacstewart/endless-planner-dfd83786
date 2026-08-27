@@ -1,5 +1,14 @@
 import { Fragment, useEffect, useRef, useState, useCallback } from "react";
-import { Plus, X, Angry, Frown, Meh, Smile, Laugh } from "lucide-react";
+import { Plus, X, Angry, Frown, Meh, Smile, Laugh, Calendar as CalendarIcon } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import type { FieldDef, FieldValue } from "@/lib/pageTypes";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
