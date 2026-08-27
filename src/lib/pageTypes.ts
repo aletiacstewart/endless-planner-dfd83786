@@ -465,12 +465,9 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "Wellness, Self-Care, Workout & Measurements",
+        title: "Wellness",
         page: 1,
-        groups: [
-          {
-            title: "Wellness",
-            fields: [
+        fields: [
               { key: "water", label: "Water intake (glasses)", type: "checkbox-group", options: ["1","2","3","4","5","6","7","8"], otherKey: "water_other" },
               { key: "meals", label: "Meal intake", type: "checkbox-group", options: ["1","2","3","4","5","6"], otherKey: "meals_other" },
               { key: "caffeine", label: "Caffeine / Other", type: "checkbox-group", options: ["1","2","3","4"], otherKey: "caffeine_other" },
