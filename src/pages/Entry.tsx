@@ -92,7 +92,10 @@ export default function Entry() {
     navigate(`/entry/${nextEntry.id}`);
   };
 
-  useSwipeNav({ onPrev: goPrev, onNext: goNext });
+  // Swiping/arrowing forward past the last sheet starts a new one, so the
+  // gesture never dead-ends (addSheet is defined below, after the guard).
+  const forwardRef = useRef<() => void>(() => {});
+  useSwipeNav({ onPrev: goPrev, onNext: () => forwardRef.current() });
 
   if (!entry) {
     return (
