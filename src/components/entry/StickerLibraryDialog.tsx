@@ -8,25 +8,20 @@ import {
   type StickerAsset,
   type StickerCategory,
 } from "@/data/stickers";
-import { getCover, type CoverCollection } from "@/data/covers";
 
 type Props = {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  /** Active cover id — determines which themed set to show. */
+  /** Kept for call-site compatibility — the library is shared across covers. */
   coverId?: string | null;
   onPick: (a: StickerAsset) => void;
 };
 
-export function StickerLibraryDialog({ open, onOpenChange, coverId, onPick }: Props) {
-  const collection: CoverCollection | undefined = useMemo(() => {
-    if (!coverId) return undefined;
-    return getCover(coverId)?.collection;
-  }, [coverId]);
-
-  const set = useMemo(() => getStickerSet(collection), [collection]);
-  const [tab, setTab] = useState<StickerCategory>("motifs");
+export function StickerLibraryDialog({ open, onOpenChange, onPick }: Props) {
+  const set = useMemo(() => getStickerSet(), []);
+  const [tab, setTab] = useState<StickerCategory>("celebrations");
   const items = set[tab] ?? [];
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -34,8 +29,10 @@ export function StickerLibraryDialog({ open, onOpenChange, coverId, onPick }: Pr
         <DialogHeader>
           <DialogTitle className="font-storefront text-2xl">Sticker library</DialogTitle>
           <p className="text-xs text-muted-foreground">
-            Themed to your active cover. Tap a sticker to place it on the page.
+            Stickers for every part of your planner — birthdays, meals, health, chores and
+            more. Tap a sticker to place it on the page.
           </p>
+
         </DialogHeader>
 
         <div className="flex gap-1 flex-wrap border-b border-border pb-2">
@@ -75,9 +72,10 @@ export function StickerLibraryDialog({ open, onOpenChange, coverId, onPick }: Pr
         </div>
 
         <p className="text-[11px] text-muted-foreground text-center pt-1">
-          Tap as many as you like — the tray stays open. Each cover ships with 60 themed
-          stickers across 4 categories.
+          Tap as many as you like — the tray stays open. The same library is available with
+          every cover, organised by topic.
         </p>
+
         <button
           type="button"
           onClick={() => onOpenChange(false)}
