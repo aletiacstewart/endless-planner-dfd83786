@@ -37,14 +37,21 @@ SAT_TOL = 0.30
 LIG_TOL = 0.26
 
 
+def _bun(script: str):
+    import subprocess
+
+    out = subprocess.check_output(["bun", str(ROOT / "scripts/icons" / script)], cwd=ROOT)
+    return json.loads(out)
+
+
 def covers() -> list[dict]:
-    src = (ROOT / "src/data/covers.ts").read_text()
-    out = []
-    for cid, name, coll in re.findall(
-        r'\{\s*id: "([a-z0-9-]+)",\s*name: "([^"]+)",\s*collection: "([a-z-]+)"', src
-    ):
-        out.append({"id": cid, "name": name, "collection": coll})
-    return out
+    """Authoritative cover registry, read straight from src/data/covers.ts."""
+    return _bun("_covlist.ts")
+
+
+def page_ids() -> list[str]:
+    """Every page type the planner can create — each needs an icon per cover."""
+    return _bun("_pagelist.ts")
 
 
 def icon_folders() -> dict[str, list[str]]:
@@ -109,6 +116,7 @@ def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
 
     cover_list = covers()
+    all_pages = page_ids()
     cover_ids = {c["id"] for c in cover_list}
     folders = icon_folders()
 
@@ -123,7 +131,7 @@ def main() -> int:
     per_cover_sigs: dict[str, dict[str, tuple[float, float, float]]] = {}
 
     for c in cover_list:
-        pages = folders.get(c["id"], [])
+        pages = all_pages
         missing, sigs, entries = [], {}, []
         for page in pages:
             p = ICONS / c["id"] / f"{page}.jpg"
@@ -190,7 +198,7 @@ def main() -> int:
 
     if want_sheets:
         for c in cover_list:
-            pages = folders.get(c["id"], [])
+            pages = all_pages
             contact_sheet(
                 c["id"],
                 [(p, ICONS / c["id"] / f"{p}.jpg") for p in pages],
