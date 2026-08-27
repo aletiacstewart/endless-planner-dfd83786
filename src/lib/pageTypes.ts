@@ -475,19 +475,21 @@ export const PAGE_TYPES: PageTypeDef[] = [
               { key: "habits", label: "Habits (smoking, vaping, dipping, other)", type: "checkbox-group", options: ["1","2","3","4","5","6","7","8"], otherKey: "habits_other" },
               { key: "mood", label: "Mood", type: "checkbox-group", options: ["Anger","Fear","Sadness","Disgust","Joy"], otherKey: "mood_other" },
               { key: "sleep", label: "Sleep (hours)", type: "checkbox-group", options: ["1","2","3","4","5","6","7","8","9","10","11","12"], otherKey: "sleep_other" },
-            ],
-          },
-          {
-            title: "Self-Care",
-            fields: [
-              { key: "self_physical", label: "Physical Self-Care", type: "textarea", rows: 3 },
-              { key: "self_emotional", label: "Emotional Self-Care", type: "textarea", rows: 3 },
-              { key: "self_spiritual", label: "Spiritual Self-Care", type: "textarea", rows: 3 },
-            ],
-          },
-          {
-            title: "Workout",
-            fields: [
+        ],
+      },
+      {
+        title: "Self-Care",
+        page: 1,
+        fields: [
+          { key: "self_physical", label: "Physical Self-Care", type: "textarea", rows: 3, span: 2 },
+          { key: "self_emotional", label: "Emotional Self-Care", type: "textarea", rows: 3, span: 2 },
+          { key: "self_spiritual", label: "Spiritual Self-Care", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+      {
+        title: "Workout",
+        page: 1,
+        fields: [
               { key: "cardio", label: "Cardio", type: "text", compact: true },
               { key: "weights", label: "Weights", type: "text", compact: true },
               { key: "yoga", label: "Yoga", type: "text", compact: true },
