@@ -186,6 +186,110 @@ function anyFilled(src: Record<string, FieldValue>, keys: string[]): boolean {
   });
 }
 
+
+/* -------------------------------------------------------------------------- */
+/* Scope-shared fields (year / month / week) across Complete Tracker days      */
+/* -------------------------------------------------------------------------- */
+
+type ScopeName = "year" | "month" | "week";
+
+/** Fields that are shared by every Complete Tracker day inside the same scope. */
+const SCOPED_FIELDS: { key: string; scope: ScopeName }[] = [
+  { key: "yearly_focus", scope: "year" },
+  { key: "month_note_today", scope: "month" },
+  { key: "weekly_goals", scope: "week" },
+  { key: "weekly_reflection", scope: "week" },
+];
+
+function dateOfEntryOrToday(entry: PlannerEntry): ParsedDate {
+  const parsed = parseDate(entry.values.date);
+  if (parsed) return parsed;
+  const d = new Date();
+  return {
+    year: d.getFullYear(),
+    monthIndex: d.getMonth(),
+    day: d.getDate(),
+    iso: isoOf(d.getFullYear(), d.getMonth(), d.getDate()),
+  };
+}
+
+function scopeKey(date: ParsedDate, scope: ScopeName): string {
+  if (scope === "year") return String(date.year);
+  if (scope === "month") return `${date.year}-${date.monthIndex}`;
+  const m = mondayOf(date.year, date.monthIndex, date.day);
+  return isoOf(m.getFullYear(), m.getMonth(), m.getDate());
+}
+
+const asText = (v: FieldValue | undefined): string => (typeof v === "string" ? v : "");
+
+/**
+ * Fan the year/month/week-scoped fields out to every other Complete Tracker day
+ * in the same scope. Clearing the field on one day clears it on the rest.
+ * Only writes when a value actually differs, so this can't loop.
+ */
+export async function propagateScopedFields(complete: PlannerEntry): Promise<string[]> {
+  if (complete.pageType !== "complete-tracker") return [];
+  const synced: string[] = [];
+  try {
+    const srcDate = dateOfEntryOrToday(complete);
+    const siblings = (await listEntries("complete-tracker")).filter((e) => e.id !== complete.id);
+    if (siblings.length === 0) return [];
+
+    for (const sib of siblings) {
+      const sibDate = dateOfEntryOrToday(sib);
+      const changes = SCOPED_FIELDS.filter(({ key, scope }) => {
+        if (scopeKey(srcDate, scope) !== scopeKey(sibDate, scope)) return false;
+        return asText(complete.values[key]).trim() !== asText(sib.values[key]).trim();
+      });
+      if (changes.length === 0) continue;
+      await persist(sib, (dst) => {
+        for (const { key } of changes) {
+          const val = asText(complete.values[key]);
+          if (val.trim()) dst[key] = val;
+          else delete dst[key];
+        }
+      });
+      synced.push(`Complete Tracker (${sibDate.iso})`);
+    }
+  } catch (err) {
+    console.error("[propagateScopedFields] failed:", err);
+  }
+  return synced;
+}
+
+/**
+ * Pre-fill a freshly created Complete Tracker day from an existing day in the
+ * same year / month / week. Nothing to copy → the field stays blank, so the
+ * first day of a new week/month/year starts clean.
+ */
+export async function seedScopedFields(entry: PlannerEntry): Promise<void> {
+  if (entry.pageType !== "complete-tracker") return;
+  try {
+    const date = dateOfEntryOrToday(entry);
+    const siblings = (await listEntries("complete-tracker"))
+      .filter((e) => e.id !== entry.id)
+      .sort((a, b) => b.updatedAt - a.updatedAt);
+    if (siblings.length === 0) return;
+
+    const patch: Record<string, string> = {};
+    for (const { key, scope } of SCOPED_FIELDS) {
+      if (asText(entry.values[key]).trim()) continue;
+      const donor = siblings.find(
+        (e) => scopeKey(dateOfEntryOrToday(e), scope) === scopeKey(date, scope) && asText(e.values[key]).trim(),
+      );
+      if (donor) patch[key] = asText(donor.values[key]);
+    }
+    if (Object.keys(patch).length === 0) return;
+    const fresh = (await listEntries("complete-tracker")).find((e) => e.id === entry.id) ?? entry;
+    await persist(fresh, (dst) => {
+      for (const [k, val] of Object.entries(patch)) dst[k] = val;
+    });
+    Object.assign(entry.values, patch);
+  } catch (err) {
+    console.error("[seedScopedFields] failed:", err);
+  }
+}
+
 /**
  * Sync the given Complete Tracker entry into all linked individual tracker entries.
  * Safe to call from auto-save — never throws; failures are logged.
@@ -552,6 +656,9 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       synced.push("Medications");
     }
 
+    // 22. Year/month/week-scoped fields shared by every day in the same scope.
+    const scoped = await propagateScopedFields(complete);
+    if (scoped.length > 0) synced.push("Other days (year/month/week fields)");
   } catch (err) {
     console.error("[syncLinkedEntries] failed:", err);
   }
@@ -568,6 +675,8 @@ export async function scaffoldLinkedEntries(complete: PlannerEntry): Promise<str
   if (complete.pageType !== "complete-tracker") return [];
   const created: string[] = [];
   try {
+    // Carry the shared year/month/week fields onto the new day.
+    await seedScopedFields(complete);
     const date = parseDate(complete.values.date) ?? (() => {
       const d = new Date();
       return {
