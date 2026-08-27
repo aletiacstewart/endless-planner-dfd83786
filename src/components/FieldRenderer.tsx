@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState, useCallback } from "react";
+import { Fragment, useEffect, useRef, useState, useCallback } from "react";
 import { Plus, X, Angry, Frown, Meh, Smile, Laugh } from "lucide-react";
 import type { FieldDef, FieldValue } from "@/lib/pageTypes";
 import { Input } from "@/components/ui/input";
@@ -59,7 +59,7 @@ export function FieldRenderer(props: Props) {
   return (
     <FieldRendererInner
       {...props}
-      value={allValues?.[scopedKey] ?? (allValues?.[field.key] as FieldValue) ?? null}
+      value={allValues?.[scopedKey] ?? null}
       onChange={(v) => (onChangeAny ? onChangeAny(scopedKey, v) : onChange(v))}
     />
   );
