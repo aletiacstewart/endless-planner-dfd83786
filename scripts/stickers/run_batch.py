@@ -73,7 +73,8 @@ VARIANTS = {
 def prompt_for(cover: dict, category: str, index: int) -> str:
     style = R.style_for(cover)
     return (
-        f"Single die-cut planner STICKER, isolated on a plain solid pure-white background. "
+        f"Single die-cut planner STICKER, cut out and isolated on a plain solid pure WHITE (#FFFFFF) "
+        f"studio background — absolutely no parchment, paper grain, cream tint, texture, border or backdrop panel behind it. "
         f"Subject: {ROLE[category]} — specifically {VARIANTS[category][index]}. "
         f"Style: {style} The attached cover artwork is the STYLE BIBLE: reuse its exact palette, "
         f"texture, linework and mood so this sticker reads as part of that cover's set. "
@@ -84,12 +85,30 @@ def prompt_for(cover: dict, category: str, index: int) -> str:
 
 
 def to_transparent_png(png_bytes: bytes, out: pathlib.Path, size: int = 320) -> None:
-    """Trim the generated white studio background to transparency."""
+    """Trim the generated studio background (white or cream) to transparency.
+
+    The backdrop colour is sampled from the corners rather than assumed white,
+    because image models often render a faint cream/parchment field instead.
+    Only background connected to the border is removed, so light areas *inside*
+    the sticker survive.
+    """
     im = Image.open(io.BytesIO(png_bytes)).convert("RGBA")
     px = im.load()
     w, h = im.size
-    # Flood from the border so white *inside* the sticker is preserved.
-    stack = [(0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1)]
+    corners = [px[0, 0], px[w - 1, 0], px[0, h - 1], px[w - 1, h - 1]]
+    br = sum(c[0] for c in corners) / 4
+    bg = sum(c[1] for c in corners) / 4
+    bb = sum(c[2] for c in corners) / 4
+    if min(br, bg, bb) < 150:
+        return _plain_png(im, out, size)  # dark backdrop: keep the square as-is
+
+    tol = 34
+
+    def is_bg(r, g, b):
+        return abs(r - br) < tol and abs(g - bg) < tol and abs(b - bb) < tol
+
+    stack = [(x, 0) for x in range(w)] + [(x, h - 1) for x in range(w)]
+    stack += [(0, y) for y in range(h)] + [(w - 1, y) for y in range(h)]
     seen = set()
     while stack:
         x, y = stack.pop()
@@ -97,12 +116,18 @@ def to_transparent_png(png_bytes: bytes, out: pathlib.Path, size: int = 320) -> 
             continue
         seen.add((x, y))
         r, g, b, a = px[x, y]
-        if r > 234 and g > 234 and b > 234:
+        if is_bg(r, g, b):
             px[x, y] = (r, g, b, 0)
             stack += [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]
     bbox = im.getbbox()
     if bbox:
         im = im.crop(bbox)
+    im.thumbnail((size, size), Image.LANCZOS)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    im.save(out, "PNG", optimize=True)
+
+
+def _plain_png(im: Image.Image, out: pathlib.Path, size: int) -> None:
     im.thumbnail((size, size), Image.LANCZOS)
     out.parent.mkdir(parents=True, exist_ok=True)
     im.save(out, "PNG", optimize=True)
