@@ -187,16 +187,26 @@ export default function PlannerDetail() {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 lg:gap-x-8 gap-y-10">
               {visibleCovers.map((c) => (
-                <CoverCard
+                <div
                   key={c.id}
-                  cover={c}
-                  isIncluded={c.id === includedCoverId}
-                  isExtra={extraPackIds.includes(c.id)}
-                  onAddExtra={() => addExtra(c.id)}
-                  onRemoveExtra={() => removeExtra(c.id)}
-                  onMakeIncluded={() => makeIncluded(c.id)}
-                />
+                  id={`cover-${c.id}`}
+                  className={cn(
+                    "rounded-2xl transition-shadow",
+                    highlightCover === c.id && c.id !== includedCoverId &&
+                      "ring-2 ring-primary/60 ring-offset-4 ring-offset-background"
+                  )}
+                >
+                  <CoverCard
+                    cover={c}
+                    isIncluded={c.id === includedCoverId}
+                    isExtra={extraPackIds.includes(c.id)}
+                    onAddExtra={() => addExtra(c.id)}
+                    onRemoveExtra={() => removeExtra(c.id)}
+                    onMakeIncluded={() => makeIncluded(c.id)}
+                  />
+                </div>
               ))}
+
             </div>
           </div>
 
