@@ -960,12 +960,15 @@ function CalendarGrid({
   month,
   year,
   compact,
+  hidePanel,
   onChange,
 }: {
   value: Record<string, string> | null;
   month?: string;
   year?: string;
   compact?: boolean;
+  /** Hide the inline note panel (notes are edited in a dialog / on the other page). */
+  hidePanel?: boolean;
   onChange: (v: FieldValue) => void;
 }) {
   const data = value ?? {};
@@ -1114,7 +1117,7 @@ function CalendarGrid({
 
   // Mobile dialog so small screens still get a full-size editor.
   // IMPORTANT: only mount the Dialog on mobile so the backdrop doesn't dim desktop.
-  const mobileDialog = isMobile ? (
+  const mobileDialog = isMobile || hidePanel ? (
     <Dialog
       open={openDay !== null}
       onOpenChange={(o) => {
@@ -1147,9 +1150,14 @@ function CalendarGrid({
 
   return (
     <div className={cn(compact && "max-w-2xl")}>
-      <div className="grid gap-4 md:grid-cols-[auto_1fr] md:items-start">
+      <div
+        className={cn(
+          "grid gap-4 md:items-start",
+          !hidePanel && "md:grid-cols-[auto_1fr]",
+        )}
+      >
         {calendar}
-        {inlinePanel}
+        {!hidePanel && inlinePanel}
       </div>
       {mobileDialog}
     </div>
