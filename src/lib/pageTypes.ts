@@ -21,6 +21,7 @@ export type FieldType =
   | "ingredients-list" // dynamic list of strings
   | "calendar-grid" // 31 day cells with notes
   | "habit-grid" // habits x 31 days (boolean marks)
+  | "water-grid" // fixed "Glass N" rows x days of the selected month (boolean marks)
   | "month-tracker" // 12 months x N items grid (boolean marks)
   | "measurement-grid" // fixed N rows x labelled columns of free text
   | "daily-month-grid" // 31 days x 12 months free-text values + Achieved column
