@@ -406,6 +406,7 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           month={derivedMonth}
           year={derivedYear}
           compact={field.compact}
+          hidePanel={field.hideNotePanel}
           onChange={onChange}
         />
       );
