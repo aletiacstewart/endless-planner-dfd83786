@@ -90,16 +90,61 @@ function mergeCalendarCell(
   field: string,
   day: number,
   value: string,
+  type?: string,
 ) {
   const existing = (dst[field] as Record<string, string> | undefined) ?? {};
   const next = { ...existing };
   if (value && value.trim()) {
     next[String(day)] = value;
+    if (type) next[`t${day}`] = type;
   } else {
     delete next[String(day)];
+    delete next[`t${day}`];
   }
   dst[field] = next;
 }
+
+/** Day notes of a calendar record tagged with the given appointment type. */
+function typedDays(cal: Record<string, string> | undefined, type: string): Map<number, string> {
+  const out = new Map<number, string>();
+  if (!cal) return out;
+  for (const [k, v] of Object.entries(cal)) {
+    const day = parseInt(k, 10);
+    if (!Number.isFinite(day) || String(day) !== k) continue;
+    if (typeof v !== "string" || !v.trim()) continue;
+    const t = cal[`t${day}`] || "Other";
+    if (t === type) out.set(day, v);
+  }
+  return out;
+}
+
+/**
+ * Replace every day of `type` in a calendar field with the given day → note map,
+ * leaving notes of other types untouched.
+ */
+function replaceTypedDays(
+  dst: Record<string, FieldValue>,
+  field: string,
+  type: string,
+  days: Map<number, string>,
+) {
+  const existing = (dst[field] as Record<string, string> | undefined) ?? {};
+  const next: Record<string, string> = { ...existing };
+  for (const day of typedDays(existing, type).keys()) {
+    delete next[String(day)];
+    delete next[`t${day}`];
+  }
+  for (const [day, note] of days) {
+    next[String(day)] = note;
+    next[`t${day}`] = type;
+  }
+  dst[field] = next;
+}
+
+const MONTH_LOWER = [
+  "january", "february", "march", "april", "may", "june",
+  "july", "august", "september", "october", "november", "december",
+];
 
 /** Body parts that have per-day "today" fields on the Complete Tracker. */
 const BODY_PARTS = ["body_fat", "neck", "chest", "bicep", "waist", "hips", "thigh", "calf"] as const;
@@ -392,6 +437,101 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       });
       const monthCap = monthName.charAt(0).toUpperCase() + monthName.slice(1);
       synced.push(`Monthly Calendar (${monthCap} ${yearStr})`);
+      synced.push(
+        ...(await fanOutMedicalDays(date.year, date.monthIndex, typedDays(cal, "Medical"), {
+          monthly: true,
+          complete: true,
+        })),
+      );
+    }
+
+    // 6b. Sleep Tracker — one row per night in the month grid.
+    const sleepKeys = ["bed_time", "wake_time", "sleep_hours", "sleep_quality", "sleep_notes"];
+    if (anyFilled(v, sleepKeys)) {
+      const monthCapName = MONTH_LOWER[date.monthIndex];
+      const entry = await findOrCreate(
+        "sleep-tracker",
+        (e) => String(e.values.month ?? "").toLowerCase() === monthCapName,
+        { month: monthCapName },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.month) dst.month = monthCapName;
+        const grid = { ...((dst.sleep_log as Record<string, string>) ?? {}) };
+        const set = (col: string, val: string) => {
+          if (val.trim()) grid[`${date.day}-${col}`] = val;
+          else delete grid[`${date.day}-${col}`];
+        };
+        set("Bedtime", asText(v.bed_time));
+        set("Wake time", asText(v.wake_time));
+        set("Hours", asText(v.sleep_hours));
+        set("Quality (1-5)", asText(v.sleep_quality));
+        set("Notes", asText(v.sleep_notes));
+        dst.sleep_log = grid;
+      });
+      synced.push("Sleep Tracker");
+    }
+
+    // 6c. Water Intake Tracker — tick one glass per checked cup for the day.
+    const waterChecked = Array.isArray(v.water) ? (v.water as string[]).length : 0;
+    if (waterChecked > 0) {
+      const monthCapName = MONTH_LOWER[date.monthIndex];
+      const entry = await findOrCreate(
+        "water-tracker",
+        (e) => String(e.values.month ?? "").toLowerCase() === monthCapName,
+        { month: monthCapName, daily_goal: String(Math.max(8, waterChecked)) },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.month) dst.month = monthCapName;
+        const cur = (dst.water_grid as { marks?: Record<string, boolean> } | undefined) ?? {};
+        const marks = { ...(cur.marks ?? {}) };
+        const goal = Math.max(Number(dst.daily_goal ?? "") || 8, waterChecked);
+        for (let g = 1; g <= goal; g++) {
+          const k = `${g}-${date.day}`;
+          if (g <= waterChecked) marks[k] = true;
+          else delete marks[k];
+        }
+        dst.daily_goal = String(goal);
+        dst.water_grid = { ...cur, marks };
+      });
+      synced.push("Water Intake Tracker");
+    }
+
+    // 6d. Gratitude Log — per-day entry.
+    if (anyFilled(v, ["gratitude", "gratitude_note"])) {
+      const entry = await findOrCreate(
+        "gratitude-log",
+        (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
+        { date: date.iso },
+      );
+      await persist(entry, (dst) => {
+        dst.date = date.iso;
+        copyKeys(v, dst, ["gratitude", "gratitude_note"]);
+        if (v.mood_overall != null) dst.mood = v.mood_overall;
+      });
+      synced.push("Gratitude Log");
+    }
+
+    // 6e. Mood Journal — per-day entry.
+    const moodKeys = [
+      "energy", "anxiety", "stress",
+      "feelings", "feelings_morning_other",
+      "feelings_afternoon", "feelings_afternoon_other",
+      "feelings_evening", "feelings_evening_other",
+      "feelings_night", "feelings_night_other",
+    ];
+    if (anyFilled(v, [...moodKeys, "mood_overall"])) {
+      const entry = await findOrCreate(
+        "mood-journal",
+        (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
+        { date: date.iso },
+      );
+      await persist(entry, (dst) => {
+        dst.date = date.iso;
+        copyKeys(v, dst, moodKeys);
+        if (v.mood_overall != null) dst.mood = v.mood_overall;
+        if (v.gratitude != null) dst.gratitude = v.gratitude;
+      });
+      synced.push("Mood Journal");
     }
 
     // 7. Cleaning Check List — daily-month-grid `cleaning`, year-scoped.
@@ -817,6 +957,96 @@ async function updateCompleteForDate(iso: string, mutate: (vals: Record<string, 
   return matches.length;
 }
 
+/* -------------------------------------------------------------------------- */
+/* Medical appointments — shared between the Medical page and the calendars    */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Fan a month's medical appointments out to every calendar that shows them:
+ * the Monthly Calendar, every Complete Tracker day in that month, the matching
+ * Weekly Calendar weekday note, and the Medical Records page's own calendar.
+ * Notes of other appointment types are never touched.
+ */
+async function fanOutMedicalDays(
+  year: number,
+  monthIndex: number,
+  days: Map<number, string>,
+  skip: { monthly?: boolean; medical?: boolean; complete?: boolean } = {},
+): Promise<string[]> {
+  const synced: string[] = [];
+  const yearStr = String(year);
+  const monthName = MONTH_LOWER[monthIndex];
+
+  if (!skip.monthly) {
+    const monthly = await findOrCreate(
+      "monthly-calendar",
+      (e) => String(e.values.year ?? "") === yearStr && String(e.values.month ?? "").toLowerCase() === monthName,
+      { year: yearStr, month: monthName },
+    );
+    await persist(monthly, (dst) => {
+      if (!dst.year) dst.year = yearStr;
+      if (!dst.month) dst.month = monthName;
+      replaceTypedDays(dst, "calendar", "Medical", days);
+    });
+    synced.push("Monthly Calendar (medical)");
+  }
+
+  if (!skip.complete) {
+    const completes = (await listEntries("complete-tracker")).filter((e) => {
+      const d = parseDate(e.values.date);
+      return d && d.year === year && d.monthIndex === monthIndex;
+    });
+    for (const c of completes) {
+      await persist(c, (dst) => replaceTypedDays(dst, "month_calendar", "Medical", days));
+    }
+    if (completes.length > 0) synced.push("Complete Tracker (medical calendar)");
+  }
+
+  // Weekly Calendar — mirror each appointment into its weekday note.
+  for (const [day, note] of days) {
+    const weekStart = mondayOf(year, monthIndex, day);
+    const weekIso = isoOf(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate());
+    const weekday = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"][
+      new Date(year, monthIndex, day).getDay()
+    ];
+    const weekly = await findOrCreate(
+      "weekly-calendar",
+      (e) => (e.values.week_of as string | undefined)?.slice(0, 10) === weekIso,
+      { week_of: weekIso },
+    );
+    await persist(weekly, (dst) => {
+      if (!dst.week_of) dst.week_of = weekIso;
+      const cur = asText(dst[weekday]);
+      const line = `Medical: ${note.trim()}`;
+      const stripped = cur
+        .split("\n")
+        .filter((l) => !/^Medical:/i.test(l.trim()))
+        .join("\n")
+        .trim();
+      dst[weekday] = stripped ? `${stripped}\n${line}` : line;
+    });
+  }
+  if (days.size > 0) synced.push("Weekly Calendar (medical)");
+
+  if (!skip.medical) {
+    const medical = await findOrCreate(
+      "medical-records",
+      (e) =>
+        String(e.values.year ?? "") === yearStr &&
+        String(e.values.month ?? "").toLowerCase() === monthName,
+      { year: yearStr, month: monthName, date: isoOf(year, monthIndex, [...days.keys()][0] ?? 1) },
+    );
+    await persist(medical, (dst) => {
+      if (!dst.year) dst.year = yearStr;
+      if (!dst.month) dst.month = monthName;
+      replaceTypedDays(dst, "medical_calendar", "Medical", days);
+    });
+    synced.push("Medical Records (calendar)");
+  }
+
+  return synced;
+}
+
 export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]> {
   const synced: string[] = [];
   try {
@@ -911,6 +1141,13 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
         await persist(c, (dst) => { dst.month_calendar = { ...cal }; });
       }
       if (completes.length > 0) synced.push("Complete Tracker (calendar)");
+      // Medical-typed days also live on the Medical Records page.
+      synced.push(
+        ...(await fanOutMedicalDays(year, monthIndex, typedDays(cal, "Medical"), {
+          monthly: true,
+          complete: true,
+        })),
+      );
       return synced;
     }
 
@@ -1053,13 +1290,74 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
     // (Daily Goal Tracker reverse-sync removed — page no longer exists.)
 
     // Medical Records → mirror three textareas into Complete Tracker for that date.
-    if (entry.pageType === "medical-records") {
+    if (entry.pageType === "gratitude-log" || entry.pageType === "mood-journal") {
       const date = parseDate(v.date);
       if (!date) return [];
+      const keys =
+        entry.pageType === "gratitude-log"
+          ? ["gratitude", "gratitude_note"]
+          : [
+              "energy", "anxiety", "stress",
+              "feelings", "feelings_morning_other",
+              "feelings_afternoon", "feelings_afternoon_other",
+              "feelings_evening", "feelings_evening_other",
+              "feelings_night", "feelings_night_other",
+            ];
       const touched = await updateCompleteForDate(date.iso, (dst) => {
-        copyKeys(v, dst, scopedKeys(v, ["medical_appointment_notes", "test_results", "lab_result_notes", "doctor_id"]));
+        copyKeys(v, dst, keys);
+        if (v.mood != null) dst.mood_overall = v.mood;
       });
-      if (touched > 0) synced.push("Complete Tracker (medical)");
+      if (touched > 0) synced.push("Complete Tracker");
+      return synced;
+    }
+
+    if (entry.pageType === "sleep-tracker") {
+      const monthIndex = MONTH_LOWER.indexOf(String(v.month ?? "").toLowerCase());
+      const grid = (v.sleep_log as Record<string, string> | undefined) ?? {};
+      if (monthIndex < 0) return [];
+      const year = new Date().getFullYear();
+      const days = new Set<number>();
+      for (const k of Object.keys(grid)) {
+        const day = Number(k.split("-")[0]);
+        if (day > 0) days.add(day);
+      }
+      let touched = 0;
+      for (const day of days) {
+        touched += await updateCompleteForDate(isoOf(year, monthIndex, day), (dst) => {
+          const get = (col: string) => grid[`${day}-${col}`] ?? "";
+          dst.bed_time = get("Bedtime");
+          dst.wake_time = get("Wake time");
+          dst.sleep_hours = get("Hours");
+          dst.sleep_quality = get("Quality (1-5)");
+          dst.sleep_notes = get("Notes");
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (sleep)");
+      return synced;
+    }
+
+    if (entry.pageType === "medical-records") {
+      const date = parseDate(v.date);
+      if (date) {
+        const touched = await updateCompleteForDate(date.iso, (dst) => {
+          copyKeys(v, dst, scopedKeys(v, ["medical_appointment_notes", "test_results", "lab_result_notes", "doctor_id"]));
+        });
+        if (touched > 0) synced.push("Complete Tracker (medical)");
+      }
+      // Medical appointment calendar → monthly / weekly / daily calendars.
+      const cal = v.medical_calendar as Record<string, string> | undefined;
+      if (cal && Object.keys(cal).length > 0) {
+        const monthName = String(v.month ?? "").toLowerCase();
+        let monthIndex = MONTH_LOWER.indexOf(monthName);
+        let year = Number(v.year ?? "") || 0;
+        if (monthIndex === -1 && date) monthIndex = date.monthIndex;
+        if (!year && date) year = date.year;
+        if (monthIndex >= 0 && year) {
+          synced.push(
+            ...(await fanOutMedicalDays(year, monthIndex, typedDays(cal, "Medical"), { medical: true })),
+          );
+        }
+      }
       return synced;
     }
 

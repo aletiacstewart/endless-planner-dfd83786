@@ -37,6 +37,8 @@ export type FieldType =
   | "note-style" // paper-style picker (blank/lined/dot/cornell) + rich body
   | "smart-goal" // structured SMART goal block
   | "mood-log" // 7-day weekday mood face row
+  | "select" // native dropdown driven by field.options
+  | "time-select" // dropdown of 15-minute times
   | "gratitude-list"; // 3 numbered gratitude text rows
 
 export interface FieldDef {
@@ -65,6 +67,8 @@ export interface FieldDef {
   rowLabels?: string[];
   /** For calendar-grid: keep the note editor out of the grid (shown elsewhere). */
   hideNotePanel?: boolean;
+  /** For calendar-grid / calendar-notes: only show notes tagged with this appointment type. */
+  filterType?: string;
   /** For measurement-grid: allow adding rows beyond rowCount. */
   growable?: boolean;
   /** Label for the add-row button when growable. */
@@ -585,6 +589,53 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
+        title: "Sleep",
+        description: "Bedtime, wake time and quality — syncs to your Sleep Tracker.",
+        page: 2,
+        columns: 2,
+        fields: [
+          { key: "bed_time", label: "Bedtime", type: "time-select" },
+          { key: "wake_time", label: "Wake time", type: "time-select" },
+          { key: "sleep_hours", label: "Hours slept", type: "select", options: Array.from({ length: 24 }, (_, i) => String(i + 1)) },
+          { key: "sleep_quality", label: "Quality (1-5)", type: "select", options: ["1", "2", "3", "4", "5"] },
+          { key: "sleep_notes", label: "Sleep notes", type: "text", span: 2 },
+        ],
+      },
+      {
+        title: "Mood Check-In",
+        description: "Overall mood and daily ratings — syncs to your Mood Journal.",
+        page: 2,
+        columns: 2,
+        fields: [
+          { key: "mood_overall", label: "Overall mood", type: "mood-rating" },
+          { key: "energy", label: "Depression", type: "rating", max: 5 },
+          { key: "anxiety", label: "Anxiety", type: "rating", max: 5 },
+          { key: "stress", label: "Stress", type: "rating", max: 5 },
+        ],
+      },
+      {
+        title: "Today's Feels",
+        description: "Name what you feel at each point of the day.",
+        page: 2,
+        columns: 1,
+        fields: [
+          { key: "feelings", label: "Morning — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_morning_other", span: 2 },
+          { key: "feelings_afternoon", label: "Afternoon — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_afternoon_other", span: 2 },
+          { key: "feelings_evening", label: "Evening — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_evening_other", span: 2 },
+          { key: "feelings_night", label: "Night — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_night_other", span: 2 },
+        ],
+      },
+      {
+        title: "Gratitude",
+        description: "Three good things — syncs to your Gratitude Log.",
+        page: 2,
+        columns: 1,
+        fields: [
+          { key: "gratitude", label: "Grateful for", type: "gratitude-list", max: 3, span: 2 },
+          { key: "gratitude_note", label: "One moment worth remembering", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+      {
         title: "Medical Records",
         description: "Track appointment notes, test results, and lab notes.",
         page: 2,
@@ -606,7 +657,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         description: "Tick M (Morning), A (Afternoon), or N (Night) for each medication.",
         page: 2,
         fields: [
-          { key: "med_list", label: "Medications", type: "med-list", rowCount: 20, span: 2 },
+          { key: "med_list", label: "Medications", type: "med-list", rowCount: 20, span: 2, growable: true, addLabel: "Add medication" },
         ],
       },
       {
@@ -718,6 +769,8 @@ export const PAGE_TYPES: PageTypeDef[] = [
             rowCount: 26,
             rowLabel: "Wk",
             columns: ["Date", "Weight", "Difference", "Notes"],
+            growable: true,
+            addLabel: "Add entry",
           },
         ],
       },
@@ -744,6 +797,8 @@ export const PAGE_TYPES: PageTypeDef[] = [
             rowCount: 26,
             rowLabel: "Wk",
             columns: ["Fat %", "Neck", "Chest", "Bicep", "Waist", "Hips", "Thigh", "Calf"],
+            growable: true,
+            addLabel: "Add entry",
           },
         ],
       },
@@ -1081,7 +1136,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Medications",
         description: "Tick M (Morning), A (Afternoon), or N (Night) for each medication.",
         fields: [
-          { key: "med_list", label: "Medications", type: "med-list", rowCount: 20, span: 2 },
+          { key: "med_list", label: "Medications", type: "med-list", rowCount: 20, span: 2, growable: true, addLabel: "Add medication" },
         ],
       },
     ],
@@ -1103,6 +1158,37 @@ export const PAGE_TYPES: PageTypeDef[] = [
         fields: [
           { key: "date", label: "Date", type: "date" },
           { key: "doctor_id", label: "Doctor seen", type: "doctor-picker" },
+        ],
+      },
+      {
+        title: "Appointment calendar",
+        description: "Only medical appointments show here — they sync with your monthly, weekly and daily calendars.",
+        page: 1,
+        fields: [
+          { key: "month", label: "Month", type: "month", placeholder: "January" },
+          { key: "year", label: "Year", type: "year", placeholder: "2026" },
+          {
+            key: "medical_calendar",
+            label: "Medical appointments",
+            type: "calendar-grid",
+            span: 2,
+            hideNotePanel: true,
+            filterType: "Medical",
+          },
+        ],
+      },
+      {
+        title: "Appointments by day",
+        description: "Every medical appointment on the calendar, day by day.",
+        page: 2,
+        fields: [
+          {
+            key: "medical_calendar",
+            label: "Medical appointments by day",
+            type: "calendar-notes",
+            span: 2,
+            filterType: "Medical",
+          },
         ],
       },
       {
@@ -1199,6 +1285,8 @@ export const PAGE_TYPES: PageTypeDef[] = [
             rowCount: 12,
             rowLabel: "#",
             columns: ["Exercise", "Sets x Reps", "Weight", "Notes"],
+            growable: true,
+            addLabel: "Add exercise",
           },
         ],
       },
@@ -1407,6 +1495,8 @@ export const PAGE_TYPES: PageTypeDef[] = [
             rowCount: 12,
             rowLabel: "#",
             columns: ["Goal", "Target", "Saved", "Deadline"],
+            growable: true,
+            addLabel: "Add savings goal",
           },
         ],
       },

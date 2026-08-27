@@ -136,6 +136,26 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           </select>
         </div>
       );
+    case "select":
+    case "time-select": {
+      const opts = field.type === "time-select" ? TIME_OPTIONS : (field.options ?? []);
+      return (
+        <div>
+          {label}
+          <select
+            id={field.key}
+            value={(value as string) ?? ""}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full h-10 rounded-md border border-input bg-background/60 px-3 text-sm"
+          >
+            <option value="">{field.placeholder ?? "Select"}</option>
+            {opts.map((o) => (
+              <option key={o} value={o}>{o}</option>
+            ))}
+          </select>
+        </div>
+      );
+    }
     case "date":
       return (
         <div>
@@ -407,6 +427,7 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           year={derivedYear}
           compact={field.compact}
           hidePanel={field.hideNotePanel}
+          filterType={field.filterType}
           onChange={onChange}
         />
       );
@@ -466,6 +487,7 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           month={typeof allValues?.month === "string" ? (allValues.month as string) : undefined}
           year={typeof allValues?.year === "string" ? (allValues.year as string) : undefined}
           label={field.label}
+          filterType={field.filterType}
           onChange={onChange}
         />
       );
@@ -497,6 +519,8 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
         <MedList
           value={value as Record<string, string>}
           rowCount={field.rowCount ?? 12}
+          growable={field.growable}
+          addLabel={field.addLabel}
           onChange={onChange}
         />
       );
@@ -850,14 +874,20 @@ function IngredientsList({
 function MedList({
   value,
   rowCount,
+  growable,
+  addLabel,
   onChange,
 }: {
   value: Record<string, string> | null;
   rowCount: number;
+  growable?: boolean;
+  addLabel?: string;
   onChange: (v: FieldValue) => void;
 }) {
   const isMobile = useIsMobile();
   const data = value ?? {};
+  const extra = Number(data.__rows ?? "") || 0;
+  const visibleRows = growable ? Math.max(rowCount, extra) : rowCount;
   const update = (key: string, v: string) => onChange({ ...data, [key]: v });
   const cols = "grid-cols-[1.25rem_minmax(0,2fr)_minmax(0,1.4fr)_minmax(0,1.6fr)_minmax(0,1.4fr)_5rem]";
   const slots: { k: "m" | "a" | "n"; label: string }[] = [
@@ -906,7 +936,7 @@ function MedList({
         </div>
       </div>
       <div className="space-y-1">
-        {Array.from({ length: rowCount }, (_, i) => i + 1).map((n) => (
+        {Array.from({ length: visibleRows }, (_, i) => i + 1).map((n) => (
           <div key={n} className={cn("grid gap-x-2 items-center", cols)}>
             <span className="text-xs text-muted-foreground text-right pr-1">{n}.</span>
             {renderTextCell(n, "name", "Name")}
@@ -936,6 +966,17 @@ function MedList({
           </div>
         ))}
       </div>
+      {growable && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="mt-2"
+          onClick={() => onChange({ ...data, __rows: String(visibleRows + 1) })}
+        >
+          <Plus className="w-4 h-4 mr-1" /> {addLabel ?? "Add row"}
+        </Button>
+      )}
       <div className="mt-3">
         <label className="field-label block mb-1.5">More / Other</label>
         <Textarea
@@ -955,12 +996,17 @@ const MONTH_NAMES = [
 ];
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+/** Appointment / event types a calendar day note can be tagged with. */
+export const APPT_TYPES = ["Medical", "Work", "School", "Family", "Personal", "Other"] as const;
+const DEFAULT_APPT_TYPE = "Other";
+
 function CalendarGrid({
   value,
   month,
   year,
   compact,
   hidePanel,
+  filterType,
   onChange,
 }: {
   value: Record<string, string> | null;
@@ -969,10 +1015,19 @@ function CalendarGrid({
   compact?: boolean;
   /** Hide the inline note panel (notes are edited in a dialog / on the other page). */
   hidePanel?: boolean;
+  /** Only show/edit notes of this appointment type (e.g. "Medical"). */
+  filterType?: string;
   onChange: (v: FieldValue) => void;
 }) {
   const data = value ?? {};
-  const update = (day: number, v: string) => onChange({ ...data, [day]: v });
+  const typeOf = (day: number) => data[`t${day}`] || DEFAULT_APPT_TYPE;
+  const update = (day: number, v: string, type?: string) => {
+    const next: Record<string, string> = { ...data, [String(day)]: v };
+    const t = type ?? filterType ?? typeOf(day);
+    if (v.trim()) next[`t${day}`] = t;
+    else delete next[`t${day}`];
+    onChange(next);
+  };
 
   const now = new Date();
   const monthLookup = (month ?? "").trim().toLowerCase();
@@ -997,28 +1052,80 @@ function CalendarGrid({
   // Open day in a popup so the cell stays clean and notes are fully visible.
   const [openDay, setOpenDay] = useState<number | null>(null);
   const [draft, setDraft] = useState("");
+  const [draftType, setDraftType] = useState<string>(filterType ?? DEFAULT_APPT_TYPE);
+  const [viewType, setViewType] = useState<string>("All");
   const isMobile = useIsMobile();
 
+  /** A day's note counts as visible when it matches the active type filter. */
+  const visibleNote = (d: number) => {
+    const note = data[String(d)] ?? "";
+    if (!note.trim()) return "";
+    const t = typeOf(d);
+    if (filterType) return t === filterType ? note : "";
+    if (viewType !== "All" && t !== viewType) return "";
+    return note;
+  };
+
   const openCell = (d: number) => {
-    setDraft(data[d] ?? "");
+    setDraft(visibleNote(d));
+    setDraftType(filterType ?? (data[String(d)]?.trim() ? typeOf(d) : viewType !== "All" ? viewType : DEFAULT_APPT_TYPE));
     setOpenDay(d);
   };
   const saveCell = () => {
-    if (openDay !== null) update(openDay, draft);
+    if (openDay !== null) update(openDay, draft, draftType);
     setOpenDay(null);
   };
 
   // Auto-save the draft as the user types so the inline panel feels seamless.
   const updateDraft = (v: string) => {
     setDraft(v);
-    if (openDay !== null) update(openDay, v);
+    if (openDay !== null) update(openDay, v, draftType);
   };
+  const updateDraftType = (t: string) => {
+    setDraftType(t);
+    if (openDay !== null && draft.trim()) update(openDay, draft, t);
+  };
+
+  const typeSelect = filterType ? null : (
+    <div className="mb-2">
+      <label className="field-label block mb-1">Type</label>
+      <select
+        value={draftType}
+        onChange={(e) => updateDraftType(e.target.value)}
+        className="w-full h-9 rounded-md border border-input bg-background/60 px-2 text-sm"
+        aria-label="Appointment type"
+      >
+        {APPT_TYPES.map((t) => (
+          <option key={t} value={t}>{t}</option>
+        ))}
+      </select>
+    </div>
+  );
 
   const calendar = (
     <div className={cn("min-w-0", compact && "max-w-xs")}>
-      <label className="field-label block mb-2">
-        {compact ? `${monthName} ${yearNum} — tap a day` : "Days of the month — tap to add a note"}
-      </label>
+      <div className="flex flex-wrap items-end justify-between gap-2 mb-2">
+        <label className="field-label block">
+          {filterType
+            ? `${monthName} ${yearNum} — ${filterType.toLowerCase()} appointments`
+            : compact
+            ? `${monthName} ${yearNum} — tap a day`
+            : "Days of the month — tap to add a note"}
+        </label>
+        {!filterType && !compact && (
+          <select
+            value={viewType}
+            onChange={(e) => setViewType(e.target.value)}
+            className="h-8 rounded-md border border-input bg-background/60 px-2 text-xs"
+            aria-label="Filter by type"
+          >
+            <option value="All">All types</option>
+            {APPT_TYPES.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        )}
+      </div>
       <div className={cn("grid grid-cols-7 mb-1.5", compact ? "gap-0.5" : "gap-1.5")}>
         {WEEKDAYS.map((w) => (
           <div
@@ -1037,7 +1144,7 @@ function CalendarGrid({
           <div key={`pad-${i}`} className="aspect-square" aria-hidden="true" />
         ))}
         {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => {
-          const note = data[d] ?? "";
+          const note = visibleNote(d);
           const filled = note.trim().length > 0;
           const isOpen = openDay === d;
           return (
@@ -1098,6 +1205,7 @@ function CalendarGrid({
               Close
             </Button>
           </div>
+          {typeSelect}
           <Textarea
             value={draft}
             onChange={(e) => updateDraft(e.target.value)}
@@ -1130,6 +1238,7 @@ function CalendarGrid({
             {openDay !== null ? `${monthName} ${openDay}, ${yearNum}` : ""}
           </DialogTitle>
         </DialogHeader>
+        {typeSelect}
         <Textarea
           value={draft}
           onChange={(e) => updateDraft(e.target.value)}
@@ -1794,15 +1903,19 @@ function CalendarNotes({
   month,
   year,
   label,
+  filterType,
   onChange,
 }: {
   value: Record<string, string> | null;
   month?: string;
   year?: string;
   label: string;
+  /** Only list notes of this appointment type (e.g. "Medical"). */
+  filterType?: string;
   onChange: (v: FieldValue) => void;
 }) {
   const data = value ?? {};
+  const typeOf = (d: number) => data[`t${d}`] || DEFAULT_APPT_TYPE;
   const now = new Date();
   const lookup = (month ?? "").trim().toLowerCase();
   let monthIndex = MONTH_NAMES.indexOf(lookup);
@@ -1819,6 +1932,7 @@ function CalendarNotes({
   const days = Object.keys(data)
     .map((k) => parseInt(k, 10))
     .filter((d) => Number.isFinite(d) && (data[String(d)] ?? "").trim().length > 0)
+    .filter((d) => !filterType || typeOf(d) === filterType)
     .sort((a, b) => a - b);
 
   return (
@@ -1826,18 +1940,44 @@ function CalendarNotes({
       <label className="field-label block mb-2">{label}</label>
       {days.length === 0 ? (
         <p className="text-sm text-muted-foreground">
-          Tap a day on the calendar to add a note — it shows up here.
+          {filterType
+            ? `Tap a day on the calendar to add a ${filterType.toLowerCase()} appointment — it shows up here.`
+            : "Tap a day on the calendar to add a note — it shows up here."}
         </p>
       ) : (
         <div className="space-y-3">
           {days.map((d) => (
             <div key={d} className="rounded-lg border border-border bg-background/60 p-3">
-              <p className="font-display text-sm mb-1.5">
-                {monthName} {d}, {yearNum}
-              </p>
+              <div className="flex items-center justify-between gap-2 mb-1.5">
+                <p className="font-display text-sm">
+                  {monthName} {d}, {yearNum}
+                </p>
+                {filterType ? (
+                  <span className="text-[10px] uppercase tracking-wide rounded-full border border-primary/40 bg-primary-soft/40 px-2 py-0.5">
+                    {filterType}
+                  </span>
+                ) : (
+                  <select
+                    value={typeOf(d)}
+                    onChange={(e) => onChange({ ...data, [`t${d}`]: e.target.value })}
+                    className="h-7 rounded-md border border-input bg-background/60 px-1.5 text-xs"
+                    aria-label={`Type for ${monthName} ${d}`}
+                  >
+                    {APPT_TYPES.map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                )}
+              </div>
               <Textarea
                 value={data[String(d)] ?? ""}
-                onChange={(e) => onChange({ ...data, [d]: e.target.value })}
+                onChange={(e) =>
+                  onChange({
+                    ...data,
+                    [d]: e.target.value,
+                    ...(e.target.value.trim() ? { [`t${d}`]: typeOf(d) } : {}),
+                  })
+                }
                 rows={3}
                 className="bg-background/60 resize-none"
                 aria-label={`Note for ${monthName} ${d}`}
