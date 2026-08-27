@@ -466,7 +466,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Wellness, Self-Care, Workout & Measurements",
-        page: 2,
+        page: 1,
         groups: [
           {
             title: "Wellness",
