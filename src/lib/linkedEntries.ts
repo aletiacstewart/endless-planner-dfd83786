@@ -558,6 +558,104 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
   return synced;
 }
 
+/**
+ * Ensure every page the Complete Tracker feeds exists as soon as a new
+ * Complete Tracker day is created. Idempotent: reuses the entry matching the
+ * same date / week / month / year instead of creating duplicates. Only the
+ * identity fields are seeded — no values are copied here.
+ */
+export async function scaffoldLinkedEntries(complete: PlannerEntry): Promise<string[]> {
+  if (complete.pageType !== "complete-tracker") return [];
+  const created: string[] = [];
+  try {
+    const date = parseDate(complete.values.date) ?? (() => {
+      const d = new Date();
+      return {
+        year: d.getFullYear(),
+        monthIndex: d.getMonth(),
+        day: d.getDate(),
+        iso: isoOf(d.getFullYear(), d.getMonth(), d.getDate()),
+      } as ParsedDate;
+    })();
+    const yearStr = String(date.year);
+    const monthName = new Date(date.year, date.monthIndex, 1)
+      .toLocaleString("en-US", { month: "long" })
+      .toLowerCase();
+    const weekStart = mondayOf(date.year, date.monthIndex, date.day);
+    const weekIso = isoOf(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate());
+
+    // Per-date pages.
+    for (const id of ["daily-tracker", "medical-records"]) {
+      await findOrCreate(
+        id,
+        (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
+        { date: date.iso },
+      );
+      created.push(id);
+    }
+
+    // Per-week page.
+    await findOrCreate(
+      "weekly-calendar",
+      (e) => (e.values.week_of as string | undefined)?.slice(0, 10) === weekIso,
+      { week_of: weekIso },
+    );
+    created.push("weekly-calendar");
+
+    // Per-month page.
+    await findOrCreate(
+      "monthly-calendar",
+      (e) =>
+        String(e.values.year ?? "") === yearStr &&
+        String(e.values.month ?? "").toLowerCase() === monthName,
+      { year: yearStr, month: monthName },
+    );
+    created.push("monthly-calendar");
+
+    // Per-year pages.
+    const yearly = [
+      "yearly-calendar",
+      "yearly-focus",
+      "yearly-habit-tracker",
+      "blood-sugar-tracker",
+      "blood-pressure-tracker",
+      "oxygen-tracker",
+      "self-care-checklist",
+      "cleaning-checklist",
+      "workout-tracker",
+    ];
+    for (const id of yearly) {
+      await findOrCreate(id, (e) => String(e.values.year ?? "") === yearStr, { year: yearStr });
+      created.push(id);
+    }
+
+    // 26-week logs — reuse any log already covering today, else start one.
+    for (const id of ["weight-tracker", "measurement-tracker"]) {
+      const all = await listEntries(id);
+      const covers = all.some((e) => {
+        const start = (e.values.start_date as string | undefined) ?? "";
+        return start && weekIndexFromStart(start, date) != null;
+      });
+      if (!covers) {
+        await createEntry(id, { start_date: date.iso });
+        created.push(id);
+      }
+    }
+
+    // Master pages (single entry).
+    const meds = await listEntries("medications");
+    if (meds.length === 0) {
+      await createEntry("medications", {});
+      created.push("medications");
+    }
+  } catch (err) {
+    console.error("[scaffoldLinkedEntries] failed:", err);
+  }
+  return created;
+}
+
+
+
 // ---------------------------------------------------------------------------
 // Reverse sync: when an individual tracker entry is saved, mirror its values
 // back into matching Complete Tracker entries.
