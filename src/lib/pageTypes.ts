@@ -491,14 +491,14 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Workout",
         page: 1,
-        columns: 2,
+        columns: 1,
         fields: [
-              { key: "cardio", label: "Cardio", type: "text" },
-              { key: "weights", label: "Weights", type: "text" },
-              { key: "yoga", label: "Yoga", type: "text" },
-              { key: "stretch", label: "Stretch", type: "text" },
-              { key: "other", label: "Other", type: "text" },
-              { key: "rest_day", label: "Rest day", type: "checkbox" },
+              { key: "cardio", label: "Cardio", type: "text", span: 2 },
+              { key: "yoga", label: "Yoga", type: "text", span: 2 },
+              { key: "weights", label: "Weights", type: "text", span: 2 },
+              { key: "stretch", label: "Stretch", type: "text", span: 2 },
+              { key: "other", label: "Other", type: "text", span: 2 },
+              { key: "rest_day", label: "Rest day", type: "checkbox", span: 2 },
         ],
       },
       {
