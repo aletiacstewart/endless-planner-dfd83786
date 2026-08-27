@@ -447,12 +447,33 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           value={value as Record<string, string>}
           columns={field.columns ?? []}
           columnKinds={field.columnKinds}
+          columnOptions={field.columnOptions}
+          columnWidths={field.columnWidths}
           rowCount={field.rowCount ?? 26}
           rowLabel={field.rowLabel ?? "Row"}
+          rowLabels={field.rowLabels}
           label={field.label}
           growable={field.growable}
           addLabel={field.addLabel}
           onChange={onChange}
+        />
+      );
+    case "calendar-notes":
+      return (
+        <CalendarNotes
+          value={value as Record<string, string>}
+          month={typeof allValues?.month === "string" ? (allValues.month as string) : undefined}
+          year={typeof allValues?.year === "string" ? (allValues.year as string) : undefined}
+          label={field.label}
+          onChange={onChange}
+        />
+      );
+    case "month-note-picker":
+      return (
+        <MonthNotePicker
+          label={field.label}
+          allValues={allValues ?? {}}
+          onChangeAny={onChangeAny}
         />
       );
     case "daily-month-grid":
