@@ -1422,12 +1422,18 @@ function WaterGrid({
     const days = Array.from({ length: Math.max(0, Math.min(to, dayCount) - from + 1) }, (_, i) => from + i);
     if (days.length === 0) return null;
     return (
-      <table className="text-xs border-separate border-spacing-y-1">
+      <table className="text-xs border-separate border-spacing-y-1 w-full table-fixed">
+        <colgroup>
+          <col className="w-[3.75rem]" />
+          {days.map((d) => (
+            <col key={d} />
+          ))}
+        </colgroup>
         <thead>
           <tr>
             <th className="text-left font-normal text-muted-foreground pr-2">Glass</th>
             {days.map((d) => (
-              <th key={d} className="font-normal text-muted-foreground w-6">{d}</th>
+              <th key={d} className="font-normal text-muted-foreground text-center">{d}</th>
             ))}
           </tr>
         </thead>
@@ -1438,12 +1444,12 @@ function WaterGrid({
               {days.map((d) => {
                 const on = !!marks[`${g}-${d}`];
                 return (
-                  <td key={d}>
+                  <td key={d} className="text-center">
                     <button
                       type="button"
                       onClick={() => toggle(g, d)}
                       className={cn(
-                        "w-5 h-5 rounded-full border transition-colors",
+                        "mx-auto block w-4 h-4 lg:w-[1.15rem] lg:h-[1.15rem] rounded-full border transition-colors",
                         on ? "bg-primary border-primary" : "bg-background/60 border-input",
                       )}
                       aria-label={`Glass ${g}, day ${d}`}
@@ -1492,9 +1498,7 @@ function WaterGrid({
           </div>
         </div>
       ) : (
-        <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
-          {renderTable(1, dayCount)}
-        </div>
+        <div className="w-full pb-2">{renderTable(1, dayCount)}</div>
       )}
       <p className="text-[11px] text-muted-foreground mt-2">
         Goal: {goal} {goal === 1 ? "glass" : "glasses"} a day — change the daily goal above to add or remove rows.
