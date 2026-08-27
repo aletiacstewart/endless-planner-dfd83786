@@ -207,7 +207,14 @@ export const PAGE_TYPES: PageTypeDef[] = [
     icon: "CalendarRange",
     sections: [
       {
+        page: 1,
         fields: [{ key: "year", label: "Year", type: "year", placeholder: "2025" }],
+      },
+      {
+        title: "Add a dated note",
+        description: "Pick a day and write a note — it's added to that month's notes.",
+        page: 1,
+        fields: [{ key: "dated_note", label: "Date & note", type: "month-note-picker", span: 2 }],
       },
       {
         title: "Months",
@@ -244,7 +251,14 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Days",
-        fields: [{ key: "calendar", label: "Calendar grid", type: "calendar-grid", span: 2 }],
+        page: 1,
+        fields: [{ key: "calendar", label: "Calendar grid", type: "calendar-grid", span: 2, hideNotePanel: true }],
+      },
+      {
+        title: "Day notes",
+        description: "Every note you added on the calendar, day by day.",
+        page: 2,
+        fields: [{ key: "calendar", label: "Notes by day", type: "calendar-notes", span: 2 }],
       },
       {
         title: "Monthly priorities",
