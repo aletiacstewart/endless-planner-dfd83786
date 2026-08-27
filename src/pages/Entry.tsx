@@ -112,7 +112,13 @@ export default function Entry() {
 
   const cadence = pageType.cadence ?? "day";
   const createLabel =
-    cadence === "year" ? "New year" : cadence === "list" ? "Update list" : "New day";
+    cadence === "year"
+      ? "New year"
+      : cadence === "month"
+        ? "New month"
+        : cadence === "list"
+          ? "Update list"
+          : "New day";
 
   const meta = getMeta(entry);
   const asSpread = true;
