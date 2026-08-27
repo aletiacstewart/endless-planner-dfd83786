@@ -280,7 +280,7 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
                 </div>
               </div>
             )}
-            <div className="flex gap-1 mb-2 overflow-x-auto no-scrollbar">
+            <div className="flex flex-wrap gap-1 mb-2">
               {STICKER_GROUPS.map((g) => (
                 <button
                   key={g.id}

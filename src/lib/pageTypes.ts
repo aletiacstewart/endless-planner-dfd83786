@@ -72,6 +72,8 @@ export interface SectionDef {
   columns?: 1 | 2 | 3;
   /** Optional column headings displayed above each column of the grid (length should match `columns`). */
   columnTitles?: string[];
+  /** Which side of a two-page spread this section belongs on. Defaults to an even split. */
+  page?: 1 | 2;
   fields: FieldDef[];
   /** Optional side-by-side groups rendered inside the same card. When provided, each group becomes its own column with its own title and stacked fields. */
   groups?: { title?: string; columns?: 1 | 2 | 3; fields: FieldDef[] }[];
