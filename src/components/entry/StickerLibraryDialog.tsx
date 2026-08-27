@@ -8,25 +8,20 @@ import {
   type StickerAsset,
   type StickerCategory,
 } from "@/data/stickers";
-import { getCover, type CoverCollection } from "@/data/covers";
 
 type Props = {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  /** Active cover id — determines which themed set to show. */
+  /** Kept for call-site compatibility — the library is shared across covers. */
   coverId?: string | null;
   onPick: (a: StickerAsset) => void;
 };
 
-export function StickerLibraryDialog({ open, onOpenChange, coverId, onPick }: Props) {
-  const collection: CoverCollection | undefined = useMemo(() => {
-    if (!coverId) return undefined;
-    return getCover(coverId)?.collection;
-  }, [coverId]);
-
-  const set = useMemo(() => getStickerSet(collection), [collection]);
-  const [tab, setTab] = useState<StickerCategory>("motifs");
+export function StickerLibraryDialog({ open, onOpenChange, onPick }: Props) {
+  const set = useMemo(() => getStickerSet(), []);
+  const [tab, setTab] = useState<StickerCategory>("celebrations");
   const items = set[tab] ?? [];
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
