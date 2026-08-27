@@ -528,10 +528,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
               },
               { key: "weight_today_notes", label: "Weight — notes", type: "text" },
               { key: "weight_result", label: "Result Weight", type: "text", compact: true },
-            ],
-          },
         ],
-        fields: [],
       },
       {
         page: 2,
