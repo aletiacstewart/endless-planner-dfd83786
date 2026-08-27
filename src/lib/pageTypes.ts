@@ -30,6 +30,7 @@ export type FieldType =
   | "paired-compact" // single label with two small Start/Finish inputs side-by-side
   | "priority-list" // N numbered rows of checkbox + text (Top priorities)
   | "hourly-timeline" // hourly schedule slots with text per hour
+  | "time-schedule" // add-a-row schedule: 15-minute time dropdown + text
   | "note-style" // paper-style picker (blank/lined/dot/cornell) + rich body
   | "smart-goal" // structured SMART goal block
   | "mood-log" // 7-day weekday mood face row
@@ -88,9 +89,19 @@ export interface PageTypeDef {
   description: string;
   icon: string; // lucide icon name
   sections: SectionDef[];
+  /**
+   * How often a new entry of this page is made. Drives the create-button and
+   * card wording: "New day" (default), "New year", or a single ongoing list.
+   */
+  cadence?: "day" | "year" | "list";
   /** Build a short summary for entry list cards */
   summary?: (values: Record<string, unknown>) => string;
 }
+
+const FEELING_OPTIONS = [
+  "Calm", "Happy", "Grateful", "Sad", "Anxious",
+  "Angry", "Overwhelmed", "Lonely", "Hopeful", "Tired",
+];
 
 const goalKeys = Array.from({ length: 6 }, (_, i) => `goal_${i + 1}`);
 
@@ -310,7 +321,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Hourly schedule",
         description: "Time-block the day.",
         fields: [
-          { key: "hourly", label: "Schedule", type: "hourly-timeline", span: 2 },
+          { key: "hourly", label: "Schedule", type: "time-schedule", span: 2 },
         ],
       },
       {
@@ -1049,6 +1060,9 @@ export const PAGE_TYPES: PageTypeDef[] = [
             label: "Exercise / Sets x Reps / Weight",
             type: "measurement-grid",
             span: 2,
+            rowCount: 12,
+            rowLabel: "#",
+            columns: ["Exercise", "Sets x Reps", "Weight", "Notes"],
           },
         ],
       },
@@ -1064,12 +1078,12 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Fuel & recovery",
-        columns: 2,
+        columns: 1,
         fields: [
-          { key: "water", label: "Water (glasses)", type: "rating", max: 10 },
-          { key: "sleep_hours", label: "Sleep (hours)", type: "text" },
-          { key: "energy", label: "Energy", type: "rating", max: 5 },
-          { key: "soreness", label: "Soreness", type: "rating", max: 5 },
+          { key: "water", label: "Water (glasses)", type: "rating", max: 10, span: 2 },
+          { key: "sleep_hours", label: "Sleep (hours)", type: "text", span: 2 },
+          { key: "energy", label: "Energy", type: "rating", max: 5, span: 2 },
+          { key: "soreness", label: "Soreness", type: "rating", max: 5, span: 2 },
           { key: "notes", label: "How it felt", type: "textarea", rows: 3, span: 2 },
         ],
       },
@@ -1203,7 +1217,15 @@ export const PAGE_TYPES: PageTypeDef[] = [
     sections: [
       {
         fields: [
-          { key: "goals", label: "Goal / Target / Saved / Deadline", type: "measurement-grid", span: 2 },
+          {
+            key: "goals",
+            label: "Goal / Target / Saved / Deadline",
+            type: "measurement-grid",
+            span: 2,
+            rowCount: 12,
+            rowLabel: "#",
+            columns: ["Goal", "Target", "Saved", "Deadline"],
+          },
         ],
       },
       {
@@ -1315,14 +1337,20 @@ export const PAGE_TYPES: PageTypeDef[] = [
         fields: [
           { key: "date", label: "Date", type: "date" },
           { key: "mood", label: "Overall mood", type: "mood-rating" },
-          { key: "energy", label: "Energy", type: "rating", max: 5 },
+          { key: "energy", label: "Depression", type: "rating", max: 5 },
           { key: "anxiety", label: "Anxiety", type: "rating", max: 5 },
+          { key: "stress", label: "Stress", type: "rating", max: 5 },
         ],
       },
       {
-        title: "Today's feelings",
+        title: "Today's Feels",
+        description: "Name what you feel at each point of the day.",
+        columns: 1,
         fields: [
-          { key: "feelings", label: "Name what you feel", type: "checkbox-group", options: ["Calm", "Happy", "Grateful", "Sad", "Anxious", "Angry", "Overwhelmed", "Lonely", "Hopeful", "Tired"], span: 2 },
+          { key: "feelings", label: "Morning — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_morning_other", span: 2 },
+          { key: "feelings_afternoon", label: "Afternoon — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_afternoon_other", span: 2 },
+          { key: "feelings_evening", label: "Evening — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_evening_other", span: 2 },
+          { key: "feelings_night", label: "Night — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_night_other", span: 2 },
         ],
       },
       {
