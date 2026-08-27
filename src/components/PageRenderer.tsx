@@ -1,6 +1,33 @@
-import type { PageTypeDef, FieldValue } from "@/lib/pageTypes";
+import { useEffect, useState } from "react";
+import type { PageTypeDef, FieldValue, SectionDef } from "@/lib/pageTypes";
 import { FieldRenderer } from "./FieldRenderer";
 import { cn } from "@/lib/utils";
+import { listDoctors } from "@/lib/doctors";
+
+/** "Notes for Dr. X" caption shown on sections whose fields are scoped by doctor. */
+function ScopeHint({ section, values }: { section: SectionDef; values: Record<string, FieldValue> }) {
+  const scopeKey = section.fields.find((f) => f.scopeByKey)?.scopeByKey;
+  const scopeValue = scopeKey ? ((values[scopeKey] as string) || "") : "";
+  const [name, setName] = useState("");
+
+  useEffect(() => {
+    if (!scopeValue) { setName(""); return; }
+    let alive = true;
+    listDoctors()
+      .then((list) => { if (alive) setName(list.find((d) => d.id === scopeValue)?.name ?? ""); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [scopeValue]);
+
+  if (!scopeKey) return null;
+  return (
+    <p className="text-xs text-muted-foreground mb-2">
+      {scopeValue
+        ? `Notes for ${name || "the selected doctor"} — each doctor keeps their own notes.`
+        : "Select a doctor above to keep these notes with that doctor."}
+    </p>
+  );
+}
 
 interface Props {
   pageType: PageTypeDef;
@@ -19,6 +46,7 @@ export function PageRenderer({ pageType, values, onChange }: Props) {
           {section.description && (
             <p className="text-sm text-muted-foreground mb-3">{section.description}</p>
           )}
+          <ScopeHint section={section} values={values} />
           {section.columnTitles && section.columnTitles.length > 0 && (
             <div
               className={cn(
