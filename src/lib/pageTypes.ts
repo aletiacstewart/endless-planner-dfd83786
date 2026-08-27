@@ -491,14 +491,14 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Workout",
         page: 1,
-        columns: 2,
+        columns: 1,
         fields: [
-              { key: "cardio", label: "Cardio", type: "text" },
-              { key: "weights", label: "Weights", type: "text" },
-              { key: "yoga", label: "Yoga", type: "text" },
-              { key: "stretch", label: "Stretch", type: "text" },
-              { key: "other", label: "Other", type: "text" },
-              { key: "rest_day", label: "Rest day", type: "checkbox" },
+              { key: "cardio", label: "Cardio", type: "text", span: 2 },
+              { key: "yoga", label: "Yoga", type: "text", span: 2 },
+              { key: "weights", label: "Weights", type: "text", span: 2 },
+              { key: "stretch", label: "Stretch", type: "text", span: 2 },
+              { key: "other", label: "Other", type: "text", span: 2 },
+              { key: "rest_day", label: "Rest day", type: "checkbox", span: 2 },
         ],
       },
       {
@@ -548,12 +548,12 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        columns: 3,
+        columns: 1,
         page: 2,
         fields: [
-          { key: "medical_appointment_notes", label: "Appointment Notes", type: "textarea", rows: 5 },
-          { key: "test_results", label: "Test Results", type: "textarea", rows: 5 },
-          { key: "lab_result_notes", label: "Lab Result Notes", type: "textarea", rows: 5 },
+          { key: "medical_appointment_notes", label: "Appointment Notes", type: "textarea", rows: 5, span: 2 },
+          { key: "test_results", label: "Test Results", type: "textarea", rows: 5, span: 2 },
+          { key: "lab_result_notes", label: "Lab Result Notes", type: "textarea", rows: 5, span: 2 },
         ],
       },
       {
@@ -567,7 +567,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Fun Activity Tracker",
         description: "Write in your own fun activities, then mark Success or Failed for the day.",
-        columns: 2,
+        columns: 1,
         page: 1,
         fields: Array.from({ length: 3 }, (_, i) => i + 1).map((n) => ({
           key: `fun_${n}`,
@@ -575,12 +575,13 @@ export const PAGE_TYPES: PageTypeDef[] = [
           type: "success-fail" as const,
           inputKey: `fun_${n}_label`,
           inputPlaceholder: "Fun activity…",
+          span: 2 as const,
         })),
       },
       {
         title: "Begin / Break Habits",
         description: "Write in each habit, choose Begin or Break, then mark Success or Failed for the day.",
-        columns: 2,
+        columns: 1,
         page: 1,
         fields: Array.from({ length: 3 }, (_, i) => i + 1).map((n) => ({
           key: `habit_${n}`,
@@ -589,6 +590,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
           inputKey: `habit_${n}_label`,
           inputPlaceholder: "Habit…",
           modeKey: `habit_${n}_mode`,
+          span: 2 as const,
         })),
       },
       {
