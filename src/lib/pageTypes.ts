@@ -94,7 +94,7 @@ export interface PageTypeDef {
    * How often a new entry of this page is made. Drives the create-button and
    * card wording: "New day" (default), "New year", or a single ongoing list.
    */
-  cadence?: "day" | "year" | "list";
+  cadence?: "day" | "month" | "year" | "list";
   /** Build a short summary for entry list cards */
   summary?: (values: Record<string, unknown>) => string;
 }
