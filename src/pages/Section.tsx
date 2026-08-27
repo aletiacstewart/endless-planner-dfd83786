@@ -79,8 +79,9 @@ export default function Section() {
 
           <div className="relative z-10 flex items-center justify-between mb-5">
             <p className="font-script text-lg text-primary/80">
-              {entries.length} {entries.length === 1 ? "sheet" : "sheets"}
+              {entries.length} {entries.length === 1 ? "Day" : "Days"}
             </p>
+
             <Button onClick={addNew} size="sm" className="rounded-full">
               <Plus className="w-4 h-4 mr-1" />
               New {pageType.shortName.toLowerCase()}
@@ -99,7 +100,7 @@ export default function Section() {
             </div>
           ) : (
             <ul className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {entries.map((e, idx) => {
+              {orderedEntries.map((e, idx) => {
                 const title = pageType.summary?.(e.values) || "Untitled";
                 return (
                   <li
@@ -108,8 +109,9 @@ export default function Section() {
                   >
                     <Link to={`/entry/${e.id}`} className="block p-4 pr-10 min-h-[112px]">
                       <p className="font-script text-primary/70 text-sm leading-none">
-                        sheet {String(idx + 1).padStart(2, "0")}
+                        Day {idx + 1}
                       </p>
+
                       <p className="font-display text-lg mt-2 line-clamp-2">{title}</p>
                       <p className="text-[11px] uppercase tracking-widest text-muted-foreground mt-3">
                         {new Date(e.updatedAt).toLocaleDateString(undefined, {
