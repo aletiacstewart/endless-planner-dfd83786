@@ -407,6 +407,7 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           year={derivedYear}
           compact={field.compact}
           hidePanel={field.hideNotePanel}
+          filterType={field.filterType}
           onChange={onChange}
         />
       );
@@ -466,6 +467,7 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           month={typeof allValues?.month === "string" ? (allValues.month as string) : undefined}
           year={typeof allValues?.year === "string" ? (allValues.year as string) : undefined}
           label={field.label}
+          filterType={field.filterType}
           onChange={onChange}
         />
       );
@@ -974,12 +976,17 @@ const MONTH_NAMES = [
 ];
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+/** Appointment / event types a calendar day note can be tagged with. */
+export const APPT_TYPES = ["Medical", "Work", "School", "Family", "Personal", "Other"] as const;
+const DEFAULT_APPT_TYPE = "Other";
+
 function CalendarGrid({
   value,
   month,
   year,
   compact,
   hidePanel,
+  filterType,
   onChange,
 }: {
   value: Record<string, string> | null;
@@ -988,10 +995,19 @@ function CalendarGrid({
   compact?: boolean;
   /** Hide the inline note panel (notes are edited in a dialog / on the other page). */
   hidePanel?: boolean;
+  /** Only show/edit notes of this appointment type (e.g. "Medical"). */
+  filterType?: string;
   onChange: (v: FieldValue) => void;
 }) {
   const data = value ?? {};
-  const update = (day: number, v: string) => onChange({ ...data, [day]: v });
+  const typeOf = (day: number) => data[`t${day}`] || DEFAULT_APPT_TYPE;
+  const update = (day: number, v: string, type?: string) => {
+    const next: Record<string, string> = { ...data, [String(day)]: v };
+    const t = type ?? filterType ?? typeOf(day);
+    if (v.trim()) next[`t${day}`] = t;
+    else delete next[`t${day}`];
+    onChange(next);
+  };
 
   const now = new Date();
   const monthLookup = (month ?? "").trim().toLowerCase();
@@ -1016,28 +1032,80 @@ function CalendarGrid({
   // Open day in a popup so the cell stays clean and notes are fully visible.
   const [openDay, setOpenDay] = useState<number | null>(null);
   const [draft, setDraft] = useState("");
+  const [draftType, setDraftType] = useState<string>(filterType ?? DEFAULT_APPT_TYPE);
+  const [viewType, setViewType] = useState<string>("All");
   const isMobile = useIsMobile();
 
+  /** A day's note counts as visible when it matches the active type filter. */
+  const visibleNote = (d: number) => {
+    const note = data[String(d)] ?? "";
+    if (!note.trim()) return "";
+    const t = typeOf(d);
+    if (filterType) return t === filterType ? note : "";
+    if (viewType !== "All" && t !== viewType) return "";
+    return note;
+  };
+
   const openCell = (d: number) => {
-    setDraft(data[d] ?? "");
+    setDraft(visibleNote(d));
+    setDraftType(filterType ?? (data[String(d)]?.trim() ? typeOf(d) : viewType !== "All" ? viewType : DEFAULT_APPT_TYPE));
     setOpenDay(d);
   };
   const saveCell = () => {
-    if (openDay !== null) update(openDay, draft);
+    if (openDay !== null) update(openDay, draft, draftType);
     setOpenDay(null);
   };
 
   // Auto-save the draft as the user types so the inline panel feels seamless.
   const updateDraft = (v: string) => {
     setDraft(v);
-    if (openDay !== null) update(openDay, v);
+    if (openDay !== null) update(openDay, v, draftType);
   };
+  const updateDraftType = (t: string) => {
+    setDraftType(t);
+    if (openDay !== null && draft.trim()) update(openDay, draft, t);
+  };
+
+  const typeSelect = filterType ? null : (
+    <div className="mb-2">
+      <label className="field-label block mb-1">Type</label>
+      <select
+        value={draftType}
+        onChange={(e) => updateDraftType(e.target.value)}
+        className="w-full h-9 rounded-md border border-input bg-background/60 px-2 text-sm"
+        aria-label="Appointment type"
+      >
+        {APPT_TYPES.map((t) => (
+          <option key={t} value={t}>{t}</option>
+        ))}
+      </select>
+    </div>
+  );
 
   const calendar = (
     <div className={cn("min-w-0", compact && "max-w-xs")}>
-      <label className="field-label block mb-2">
-        {compact ? `${monthName} ${yearNum} — tap a day` : "Days of the month — tap to add a note"}
-      </label>
+      <div className="flex flex-wrap items-end justify-between gap-2 mb-2">
+        <label className="field-label block">
+          {filterType
+            ? `${monthName} ${yearNum} — ${filterType.toLowerCase()} appointments`
+            : compact
+            ? `${monthName} ${yearNum} — tap a day`
+            : "Days of the month — tap to add a note"}
+        </label>
+        {!filterType && !compact && (
+          <select
+            value={viewType}
+            onChange={(e) => setViewType(e.target.value)}
+            className="h-8 rounded-md border border-input bg-background/60 px-2 text-xs"
+            aria-label="Filter by type"
+          >
+            <option value="All">All types</option>
+            {APPT_TYPES.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        )}
+      </div>
       <div className={cn("grid grid-cols-7 mb-1.5", compact ? "gap-0.5" : "gap-1.5")}>
         {WEEKDAYS.map((w) => (
           <div
@@ -1056,7 +1124,7 @@ function CalendarGrid({
           <div key={`pad-${i}`} className="aspect-square" aria-hidden="true" />
         ))}
         {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => {
-          const note = data[d] ?? "";
+          const note = visibleNote(d);
           const filled = note.trim().length > 0;
           const isOpen = openDay === d;
           return (
@@ -1117,6 +1185,7 @@ function CalendarGrid({
               Close
             </Button>
           </div>
+          {typeSelect}
           <Textarea
             value={draft}
             onChange={(e) => updateDraft(e.target.value)}
@@ -1149,6 +1218,7 @@ function CalendarGrid({
             {openDay !== null ? `${monthName} ${openDay}, ${yearNum}` : ""}
           </DialogTitle>
         </DialogHeader>
+        {typeSelect}
         <Textarea
           value={draft}
           onChange={(e) => updateDraft(e.target.value)}
