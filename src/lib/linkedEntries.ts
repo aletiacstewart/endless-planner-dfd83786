@@ -840,7 +840,7 @@ export async function scaffoldLinkedEntries(complete: PlannerEntry): Promise<str
     const weekIso = isoOf(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate());
 
     // Per-date pages.
-    for (const id of ["daily-tracker", "medical-records"]) {
+    for (const id of ["daily-tracker", "medical-records", "cleaning-checklist"]) {
       await findOrCreate(
         id,
         (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
@@ -876,7 +876,6 @@ export async function scaffoldLinkedEntries(complete: PlannerEntry): Promise<str
       "blood-pressure-tracker",
       "oxygen-tracker",
       "self-care-checklist",
-      "cleaning-checklist",
       "workout-tracker",
     ];
     for (const id of yearly) {
