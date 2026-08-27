@@ -437,6 +437,12 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       });
       const monthCap = monthName.charAt(0).toUpperCase() + monthName.slice(1);
       synced.push(`Monthly Calendar (${monthCap} ${yearStr})`);
+      synced.push(
+        ...(await fanOutMedicalDays(date.year, date.monthIndex, typedDays(cal, "Medical"), {
+          monthly: true,
+          complete: true,
+        })),
+      );
     }
 
     // 7. Cleaning Check List — daily-month-grid `cleaning`, year-scoped.
@@ -862,6 +868,96 @@ async function updateCompleteForDate(iso: string, mutate: (vals: Record<string, 
   return matches.length;
 }
 
+/* -------------------------------------------------------------------------- */
+/* Medical appointments — shared between the Medical page and the calendars    */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Fan a month's medical appointments out to every calendar that shows them:
+ * the Monthly Calendar, every Complete Tracker day in that month, the matching
+ * Weekly Calendar weekday note, and the Medical Records page's own calendar.
+ * Notes of other appointment types are never touched.
+ */
+async function fanOutMedicalDays(
+  year: number,
+  monthIndex: number,
+  days: Map<number, string>,
+  skip: { monthly?: boolean; medical?: boolean; complete?: boolean } = {},
+): Promise<string[]> {
+  const synced: string[] = [];
+  const yearStr = String(year);
+  const monthName = MONTH_LOWER[monthIndex];
+
+  if (!skip.monthly) {
+    const monthly = await findOrCreate(
+      "monthly-calendar",
+      (e) => String(e.values.year ?? "") === yearStr && String(e.values.month ?? "").toLowerCase() === monthName,
+      { year: yearStr, month: monthName },
+    );
+    await persist(monthly, (dst) => {
+      if (!dst.year) dst.year = yearStr;
+      if (!dst.month) dst.month = monthName;
+      replaceTypedDays(dst, "calendar", "Medical", days);
+    });
+    synced.push("Monthly Calendar (medical)");
+  }
+
+  if (!skip.complete) {
+    const completes = (await listEntries("complete-tracker")).filter((e) => {
+      const d = parseDate(e.values.date);
+      return d && d.year === year && d.monthIndex === monthIndex;
+    });
+    for (const c of completes) {
+      await persist(c, (dst) => replaceTypedDays(dst, "month_calendar", "Medical", days));
+    }
+    if (completes.length > 0) synced.push("Complete Tracker (medical calendar)");
+  }
+
+  // Weekly Calendar — mirror each appointment into its weekday note.
+  for (const [day, note] of days) {
+    const weekStart = mondayOf(year, monthIndex, day);
+    const weekIso = isoOf(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate());
+    const weekday = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"][
+      new Date(year, monthIndex, day).getDay()
+    ];
+    const weekly = await findOrCreate(
+      "weekly-calendar",
+      (e) => (e.values.week_of as string | undefined)?.slice(0, 10) === weekIso,
+      { week_of: weekIso },
+    );
+    await persist(weekly, (dst) => {
+      if (!dst.week_of) dst.week_of = weekIso;
+      const cur = asText(dst[weekday]);
+      const line = `Medical: ${note.trim()}`;
+      const stripped = cur
+        .split("\n")
+        .filter((l) => !/^Medical:/i.test(l.trim()))
+        .join("\n")
+        .trim();
+      dst[weekday] = stripped ? `${stripped}\n${line}` : line;
+    });
+  }
+  if (days.size > 0) synced.push("Weekly Calendar (medical)");
+
+  if (!skip.medical) {
+    const medical = await findOrCreate(
+      "medical-records",
+      (e) =>
+        String(e.values.year ?? "") === yearStr &&
+        String(e.values.month ?? "").toLowerCase() === monthName,
+      { year: yearStr, month: monthName, date: isoOf(year, monthIndex, [...days.keys()][0] ?? 1) },
+    );
+    await persist(medical, (dst) => {
+      if (!dst.year) dst.year = yearStr;
+      if (!dst.month) dst.month = monthName;
+      replaceTypedDays(dst, "medical_calendar", "Medical", days);
+    });
+    synced.push("Medical Records (calendar)");
+  }
+
+  return synced;
+}
+
 export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]> {
   const synced: string[] = [];
   try {
@@ -956,6 +1052,13 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
         await persist(c, (dst) => { dst.month_calendar = { ...cal }; });
       }
       if (completes.length > 0) synced.push("Complete Tracker (calendar)");
+      // Medical-typed days also live on the Medical Records page.
+      synced.push(
+        ...(await fanOutMedicalDays(year, monthIndex, typedDays(cal, "Medical"), {
+          monthly: true,
+          complete: true,
+        })),
+      );
       return synced;
     }
 
@@ -1100,11 +1203,26 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
     // Medical Records → mirror three textareas into Complete Tracker for that date.
     if (entry.pageType === "medical-records") {
       const date = parseDate(v.date);
-      if (!date) return [];
-      const touched = await updateCompleteForDate(date.iso, (dst) => {
-        copyKeys(v, dst, scopedKeys(v, ["medical_appointment_notes", "test_results", "lab_result_notes", "doctor_id"]));
-      });
-      if (touched > 0) synced.push("Complete Tracker (medical)");
+      if (date) {
+        const touched = await updateCompleteForDate(date.iso, (dst) => {
+          copyKeys(v, dst, scopedKeys(v, ["medical_appointment_notes", "test_results", "lab_result_notes", "doctor_id"]));
+        });
+        if (touched > 0) synced.push("Complete Tracker (medical)");
+      }
+      // Medical appointment calendar → monthly / weekly / daily calendars.
+      const cal = v.medical_calendar as Record<string, string> | undefined;
+      if (cal && Object.keys(cal).length > 0) {
+        const monthName = String(v.month ?? "").toLowerCase();
+        let monthIndex = MONTH_LOWER.indexOf(monthName);
+        let year = Number(v.year ?? "") || 0;
+        if (monthIndex === -1 && date) monthIndex = date.monthIndex;
+        if (!year && date) year = date.year;
+        if (monthIndex >= 0 && year) {
+          synced.push(
+            ...(await fanOutMedicalDays(year, monthIndex, typedDays(cal, "Medical"), { medical: true })),
+          );
+        }
+      }
       return synced;
     }
 
