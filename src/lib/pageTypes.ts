@@ -21,6 +21,7 @@ export type FieldType =
   | "ingredients-list" // dynamic list of strings
   | "calendar-grid" // 31 day cells with notes
   | "habit-grid" // habits x 31 days (boolean marks)
+  | "water-grid" // fixed "Glass N" rows x days of the selected month (boolean marks)
   | "month-tracker" // 12 months x N items grid (boolean marks)
   | "measurement-grid" // fixed N rows x labelled columns of free text
   | "daily-month-grid" // 31 days x 12 months free-text values + Achieved column
@@ -93,7 +94,7 @@ export interface PageTypeDef {
    * How often a new entry of this page is made. Drives the create-button and
    * card wording: "New day" (default), "New year", or a single ongoing list.
    */
-  cadence?: "day" | "year" | "list";
+  cadence?: "day" | "month" | "year" | "list";
   /** Build a short summary for entry list cards */
   summary?: (values: Record<string, unknown>) => string;
 }
@@ -1578,6 +1579,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
     shortName: "Water",
     description: "Check off your glasses of water every day of the month.",
     icon: "Droplet",
+    cadence: "month",
     sections: [
       {
         columns: 2,
@@ -1593,9 +1595,8 @@ export const PAGE_TYPES: PageTypeDef[] = [
           {
             key: "water_grid",
             label: "Water intake",
-            type: "habit-grid",
+            type: "water-grid",
             span: 2,
-            defaultItems: ["1", "2", "3", "4", "5", "6", "7", "8"],
           },
         ],
       },

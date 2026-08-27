@@ -112,7 +112,13 @@ export default function Entry() {
 
   const cadence = pageType.cadence ?? "day";
   const createLabel =
-    cadence === "year" ? "New year" : cadence === "list" ? "Update list" : "New day";
+    cadence === "year"
+      ? "New year"
+      : cadence === "month"
+        ? "New month"
+        : cadence === "list"
+          ? "Update list"
+          : "New day";
 
   const meta = getMeta(entry);
   const asSpread = true;
@@ -133,7 +139,12 @@ export default function Entry() {
 
   /** Start a fresh sheet of the same page type and jump straight into it. */
   const addSheet = async () => {
-    const created = await createEntry(entry.pageType);
+    const created = await createEntry(
+      entry.pageType,
+      cadence === "month"
+        ? { month: new Date().toLocaleDateString("en-US", { month: "long" }) }
+        : undefined,
+    );
     if (entry.pageType === "complete-tracker") {
       const { scaffoldLinkedEntries } = await import("@/lib/linkedEntries");
       await scaffoldLinkedEntries(created);

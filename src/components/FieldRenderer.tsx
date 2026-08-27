@@ -410,6 +410,20 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           onChange={onChange}
         />
       );
+    case "water-grid": {
+      const goalRaw = allValues?.daily_goal;
+      const goalNum = parseInt(String(goalRaw ?? ""), 10);
+      const goal = Number.isFinite(goalNum) ? Math.min(12, Math.max(1, goalNum)) : 8;
+      const monthName = typeof allValues?.month === "string" ? (allValues.month as string) : "";
+      return (
+        <WaterGrid
+          value={value as { marks: Record<string, boolean> } | null}
+          goal={goal}
+          monthName={monthName}
+          onChange={onChange}
+        />
+      );
+    }
     case "month-tracker":
       return (
         <MonthTracker
@@ -1224,6 +1238,116 @@ function HabitGrid({
       <Button type="button" variant="outline" size="sm" onClick={addHabit} className="mt-2">
         <Plus className="w-4 h-4 mr-1" /> Add habit
       </Button>
+    </div>
+  );
+}
+
+/** Glasses (rows) x days of the month (columns). Rows are fixed by the daily goal. */
+function WaterGrid({
+  value,
+  goal,
+  monthName,
+  onChange,
+}: {
+  value: { marks: Record<string, boolean> } | null;
+  goal: number;
+  monthName: string;
+  onChange: (v: FieldValue) => void;
+}) {
+  const isMobile = useIsMobile();
+  const marks = value?.marks ?? {};
+  const idx = MONTH_NAMES.indexOf((monthName || "").trim().toLowerCase());
+  const year = new Date().getFullYear();
+  const dayCount = idx >= 0 ? new Date(year, idx + 1, 0).getDate() : 31;
+
+  const toggle = (glass: number, day: number) => {
+    const k = `${glass}-${day}`;
+    onChange({ ...(value ?? {}), marks: { ...marks, [k]: !marks[k] } });
+  };
+
+  const glasses = Array.from({ length: goal }, (_, i) => i + 1);
+
+  const renderTable = (from: number, to: number) => {
+    const days = Array.from({ length: Math.max(0, Math.min(to, dayCount) - from + 1) }, (_, i) => from + i);
+    if (days.length === 0) return null;
+    return (
+      <table className="text-xs border-separate border-spacing-y-1">
+        <thead>
+          <tr>
+            <th className="text-left font-normal text-muted-foreground pr-2">Glass</th>
+            {days.map((d) => (
+              <th key={d} className="font-normal text-muted-foreground w-6">{d}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {glasses.map((g) => (
+            <tr key={g}>
+              <td className="pr-2 whitespace-nowrap text-muted-foreground">Glass {g}</td>
+              {days.map((d) => {
+                const on = !!marks[`${g}-${d}`];
+                return (
+                  <td key={d}>
+                    <button
+                      type="button"
+                      onClick={() => toggle(g, d)}
+                      className={cn(
+                        "w-5 h-5 rounded-full border transition-colors",
+                        on ? "bg-primary border-primary" : "bg-background/60 border-input",
+                      )}
+                      aria-label={`Glass ${g}, day ${d}`}
+                      aria-pressed={on}
+                    />
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+          <tr>
+            <td className="pr-2 text-[10px] uppercase tracking-wide text-muted-foreground">Total</td>
+            {days.map((d) => {
+              const count = glasses.reduce((n, g) => n + (marks[`${g}-${d}`] ? 1 : 0), 0);
+              const hit = count >= goal;
+              return (
+                <td
+                  key={d}
+                  className={cn(
+                    "text-center text-[10px]",
+                    hit ? "text-primary font-semibold" : "text-muted-foreground",
+                  )}
+                >
+                  {count}
+                </td>
+              );
+            })}
+          </tr>
+        </tbody>
+      </table>
+    );
+  };
+
+  return (
+    <div>
+      <label className="field-label block mb-2">Glasses per day — tap to fill</label>
+      {isMobile ? (
+        <div className="space-y-4">
+          <div>
+            <div className="text-[10px] text-muted-foreground mb-1">Days 1–16</div>
+            {renderTable(1, 16)}
+          </div>
+          <div>
+            <div className="text-[10px] text-muted-foreground mb-1">Days 17–{dayCount}</div>
+            {renderTable(17, dayCount)}
+          </div>
+        </div>
+      ) : (
+        <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
+          {renderTable(1, dayCount)}
+        </div>
+      )}
+      <p className="text-[11px] text-muted-foreground mt-2">
+        Goal: {goal} {goal === 1 ? "glass" : "glasses"} a day — change the daily goal above to add or remove rows.
+      </p>
     </div>
   );
 }
