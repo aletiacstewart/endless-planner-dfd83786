@@ -21,7 +21,7 @@ function labelFor(entry: PlannerEntry, index: number, total: number): string {
   if (d && !isNaN(d.getTime())) {
     return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
   }
-  return `Page ${total - index}`;
+  return `Day ${index + 1}`;
 }
 
 /**
