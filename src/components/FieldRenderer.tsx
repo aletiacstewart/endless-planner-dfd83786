@@ -1460,25 +1460,151 @@ function MonthTracker({
 /*  Used by Bi-Monthly Weight (4 cols) and Bi-Monthly Measurements (8 cols).  */
 /* -------------------------------------------------------------------------- */
 
+const OCCASION_OPTIONS = [
+  "Birthday",
+  "Anniversary",
+  "Wedding",
+  "Graduation",
+  "Holiday",
+  "Memorial",
+  "Work",
+  "Other",
+];
+
+/** Occasion cell: preset dropdown with an inline text box when "Other". */
+function OccasionCell({
+  value,
+  otherValue,
+  onChange,
+  onOtherChange,
+  ariaLabel,
+}: {
+  value: string;
+  otherValue: string;
+  onChange: (v: string) => void;
+  onOtherChange: (v: string) => void;
+  ariaLabel: string;
+}) {
+  return (
+    <div className="flex items-center gap-1">
+      <Select value={value || undefined} onValueChange={onChange}>
+        <SelectTrigger className="h-7 text-xs min-w-[7rem] bg-background/60" aria-label={ariaLabel}>
+          <SelectValue placeholder="—" />
+        </SelectTrigger>
+        <SelectContent>
+          {OCCASION_OPTIONS.map((o) => (
+            <SelectItem key={o} value={o} className="text-xs">
+              {o}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      {value === "Other" && (
+        <Input
+          value={otherValue}
+          onChange={(e) => onOtherChange(e.target.value)}
+          placeholder="Which?"
+          aria-label={`${ariaLabel} — other`}
+          className="h-7 text-xs min-w-[5rem] bg-background/60"
+        />
+      )}
+    </div>
+  );
+}
+
+/** Date cell: pop-out calendar for day / month / year. */
+function DateCell({
+  value,
+  onChange,
+  ariaLabel,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  ariaLabel: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const parsed = value ? new Date(`${value}T00:00:00`) : undefined;
+  const valid = parsed && !isNaN(parsed.getTime()) ? parsed : undefined;
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          aria-label={ariaLabel}
+          className={cn(
+            "h-7 px-2 text-xs font-normal justify-start min-w-[7rem] bg-background/60",
+            !valid && "text-muted-foreground",
+          )}
+        >
+          <CalendarIcon className="w-3 h-3 mr-1 shrink-0" />
+          {valid
+            ? valid.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })
+            : "Pick date"}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0" align="start">
+        <Calendar
+          mode="single"
+          selected={valid}
+          defaultMonth={valid}
+          captionLayout="dropdown-buttons"
+          fromYear={1900}
+          toYear={new Date().getFullYear() + 10}
+          onSelect={(d) => {
+            if (d) {
+              const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+              onChange(iso);
+            } else {
+              onChange("");
+            }
+            setOpen(false);
+          }}
+          initialFocus
+          className={cn("p-3 pointer-events-auto")}
+        />
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 function MeasurementGrid({
   value,
   columns,
+  columnKinds,
   rowCount,
   rowLabel,
   label,
+  growable,
+  addLabel,
   onChange,
 }: {
   value: Record<string, string> | null;
   columns: string[];
+  columnKinds?: ("text" | "occasion" | "date")[];
   rowCount: number;
   rowLabel: string;
   label: string;
+  growable?: boolean;
+  addLabel?: string;
   onChange: (v: FieldValue) => void;
 }) {
   const isMobile = useIsMobile();
   const data = value ?? {};
   const set = (row: number, col: string, v: string) =>
     onChange({ ...data, [`${row}-${col}`]: v });
+
+  const storedRows = Number(data.__rows);
+  const visibleRows = growable
+    ? Math.max(rowCount, Number.isFinite(storedRows) ? storedRows : 0)
+    : rowCount;
+
+  /** Legacy fallback: a renamed column keeps showing values saved under its old name. */
+  const cellValue = (row: number, col: string) => {
+    const v = data[`${row}-${col}`];
+    if (v != null && v !== "") return v;
+    const legacy = col.includes("/") ? col.split("/")[0] : null;
+    return (legacy ? data[`${row}-${legacy}`] : undefined) ?? "";
+  };
 
   return (
     <div>
@@ -1498,36 +1624,65 @@ function MeasurementGrid({
             </tr>
           </thead>
           <tbody>
-            {Array.from({ length: rowCount }, (_, i) => i + 1).map((row) => (
+            {Array.from({ length: visibleRows }, (_, i) => i + 1).map((row) => (
               <tr key={row}>
                 <td className="pr-2 text-muted-foreground text-center">
                   {row}
                 </td>
-                {columns.map((c) => (
-                  <td key={c}>
-                    {isMobile ? (
-                      <MobileEditButton
-                        value={data[`${row}-${c}`] ?? ""}
-                        onSave={(nv) => set(row, c, nv)}
-                        title={`${rowLabel} ${row} · ${c}`}
-                        placeholder="—"
-                        className="h-7 text-xs min-w-[4rem]"
-                        ariaLabel={`${rowLabel} ${row} ${c}`}
-                      />
-                    ) : (
-                      <Input
-                        value={data[`${row}-${c}`] ?? ""}
-                        onChange={(e) => set(row, c, e.target.value)}
-                        className="h-7 text-xs min-w-[5rem] bg-background/60"
-                      />
-                    )}
-                  </td>
-                ))}
+                {columns.map((c, ci) => {
+                  const kind = columnKinds?.[ci] ?? "text";
+                  const cv = cellValue(row, c);
+                  return (
+                    <td key={c}>
+                      {kind === "occasion" ? (
+                        <OccasionCell
+                          value={cv}
+                          otherValue={data[`${row}-${c}-other`] ?? ""}
+                          onChange={(v) => set(row, c, v)}
+                          onOtherChange={(v) => set(row, `${c}-other`, v)}
+                          ariaLabel={`${rowLabel} ${row} ${c}`}
+                        />
+                      ) : kind === "date" ? (
+                        <DateCell
+                          value={cv}
+                          onChange={(v) => set(row, c, v)}
+                          ariaLabel={`${rowLabel} ${row} ${c}`}
+                        />
+                      ) : isMobile ? (
+                        <MobileEditButton
+                          value={cv}
+                          onSave={(nv) => set(row, c, nv)}
+                          title={`${rowLabel} ${row} · ${c}`}
+                          placeholder="—"
+                          className="h-7 text-xs min-w-[4rem]"
+                          ariaLabel={`${rowLabel} ${row} ${c}`}
+                        />
+                      ) : (
+                        <Input
+                          value={cv}
+                          onChange={(e) => set(row, c, e.target.value)}
+                          className="h-7 text-xs min-w-[5rem] bg-background/60"
+                        />
+                      )}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      {growable && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="mt-2 rounded-full"
+          onClick={() => onChange({ ...data, __rows: String(visibleRows + 1) })}
+        >
+          <Plus className="w-4 h-4 mr-1" /> {addLabel ?? "Add row"}
+        </Button>
+      )}
     </div>
   );
 }
