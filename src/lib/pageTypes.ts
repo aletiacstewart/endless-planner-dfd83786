@@ -466,20 +466,22 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Wellness",
-        page: 1,
+        page: 2,
+        columns: 2,
         fields: [
-              { key: "water", label: "Water intake (glasses)", type: "checkbox-group", options: ["1","2","3","4","5","6","7","8"], otherKey: "water_other" },
-              { key: "meals", label: "Meal intake", type: "checkbox-group", options: ["1","2","3","4","5","6"], otherKey: "meals_other" },
+              { key: "water", label: "Water intake (glasses)", type: "checkbox-group", options: ["1","2","3","4","5","6","7","8"], otherKey: "water_other", span: 2 },
+              { key: "meals", label: "Meal intake", type: "checkbox-group", options: ["1","2","3","4","5","6"], otherKey: "meals_other", span: 2 },
               { key: "caffeine", label: "Caffeine / Other", type: "checkbox-group", options: ["1","2","3","4"], otherKey: "caffeine_other" },
               { key: "sweets", label: "Sweets / Savory", type: "checkbox-group", options: ["1","2","3","4"], otherKey: "sweets_other" },
-              { key: "habits", label: "Habits (smoking, vaping, dipping, other)", type: "checkbox-group", options: ["1","2","3","4","5","6","7","8"], otherKey: "habits_other" },
-              { key: "mood", label: "Mood", type: "checkbox-group", options: ["Anger","Fear","Sadness","Disgust","Joy"], otherKey: "mood_other" },
-              { key: "sleep", label: "Sleep (hours)", type: "checkbox-group", options: ["1","2","3","4","5","6","7","8","9","10","11","12"], otherKey: "sleep_other" },
+              { key: "habits", label: "Habits (smoking, vaping, dipping, other)", type: "checkbox-group", options: ["1","2","3","4","5","6","7","8"], otherKey: "habits_other", span: 2 },
+              { key: "mood", label: "Mood", type: "checkbox-group", options: ["Anger","Fear","Sadness","Disgust","Joy"], otherKey: "mood_other", span: 2 },
+              { key: "sleep", label: "Sleep (hours)", type: "checkbox-group", options: ["1","2","3","4","5","6","7","8","9","10","11","12"], otherKey: "sleep_other", span: 2 },
         ],
       },
       {
         title: "Self-Care",
         page: 1,
+        columns: 2,
         fields: [
           { key: "self_physical", label: "Physical Self-Care", type: "textarea", rows: 3, span: 2 },
           { key: "self_emotional", label: "Emotional Self-Care", type: "textarea", rows: 3, span: 2 },
@@ -489,13 +491,14 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Workout",
         page: 1,
+        columns: 2,
         fields: [
-              { key: "cardio", label: "Cardio", type: "text", compact: true },
-              { key: "weights", label: "Weights", type: "text", compact: true },
-              { key: "yoga", label: "Yoga", type: "text", compact: true },
-              { key: "stretch", label: "Stretch", type: "text", compact: true },
+              { key: "cardio", label: "Cardio", type: "text" },
+              { key: "weights", label: "Weights", type: "text" },
+              { key: "yoga", label: "Yoga", type: "text" },
+              { key: "stretch", label: "Stretch", type: "text" },
+              { key: "other", label: "Other", type: "text" },
               { key: "rest_day", label: "Rest day", type: "checkbox" },
-              { key: "other", label: "Other", type: "text", compact: true },
         ],
       },
       {
