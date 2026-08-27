@@ -496,12 +496,13 @@ export const PAGE_TYPES: PageTypeDef[] = [
               { key: "stretch", label: "Stretch", type: "text", compact: true },
               { key: "rest_day", label: "Rest day", type: "checkbox" },
               { key: "other", label: "Other", type: "text", compact: true },
-            ],
-          },
-          {
-            title: "Measurements",
-            columns: 1,
-            fields: [
+        ],
+      },
+      {
+        title: "Measurements",
+        page: 1,
+        columns: 1,
+        fields: [
               ...([
                 ["body_fat", "Body Fat %"],
                 ["neck", "Neck"],
