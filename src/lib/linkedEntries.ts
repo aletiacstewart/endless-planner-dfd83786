@@ -90,16 +90,61 @@ function mergeCalendarCell(
   field: string,
   day: number,
   value: string,
+  type?: string,
 ) {
   const existing = (dst[field] as Record<string, string> | undefined) ?? {};
   const next = { ...existing };
   if (value && value.trim()) {
     next[String(day)] = value;
+    if (type) next[`t${day}`] = type;
   } else {
     delete next[String(day)];
+    delete next[`t${day}`];
   }
   dst[field] = next;
 }
+
+/** Day notes of a calendar record tagged with the given appointment type. */
+function typedDays(cal: Record<string, string> | undefined, type: string): Map<number, string> {
+  const out = new Map<number, string>();
+  if (!cal) return out;
+  for (const [k, v] of Object.entries(cal)) {
+    const day = parseInt(k, 10);
+    if (!Number.isFinite(day) || String(day) !== k) continue;
+    if (typeof v !== "string" || !v.trim()) continue;
+    const t = cal[`t${day}`] || "Other";
+    if (t === type) out.set(day, v);
+  }
+  return out;
+}
+
+/**
+ * Replace every day of `type` in a calendar field with the given day → note map,
+ * leaving notes of other types untouched.
+ */
+function replaceTypedDays(
+  dst: Record<string, FieldValue>,
+  field: string,
+  type: string,
+  days: Map<number, string>,
+) {
+  const existing = (dst[field] as Record<string, string> | undefined) ?? {};
+  const next: Record<string, string> = { ...existing };
+  for (const day of typedDays(existing, type).keys()) {
+    delete next[String(day)];
+    delete next[`t${day}`];
+  }
+  for (const [day, note] of days) {
+    next[String(day)] = note;
+    next[`t${day}`] = type;
+  }
+  dst[field] = next;
+}
+
+const MONTH_LOWER = [
+  "january", "february", "march", "april", "may", "june",
+  "july", "august", "september", "october", "november", "december",
+];
 
 /** Body parts that have per-day "today" fields on the Complete Tracker. */
 const BODY_PARTS = ["body_fat", "neck", "chest", "bicep", "waist", "hips", "thigh", "calf"] as const;
