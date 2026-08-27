@@ -32,8 +32,13 @@ export default function Section() {
 
   const addNew = async () => {
     const e = await createEntry(pageType.id);
+    if (pageType.id === "complete-tracker") {
+      const { scaffoldLinkedEntries } = await import("@/lib/linkedEntries");
+      await scaffoldLinkedEntries(e);
+    }
     navigate(`/entry/${e.id}`);
   };
+
 
   const remove = async (id: string) => {
     await deleteEntry(id);
