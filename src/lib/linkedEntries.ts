@@ -469,7 +469,7 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
 
     // 18. Medical Records — per-date entry mirroring the three textareas.
     const medicalFields = ["medical_appointment_notes", "test_results", "lab_result_notes", "doctor_id"];
-    if (medicalFields.some((k) => typeof v[k] === "string" && (v[k] as string).trim())) {
+    if (scopedKeys(v, medicalFields).some((k) => typeof v[k] === "string" && (v[k] as string).trim())) {
       const entry = await findOrCreate(
         "medical-records",
         (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
