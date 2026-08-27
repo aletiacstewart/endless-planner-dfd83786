@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, Plus, Trash2 } from "lucide-react";
 import { getPageType } from "@/lib/pageTypes";
 import { getPageImage } from "@/lib/pageImages";
@@ -21,6 +21,23 @@ export default function Section() {
     listEntries(pageType.id).then(setEntries);
   }, [pageType]);
 
+  /** Day numbering follows the entry date (oldest = Day 1); undated go last. */
+  const orderedEntries = useMemo(() => {
+    const key = (e: PlannerEntry) => {
+      const raw = e.values?.date as string | undefined;
+      const t = raw ? new Date(raw).getTime() : NaN;
+      return Number.isNaN(t) ? null : t;
+    };
+    return [...entries].sort((a, b) => {
+      const ka = key(a), kb = key(b);
+      if (ka != null && kb != null) return ka - kb;
+      if (ka != null) return -1;
+      if (kb != null) return 1;
+      return a.createdAt - b.createdAt;
+    });
+  }, [entries]);
+
+
   if (!pageType) {
     return (
       <div className="p-6">
@@ -32,8 +49,13 @@ export default function Section() {
 
   const addNew = async () => {
     const e = await createEntry(pageType.id);
+    if (pageType.id === "complete-tracker") {
+      const { scaffoldLinkedEntries } = await import("@/lib/linkedEntries");
+      await scaffoldLinkedEntries(e);
+    }
     navigate(`/entry/${e.id}`);
   };
+
 
   const remove = async (id: string) => {
     await deleteEntry(id);
@@ -74,8 +96,9 @@ export default function Section() {
 
           <div className="relative z-10 flex items-center justify-between mb-5">
             <p className="font-script text-lg text-primary/80">
-              {entries.length} {entries.length === 1 ? "sheet" : "sheets"}
+              {entries.length} {entries.length === 1 ? "Day" : "Days"}
             </p>
+
             <Button onClick={addNew} size="sm" className="rounded-full">
               <Plus className="w-4 h-4 mr-1" />
               New {pageType.shortName.toLowerCase()}
@@ -94,7 +117,7 @@ export default function Section() {
             </div>
           ) : (
             <ul className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {entries.map((e, idx) => {
+              {orderedEntries.map((e, idx) => {
                 const title = pageType.summary?.(e.values) || "Untitled";
                 return (
                   <li
@@ -103,8 +126,9 @@ export default function Section() {
                   >
                     <Link to={`/entry/${e.id}`} className="block p-4 pr-10 min-h-[112px]">
                       <p className="font-script text-primary/70 text-sm leading-none">
-                        sheet {String(idx + 1).padStart(2, "0")}
+                        Day {idx + 1}
                       </p>
+
                       <p className="font-display text-lg mt-2 line-clamp-2">{title}</p>
                       <p className="text-[11px] uppercase tracking-widest text-muted-foreground mt-3">
                         {new Date(e.updatedAt).toLocaleDateString(undefined, {

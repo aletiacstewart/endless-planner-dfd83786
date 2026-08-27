@@ -130,8 +130,12 @@ export default function Entry() {
   /** Start a fresh sheet of the same page type and jump straight into it. */
   const addSheet = async () => {
     const created = await createEntry(entry.pageType);
+    if (entry.pageType === "complete-tracker") {
+      const { scaffoldLinkedEntries } = await import("@/lib/linkedEntries");
+      await scaffoldLinkedEntries(created);
+    }
     setFlipDir("next");
-    toast.success(`New ${pageType.shortName} sheet`);
+    toast.success(`New ${pageType.shortName} day`);
     navigate(`/entry/${created.id}`);
   };
   forwardRef.current = () => {
@@ -247,8 +251,8 @@ export default function Entry() {
               variant="secondary"
               size="sm"
               onClick={addSheet}
-              aria-label={`New ${pageType.shortName} sheet`}
-              title="Start a new sheet of this page"
+              aria-label={`New ${pageType.shortName} day`}
+              title="Start a new day of this page"
             >
               <Plus className="w-4 h-4 sm:mr-1" />
               <span className="hidden sm:inline">New {pageType.shortName}</span>
@@ -333,9 +337,9 @@ export default function Entry() {
               variant="secondary"
               size="sm"
               onClick={addSheet}
-              aria-label={`New ${pageType.shortName} sheet`}
+              aria-label={`New ${pageType.shortName} day`}
             >
-              <Plus className="w-4 h-4 mr-1" /> New sheet
+              <Plus className="w-4 h-4 mr-1" /> New day
             </Button>
           )}
         </div>
