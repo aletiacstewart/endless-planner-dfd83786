@@ -53,6 +53,12 @@ export interface FieldDef {
   rowCount?: number;
   /** For measurement-grid: row-label prefix (e.g. "Wk"). */
   rowLabel?: string;
+  /** For measurement-grid: per-column input kind (defaults to "text"). */
+  columnKinds?: ("text" | "occasion" | "date")[];
+  /** For measurement-grid: allow adding rows beyond rowCount. */
+  growable?: boolean;
+  /** Label for the add-row button when growable. */
+  addLabel?: string;
   /** For rating: render a small companion text input on the same row, bound to this other field key. */
   otherKey?: string;
   /** For success-fail: render a blank text input alongside the buttons (user-typed label) bound to this key. Hides the field's own label. */
