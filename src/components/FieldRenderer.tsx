@@ -1883,15 +1883,19 @@ function CalendarNotes({
   month,
   year,
   label,
+  filterType,
   onChange,
 }: {
   value: Record<string, string> | null;
   month?: string;
   year?: string;
   label: string;
+  /** Only list notes of this appointment type (e.g. "Medical"). */
+  filterType?: string;
   onChange: (v: FieldValue) => void;
 }) {
   const data = value ?? {};
+  const typeOf = (d: number) => data[`t${d}`] || DEFAULT_APPT_TYPE;
   const now = new Date();
   const lookup = (month ?? "").trim().toLowerCase();
   let monthIndex = MONTH_NAMES.indexOf(lookup);
@@ -1908,6 +1912,7 @@ function CalendarNotes({
   const days = Object.keys(data)
     .map((k) => parseInt(k, 10))
     .filter((d) => Number.isFinite(d) && (data[String(d)] ?? "").trim().length > 0)
+    .filter((d) => !filterType || typeOf(d) === filterType)
     .sort((a, b) => a - b);
 
   return (
@@ -1915,18 +1920,44 @@ function CalendarNotes({
       <label className="field-label block mb-2">{label}</label>
       {days.length === 0 ? (
         <p className="text-sm text-muted-foreground">
-          Tap a day on the calendar to add a note — it shows up here.
+          {filterType
+            ? `Tap a day on the calendar to add a ${filterType.toLowerCase()} appointment — it shows up here.`
+            : "Tap a day on the calendar to add a note — it shows up here."}
         </p>
       ) : (
         <div className="space-y-3">
           {days.map((d) => (
             <div key={d} className="rounded-lg border border-border bg-background/60 p-3">
-              <p className="font-display text-sm mb-1.5">
-                {monthName} {d}, {yearNum}
-              </p>
+              <div className="flex items-center justify-between gap-2 mb-1.5">
+                <p className="font-display text-sm">
+                  {monthName} {d}, {yearNum}
+                </p>
+                {filterType ? (
+                  <span className="text-[10px] uppercase tracking-wide rounded-full border border-primary/40 bg-primary-soft/40 px-2 py-0.5">
+                    {filterType}
+                  </span>
+                ) : (
+                  <select
+                    value={typeOf(d)}
+                    onChange={(e) => onChange({ ...data, [`t${d}`]: e.target.value })}
+                    className="h-7 rounded-md border border-input bg-background/60 px-1.5 text-xs"
+                    aria-label={`Type for ${monthName} ${d}`}
+                  >
+                    {APPT_TYPES.map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                )}
+              </div>
               <Textarea
                 value={data[String(d)] ?? ""}
-                onChange={(e) => onChange({ ...data, [d]: e.target.value })}
+                onChange={(e) =>
+                  onChange({
+                    ...data,
+                    [d]: e.target.value,
+                    ...(e.target.value.trim() ? { [`t${d}`]: typeOf(d) } : {}),
+                  })
+                }
                 rows={3}
                 className="bg-background/60 resize-none"
                 aria-label={`Note for ${monthName} ${d}`}
