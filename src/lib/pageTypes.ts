@@ -1579,6 +1579,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
     shortName: "Water",
     description: "Check off your glasses of water every day of the month.",
     icon: "Droplet",
+    cadence: "month",
     sections: [
       {
         columns: 2,
