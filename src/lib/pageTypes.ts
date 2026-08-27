@@ -61,6 +61,8 @@ export interface FieldDef {
   modeKey?: string;
   /** For text/number: render a narrow input sized for ~3 characters. */
   compact?: boolean;
+  /** Scope this field's value by the value of another field (e.g. per-doctor notes). */
+  scopeByKey?: string;
   /** For paired-compact: keys + sub-labels for the two inputs. */
   pairKeys?: [string, string];
   pairLabels?: [string, string];
@@ -551,9 +553,9 @@ export const PAGE_TYPES: PageTypeDef[] = [
         columns: 1,
         page: 2,
         fields: [
-          { key: "medical_appointment_notes", label: "Appointment Notes", type: "textarea", rows: 5, span: 2 },
-          { key: "test_results", label: "Test Results", type: "textarea", rows: 5, span: 2 },
-          { key: "lab_result_notes", label: "Lab Result Notes", type: "textarea", rows: 5, span: 2 },
+          { key: "medical_appointment_notes", label: "Appointment Notes", type: "textarea", rows: 5, span: 2, scopeByKey: "doctor_id" },
+          { key: "test_results", label: "Test Results", type: "textarea", rows: 5, span: 2, scopeByKey: "doctor_id" },
+          { key: "lab_result_notes", label: "Lab Result Notes", type: "textarea", rows: 5, span: 2, scopeByKey: "doctor_id" },
         ],
       },
       {
@@ -960,9 +962,9 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         columns: 1,
         fields: [
-          { key: "medical_appointment_notes", label: "Appointment Notes", type: "textarea", rows: 6, span: 2 },
-          { key: "test_results", label: "Test Results", type: "textarea", rows: 6, span: 2 },
-          { key: "lab_result_notes", label: "Lab Result Notes", type: "textarea", rows: 6, span: 2 },
+          { key: "medical_appointment_notes", label: "Appointment Notes", type: "textarea", rows: 6, span: 2, scopeByKey: "doctor_id" },
+          { key: "test_results", label: "Test Results", type: "textarea", rows: 6, span: 2, scopeByKey: "doctor_id" },
+          { key: "lab_result_notes", label: "Lab Result Notes", type: "textarea", rows: 6, span: 2, scopeByKey: "doctor_id" },
         ],
       },
     ],

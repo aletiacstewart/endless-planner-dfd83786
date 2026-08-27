@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState, useCallback } from "react";
+import { Fragment, useEffect, useRef, useState, useCallback } from "react";
 import { Plus, X, Angry, Frown, Meh, Smile, Laugh } from "lucide-react";
 import type { FieldDef, FieldValue } from "@/lib/pageTypes";
 import { Input } from "@/components/ui/input";
@@ -26,7 +26,47 @@ interface Props {
   showPairHeaders?: boolean;
 }
 
-export function FieldRenderer({ field, value, allValues, onChange, onChangeAny, showPairHeaders }: Props) {
+/**
+ * Scoped-field wrapper: when a field declares `scopeByKey` (e.g. medical notes
+ * scoped by `doctor_id`), its value is read/written under `${key}__${scopeValue}`
+ * so each doctor keeps their own notes. Legacy unscoped values are migrated onto
+ * the first doctor selected.
+ */
+export function FieldRenderer(props: Props) {
+  const { field, value, allValues, onChange, onChangeAny } = props;
+  const scopeValue = field.scopeByKey ? ((allValues?.[field.scopeByKey] as string) || "") : "";
+  const scopedKey = scopeValue ? `${field.key}__${scopeValue}` : field.key;
+  const migrated = useRef<string | null>(null);
+
+  // One-time migration: existing unscoped text moves under the first doctor picked.
+  useEffect(() => {
+    if (!scopeValue || !allValues || !onChangeAny) return;
+    if (migrated.current === scopedKey) return;
+    const plain = allValues[field.key];
+    const scoped = allValues[scopedKey];
+    const hasOtherScoped = Object.keys(allValues).some(
+      (k) => k.startsWith(`${field.key}__`) && k !== scopedKey && !!allValues[k],
+    );
+    if (typeof plain === "string" && plain.trim() && scoped === undefined && !hasOtherScoped) {
+      migrated.current = scopedKey;
+      onChangeAny(scopedKey, plain);
+      onChangeAny(field.key, "");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scopedKey, scopeValue]);
+
+  if (scopedKey === field.key) return <FieldRendererInner {...props} />;
+  return (
+    <FieldRendererInner
+      {...props}
+      value={allValues?.[scopedKey] ?? null}
+      onChange={(v) => (onChangeAny ? onChangeAny(scopedKey, v) : onChange(v))}
+    />
+  );
+}
+
+function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, showPairHeaders }: Props) {
+
   const isMobile = useIsMobile();
   const label = (
     <label className="field-label block mb-1.5" htmlFor={field.key}>

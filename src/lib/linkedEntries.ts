@@ -64,6 +64,15 @@ async function persist(entry: PlannerEntry, mutator: (vals: Record<string, Field
 }
 
 /** Copy plain same-named keys from source to target. Empty/undefined values clear the target. */
+/** All keys for a field, including per-scope variants like `key__<doctorId>`. */
+function scopedKeys(src: Record<string, FieldValue>, bases: string[]): string[] {
+  const out = new Set(bases);
+  for (const k of Object.keys(src)) {
+    if (bases.some((b) => k.startsWith(`${b}__`))) out.add(k);
+  }
+  return [...out];
+}
+
 function copyKeys(src: Record<string, FieldValue>, dst: Record<string, FieldValue>, keys: string[]) {
   for (const k of keys) {
     const v = src[k];
@@ -460,7 +469,7 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
 
     // 18. Medical Records — per-date entry mirroring the three textareas.
     const medicalFields = ["medical_appointment_notes", "test_results", "lab_result_notes", "doctor_id"];
-    if (medicalFields.some((k) => typeof v[k] === "string" && (v[k] as string).trim())) {
+    if (scopedKeys(v, medicalFields).some((k) => typeof v[k] === "string" && (v[k] as string).trim())) {
       const entry = await findOrCreate(
         "medical-records",
         (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
@@ -468,7 +477,7 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       );
       await persist(entry, (dst) => {
         if (!dst.date) dst.date = date.iso;
-        copyKeys(v, dst, medicalFields);
+        copyKeys(v, dst, scopedKeys(v, medicalFields));
       });
       synced.push(`Medical Records (${date.iso})`);
     }
@@ -841,7 +850,7 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
       const date = parseDate(v.date);
       if (!date) return [];
       const touched = await updateCompleteForDate(date.iso, (dst) => {
-        copyKeys(v, dst, ["medical_appointment_notes", "test_results", "lab_result_notes", "doctor_id"]);
+        copyKeys(v, dst, scopedKeys(v, ["medical_appointment_notes", "test_results", "lab_result_notes", "doctor_id"]));
       });
       if (touched > 0) synced.push("Complete Tracker (medical)");
       return synced;
