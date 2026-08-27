@@ -850,14 +850,20 @@ function IngredientsList({
 function MedList({
   value,
   rowCount,
+  growable,
+  addLabel,
   onChange,
 }: {
   value: Record<string, string> | null;
   rowCount: number;
+  growable?: boolean;
+  addLabel?: string;
   onChange: (v: FieldValue) => void;
 }) {
   const isMobile = useIsMobile();
   const data = value ?? {};
+  const extra = Number(data.__rows ?? "") || 0;
+  const visibleRows = growable ? Math.max(rowCount, extra) : rowCount;
   const update = (key: string, v: string) => onChange({ ...data, [key]: v });
   const cols = "grid-cols-[1.25rem_minmax(0,2fr)_minmax(0,1.4fr)_minmax(0,1.6fr)_minmax(0,1.4fr)_5rem]";
   const slots: { k: "m" | "a" | "n"; label: string }[] = [
@@ -906,7 +912,7 @@ function MedList({
         </div>
       </div>
       <div className="space-y-1">
-        {Array.from({ length: rowCount }, (_, i) => i + 1).map((n) => (
+        {Array.from({ length: visibleRows }, (_, i) => i + 1).map((n) => (
           <div key={n} className={cn("grid gap-x-2 items-center", cols)}>
             <span className="text-xs text-muted-foreground text-right pr-1">{n}.</span>
             {renderTextCell(n, "name", "Name")}
@@ -936,6 +942,17 @@ function MedList({
           </div>
         ))}
       </div>
+      {growable && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="mt-2"
+          onClick={() => onChange({ ...data, __rows: String(visibleRows + 1) })}
+        >
+          <Plus className="w-4 h-4 mr-1" /> {addLabel ?? "Add row"}
+        </Button>
+      )}
       <div className="mt-3">
         <label className="field-label block mb-1.5">More / Other</label>
         <Textarea
