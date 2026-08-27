@@ -445,6 +445,95 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       );
     }
 
+    // 6b. Sleep Tracker — one row per night in the month grid.
+    const sleepKeys = ["bed_time", "wake_time", "sleep_hours", "sleep_quality", "sleep_notes"];
+    if (anyFilled(v, sleepKeys)) {
+      const monthCapName = MONTH_LOWER[date.monthIndex];
+      const entry = await findOrCreate(
+        "sleep-tracker",
+        (e) => String(e.values.month ?? "").toLowerCase() === monthCapName,
+        { month: monthCapName },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.month) dst.month = monthCapName;
+        const grid = { ...((dst.sleep_log as Record<string, string>) ?? {}) };
+        const set = (col: string, val: string) => {
+          if (val.trim()) grid[`${date.day}-${col}`] = val;
+          else delete grid[`${date.day}-${col}`];
+        };
+        set("Bedtime", asText(v.bed_time));
+        set("Wake time", asText(v.wake_time));
+        set("Hours", asText(v.sleep_hours));
+        set("Quality (1-5)", asText(v.sleep_quality));
+        set("Notes", asText(v.sleep_notes));
+        dst.sleep_log = grid;
+      });
+      synced.push("Sleep Tracker");
+    }
+
+    // 6c. Water Intake Tracker — tick one glass per checked cup for the day.
+    const waterChecked = Array.isArray(v.water) ? (v.water as string[]).length : 0;
+    if (waterChecked > 0) {
+      const monthCapName = MONTH_LOWER[date.monthIndex];
+      const entry = await findOrCreate(
+        "water-tracker",
+        (e) => String(e.values.month ?? "").toLowerCase() === monthCapName,
+        { month: monthCapName, daily_goal: String(Math.max(8, waterChecked)) },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.month) dst.month = monthCapName;
+        const cur = (dst.water_grid as { marks?: Record<string, boolean> } | undefined) ?? {};
+        const marks = { ...(cur.marks ?? {}) };
+        const goal = Math.max(Number(dst.daily_goal ?? "") || 8, waterChecked);
+        for (let g = 1; g <= goal; g++) {
+          const k = `${g}-${date.day}`;
+          if (g <= waterChecked) marks[k] = true;
+          else delete marks[k];
+        }
+        dst.daily_goal = String(goal);
+        dst.water_grid = { ...cur, marks };
+      });
+      synced.push("Water Intake Tracker");
+    }
+
+    // 6d. Gratitude Log — per-day entry.
+    if (anyFilled(v, ["gratitude", "gratitude_note"])) {
+      const entry = await findOrCreate(
+        "gratitude-log",
+        (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
+        { date: date.iso },
+      );
+      await persist(entry, (dst) => {
+        dst.date = date.iso;
+        copyKeys(v, dst, ["gratitude", "gratitude_note"]);
+        if (v.mood_overall != null) dst.mood = v.mood_overall;
+      });
+      synced.push("Gratitude Log");
+    }
+
+    // 6e. Mood Journal — per-day entry.
+    const moodKeys = [
+      "energy", "anxiety", "stress",
+      "feelings", "feelings_morning_other",
+      "feelings_afternoon", "feelings_afternoon_other",
+      "feelings_evening", "feelings_evening_other",
+      "feelings_night", "feelings_night_other",
+    ];
+    if (anyFilled(v, [...moodKeys, "mood_overall"])) {
+      const entry = await findOrCreate(
+        "mood-journal",
+        (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
+        { date: date.iso },
+      );
+      await persist(entry, (dst) => {
+        dst.date = date.iso;
+        copyKeys(v, dst, moodKeys);
+        if (v.mood_overall != null) dst.mood = v.mood_overall;
+        if (v.gratitude != null) dst.gratitude = v.gratitude;
+      });
+      synced.push("Mood Journal");
+    }
+
     // 7. Cleaning Check List — daily-month-grid `cleaning`, year-scoped.
     const cleaningToday = (v.cleaning_today as string | undefined) ?? "";
     if (cleaningToday.trim()) {
@@ -1201,6 +1290,52 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
     // (Daily Goal Tracker reverse-sync removed — page no longer exists.)
 
     // Medical Records → mirror three textareas into Complete Tracker for that date.
+    if (entry.pageType === "gratitude-log" || entry.pageType === "mood-journal") {
+      const date = parseDate(v.date);
+      if (!date) return [];
+      const keys =
+        entry.pageType === "gratitude-log"
+          ? ["gratitude", "gratitude_note"]
+          : [
+              "energy", "anxiety", "stress",
+              "feelings", "feelings_morning_other",
+              "feelings_afternoon", "feelings_afternoon_other",
+              "feelings_evening", "feelings_evening_other",
+              "feelings_night", "feelings_night_other",
+            ];
+      const touched = await updateCompleteForDate(date.iso, (dst) => {
+        copyKeys(v, dst, keys);
+        if (v.mood != null) dst.mood_overall = v.mood;
+      });
+      if (touched > 0) synced.push("Complete Tracker");
+      return synced;
+    }
+
+    if (entry.pageType === "sleep-tracker") {
+      const monthIndex = MONTH_LOWER.indexOf(String(v.month ?? "").toLowerCase());
+      const grid = (v.sleep_log as Record<string, string> | undefined) ?? {};
+      if (monthIndex < 0) return [];
+      const year = new Date().getFullYear();
+      const days = new Set<number>();
+      for (const k of Object.keys(grid)) {
+        const day = Number(k.split("-")[0]);
+        if (day > 0) days.add(day);
+      }
+      let touched = 0;
+      for (const day of days) {
+        touched += await updateCompleteForDate(isoOf(year, monthIndex, day), (dst) => {
+          const get = (col: string) => grid[`${day}-${col}`] ?? "";
+          dst.bed_time = get("Bedtime");
+          dst.wake_time = get("Wake time");
+          dst.sleep_hours = get("Hours");
+          dst.sleep_quality = get("Quality (1-5)");
+          dst.sleep_notes = get("Notes");
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (sleep)");
+      return synced;
+    }
+
     if (entry.pageType === "medical-records") {
       const date = parseDate(v.date);
       if (date) {
