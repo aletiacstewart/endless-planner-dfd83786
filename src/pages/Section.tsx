@@ -48,21 +48,27 @@ export default function Section() {
   }
 
   const cadence = pageType.cadence ?? "day";
-  const unitLabel = cadence === "year" ? "Year" : "Day";
+  const unitLabel = cadence === "year" ? "Year" : cadence === "month" ? "Month" : "Day";
   /** Ongoing lists (e.g. Medications) open the existing sheet instead of adding one. */
   const createLabel =
     cadence === "list"
       ? `Update ${pageType.name.toLowerCase()}`
       : cadence === "year"
         ? "New year"
-        : `New ${pageType.shortName.toLowerCase()}`;
+        : cadence === "month"
+          ? "New month"
+          : `New ${pageType.shortName.toLowerCase()}`;
 
   const addNew = async () => {
     if (cadence === "list" && orderedEntries.length > 0) {
       navigate(`/entry/${orderedEntries[0].id}`);
       return;
     }
-    const e = await createEntry(pageType.id);
+    const monthDefault =
+      cadence === "month"
+        ? { month: new Date().toLocaleDateString("en-US", { month: "long" }) }
+        : undefined;
+    const e = await createEntry(pageType.id, monthDefault);
     if (pageType.id === "complete-tracker") {
       const { scaffoldLinkedEntries } = await import("@/lib/linkedEntries");
       await scaffoldLinkedEntries(e);
