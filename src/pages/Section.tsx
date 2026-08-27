@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, Plus, Trash2 } from "lucide-react";
 import { getPageType } from "@/lib/pageTypes";
 import { getPageImage } from "@/lib/pageImages";
@@ -20,6 +20,23 @@ export default function Section() {
     if (!pageType) return;
     listEntries(pageType.id).then(setEntries);
   }, [pageType]);
+
+  /** Day numbering follows the entry date (oldest = Day 1); undated go last. */
+  const orderedEntries = useMemo(() => {
+    const key = (e: PlannerEntry) => {
+      const raw = e.values?.date as string | undefined;
+      const t = raw ? new Date(raw).getTime() : NaN;
+      return Number.isNaN(t) ? null : t;
+    };
+    return [...entries].sort((a, b) => {
+      const ka = key(a), kb = key(b);
+      if (ka != null && kb != null) return ka - kb;
+      if (ka != null) return -1;
+      if (kb != null) return 1;
+      return a.createdAt - b.createdAt;
+    });
+  }, [entries]);
+
 
   if (!pageType) {
     return (
