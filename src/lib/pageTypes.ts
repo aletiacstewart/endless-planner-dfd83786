@@ -1116,8 +1116,8 @@ export const PAGE_TYPES: PageTypeDef[] = [
         description: "Only medical appointments show here — they sync with your monthly, weekly and daily calendars.",
         page: 1,
         fields: [
-          { key: "cal_month", label: "Month", type: "month", placeholder: "January" },
-          { key: "cal_year", label: "Year", type: "year", placeholder: "2026" },
+          { key: "month", label: "Month", type: "month", placeholder: "January" },
+          { key: "year", label: "Year", type: "year", placeholder: "2026" },
           {
             key: "medical_calendar",
             label: "Medical appointments",
