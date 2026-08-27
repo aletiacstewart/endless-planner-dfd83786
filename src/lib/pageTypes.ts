@@ -72,6 +72,8 @@ export interface SectionDef {
   columns?: 1 | 2 | 3;
   /** Optional column headings displayed above each column of the grid (length should match `columns`). */
   columnTitles?: string[];
+  /** Which side of a two-page spread this section belongs on. Defaults to an even split. */
+  page?: 1 | 2;
   fields: FieldDef[];
   /** Optional side-by-side groups rendered inside the same card. When provided, each group becomes its own column with its own title and stacked fields. */
   groups?: { title?: string; columns?: 1 | 2 | 3; fields: FieldDef[] }[];
@@ -406,6 +408,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
     sections: [
       {
         columns: 2,
+        page: 1,
         fields: [
           { key: "date", label: "Date", type: "date" },
           {
@@ -418,6 +421,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         columns: 2,
+        page: 1,
         fields: [
           { key: "daily_goal", label: "Daily Goal", type: "textarea", rows: 3 },
           { key: "daily_habit", label: "Daily Habit Tracker", type: "success-fail" },
@@ -426,12 +430,14 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Monthly Calendar",
         description: "Quick reference for the month — tap a day to add or view a note.",
+        page: 1,
         fields: [
           { key: "month_calendar", label: "Monthly calendar", type: "calendar-grid", compact: true, span: 2 },
         ],
       },
       {
         title: "Meals",
+        page: 2,
         fields: [
           { key: "breakfast", label: "Breakfast", type: "text", span: 2 },
           { key: "breakfast_bs", label: "Breakfast — Blood Sugar", type: "text" },
@@ -460,6 +466,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Wellness, Self-Care, Workout & Measurements",
+        page: 2,
         groups: [
           {
             title: "Wellness",
@@ -527,6 +534,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         fields: [],
       },
       {
+        page: 2,
         fields: [
           { key: "daily_notes", label: "Wellness Notes", type: "textarea", rows: 5, span: 2 },
         ],
@@ -534,6 +542,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Medications",
         description: "Tick M (Morning), A (Afternoon), or N (Night) for each medication.",
+        page: 2,
         fields: [
           { key: "med_list", label: "Medications", type: "med-list", rowCount: 12, span: 2 },
         ],
@@ -541,14 +550,16 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Medical Records",
         description: "Track appointment notes, test results, and lab notes.",
+        page: 2,
         fields: [
           { key: "doctor_id", label: "Doctor seen", type: "doctor-picker", span: 2 },
         ],
       },
       {
         columns: 3,
+        page: 2,
         fields: [
-          { key: "medical_appointment_notes", label: "Medical Appointment Notes", type: "textarea", rows: 5 },
+          { key: "medical_appointment_notes", label: "Appointment Notes", type: "textarea", rows: 5 },
           { key: "test_results", label: "Test Results", type: "textarea", rows: 5 },
           { key: "lab_result_notes", label: "Lab Result Notes", type: "textarea", rows: 5 },
         ],
@@ -557,6 +568,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Fun & Habit Tracker",
         description: "Write in your own items, then mark Success or Failed for the day. For habits, choose Begin or Break.",
         columns: 2,
+        page: 1,
         fields: Array.from({ length: 3 }, (_, i) => i + 1).flatMap((n) => [
           {
             key: `fun_${n}`,
@@ -578,6 +590,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Cleaning",
         description: "What you cleaned today — syncs to your yearly Cleaning Check List.",
+        page: 1,
         fields: [
           { key: "cleaning_today", label: "Cleaning today", type: "textarea", rows: 3, span: 2 },
         ],
@@ -586,6 +599,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "This Week",
         description: "Today's note plus the week's goals & reflection — sync to your Weekly Calendar.",
         columns: 1,
+        page: 1,
         fields: [
           { key: "week_note_today", label: "Note for today's weekday", type: "textarea", rows: 3, span: 2 },
           { key: "weekly_goals", label: "Weekly Goals", type: "textarea", rows: 3, span: 2 },
@@ -596,6 +610,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "This Year",
         description: "A note for this month plus a yearly focus — sync to your Yearly Calendar.",
         columns: 1,
+        page: 1,
         fields: [
           { key: "month_note_today", label: "Note for this month", type: "textarea", rows: 3, span: 2 },
           { key: "yearly_focus", label: "Yearly Focus / Word of the Year", type: "textarea", rows: 2, span: 2 },
@@ -939,7 +954,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         columns: 1,
         fields: [
-          { key: "medical_appointment_notes", label: "Medical Appointment Notes", type: "textarea", rows: 6, span: 2 },
+          { key: "medical_appointment_notes", label: "Appointment Notes", type: "textarea", rows: 6, span: 2 },
           { key: "test_results", label: "Test Results", type: "textarea", rows: 6, span: 2 },
           { key: "lab_result_notes", label: "Lab Result Notes", type: "textarea", rows: 6, span: 2 },
         ],

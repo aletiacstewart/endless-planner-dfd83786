@@ -22,6 +22,8 @@ const WIDE_TYPES = new Set([
 ]);
 
 function isWide(section: SectionDef): boolean {
+  // A section explicitly pinned to one page never goes full-bleed.
+  if (section.page) return false;
   return section.fields.some((f) => WIDE_TYPES.has(f.type));
 }
 
@@ -41,9 +43,21 @@ export function PlannerSpread({ pageType, values, onChange, split, className }: 
     (isWide(s) ? wide : narrow).push(s);
   }
 
-  const mid = split ?? Math.ceil(narrow.length / 2);
-  const leftPage: PageTypeDef = { ...pageType, sections: narrow.slice(0, mid) };
-  const rightPage: PageTypeDef = { ...pageType, sections: narrow.slice(mid) };
+  // When any section declares an explicit page, honour those assignments.
+  // Sections without one keep the historic first-half / second-half split.
+  const pinned = narrow.some((s) => s.page);
+  let leftSections: SectionDef[];
+  let rightSections: SectionDef[];
+  if (pinned) {
+    leftSections = narrow.filter((s) => s.page !== 2);
+    rightSections = narrow.filter((s) => s.page === 2);
+  } else {
+    const mid = split ?? Math.ceil(narrow.length / 2);
+    leftSections = narrow.slice(0, mid);
+    rightSections = narrow.slice(mid);
+  }
+  const leftPage: PageTypeDef = { ...pageType, sections: leftSections };
+  const rightPage: PageTypeDef = { ...pageType, sections: rightSections };
 
   const hasNarrow = narrow.length > 0;
   const hasWide = wide.length > 0;

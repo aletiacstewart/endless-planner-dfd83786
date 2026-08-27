@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, ChevronLeft, ChevronRight, Loader2, Plus, Redo2, Trash2, Undo2 } from "lucide-react";
 import { createEntry, deleteEntry, getEntry, listEntries, type PlannerEntry } from "@/lib/db";
 import { getPageType, type FieldValue } from "@/lib/pageTypes";
@@ -92,7 +92,10 @@ export default function Entry() {
     navigate(`/entry/${nextEntry.id}`);
   };
 
-  useSwipeNav({ onPrev: goPrev, onNext: goNext });
+  // Swiping/arrowing forward past the last sheet starts a new one, so the
+  // gesture never dead-ends (addSheet is defined below, after the guard).
+  const forwardRef = useRef<() => void>(() => {});
+  useSwipeNav({ onPrev: goPrev, onNext: () => forwardRef.current() });
 
   if (!entry) {
     return (
@@ -130,6 +133,10 @@ export default function Entry() {
     setFlipDir("next");
     toast.success(`New ${pageType.shortName} sheet`);
     navigate(`/entry/${created.id}`);
+  };
+  forwardRef.current = () => {
+    if (nextEntry) goNext();
+    else void addSheet();
   };
 
   const remove = async () => {
@@ -312,9 +319,11 @@ export default function Entry() {
           >
             <ChevronLeft className="w-4 h-4 mr-1" /> Prev
           </Button>
-          <p className="text-xs text-muted-foreground font-script hidden sm:block">
-            swipe or press ← / →
-          </p>
+          {(prevEntry || nextEntry) && (
+            <p className="text-xs text-muted-foreground font-script hidden sm:block">
+              swipe or press ← / →
+            </p>
+          )}
           {nextEntry ? (
             <Button variant="ghost" size="sm" onClick={goNext} aria-label="Next entry">
               Next <ChevronRight className="w-4 h-4 ml-1" />
