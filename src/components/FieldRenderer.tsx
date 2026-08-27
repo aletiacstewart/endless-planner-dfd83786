@@ -1242,11 +1242,6 @@ function HabitGrid({
   );
 }
 
-const MONTH_NAMES = [
-  "january", "february", "march", "april", "may", "june",
-  "july", "august", "september", "october", "november", "december",
-];
-
 /** Glasses (rows) x days of the month (columns). Rows are fixed by the daily goal. */
 function WaterGrid({
   value,
