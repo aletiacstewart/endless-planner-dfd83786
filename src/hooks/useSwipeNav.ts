@@ -19,6 +19,20 @@ export function useSwipeNav({ onPrev, onNext, keyboard = true, threshold = 60 }:
   useEffect(() => {
     const onTouchStart = (e: TouchEvent) => {
       const t = e.touches[0];
+      // Ignore gestures that begin inside stickers, editors, or scrollable grids.
+      const el = t.target as HTMLElement | null;
+      if (
+        el?.closest?.(
+          "[data-no-swipe], input, textarea, select, [contenteditable='true'], .overflow-x-auto",
+        )
+      ) {
+        start.current = null;
+        return;
+      }
+      if (e.touches.length > 1) {
+        start.current = null;
+        return;
+      }
       start.current = { x: t.clientX, y: t.clientY };
     };
     const onTouchEnd = (e: TouchEvent) => {
