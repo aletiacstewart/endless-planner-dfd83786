@@ -410,6 +410,20 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           onChange={onChange}
         />
       );
+    case "water-grid": {
+      const goalRaw = allValues?.daily_goal;
+      const goalNum = parseInt(String(goalRaw ?? ""), 10);
+      const goal = Number.isFinite(goalNum) ? Math.min(12, Math.max(1, goalNum)) : 8;
+      const monthName = typeof allValues?.month === "string" ? (allValues.month as string) : "";
+      return (
+        <WaterGrid
+          value={value as { marks: Record<string, boolean> } | null}
+          goal={goal}
+          monthName={monthName}
+          onChange={onChange}
+        />
+      );
+    }
     case "month-tracker":
       return (
         <MonthTracker
