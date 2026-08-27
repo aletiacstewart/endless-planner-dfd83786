@@ -144,7 +144,7 @@ export default function Entry() {
   };
   forwardRef.current = () => {
     if (nextEntry) goNext();
-    else void addSheet();
+    else if (cadence !== "list") void addSheet();
   };
 
   const remove = async () => {
