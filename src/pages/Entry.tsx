@@ -319,9 +319,11 @@ export default function Entry() {
           >
             <ChevronLeft className="w-4 h-4 mr-1" /> Prev
           </Button>
-          <p className="text-xs text-muted-foreground font-script hidden sm:block">
-            swipe or press ← / →
-          </p>
+          {(prevEntry || nextEntry) && (
+            <p className="text-xs text-muted-foreground font-script hidden sm:block">
+              swipe or press ← / →
+            </p>
+          )}
           {nextEntry ? (
             <Button variant="ghost" size="sm" onClick={goNext} aria-label="Next entry">
               Next <ChevronRight className="w-4 h-4 ml-1" />
