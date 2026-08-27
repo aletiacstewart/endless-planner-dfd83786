@@ -90,6 +90,10 @@ export function SideTabs({ activePageType }: Props) {
     setBusy(pageTypeId);
     try {
       const created = await createEntry(pageTypeId);
+      if (pageTypeId === "complete-tracker") {
+        const { scaffoldLinkedEntries } = await import("@/lib/linkedEntries");
+        await scaffoldLinkedEntries(created);
+      }
       navigate(`/entry/${created.id}`);
     } finally {
       setBusy(null);
@@ -124,8 +128,8 @@ export function SideTabs({ activePageType }: Props) {
               </button>
               <button
                 onClick={() => addTab(pt.id)}
-                aria-label={`New ${pt.shortName} sheet`}
-                title={`New ${pt.shortName} sheet`}
+                aria-label={`New ${pt.shortName} day`}
+                title={`New ${pt.shortName} day`}
                 className={cn(
                   "mr-1 rounded-lg p-1 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100",
                   active ? "hover:bg-primary-foreground/20" : "hover:bg-background",
@@ -165,7 +169,7 @@ export function SideTabs({ activePageType }: Props) {
                 </button>
                 <button
                   onClick={() => addTab(pt.id)}
-                  aria-label={`New ${pt.shortName} sheet`}
+                  aria-label={`New ${pt.shortName} day`}
                   className={cn(
                     "absolute -top-1 -right-1 rounded-full border border-border p-0.5 shadow-sm",
                     active ? "bg-primary-foreground text-primary" : "bg-card text-foreground",
