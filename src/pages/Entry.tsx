@@ -110,6 +110,10 @@ export default function Entry() {
     return <div className="p-6">Unknown page type. <Link to="/app" className="text-primary underline">Home</Link></div>;
   }
 
+  const cadence = pageType.cadence ?? "day";
+  const createLabel =
+    cadence === "year" ? "New year" : cadence === "list" ? "Update list" : "New day";
+
   const meta = getMeta(entry);
   const asSpread = true;
 
@@ -135,7 +139,7 @@ export default function Entry() {
       await scaffoldLinkedEntries(created);
     }
     setFlipDir("next");
-    toast.success(`New ${pageType.shortName} day`);
+    toast.success(createLabel);
     navigate(`/entry/${created.id}`);
   };
   forwardRef.current = () => {
@@ -251,11 +255,12 @@ export default function Entry() {
               variant="secondary"
               size="sm"
               onClick={addSheet}
-              aria-label={`New ${pageType.shortName} day`}
-              title="Start a new day of this page"
+              aria-label={createLabel}
+              title={createLabel}
+              disabled={cadence === "list"}
             >
               <Plus className="w-4 h-4 sm:mr-1" />
-              <span className="hidden sm:inline">New {pageType.shortName}</span>
+              <span className="hidden sm:inline">{createLabel}</span>
             </Button>
             <Button variant="ghost" size="icon" onClick={remove} aria-label="Delete">
               <Trash2 className="w-4 h-4 text-destructive" />
@@ -328,20 +333,15 @@ export default function Entry() {
               swipe or press ← / →
             </p>
           )}
-          {nextEntry ? (
-            <Button variant="ghost" size="sm" onClick={goNext} aria-label="Next entry">
-              Next <ChevronRight className="w-4 h-4 ml-1" />
-            </Button>
-          ) : (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={addSheet}
-              aria-label={`New ${pageType.shortName} day`}
-            >
-              <Plus className="w-4 h-4 mr-1" /> New day
-            </Button>
-          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={goNext}
+            disabled={!nextEntry}
+            aria-label="Next entry"
+          >
+            Next <ChevronRight className="w-4 h-4 ml-1" />
+          </Button>
         </div>
 
       </main>

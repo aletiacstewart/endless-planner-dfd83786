@@ -47,7 +47,21 @@ export default function Section() {
     );
   }
 
+  const cadence = pageType.cadence ?? "day";
+  const unitLabel = cadence === "year" ? "Year" : "Day";
+  /** Ongoing lists (e.g. Medications) open the existing sheet instead of adding one. */
+  const createLabel =
+    cadence === "list"
+      ? `Update ${pageType.name.toLowerCase()}`
+      : cadence === "year"
+        ? "New year"
+        : `New ${pageType.shortName.toLowerCase()}`;
+
   const addNew = async () => {
+    if (cadence === "list" && orderedEntries.length > 0) {
+      navigate(`/entry/${orderedEntries[0].id}`);
+      return;
+    }
     const e = await createEntry(pageType.id);
     if (pageType.id === "complete-tracker") {
       const { scaffoldLinkedEntries } = await import("@/lib/linkedEntries");
@@ -96,12 +110,12 @@ export default function Section() {
 
           <div className="relative z-10 flex items-center justify-between mb-5">
             <p className="font-script text-lg text-primary/80">
-              {entries.length} {entries.length === 1 ? "Day" : "Days"}
+              {entries.length} {entries.length === 1 ? unitLabel : `${unitLabel}s`}
             </p>
 
             <Button onClick={addNew} size="sm" className="rounded-full">
               <Plus className="w-4 h-4 mr-1" />
-              New {pageType.shortName.toLowerCase()}
+              {createLabel}
             </Button>
           </div>
 
@@ -126,7 +140,7 @@ export default function Section() {
                   >
                     <Link to={`/entry/${e.id}`} className="block p-4 pr-10 min-h-[112px]">
                       <p className="font-script text-primary/70 text-sm leading-none">
-                        Day {idx + 1}
+                        {unitLabel} {idx + 1}
                       </p>
 
                       <p className="font-display text-lg mt-2 line-clamp-2">{title}</p>
