@@ -1595,9 +1595,8 @@ export const PAGE_TYPES: PageTypeDef[] = [
           {
             key: "water_grid",
             label: "Water intake",
-            type: "habit-grid",
+            type: "water-grid",
             span: 2,
-            defaultItems: ["1", "2", "3", "4", "5", "6", "7", "8"],
           },
         ],
       },
