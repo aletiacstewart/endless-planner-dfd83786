@@ -65,6 +65,8 @@ export interface FieldDef {
   rowLabels?: string[];
   /** For calendar-grid: keep the note editor out of the grid (shown elsewhere). */
   hideNotePanel?: boolean;
+  /** For calendar-grid / calendar-notes: only show notes tagged with this appointment type. */
+  filterType?: string;
   /** For measurement-grid: allow adding rows beyond rowCount. */
   growable?: boolean;
   /** Label for the add-row button when growable. */
@@ -1107,6 +1109,37 @@ export const PAGE_TYPES: PageTypeDef[] = [
         fields: [
           { key: "date", label: "Date", type: "date" },
           { key: "doctor_id", label: "Doctor seen", type: "doctor-picker" },
+        ],
+      },
+      {
+        title: "Appointment calendar",
+        description: "Only medical appointments show here — they sync with your monthly, weekly and daily calendars.",
+        page: 1,
+        fields: [
+          { key: "cal_month", label: "Month", type: "month", placeholder: "January" },
+          { key: "cal_year", label: "Year", type: "year", placeholder: "2026" },
+          {
+            key: "medical_calendar",
+            label: "Medical appointments",
+            type: "calendar-grid",
+            span: 2,
+            hideNotePanel: true,
+            filterType: "Medical",
+          },
+        ],
+      },
+      {
+        title: "Appointments by day",
+        description: "Every medical appointment on the calendar, day by day.",
+        page: 2,
+        fields: [
+          {
+            key: "medical_calendar",
+            label: "Medical appointments by day",
+            type: "calendar-notes",
+            span: 2,
+            filterType: "Medical",
+          },
         ],
       },
       {
