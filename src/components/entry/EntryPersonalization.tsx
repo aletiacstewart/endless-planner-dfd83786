@@ -89,7 +89,7 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
     };
     onChange({ stickers: [...(meta.stickers ?? []), s] });
     pushRecent({ kind: "emoji", src: emoji });
-    setStickerOpen(false);
+    // Tray intentionally stays open so you can place several stickers in a row.
   };
 
   const addFromLibrary = (a: StickerAsset) => {
