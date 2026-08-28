@@ -7,11 +7,12 @@ interface Props {
   onChange: (next: Sticker[]) => void;
 }
 
-/** Positions (in %) stickers snap to while dragging. */
+/** Optional alignment guides — only applied while holding Shift. */
 const SNAP_POINTS = [25, 50, 75];
 const SNAP_TOLERANCE = 1.6;
 
-function snap(value: number): { value: number; guide: number | null } {
+function snap(value: number, enabled: boolean): { value: number; guide: number | null } {
+  if (!enabled) return { value, guide: null };
   for (const p of SNAP_POINTS) {
     if (Math.abs(value - p) <= SNAP_TOLERANCE) return { value: p, guide: p };
   }
@@ -156,10 +157,10 @@ function StickerItem({
     const dy = ((e.clientY - dragRef.current.startY) / rect.height) * 100;
     if (Math.abs(dx) + Math.abs(dy) > 0.3) dragRef.current.moved = true;
 
-    const rawX = Math.max(0, Math.min(96, dragRef.current.origX + dx));
-    const rawY = Math.max(0, Math.min(98, dragRef.current.origY + dy));
-    const sx = snap(rawX);
-    const sy = snap(rawY);
+    const rawX = Math.max(0, Math.min(100, dragRef.current.origX + dx));
+    const rawY = Math.max(0, Math.min(100, dragRef.current.origY + dy));
+    const sx = snap(rawX, e.shiftKey);
+    const sy = snap(rawY, e.shiftKey);
     onGuides({ x: sx.guide, y: sy.guide });
     onUpdate({ ...sticker, x: sx.value, y: sy.value });
   };

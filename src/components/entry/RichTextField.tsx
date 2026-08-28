@@ -1,7 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { Bold, Italic, Underline, List, ListOrdered, Palette, Eraser } from "lucide-react";
+import { Bold, Italic, Underline, List, ListOrdered, Palette, Eraser, Minus, Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useThemedSwatches, toCss } from "@/hooks/useThemedSwatches";
+import {
+  registerInlineTarget,
+  unregisterInlineTarget,
+  saveInlineCaret,
+  inlineStickerSize,
+  setInlineStickerSize,
+} from "@/lib/inlineStickers";
 
 interface Props {
   value: string;
@@ -20,6 +27,7 @@ export function RichTextField({ value, onChange, placeholder, rows = 3, id }: Pr
   const ref = useRef<HTMLDivElement>(null);
   const [focused, setFocused] = useState(false);
   const [colorOpen, setColorOpen] = useState(false);
+  const [picked, setPicked] = useState<HTMLElement | null>(null);
   const swatches = useThemedSwatches();
 
   useEffect(() => {
@@ -32,6 +40,19 @@ export function RichTextField({ value, onChange, placeholder, rows = 3, id }: Pr
     }
   }, [value]);
 
+  // Clean up the inline-sticker target registration when unmounting.
+  useEffect(() => {
+    const el = ref.current;
+    return () => {
+      if (el) unregisterInlineTarget(el);
+    };
+  }, []);
+
+  const claimTarget = () => {
+    const el = ref.current;
+    if (el) registerInlineTarget({ el, commit: (html) => onChange(html) });
+  };
+
   const exec = (cmd: string, arg?: string) => {
     const el = ref.current;
     if (!el) return;
@@ -43,7 +64,23 @@ export function RichTextField({ value, onChange, placeholder, rows = 3, id }: Pr
     onChange(el.innerHTML);
   };
 
+  const resizePicked = (delta: number) => {
+    const el = ref.current;
+    if (!picked || !el) return;
+    setInlineStickerSize(picked, inlineStickerSize(picked) + delta);
+    onChange(el.innerHTML);
+  };
+
+  const removePicked = () => {
+    const el = ref.current;
+    if (!picked || !el) return;
+    picked.remove();
+    setPicked(null);
+    onChange(el.innerHTML);
+  };
+
   const minH = `${Math.max(2, rows) * 1.6}rem`;
+
 
   return (
     <div className="relative">
@@ -86,6 +123,17 @@ export function RichTextField({ value, onChange, placeholder, rows = 3, id }: Pr
           </div>
         </div>
       )}
+      {picked && (
+        <div
+          className="absolute -top-9 right-0 z-30 flex items-center gap-1 rounded-full border border-border bg-popover px-1.5 py-1 shadow-md"
+          onMouseDown={(e) => e.preventDefault()}
+        >
+          <span className="px-1 text-[10px] uppercase tracking-wide text-muted-foreground">Sticker</span>
+          <ToolbarBtn onClick={() => resizePicked(-6)} title="Smaller"><Minus className="w-3.5 h-3.5" /></ToolbarBtn>
+          <ToolbarBtn onClick={() => resizePicked(6)} title="Larger"><Plus className="w-3.5 h-3.5" /></ToolbarBtn>
+          <ToolbarBtn onClick={removePicked} title="Remove sticker"><X className="w-3.5 h-3.5" /></ToolbarBtn>
+        </div>
+      )}
       <div
         id={id}
         ref={ref}
@@ -93,9 +141,20 @@ export function RichTextField({ value, onChange, placeholder, rows = 3, id }: Pr
         role="textbox"
         aria-multiline="true"
         data-placeholder={placeholder}
-        onFocus={() => setFocused(true)}
-        onBlur={() => { setFocused(false); setColorOpen(false); }}
+        onFocus={() => { setFocused(true); claimTarget(); }}
+        onBlur={() => {
+          setFocused(false);
+          setColorOpen(false);
+          if (ref.current) saveInlineCaret(ref.current);
+        }}
+        onKeyUp={() => ref.current && saveInlineCaret(ref.current)}
+        onMouseUp={() => ref.current && saveInlineCaret(ref.current)}
+        onClick={(e) => {
+          const t = (e.target as HTMLElement).closest?.("[data-inline-sticker]") as HTMLElement | null;
+          setPicked(t && ref.current?.contains(t) ? t : null);
+        }}
         onInput={(e) => onChange((e.target as HTMLDivElement).innerHTML)}
+
         className={cn(
           "richtext w-full rounded-md border border-input bg-background/60 px-3 py-2 text-sm",
           "focus:outline-none focus:ring-2 focus:ring-ring/40 whitespace-pre-wrap"
