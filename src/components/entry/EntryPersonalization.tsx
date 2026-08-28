@@ -106,6 +106,9 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
   const pushRecent = (r: RecentSticker) => setRecents(saveRecentSticker(r));
 
   const addSticker = (emoji: string) => {
+    pushRecent({ kind: "emoji", src: emoji });
+    // If a text field is focused, place the sticker inside it at the caret.
+    if (insertInlineSticker({ kind: "emoji", src: emoji, size: 28 })) return;
     const s: Sticker = {
       id: newStickerId(),
       src: emoji,
@@ -116,11 +119,13 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
       z: topStickerZ(meta.stickers) + 1,
     };
     onChange({ stickers: [...(meta.stickers ?? []), s] });
-    pushRecent({ kind: "emoji", src: emoji });
     // Tray intentionally stays open so you can place several stickers in a row.
   };
 
   const addFromLibrary = (a: StickerAsset) => {
+    pushRecent({ kind: a.kind, src: a.src, label: a.label });
+    if (insertInlineSticker({ kind: a.kind, src: a.src, label: a.label, size: a.kind === "emoji" ? 28 : 48 }))
+      return;
     const s: Sticker = {
       id: newStickerId(),
       src: a.src,
@@ -131,11 +136,13 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
       z: topStickerZ(meta.stickers) + 1,
     };
     onChange({ stickers: [...(meta.stickers ?? []), s] });
-    pushRecent({ kind: a.kind, src: a.src, label: a.label });
   };
 
   /** Quick-access tray: re-place any sticker used recently, in one tap. */
   const addRecent = (r: RecentSticker) => {
+    pushRecent(r);
+    if (insertInlineSticker({ kind: r.kind, src: r.src, label: r.label, size: r.kind === "emoji" ? 28 : 48 }))
+      return;
     const s: Sticker = {
       id: newStickerId(),
       src: r.src,
@@ -146,8 +153,8 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
       z: topStickerZ(meta.stickers) + 1,
     };
     onChange({ stickers: [...(meta.stickers ?? []), s] });
-    pushRecent(r);
   };
+
 
   const bg = meta.background ?? { kind: "paper" as const };
   const setBg = (next: BackgroundSpec) => onChange({ background: next });
