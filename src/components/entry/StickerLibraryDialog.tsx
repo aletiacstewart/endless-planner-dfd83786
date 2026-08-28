@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import {
   getStickerSet,
@@ -28,10 +28,10 @@ export function StickerLibraryDialog({ open, onOpenChange, onPick }: Props) {
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="font-storefront text-2xl">Sticker library</DialogTitle>
-          <p className="text-xs text-muted-foreground">
+          <DialogDescription className="text-xs">
             Stickers for every part of your planner — birthdays, meals, health, chores and
             more. Tap a sticker to place it on the page.
-          </p>
+          </DialogDescription>
 
         </DialogHeader>
 
