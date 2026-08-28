@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { type Cover } from "@/data/covers";
 import { cn } from "@/lib/utils";
 
@@ -17,10 +17,7 @@ type Props = {
  * name + owner name onto the blank "Belongs to" note via canvas so the
  * artwork stays sharp and updates whenever the user renames their planner.
  */
-export const CoverImage = forwardRef<HTMLImageElement | HTMLCanvasElement, Props>(function CoverImage(
-  { cover, plannerName, ownerName, className, personalize = true },
-  ref,
-) {
+export function CoverImage({ cover, plannerName, ownerName, className, personalize = true }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isPersonalized = cover.personalized && personalize;
 
@@ -65,11 +62,7 @@ export const CoverImage = forwardRef<HTMLImageElement | HTMLCanvasElement, Props
   if (isPersonalized) {
     return (
       <canvas
-        ref={(el) => {
-          canvasRef.current = el;
-          if (typeof ref === "function") ref(el);
-          else if (ref) ref.current = el;
-        }}
+        ref={canvasRef}
         className={cn("w-full h-full object-cover", className)}
       />
     );
@@ -77,14 +70,13 @@ export const CoverImage = forwardRef<HTMLImageElement | HTMLCanvasElement, Props
 
   return (
     <img
-      ref={ref as React.Ref<HTMLImageElement>}
       src={cover.image}
       alt={cover.name}
       loading="lazy"
       className={cn("w-full h-full object-cover", className)}
     />
   );
-});
+}
 
 function truncate(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string {
   if (ctx.measureText(text).width <= maxWidth) return text;
