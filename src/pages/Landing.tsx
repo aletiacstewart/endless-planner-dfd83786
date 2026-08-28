@@ -20,8 +20,9 @@ export default function Landing() {
 
   const previewCovers = useMemo(() => {
     const source = filter === "all" ? COVERS : COVERS.filter((c) => c.collection === filter);
-    return source.slice(0, 8);
+    return source.slice(0, 24);
   }, [filter]);
+
 
   const flagshipPlanner = PLANNERS.find((p) => p.available) ?? PLANNERS[0];
 
