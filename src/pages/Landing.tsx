@@ -4,6 +4,7 @@ import { Cloud, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { COVERS, COLLECTIONS, type CoverCollection } from "@/data/covers";
 import { PLANNERS } from "@/data/planners";
+import { CoverCarousel } from "@/components/cover/CoverCarousel";
 import { cn } from "@/lib/utils";
 
 export default function Landing() {
