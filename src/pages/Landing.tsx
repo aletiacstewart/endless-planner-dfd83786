@@ -106,35 +106,13 @@ export default function Landing() {
           ))}
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 lg:gap-x-10 gap-y-10">
-          {previewCovers.map((c) => (
-            <Link
-              key={c.id}
-              to={`/planner/${flagshipPlanner.id}?cover=${encodeURIComponent(c.id)}`}
-              className="group cursor-pointer block"
-            >
-              <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-secondary mb-4 transition-all duration-700 group-hover:shadow-2xl group-hover:shadow-primary/10">
-                <img
-                  src={c.image}
-                  alt={c.name}
-                  loading="lazy"
-                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-1000"
-                />
-              </div>
-              <div className="flex justify-between items-start">
-                <div className="min-w-0">
-                  <h3 className="font-storefront text-xl text-primary truncate">{c.name}</h3>
-                  <p className="text-[10px] uppercase tracking-[0.22em] text-primary/40 font-bold mt-0.5">
-                    {COLLECTIONS.find((x) => x.id === c.collection)?.label ?? "Collection"}
-                  </p>
-                </div>
-                <span className="text-[11px] font-semibold text-primary bg-primary/5 px-2 py-1 rounded">
-                  +$5.00
-                </span>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <CoverCarousel
+          covers={previewCovers}
+          hrefFor={(c) =>
+            `/planner/${flagshipPlanner.id}?cover=${encodeURIComponent(c.id)}`
+          }
+        />
+
 
         <div className="text-center mt-12">
           <Button asChild variant="outline" className="rounded-full px-8 text-[11px] uppercase tracking-[0.2em] font-bold">
