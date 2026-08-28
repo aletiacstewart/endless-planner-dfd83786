@@ -1,7 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { Bold, Italic, Underline, List, ListOrdered, Palette, Eraser } from "lucide-react";
+import { Bold, Italic, Underline, List, ListOrdered, Palette, Eraser, Minus, Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useThemedSwatches, toCss } from "@/hooks/useThemedSwatches";
+import {
+  registerInlineTarget,
+  unregisterInlineTarget,
+  saveInlineCaret,
+  inlineStickerSize,
+  setInlineStickerSize,
+} from "@/lib/inlineStickers";
 
 interface Props {
   value: string;
@@ -20,6 +27,7 @@ export function RichTextField({ value, onChange, placeholder, rows = 3, id }: Pr
   const ref = useRef<HTMLDivElement>(null);
   const [focused, setFocused] = useState(false);
   const [colorOpen, setColorOpen] = useState(false);
+  const [picked, setPicked] = useState<HTMLElement | null>(null);
   const swatches = useThemedSwatches();
 
   useEffect(() => {
@@ -32,6 +40,19 @@ export function RichTextField({ value, onChange, placeholder, rows = 3, id }: Pr
     }
   }, [value]);
 
+  // Clean up the inline-sticker target registration when unmounting.
+  useEffect(() => {
+    const el = ref.current;
+    return () => {
+      if (el) unregisterInlineTarget(el);
+    };
+  }, []);
+
+  const claimTarget = () => {
+    const el = ref.current;
+    if (el) registerInlineTarget({ el, commit: (html) => onChange(html) });
+  };
+
   const exec = (cmd: string, arg?: string) => {
     const el = ref.current;
     if (!el) return;
@@ -43,7 +64,23 @@ export function RichTextField({ value, onChange, placeholder, rows = 3, id }: Pr
     onChange(el.innerHTML);
   };
 
+  const resizePicked = (delta: number) => {
+    const el = ref.current;
+    if (!picked || !el) return;
+    setInlineStickerSize(picked, inlineStickerSize(picked) + delta);
+    onChange(el.innerHTML);
+  };
+
+  const removePicked = () => {
+    const el = ref.current;
+    if (!picked || !el) return;
+    picked.remove();
+    setPicked(null);
+    onChange(el.innerHTML);
+  };
+
   const minH = `${Math.max(2, rows) * 1.6}rem`;
+
 
   return (
     <div className="relative">
