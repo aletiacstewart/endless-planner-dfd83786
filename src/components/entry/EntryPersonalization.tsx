@@ -252,7 +252,17 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
         {/* Stickers */}
         <Popover open={stickerOpen} onOpenChange={setStickerOpen}>
           <PopoverTrigger asChild>
-            <button type="button" className={chipClass}>
+            <button
+              type="button"
+              className={chipClass}
+              // Some touch devices emit a synthetic second click that would
+              // instantly re-toggle (open→close) the tray — swallow it.
+              onPointerDown={(e) => e.preventDefault()}
+              onClick={(e) => {
+                e.preventDefault();
+                setStickerOpen((v) => !v);
+              }}
+            >
               <StickerIcon className="w-3.5 h-3.5" />
               Sticker
             </button>
@@ -308,7 +318,8 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
               ))}
             </div>
             <p className="text-[11px] text-muted-foreground px-1 mt-2">
-              Stickers land at the top of the page. Drag to move, tap for controls.
+              Tap as many as you like — the tray stays open. Tap outside it (or the
+              Sticker button again) to close, then drag stickers into place.
             </p>
           </PopoverContent>
         </Popover>
