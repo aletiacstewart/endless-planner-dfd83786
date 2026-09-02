@@ -16,6 +16,8 @@ export interface Sticker {
   size: number;        // px
   rot?: number;        // degrees
   z?: number;          // stacking order (higher = in front)
+  /** "theme" (default) tints image stickers to the cover palette; "none" keeps original art. */
+  tint?: "theme" | "none";
 }
 
 /** Highest z currently used, so new/raised stickers land on top. */
