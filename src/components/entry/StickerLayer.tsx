@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { X, Minus, Plus, RotateCcw, RotateCw, BringToFront, SendToBack } from "lucide-react";
+import { X, Minus, Plus, RotateCcw, RotateCw, BringToFront, SendToBack, Droplet, DropletOff } from "lucide-react";
 import { sortStickers, topStickerZ, type Sticker } from "@/lib/entryMeta";
+import { useStickerTint } from "@/hooks/useStickerTint";
 
 interface Props {
   stickers: Sticker[];
@@ -27,6 +28,7 @@ function snap(value: number, enabled: boolean): { value: number; guide: number |
 export function StickerLayer({ stickers, onChange }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [guides, setGuides] = useState<{ x: number | null; y: number | null }>({ x: null, y: null });
+  const tintFilter = useStickerTint();
 
   // Deselect when clicking outside any sticker
   useEffect(() => {
@@ -72,6 +74,7 @@ export function StickerLayer({ stickers, onChange }: Props) {
         <StickerItem
           key={s.id}
           sticker={s}
+          tintFilter={tintFilter}
           selected={selectedId === s.id}
           onSelect={() => setSelectedId(s.id)}
           onGuides={setGuides}
@@ -90,6 +93,7 @@ export function StickerLayer({ stickers, onChange }: Props) {
 
 function StickerItem({
   sticker,
+  tintFilter,
   selected,
   onSelect,
   onUpdate,
@@ -99,6 +103,7 @@ function StickerItem({
   onGuides,
 }: {
   sticker: Sticker;
+  tintFilter: string;
   selected: boolean;
   onSelect: () => void;
   onUpdate: (s: Sticker) => void;
@@ -215,7 +220,16 @@ function StickerItem({
           {sticker.kind === "emoji" ? (
             <span>{sticker.src}</span>
           ) : (
-            <img src={sticker.src} alt="" style={{ width: sticker.size, height: sticker.size }} draggable={false} />
+            <img
+              src={sticker.src}
+              alt=""
+              style={{
+                width: sticker.size,
+                height: sticker.size,
+                filter: (sticker.tint ?? "theme") === "theme" ? tintFilter : undefined,
+              }}
+              draggable={false}
+            />
           )}
         </div>
 
@@ -245,6 +259,26 @@ function StickerItem({
             <button type="button" onClick={onBack} className="w-6 h-6 rounded flex items-center justify-center hover:bg-muted" aria-label="Send to back">
               <SendToBack className="w-3 h-3" />
             </button>
+            {sticker.kind === "img" && (
+              <>
+                <span className="w-px h-4 bg-border mx-0.5" />
+                <button
+                  type="button"
+                  onClick={() =>
+                    onUpdate({ ...sticker, tint: (sticker.tint ?? "theme") === "theme" ? "none" : "theme" })
+                  }
+                  className="w-6 h-6 rounded flex items-center justify-center hover:bg-muted"
+                  aria-label={(sticker.tint ?? "theme") === "theme" ? "Use original colors" : "Match cover colors"}
+                  title={(sticker.tint ?? "theme") === "theme" ? "Use original colors" : "Match cover colors"}
+                >
+                  {(sticker.tint ?? "theme") === "theme" ? (
+                    <Droplet className="w-3 h-3" />
+                  ) : (
+                    <DropletOff className="w-3 h-3" />
+                  )}
+                </button>
+              </>
+            )}
             <span className="w-px h-4 bg-border mx-0.5" />
             <button type="button" onClick={onRemove} className="w-6 h-6 rounded flex items-center justify-center text-destructive hover:bg-destructive/10" aria-label="Delete sticker">
               <X className="w-3.5 h-3.5" />

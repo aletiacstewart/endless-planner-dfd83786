@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { useStickerTint } from "@/hooks/useStickerTint";
 import {
   getStickerSet,
   STICKER_CATEGORIES,
@@ -20,6 +21,7 @@ type Props = {
 export function StickerLibraryDialog({ open, onOpenChange, onPick }: Props) {
   const set = useMemo(() => getStickerSet(), []);
   const [tab, setTab] = useState<StickerCategory>("celebrations");
+  const tintFilter = useStickerTint();
   const items = set[tab] ?? [];
 
 
@@ -65,7 +67,12 @@ export function StickerLibraryDialog({ open, onOpenChange, onPick }: Props) {
               {a.kind === "emoji" ? (
                 <span>{a.src}</span>
               ) : (
-                <img src={a.src} alt={a.label ?? ""} className="w-full h-full object-contain p-1" />
+                <img
+                  src={a.src}
+                  alt={a.label ?? ""}
+                  className="w-full h-full object-contain p-1"
+                  style={{ filter: tintFilter }}
+                />
               )}
             </button>
           ))}
