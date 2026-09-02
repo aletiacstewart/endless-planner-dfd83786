@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useThemedSwatches, toCss } from "@/hooks/useThemedSwatches";
 import { useUserSettings } from "@/hooks/useUserSettings";
+import { useStickerTint } from "@/hooks/useStickerTint";
 import { StickerLibraryDialog } from "@/components/entry/StickerLibraryDialog";
 import { ColorSwatchGrid } from "@/components/entry/ColorSwatchGrid";
 import { getRecentStickers, saveRecentSticker, type RecentSticker } from "@/lib/recentStickers";
@@ -74,6 +75,7 @@ type PanelId = "title" | "subtitle" | "body" | "background" | "cards" | "accent"
 export function EntryPersonalization({ meta, onChange, onTypography, onReset }: Props) {
   const swatches = useThemedSwatches();
   const { settings } = useUserSettings();
+  const tintFilter = useStickerTint();
   const [panel, setPanel] = useState<PanelId | null>(null);
   const [stickerTab, setStickerTab] = useState(STICKER_GROUPS[0].id);
   const [libraryOpen, setLibraryOpen] = useState(false);
@@ -114,8 +116,8 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
       id: newStickerId(),
       src: emoji,
       kind: "emoji",
-      x: 50 + (Math.random() * 10 - 5),
-      y: 45 + (Math.random() * 10 - 5),
+      x: 50 + (Math.random() * 6 - 3),
+      y: 6,
       size: 48,
       z: topStickerZ(meta.stickers) + 1,
     };
@@ -131,8 +133,8 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
       id: newStickerId(),
       src: a.src,
       kind: a.kind,
-      x: 50 + (Math.random() * 10 - 5),
-      y: 45 + (Math.random() * 10 - 5),
+      x: 50 + (Math.random() * 6 - 3),
+      y: 6,
       size: a.kind === "emoji" ? 48 : 96,
       z: topStickerZ(meta.stickers) + 1,
     };
@@ -148,8 +150,8 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
       id: newStickerId(),
       src: r.src,
       kind: r.kind,
-      x: 50 + (Math.random() * 10 - 5),
-      y: 45 + (Math.random() * 10 - 5),
+      x: 50 + (Math.random() * 6 - 3),
+      y: 6,
       size: r.kind === "emoji" ? 48 : 96,
       z: topStickerZ(meta.stickers) + 1,
     };
@@ -407,7 +409,12 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
                         {r.kind === "emoji" ? (
                           <span>{r.src}</span>
                         ) : (
-                          <img src={r.src} alt={r.label ?? ""} className="w-full h-full object-contain p-0.5" />
+                          <img
+                            src={r.src}
+                            alt={r.label ?? ""}
+                            className="w-full h-full object-contain p-0.5"
+                            style={{ filter: tintFilter }}
+                          />
                         )}
                       </button>
                     ))}
