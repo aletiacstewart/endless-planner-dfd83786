@@ -6,7 +6,7 @@
  * Writing to localStorage cannot unlock anything.
  */
 
-import { hasPack, hasPlanner, ownedPackIds, refreshEntitlements } from "./entitlements";
+import { hasPack, hasPurchasedPack, hasPlanner, ownedPackIds, refreshEntitlements } from "./entitlements";
 
 const DEVICE_KEY = "planner-device-id";
 
@@ -29,6 +29,11 @@ export function isUnlocked(plannerId: string): boolean {
 
 export function isPackUnlocked(coverId: string): boolean {
   return hasPack(coverId);
+}
+
+/** Paid-for (or included) only — admin access does not count as a purchase. */
+export function isPackPurchased(coverId: string): boolean {
+  return hasPurchasedPack(coverId);
 }
 
 export function listOwnedPacks(): string[] {

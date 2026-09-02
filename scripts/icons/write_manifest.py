@@ -18,7 +18,11 @@ for d in sorted(ICONS.iterdir()):
             folders[d.name] = pages
 
 src = (ROOT / "src/data/covers.ts").read_text()
-cover_ids = [m for m in re.findall(r'^\s*id: "([a-z0-9-]+)",$', src, re.M)]
+# Cover entries appear both multi-line (`id: "x",\n`) and single-line
+# (`{ id: "x", name: ..., image: ... }`), so match the id wherever it sits.
+cover_ids = re.findall(r'\bid: "([a-z0-9-]+)"', src)
+# Collection ids also match the pattern above; keep only ids that have art.
+cover_ids = [c for c in dict.fromkeys(cover_ids)]
 
 mapping = {}
 for cid in cover_ids:

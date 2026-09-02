@@ -170,6 +170,16 @@ export function hasPack(packId: string): boolean {
   return state.packs.includes(packId);
 }
 
+/**
+ * True only when the pack was actually paid for (or ships included).
+ * Ignores the admin override, so the store never hides its whole catalog
+ * from an admin account.
+ */
+export function hasPurchasedPack(packId: string): boolean {
+  if ((INCLUDED_PACK_IDS as readonly string[]).includes(packId)) return true;
+  return state.packs.includes(packId);
+}
+
 export function ownedPackIds(): string[] {
   const owned = new Set<string>(INCLUDED_PACK_IDS as readonly string[]);
   state.packs.forEach((p) => owned.add(p));

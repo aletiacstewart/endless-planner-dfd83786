@@ -1,8 +1,7 @@
 // Cover Packs = cover + matching page-icon set, sold as add-ons.
 //
 // Pricing:
-//   $5 per pack (flat)
-//   Discount: 5+ packs → 10% off entire pack subtotal
+//   $5 per pack (flat) — no volume discounts
 
 import { COVERS, getCover } from "@/data/covers";
 
@@ -24,18 +23,12 @@ export function getPackPriceUSD(_indexInCart: number): number {
   return PACK_PRICE_USD;
 }
 
-/** Discounted total for a cart of pack ids. */
+/** Flat total for a cart of pack ids — $5 each, no discounts. */
 export function calcPackTotalUSD(packIds: string[]): number {
-  const n = packIds.length;
-  if (n === 0) return 0;
-  const gross = n * PACK_PRICE_USD;
-  if (n >= 5) return round2(gross * 0.9); // 10% off
-  return gross;
+  return round2(packIds.length * PACK_PRICE_USD);
 }
 
-export function getDiscountLabel(count: number): string | null {
-  if (count >= 5) return "10% off";
-  if (count > 0) return `Add ${5 - count} more for 10% off`;
+export function getDiscountLabel(_count: number): string | null {
   return null;
 }
 

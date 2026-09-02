@@ -102,16 +102,8 @@ Deno.serve(async (req) => {
       line_items.push({ price: flat.id, quantity: packs.length });
     }
 
-    let discounts: any[] | undefined;
-    if (!isRecurring && packs.length >= 5) {
-      const coupon = await stripe.coupons.create({
-        percent_off: 10,
-        duration: "once",
-        name: "10% off cover packs",
-        max_redemptions: 1,
-      });
-      discounts = [{ coupon: coupon.id }];
-    }
+    // Cover packs are a flat $5 each — no volume discounts.
+    const discounts: any[] | undefined = undefined;
 
     // Resolve or create a Stripe Customer so userId lives on a searchable object.
     const customerId = (customerEmail || userId)

@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CoverPackPicker, CoverPackSummary } from "@/components/cover/CoverPackPicker";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
-import { isPackUnlocked } from "@/lib/unlock";
+import { isPackPurchased } from "@/lib/unlock";
 import { useEntitlements } from "@/hooks/useEntitlements";
 
 export default function Packs() {
@@ -12,7 +12,7 @@ export default function Packs() {
   const [searchParams] = useSearchParams();
   const focus = searchParams.get("focus");
   const [packIds, setPackIds] = useState<string[]>(() =>
-    focus && !isPackUnlocked(focus) ? [focus] : []
+    focus && !isPackPurchased(focus) ? [focus] : []
   );
   const [email, setEmail] = useState("");
   const { openCheckout, checkoutElement, closeCheckout, isOpen } = useStripeCheckout();
@@ -51,7 +51,7 @@ export default function Packs() {
           Each pack re-themes the whole planner — cover, palette, and matching page icons.
         </p>
         <p className="text-center text-xs text-muted-foreground mb-8">
-          First pack $4.99 · each additional $2.99
+          $5 per pack
         </p>
 
         <CoverPackPicker selectedPackIds={packIds} onChange={setPackIds} hideOwned />

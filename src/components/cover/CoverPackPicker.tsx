@@ -3,8 +3,8 @@ import { Plus, Check, X, Lock, Eye } from "lucide-react";
 import { COLLECTIONS, COVERS, type CoverCollection } from "@/data/covers";
 import { CoverImage } from "@/components/cover/CoverImage";
 import { CoverIconPreviewDialog } from "@/components/cover/CoverIconPreviewDialog";
-import { isCoverIncluded, calcPackTotalUSD, getPackPriceUSD, getDiscountLabel } from "@/data/coverPacks";
-import { isPackUnlocked } from "@/lib/unlock";
+import { isCoverIncluded, calcPackTotalUSD, getPackPriceUSD, PACK_PRICE_USD } from "@/data/coverPacks";
+import { isPackUnlocked, isPackPurchased } from "@/lib/unlock";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -34,14 +34,14 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
   const visibleCovers = useMemo(() => {
     let list = COVERS;
     if (filter !== "all") list = list.filter((c) => c.collection === filter);
-    if (hideOwned) list = list.filter((c) => !isPackUnlocked(c.id));
+    if (hideOwned) list = list.filter((c) => !isPackPurchased(c.id));
     if (excludeIds.length) list = list.filter((c) => !excludeIds.includes(c.id));
     return list;
   }, [filter, hideOwned, excludeIds, ent.verifiedAt, ent.admin]);
 
   const toggle = (id: string) => {
     if (isCoverIncluded(id)) return;
-    if (isPackUnlocked(id)) return;
+    if (isPackPurchased(id)) return;
     if (selectedPackIds.includes(id)) {
       onChange(selectedPackIds.filter((p) => p !== id));
     } else {
@@ -70,7 +70,7 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
       <div className={cn("grid gap-3", compact ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4")}>
         {visibleCovers.map((c) => {
           const included = isCoverIncluded(c.id);
-          const owned = isPackUnlocked(c.id);
+          const owned = isPackPurchased(c.id);
           const isSelected = selectedPackIds.includes(c.id);
           const indexInCart = selectedPackIds.indexOf(c.id);
           const price = isSelected ? getPackPriceUSD(indexInCart) : getPackPriceUSD(selectedPackIds.length);
@@ -148,9 +148,7 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
       {selectedPackIds.length > 0 && (
         <div className="text-xs text-muted-foreground text-center">
           {selectedPackIds.length} pack{selectedPackIds.length === 1 ? "" : "s"} selected · packs total <strong className="text-foreground">${total.toFixed(2)}</strong>
-          <span className="block mt-0.5">
-            {getDiscountLabel(selectedPackIds.length) || "$5 per pack"}
-          </span>
+          <span className="block mt-0.5">${PACK_PRICE_USD} per pack</span>
         </div>
       )}
 
@@ -166,7 +164,7 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
         }
         onToggle={() => {
           if (!previewId) return;
-          if (isCoverIncluded(previewId) || isPackUnlocked(previewId)) return;
+          if (isCoverIncluded(previewId) || isPackPurchased(previewId)) return;
           if (selectedPackIds.includes(previewId)) {
             onChange(selectedPackIds.filter((p) => p !== previewId));
           } else {
