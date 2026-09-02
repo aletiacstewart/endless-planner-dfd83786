@@ -114,8 +114,8 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
       id: newStickerId(),
       src: emoji,
       kind: "emoji",
-      x: 50 + (Math.random() * 12 - 6),
-      y: 6 + Math.random() * 4,
+      x: 50 + (Math.random() * 10 - 5),
+      y: 45 + (Math.random() * 10 - 5),
       size: 48,
       z: topStickerZ(meta.stickers) + 1,
     };
@@ -131,8 +131,8 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
       id: newStickerId(),
       src: a.src,
       kind: a.kind,
-      x: 50 + (Math.random() * 12 - 6),
-      y: 6 + Math.random() * 4,
+      x: 50 + (Math.random() * 10 - 5),
+      y: 45 + (Math.random() * 10 - 5),
       size: a.kind === "emoji" ? 48 : 96,
       z: topStickerZ(meta.stickers) + 1,
     };
@@ -148,8 +148,8 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
       id: newStickerId(),
       src: r.src,
       kind: r.kind,
-      x: 50 + (Math.random() * 12 - 6),
-      y: 6 + Math.random() * 4,
+      x: 50 + (Math.random() * 10 - 5),
+      y: 45 + (Math.random() * 10 - 5),
       size: r.kind === "emoji" ? 48 : 96,
       z: topStickerZ(meta.stickers) + 1,
     };

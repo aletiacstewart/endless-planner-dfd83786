@@ -52,7 +52,7 @@ export function StickerLayer({ stickers, onChange }: Props) {
   };
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-10">
+    <div data-sticker-layer className="pointer-events-none absolute inset-0 z-10">
       {guides.x !== null && (
         <div
           className="absolute top-0 bottom-0 w-px bg-primary/60"
@@ -150,9 +150,11 @@ function StickerItem({
     }
 
     if (!dragRef.current) return;
-    const parent = (e.currentTarget as HTMLElement).parentElement;
-    if (!parent) return;
-    const rect = parent.getBoundingClientRect();
+    // Measure against the full-page sticker layer, not the sticker's own wrapper.
+    const layer = (e.currentTarget as HTMLElement).closest("[data-sticker-layer]") as HTMLElement | null;
+    if (!layer) return;
+    const rect = layer.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
     const dx = ((e.clientX - dragRef.current.startX) / rect.width) * 100;
     const dy = ((e.clientY - dragRef.current.startY) / rect.height) * 100;
     if (Math.abs(dx) + Math.abs(dy) > 0.3) dragRef.current.moved = true;
