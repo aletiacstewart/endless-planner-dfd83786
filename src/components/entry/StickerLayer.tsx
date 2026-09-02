@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { X, Minus, Plus, RotateCcw, RotateCw, BringToFront, SendToBack, Droplet, DropletOff } from "lucide-react";
+import { X, Minus, Plus, RotateCcw, RotateCw, BringToFront, SendToBack, Droplet, Palette } from "lucide-react";
 import { sortStickers, topStickerZ, type Sticker } from "@/lib/entryMeta";
 import { useStickerTint } from "@/hooks/useStickerTint";
 
@@ -274,7 +274,7 @@ function StickerItem({
                   {(sticker.tint ?? "theme") === "theme" ? (
                     <Droplet className="w-3 h-3" />
                   ) : (
-                    <DropletOff className="w-3 h-3" />
+                    <Palette className="w-3 h-3" />
                   )}
                 </button>
               </>
