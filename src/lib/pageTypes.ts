@@ -869,10 +869,10 @@ export const PAGE_TYPES: PageTypeDef[] = [
   },
   {
     id: "self-care-checklist",
-    cadence: "year",
+    cadence: "list",
     name: "Self-Care Check List",
     shortName: "Self-Care",
-    description: "A weekly self-care ritual — categorized checklists, mood, sleep, and gratitude.",
+    description: "A weekly self-care ritual with practical choices for body, mind, rest, relationships, and home.",
     icon: "HeartHandshake",
     sections: [
       {
@@ -886,7 +886,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Physical",
         columns: 1,
         fields: [
-          { key: "phys_checklist", label: "Physical", type: "checkbox-group", options: ["Move", "Sleep 8h", "Hydrate", "Nourish", "Sunlight", "Stretch"], span: 2 },
+          { key: "phys_checklist", label: "Choose what supports your body", type: "checkbox-group", options: ["Move gently", "Exercise", "Hydrate", "Balanced meal", "Take medication", "Stretch", "Fresh air", "Health appointment"], span: 2 },
           { key: "phys_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
         ],
       },
@@ -894,7 +894,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Emotional",
         columns: 1,
         fields: [
-          { key: "emo_checklist", label: "Emotional", type: "checkbox-group", options: ["Journal", "Feel it", "Cry if needed", "Talk it out", "Set a boundary", "Rest"], span: 2 },
+          { key: "emo_checklist", label: "Choose what supports your emotions", type: "checkbox-group", options: ["Name my feelings", "Journal", "Talk it out", "Allow tears", "Self-compassion", "Ask for help", "Celebrate a win"], span: 2 },
           { key: "emo_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
         ],
       },
@@ -902,7 +902,15 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Spiritual",
         columns: 1,
         fields: [
-          { key: "spir_checklist", label: "Spiritual", type: "checkbox-group", options: ["Pray", "Meditate", "Nature", "Read", "Gratitude", "Silence"], span: 2 },
+          { key: "mental_checklist", label: "Choose what supports your mind", type: "checkbox-group", options: ["Brain break", "Read", "Create", "Limit news", "Quiet time", "Learn something", "Reduce screen time"], span: 2 },
+          { key: "mental_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+      {
+        title: "Spiritual",
+        columns: 1,
+        fields: [
+          { key: "spir_checklist", label: "Choose what helps you feel grounded", type: "checkbox-group", options: ["Pray", "Meditate", "Nature", "Meaningful reading", "Reflection", "Silence", "Community"], span: 2 },
           { key: "spir_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
         ],
       },
@@ -910,8 +918,22 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Social",
         columns: 1,
         fields: [
-          { key: "soc_checklist", label: "Social", type: "checkbox-group", options: ["Call someone", "Say no", "Ask for help", "Quality time", "Alone time", "Community"], span: 2 },
+          { key: "soc_checklist", label: "Choose what supports connection", type: "checkbox-group", options: ["Call someone", "Quality time", "Ask for help", "Send a message", "Community", "Alone time", "Plan something enjoyable"], span: 2 },
           { key: "soc_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+      {
+        title: "Practical / Home",
+        fields: [
+          { key: "practical_checklist", label: "Choose one caring reset", type: "checkbox-group", options: ["Tidy one area", "Prep a meal", "Review calendar", "Handle one bill", "Wash clothes", "Restock essentials"], span: 2 },
+          { key: "practical_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+      {
+        title: "Rest & Boundaries",
+        fields: [
+          { key: "rest_checklist", label: "Protect your energy", type: "checkbox-group", options: ["Sleep routine", "Nap or pause", "Say no", "Delay a decision", "Mute notifications", "Leave on time", "Make space alone"], span: 2 },
+          { key: "rest_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
         ],
       },
       {
@@ -921,7 +943,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
           { key: "mood_log", label: "Daily mood (S M T W T F S — tap to cycle)", type: "mood-log", span: 2 },
           { key: "water_log", label: "Water (glasses/day avg)", type: "text" },
           { key: "sleep_log", label: "Sleep (hours/night avg)", type: "text" },
-          { key: "gratitude", label: "Grateful for", type: "gratitude-list", max: 3, span: 2 },
           { key: "week_reflection", label: "Weekly reflection", type: "textarea", rows: 4, span: 2 },
         ],
       },
@@ -945,6 +966,27 @@ export const PAGE_TYPES: PageTypeDef[] = [
         fields: [
           { key: "cleaning_rooms", label: "Rooms cleaned today", type: "checkbox-group", options: ["Kitchen", "Dining Room", "Living Room", "Primary Bedroom", "Bedroom 2", "Bedroom 3", "Bathroom 1", "Bathroom 2", "Laundry", "Hallway / Entry", "Office", "Outside / Porch"], span: 2 },
           { key: "cleaning_today", label: "Cleaning today", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+      {
+        title: "Weekly zones",
+        description: "Choose the tasks that make sense for each day; unfinished items can move forward.",
+        columns: 2,
+        fields: [
+          { key: "monday", label: "Monday", type: "checkbox-group", options: ["Kitchen", "Trash", "Dishes", "Laundry", "Floors"] },
+          { key: "tuesday", label: "Tuesday", type: "checkbox-group", options: ["Bathrooms", "Mirrors", "Toilets", "Sinks"] },
+          { key: "wednesday", label: "Wednesday", type: "checkbox-group", options: ["Bedrooms", "Sheets", "Dust", "Vacuum"] },
+          { key: "thursday", label: "Thursday", type: "checkbox-group", options: ["Living areas", "Vacuum", "Dust", "Windows"] },
+          { key: "friday", label: "Friday", type: "checkbox-group", options: ["Kitchen deep clean", "Fridge", "Stove", "Sweep"] },
+          { key: "saturday", label: "Saturday", type: "checkbox-group", options: ["Errands", "Groceries", "Yard", "Cars"] },
+          { key: "sunday", label: "Sunday", type: "checkbox-group", options: ["Reset", "Meal prep", "Plan week", "Rest"] },
+        ],
+      },
+      {
+        title: "Cleaning supplies",
+        fields: [
+          { key: "supplies", label: "On hand", type: "checkbox-group", options: ["All-purpose cleaner", "Glass cleaner", "Bathroom cleaner", "Floor cleaner", "Disinfectant", "Sponges", "Scrub brush", "Microfiber cloths", "Paper towels", "Trash bags", "Laundry detergent", "Gloves", "Mop / broom", "Vacuum supplies"], span: 2 },
+          { key: "supplies_buy", label: "Need to buy", type: "textarea", rows: 3, span: 2 },
         ],
       },
       {
@@ -1277,39 +1319,46 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "Strength",
+        title: "Workout log",
+        page: 1,
         fields: [
           {
             key: "strength",
-            label: "Exercise / Sets x Reps / Weight",
+            label: "Activities and exercises",
             type: "measurement-grid",
             span: 2,
             rowCount: 12,
             rowLabel: "#",
-            columns: ["Exercise", "Sets x Reps", "Weight", "Notes"],
+            columns: ["Activity", "Duration", "Intensity", "Sets", "Reps", "Weight / resistance", "Distance / HR", "Notes"],
+            columnKinds: ["select", "text", "select", "text", "text", "text", "text", "text"],
+            columnOptions: [["Walking", "Running", "Cycling", "Swimming", "Strength", "Mobility", "Stretching", "Yoga", "Pilates", "Dance", "Sports", "Hiking", "HIIT", "Rehabilitation / PT", "Other"], null, ["Light", "Moderate", "Hard"], null, null, null, null, null],
+            columnWidths: ["md", "sm", "sm", "xs", "xs", "sm", "sm", "lg"],
             growable: true,
             addLabel: "Add exercise",
           },
         ],
       },
       {
-        title: "Cardio & activity",
+        title: "Session care",
+        page: 2,
         columns: 2,
         fields: [
-          { key: "cardio_type", label: "Cardio type", type: "text" },
-          { key: "cardio_duration", label: "Duration (min)", type: "number" },
-          { key: "cardio_distance", label: "Distance", type: "text" },
+          { key: "warm_up", label: "Warm-up", type: "textarea", rows: 3 },
+          { key: "cool_down", label: "Cool-down", type: "textarea", rows: 3 },
           { key: "steps", label: "Steps", type: "number" },
+          { key: "recovery", label: "Recovery plan", type: "text" },
         ],
       },
       {
         title: "Fuel & recovery",
+        page: 2,
         columns: 1,
         fields: [
           { key: "water", label: "Water (glasses)", type: "rating", max: 10, span: 2 },
           { key: "sleep_hours", label: "Sleep (hours)", type: "text", span: 2 },
           { key: "energy", label: "Energy", type: "rating", max: 5, span: 2 },
           { key: "soreness", label: "Soreness", type: "rating", max: 5, span: 2 },
+          { key: "pain_notes", label: "Pain or movement limits", type: "textarea", rows: 3, span: 2 },
           { key: "notes", label: "How it felt", type: "textarea", rows: 3, span: 2 },
         ],
       },
@@ -1320,7 +1369,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
     id: "adhd-toolkit",
     name: "ADHD Daily Toolkit",
     shortName: "ADHD",
-    description: "One page, one day — anchor priorities, time-block, and celebrate wins.",
+    description: "A supportive daily workspace for focus, transitions, sensory needs, urges, and small wins.",
     icon: "Zap",
     sections: [
       {
@@ -1332,19 +1381,35 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
+        title: "Clear the mental load",
+        page: 1,
+        columns: 2,
+        fields: [
+          { key: "brain_dump", label: "Brain dump", type: "textarea", rows: 5 },
+          { key: "distraction_parking", label: "Distraction parking lot", type: "textarea", rows: 5 },
+          { key: "must_should_could", label: "Must / should / could", type: "textarea", rows: 4, span: 2 },
+          { key: "task_breakdown", label: "Break the hardest task into tiny steps", type: "textarea", rows: 4, span: 2 },
+          { key: "effort_estimate", label: "Estimated time / effort", type: "text" },
+          { key: "support_person", label: "Body double / support person", type: "text" },
+        ],
+      },
+      {
         title: "The 3 that matter today",
+        page: 1,
         fields: [
           { key: "big_three", label: "Big 3", type: "priority-list", max: 3, span: 2 },
         ],
       },
       {
         title: "Time-block the day",
+        page: 1,
         fields: [
           { key: "schedule", label: "Time schedule", type: "time-schedule", span: 2 },
         ],
       },
       {
         title: "Brain state check-ins",
+        page: 2,
         columns: 2,
         fields: [
           { key: "morning_mood", label: "Morning mood", type: "mood-rating" },
@@ -1354,12 +1419,18 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "Distractions & wins",
+        title: "Regulation, transitions & urges",
+        page: 2,
         columns: 2,
         fields: [
-          { key: "distractions", label: "What pulled me away", type: "textarea", rows: 4 },
+          { key: "sensory_needs", label: "Sensory needs / adjustments", type: "textarea", rows: 4 },
+          { key: "transition_plan", label: "Next transition plan", type: "textarea", rows: 4 },
+          { key: "urge_notes", label: "Urge / exposure notes", type: "textarea", rows: 4 },
+          { key: "compulsion_awareness", label: "Reassurance or compulsion I noticed", type: "textarea", rows: 4 },
+          { key: "regulation_breaks", label: "Regulation breaks that helped", type: "textarea", rows: 4 },
           { key: "wins", label: "Wins (however small)", type: "textarea", rows: 4 },
           { key: "tomorrow", label: "Set up tomorrow — one thing", type: "textarea", rows: 2, span: 2 },
+          { key: "sketch", label: "Sketch / visual brain dump", type: "drawing", span: 2 },
         ],
       },
     ],
@@ -1491,12 +1562,15 @@ export const PAGE_TYPES: PageTypeDef[] = [
         fields: [
           {
             key: "goals",
-            label: "Goal / Target / Saved / Deadline",
+            label: "Savings goals",
             type: "measurement-grid",
             span: 2,
             rowCount: 12,
             rowLabel: "#",
-            columns: ["Goal", "Target", "Saved", "Deadline"],
+            columns: ["Goal name", "Target amount", "Amount saved", "Remaining", "Deadline", "Progress / status"],
+            columnKinds: ["text", "text", "text", "computed-remaining", "date", "select"],
+            columnOptions: [null, null, null, null, null, ["Not started", "Building", "Almost there", "Funded", "Paused"]],
+            columnWidths: ["lg", "sm", "sm", "sm", "sm", "sm"],
             growable: true,
             addLabel: "Add savings goal",
           },
