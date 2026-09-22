@@ -19,12 +19,18 @@ type Props = {
   compact?: boolean;
   /** Cover ids to exclude entirely (e.g. the primary cover already included with install). */
   excludeIds?: string[];
+  /** Show the normal buyer view even for admin accounts (price preview / testing). */
+  ignoreAdmin?: boolean;
 };
 
-export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact, excludeIds = [] }: Props) {
+export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact, excludeIds = [], ignoreAdmin }: Props) {
   const ent = useEntitlements();
   const [filter, setFilter] = useState<CoverCollection | "all">("all");
   const [previewId, setPreviewId] = useState<string | null>(null);
+
+  /** Admin accounts already have access to every cover and icon set. */
+  const adminAll = Boolean(ent.admin) && !ignoreAdmin;
+  const hasAccess = (id: string) => isPackPurchased(id) || adminAll;
 
   const availableCollections = useMemo(() => {
     const used = new Set(COVERS.map((c) => c.collection));
@@ -34,14 +40,15 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
   const visibleCovers = useMemo(() => {
     let list = COVERS;
     if (filter !== "all") list = list.filter((c) => c.collection === filter);
-    if (hideOwned) list = list.filter((c) => !isPackPurchased(c.id));
+    // Admins keep the full catalogue visible so it stays testable.
+    if (hideOwned && !adminAll) list = list.filter((c) => !isPackPurchased(c.id));
     if (excludeIds.length) list = list.filter((c) => !excludeIds.includes(c.id));
     return list;
-  }, [filter, hideOwned, excludeIds, ent.verifiedAt, ent.admin]);
+  }, [filter, hideOwned, excludeIds, adminAll, ent.verifiedAt, ent.admin]);
 
   const toggle = (id: string) => {
     if (isCoverIncluded(id)) return;
-    if (isPackPurchased(id)) return;
+    if (hasAccess(id)) return;
     if (selectedPackIds.includes(id)) {
       onChange(selectedPackIds.filter((p) => p !== id));
     } else {
