@@ -57,10 +57,34 @@ export default function Packs() {
           $5 per pack
         </p>
 
-        <CoverPackPicker selectedPackIds={packIds} onChange={setPackIds} hideOwned />
+        {admin && (
+          <div className="mb-8 rounded-xl border border-primary/40 bg-primary-soft/40 px-4 py-3 text-center text-sm">
+            {adminAccess
+              ? "Admin account — every cover and its matching page icons, stickers and library art are already unlocked for you."
+              : "Price preview on — showing the normal buyer view."}
+            <Button
+              variant="link"
+              size="sm"
+              className="ml-2 h-auto p-0 align-baseline"
+              onClick={() => {
+                setPreviewPrices((v) => !v);
+                setPackIds([]);
+              }}
+            >
+              {adminAccess ? "Preview prices" : "Back to admin view"}
+            </Button>
+          </div>
+        )}
+
+        <CoverPackPicker
+          selectedPackIds={packIds}
+          onChange={setPackIds}
+          hideOwned
+          ignoreAdmin={previewPrices}
+        />
       </section>
 
-      {packIds.length > 0 && (
+      {packIds.length > 0 && !adminAccess && (
         <div className="sticky bottom-0 z-40 border-t border-border bg-card/95 backdrop-blur px-6 py-4 shadow-lg">
           <div className="max-w-2xl mx-auto space-y-3">
             <CoverPackSummary packIds={packIds} />
