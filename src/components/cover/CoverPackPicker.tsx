@@ -133,6 +133,30 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
                 <Eye className="w-4 h-4" />
               </Button>
 
+              {canApply(c.id) && (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={c.id === currentCoverId ? "secondary" : "default"}
+                  disabled={c.id === currentCoverId}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    void applyCover(c.id);
+                  }}
+                  className="absolute bottom-2 left-2 z-30 h-8 rounded-full px-3 text-[11px] shadow-md"
+                >
+                  {c.id === currentCoverId ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 mr-1" /> In use
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-3.5 h-3.5 mr-1" /> Use this cover
+                    </>
+                  )}
+                </Button>
+              )}
+
               {included && (
                 <span className="pointer-events-none absolute top-2 left-2 z-20 text-[10px] uppercase tracking-wide font-bold bg-primary text-primary-foreground rounded-full px-2 py-0.5">
                   Included
