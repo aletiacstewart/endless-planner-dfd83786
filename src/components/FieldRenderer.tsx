@@ -656,7 +656,7 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
         />
       );
     case "drawing":
-      return <DrawingCanvas value={value as DrawingValue | null} label={field.label} onChange={(v) => onChange(v as unknown as FieldValue)} />;
+      return <DrawingCanvas value={value as unknown as DrawingValue | null} label={field.label} onChange={(v) => onChange(v as unknown as FieldValue)} />;
     default:
       return null;
   }
