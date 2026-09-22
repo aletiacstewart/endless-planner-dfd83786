@@ -378,6 +378,17 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
+        title: "Today’s Vitals",
+        description: "One daily reading for each yearly health tracker.",
+        page: 2,
+        columns: 3,
+        fields: [
+          { key: "daily_blood_sugar", label: "Blood Sugar", type: "text" },
+          { key: "daily_blood_pressure", label: "Blood Pressure", type: "text" },
+          { key: "daily_oxygen", label: "O₂ Level", type: "text" },
+        ],
+      },
+      {
         title: "Wellness",
         description: "Tick a box for each unit. Add anything else in the Other field.",
         columns: 1,
@@ -618,9 +629,13 @@ export const PAGE_TYPES: PageTypeDef[] = [
         columns: 1,
         fields: [
           { key: "feelings", label: "Morning — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_morning_other", span: 2 },
+          { key: "feelings_morning_notes", label: "Morning notes", type: "textarea", rows: 3, span: 2 },
           { key: "feelings_afternoon", label: "Afternoon — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_afternoon_other", span: 2 },
+          { key: "feelings_afternoon_notes", label: "Afternoon notes", type: "textarea", rows: 3, span: 2 },
           { key: "feelings_evening", label: "Evening — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_evening_other", span: 2 },
+          { key: "feelings_evening_notes", label: "Evening notes", type: "textarea", rows: 3, span: 2 },
           { key: "feelings_night", label: "Night — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_night_other", span: 2 },
+          { key: "feelings_night_notes", label: "Night notes", type: "textarea", rows: 3, span: 2 },
         ],
       },
       {
@@ -2159,5 +2174,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
 
 
 export function getPageType(id: string): PageTypeDef | undefined {
-  return PAGE_TYPES.find((p) => p.id === id);
+  const resolved = id === "weekly-cleaning" ? "cleaning-checklist" : id;
+  return PAGE_TYPES.find((p) => p.id === resolved);
 }

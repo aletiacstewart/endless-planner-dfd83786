@@ -334,8 +334,8 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
     case "success-fail": {
       const current = (value as string) ?? "";
       const opts: { v: "success" | "failed"; label: string }[] = [
-        { v: "success", label: "Success" },
-        { v: "failed", label: "Failed" },
+        { v: "success", label: "Accomplished" },
+        { v: "failed", label: "Needs Improvement" },
       ];
       const inputKey = field.inputKey;
       const inputVal = inputKey ? ((allValues?.[inputKey] as string) ?? "") : "";

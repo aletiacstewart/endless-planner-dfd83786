@@ -122,7 +122,11 @@ export function PageRenderer({ pageType, values, onChange }: Props) {
                 return section.fields.map((field) => (
                   <div
                     key={field.key}
-                    className={cn(field.span === 2 && "sm:col-span-2 md:col-span-3")}
+                    className={cn(
+                      "min-w-0",
+                      field.span === 2 && section.columns === 2 && "sm:col-span-2",
+                      field.span === 2 && section.columns === 3 && "sm:col-span-2 md:col-span-3",
+                    )}
                   >
                     <FieldRenderer
                       field={field}
