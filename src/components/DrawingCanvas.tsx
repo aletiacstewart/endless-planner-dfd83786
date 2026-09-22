@@ -80,7 +80,7 @@ export function DrawingCanvas({ value, label, onChange }: Props) {
         <input aria-label="Stroke thickness" type="range" min="2" max="12" value={width} onChange={(e) => setWidth(Number(e.target.value))} className="w-20 accent-primary" />
         <Button type="button" size="icon" variant="ghost" disabled={!strokes.length} onClick={() => { const last = strokes.at(-1); if (!last) return; onChange({ strokes: strokes.slice(0, -1) }); setRedo((r) => [...r, last]); }} title="Undo"><Undo2 className="h-4 w-4" /></Button>
         <Button type="button" size="icon" variant="ghost" disabled={!redo.length} onClick={() => { const last = redo.at(-1); if (!last) return; onChange({ strokes: [...strokes, last] }); setRedo((r) => r.slice(0, -1)); }} title="Redo"><Redo2 className="h-4 w-4" /></Button>
-        <Button type="button" size="icon" variant="ghost" disabled={!strokes.length} onClick={() => window.confirm("Clear this sketch?") && onChange({ strokes: [] })} title="Clear"><Trash2 className="h-4 w-4" /></Button>
+        <Button type="button" size="icon" variant="ghost" disabled={!strokes.length} onClick={() => { drawing.current = null; setRedo([]); onChange({ strokes: [] }); }} title="Clear sketch" aria-label="Clear sketch"><Trash2 className="h-4 w-4" /></Button>
       </div>
     </div>
     <canvas ref={canvasRef} onPointerDown={start} onPointerMove={move} onPointerUp={end} onPointerCancel={end} className="h-72 w-full touch-none rounded-md border border-border bg-background/60 paper-dot cursor-crosshair" aria-label={label} />

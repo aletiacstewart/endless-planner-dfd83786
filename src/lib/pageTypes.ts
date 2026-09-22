@@ -2068,6 +2068,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
             rowLabel: "#",
             columns: ["Name", "Relationship", "Phone", "Notes"],
             columnWidths: ["md", "sm", "sm", "lg"],
+            rowDetails: true,
             growable: true,
             addLabel: "Add contact",
           },
