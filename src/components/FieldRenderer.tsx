@@ -1884,18 +1884,24 @@ function MeasurementGrid({
     <div className="min-w-0">
       <label className="field-label block mb-2">{label}</label>
       {rowDetails && (
-        <div className="space-y-2 lg:hidden">
+        <div className="space-y-2 xl:hidden">
           {Array.from({ length: visibleRows }, (_, i) => i + 1).map((row) => {
             const name = cellValue(row, columns[0] ?? "");
             const secondary = cellValue(row, columns[1] ?? "");
             return (
               <div key={row} className="flex min-w-0 items-center gap-3 rounded-md border border-border bg-background/40 p-2.5">
-                <span className="w-6 shrink-0 text-center text-xs text-muted-foreground">
+                <span className="w-10 shrink-0 text-center text-xs text-muted-foreground">
                   {rowLabels?.[row - 1] ?? row}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{name || `Contact ${row}`}</p>
-                  <p className="truncate text-xs text-muted-foreground">{secondary || "No phone added"}</p>
+                  <p className="truncate text-sm font-medium">
+                    {name || `${rowLabels?.[row - 1] ?? `${rowLabel} ${row}`} — tap to fill in`}
+                  </p>
+                  {columns.length > 1 && (
+                    <p className="truncate text-xs text-muted-foreground">
+                      {secondary || columns[1]}
+                    </p>
+                  )}
                 </div>
                 {detailsButton(row)}
               </div>
@@ -1906,7 +1912,7 @@ function MeasurementGrid({
       <div
         className={cn(
           "overflow-x-auto -mx-2 px-2 pb-2 max-w-full",
-          rowDetails && "hidden lg:block",
+          rowDetails && "hidden xl:block",
         )}
         style={{ WebkitOverflowScrolling: "touch" }}
       >
