@@ -90,8 +90,8 @@ export function PageRenderer({ pageType, values, onChange }: Props) {
                           key={field.key}
                           className={cn(
                             "min-w-0",
-                            field.span === 2 && group.columns === 2 && "col-span-2",
-                            field.span === 2 && group.columns === 3 && "col-span-3"
+                            field.span === 2 && group.columns === 2 && "sm:col-span-2",
+                            field.span === 2 && group.columns === 3 && "sm:col-span-2 xl:col-span-3"
                           )}
                         >
                           <FieldRenderer
