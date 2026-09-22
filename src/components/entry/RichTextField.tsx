@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Bold, Italic, Underline, List, ListOrdered, Palette, Eraser, Minus, Plus, X } from "lucide-react";
+import { Bold, GripHorizontal, Italic, Underline, List, ListOrdered, Palette, Eraser, Minus, Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useThemedSwatches, toCss } from "@/hooks/useThemedSwatches";
 import {
@@ -28,6 +28,9 @@ export function RichTextField({ value, onChange, placeholder, rows = 3, id }: Pr
   const [focused, setFocused] = useState(false);
   const [colorOpen, setColorOpen] = useState(false);
   const [picked, setPicked] = useState<HTMLElement | null>(null);
+  const [toolbarDismissed, setToolbarDismissed] = useState(false);
+  const [toolbarOffset, setToolbarOffset] = useState({ x: 0, y: 0 });
+  const toolbarDrag = useRef<{ x: number; y: number; startX: number; startY: number } | null>(null);
   const swatches = useThemedSwatches();
 
   useEffect(() => {
@@ -84,11 +87,31 @@ export function RichTextField({ value, onChange, placeholder, rows = 3, id }: Pr
 
   return (
     <div className="relative">
-      {focused && (
+      {focused && !toolbarDismissed && (
         <div
-          className="absolute -top-9 left-0 z-20 flex items-center gap-0.5 rounded-md border border-border bg-popover px-1 py-1 shadow-md"
+          className="absolute bottom-full left-0 z-20 mb-1 flex max-w-[calc(100vw-2rem)] flex-wrap items-center gap-0.5 rounded-md border border-border bg-popover px-1 py-1 shadow-md"
+          style={{ transform: `translate(${toolbarOffset.x}px, ${toolbarOffset.y}px)` }}
           onMouseDown={(e) => e.preventDefault()}
         >
+          <button
+            type="button"
+            aria-label="Move text tools"
+            title="Drag to move"
+            className="flex h-7 cursor-grab touch-none items-center gap-1 rounded px-1 text-[9px] text-muted-foreground hover:bg-muted"
+            onPointerDown={(e) => {
+              e.currentTarget.setPointerCapture(e.pointerId);
+              toolbarDrag.current = { x: toolbarOffset.x, y: toolbarOffset.y, startX: e.clientX, startY: e.clientY };
+            }}
+            onPointerMove={(e) => {
+              const drag = toolbarDrag.current;
+              if (!drag) return;
+              setToolbarOffset({ x: drag.x + e.clientX - drag.startX, y: drag.y + e.clientY - drag.startY });
+            }}
+            onPointerUp={() => { toolbarDrag.current = null; }}
+            onPointerCancel={() => { toolbarDrag.current = null; }}
+          >
+            <GripHorizontal className="h-3.5 w-3.5" /> Move
+          </button>
           <ToolbarBtn onClick={() => exec("bold")} title="Bold"><Bold className="w-3.5 h-3.5" /></ToolbarBtn>
           <ToolbarBtn onClick={() => exec("italic")} title="Italic"><Italic className="w-3.5 h-3.5" /></ToolbarBtn>
           <ToolbarBtn onClick={() => exec("underline")} title="Underline"><Underline className="w-3.5 h-3.5" /></ToolbarBtn>
@@ -121,6 +144,8 @@ export function RichTextField({ value, onChange, placeholder, rows = 3, id }: Pr
               </div>
             )}
           </div>
+          <ToolbarBtn onClick={() => setToolbarDismissed(true)} title="Close tools"><X className="w-3.5 h-3.5" /></ToolbarBtn>
+          <span className="w-full px-1 text-[9px] leading-tight text-muted-foreground sm:w-auto">Drag Move · tap × to close</span>
         </div>
       )}
       {picked && (
@@ -141,7 +166,7 @@ export function RichTextField({ value, onChange, placeholder, rows = 3, id }: Pr
         role="textbox"
         aria-multiline="true"
         data-placeholder={placeholder}
-        onFocus={() => { setFocused(true); claimTarget(); }}
+        onFocus={() => { setFocused(true); setToolbarDismissed(false); claimTarget(); }}
         onBlur={() => {
           setFocused(false);
           setColorOpen(false);

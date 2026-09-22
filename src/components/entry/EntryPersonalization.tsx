@@ -185,13 +185,13 @@ export function EntryPersonalization({
       <div
         className={cn(
           "-mx-1 px-1 no-scrollbar",
-          wrapOnMobile ? "overflow-visible sm:overflow-x-auto" : "overflow-x-auto",
+          wrapOnMobile ? "overflow-visible lg:overflow-x-auto" : "overflow-x-auto",
         )}
       >
         <div
           className={cn(
-            "flex items-center gap-2 pb-1",
-            wrapOnMobile ? "flex-wrap min-w-0 sm:flex-nowrap sm:min-w-max" : "min-w-max",
+            "flex items-center gap-2 pb-2",
+            wrapOnMobile ? "flex-wrap min-w-0 lg:flex-nowrap lg:min-w-max" : "min-w-max",
           )}
         >
           <Chip

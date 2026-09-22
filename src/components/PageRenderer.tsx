@@ -79,8 +79,8 @@ export function PageRenderer({ pageType, values, onChange }: Props) {
                     className={cn(
                       "grid gap-3",
                       (!group.columns || group.columns === 1) && "grid-cols-1",
-                      group.columns === 2 && "grid-cols-2",
-                      group.columns === 3 && "grid-cols-3"
+                      group.columns === 2 && "grid-cols-1 sm:grid-cols-2",
+                      group.columns === 3 && "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3"
                     )}
                   >
                     {(() => {
@@ -90,8 +90,8 @@ export function PageRenderer({ pageType, values, onChange }: Props) {
                           key={field.key}
                           className={cn(
                             "min-w-0",
-                            field.span === 2 && group.columns === 2 && "col-span-2",
-                            field.span === 2 && group.columns === 3 && "col-span-3"
+                            field.span === 2 && group.columns === 2 && "sm:col-span-2",
+                            field.span === 2 && group.columns === 3 && "sm:col-span-2 xl:col-span-3"
                           )}
                         >
                           <FieldRenderer

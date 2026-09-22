@@ -235,10 +235,14 @@ function StickerItem({
 
         {selected && (
           <div
-            className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full border border-border bg-popover px-1.5 py-1 shadow-md"
+            className="absolute left-1/2 -translate-x-1/2 flex w-max max-w-[calc(100vw-2rem)] flex-wrap items-center justify-center gap-1 rounded-xl border border-border bg-popover px-1.5 py-1 shadow-md"
             style={{ top: `calc(50% + ${sticker.size / 2 + 8}px)` }}
             onMouseDown={(e) => e.preventDefault()}
+            title="Drag the sticker to move it. Tap outside to close these tools."
           >
+            <span className="w-full px-1 text-center text-[9px] text-muted-foreground sm:w-auto">
+              Drag sticker to move · tap outside to close
+            </span>
             <button type="button" onClick={() => bump(-8)} className="w-6 h-6 rounded flex items-center justify-center hover:bg-muted" aria-label="Smaller">
               <Minus className="w-3 h-3" />
             </button>
