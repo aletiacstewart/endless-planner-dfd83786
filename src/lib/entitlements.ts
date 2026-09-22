@@ -60,6 +60,7 @@ function readCache(): Partial<EntitlementState> {
       planners: Array.isArray(parsed.planners) ? parsed.planners : [],
       packs: Array.isArray(parsed.packs) ? parsed.packs : [],
       admin: Boolean(parsed.admin),
+      tester: Boolean(parsed.tester),
       verifiedAt: parsed.verifiedAt ?? 0,
       stale: true,
     };
@@ -77,6 +78,7 @@ function writeCache(s: EntitlementState) {
         planners: s.planners,
         packs: s.packs,
         admin: s.admin,
+        tester: s.tester,
         verifiedAt: s.verifiedAt,
       }),
     );
