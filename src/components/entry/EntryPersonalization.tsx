@@ -48,6 +48,8 @@ interface Props {
   hideStickers?: boolean;
   /** Label for the reset chip. */
   resetLabel?: string;
+  /** Show every control in wrapped rows on phones instead of a sideways strip. */
+  wrapOnMobile?: boolean;
 }
 
 const FONTS: EntryFont[] = ["serif", "sans", "hand", "mono", "display", "rounded"];
@@ -83,6 +85,7 @@ export function EntryPersonalization({
   onReset,
   hideStickers,
   resetLabel = "Reset",
+  wrapOnMobile = false,
 }: Props) {
   const swatches = useThemedSwatches();
   const { settings } = useUserSettings();
@@ -176,8 +179,18 @@ export function EntryPersonalization({
   return (
     <div ref={wrapRef} className="mt-3">
       {/* Chip strip (scrolls horizontally on small screens) */}
-      <div className="-mx-1 px-1 overflow-x-auto no-scrollbar">
-        <div className="flex items-center gap-2 min-w-max pb-1">
+      <div
+        className={cn(
+          "-mx-1 px-1 no-scrollbar",
+          wrapOnMobile ? "overflow-visible sm:overflow-x-auto" : "overflow-x-auto",
+        )}
+      >
+        <div
+          className={cn(
+            "flex items-center gap-2 pb-1",
+            wrapOnMobile ? "flex-wrap min-w-0 sm:flex-nowrap sm:min-w-max" : "min-w-max",
+          )}
+        >
           <Chip
             active={panel === "title"}
             onClick={() => toggle("title")}
@@ -200,7 +213,7 @@ export function EntryPersonalization({
             dot={getTypo(meta, "body").color}
           />
 
-          <Divider />
+          <Divider hiddenOnMobile={wrapOnMobile} />
 
           <Chip
             active={panel === "background"}
@@ -232,7 +245,7 @@ export function EntryPersonalization({
 
           {!hideStickers && (
             <>
-              <Divider />
+              <Divider hiddenOnMobile={wrapOnMobile} />
 
               <Chip
                 active={panel === "sticker"}
@@ -517,8 +530,8 @@ function Chip({
   );
 }
 
-function Divider() {
-  return <span className="w-px h-5 bg-border/70 mx-0.5 shrink-0" />;
+function Divider({ hiddenOnMobile = false }: { hiddenOnMobile?: boolean }) {
+  return <span className={cn("w-px h-5 bg-border/70 mx-0.5 shrink-0", hiddenOnMobile && "hidden sm:block")} />;
 }
 
 function Legend({ children }: { children: React.ReactNode }) {
