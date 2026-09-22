@@ -235,7 +235,7 @@ export default function Entry() {
   return (
     <div
       data-entry-styled
-      className="min-h-screen pb-32 lg:pb-24 lg:pr-40"
+      className="min-h-screen pb-56 lg:pb-44 lg:pr-40"
       style={{
         background: pageBg,
         backgroundImage: patternBg ? `${patternBg}${bg.color ? "" : ""}` : undefined,
