@@ -456,7 +456,7 @@ export function EntryPersonalization({
                             src={r.src}
                             alt={r.label ?? ""}
                             className="w-full h-full object-contain p-0.5"
-                            style={{ filter: tintFilter }}
+                            style={{ filter: isPageIconAsset(r.src) ? undefined : tintFilter }}
                           />
                         )}
                       </button>
