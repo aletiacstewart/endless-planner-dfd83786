@@ -216,6 +216,11 @@ function isoOf(year: number, monthIndex: number, day: number) {
   return `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
+/** Weekly-grid row index for a date (Mon = 0 … Sun = 6). */
+function weekdayRow(date: ParsedDate): number {
+  return (new Date(date.year, date.monthIndex, date.day).getDay() + 6) % 7;
+}
+
 /** Merge into a daily-month-grid value: `{ cells: { [day-monthIndex]: string }, achieved, notes }`. */
 function mergeDailyMonthCell(
   dst: Record<string, FieldValue>,
