@@ -19,12 +19,18 @@ type Props = {
   compact?: boolean;
   /** Cover ids to exclude entirely (e.g. the primary cover already included with install). */
   excludeIds?: string[];
+  /** Show the normal buyer view even for admin accounts (price preview / testing). */
+  ignoreAdmin?: boolean;
 };
 
-export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact, excludeIds = [] }: Props) {
+export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact, excludeIds = [], ignoreAdmin }: Props) {
   const ent = useEntitlements();
   const [filter, setFilter] = useState<CoverCollection | "all">("all");
   const [previewId, setPreviewId] = useState<string | null>(null);
+
+  /** Admin accounts already have access to every cover and icon set. */
+  const adminAll = Boolean(ent.admin) && !ignoreAdmin;
+  const hasAccess = (id: string) => isPackPurchased(id) || adminAll;
 
   const availableCollections = useMemo(() => {
     const used = new Set(COVERS.map((c) => c.collection));
@@ -34,14 +40,15 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
   const visibleCovers = useMemo(() => {
     let list = COVERS;
     if (filter !== "all") list = list.filter((c) => c.collection === filter);
-    if (hideOwned) list = list.filter((c) => !isPackPurchased(c.id));
+    // Admins keep the full catalogue visible so it stays testable.
+    if (hideOwned && !adminAll) list = list.filter((c) => !isPackPurchased(c.id));
     if (excludeIds.length) list = list.filter((c) => !excludeIds.includes(c.id));
     return list;
-  }, [filter, hideOwned, excludeIds, ent.verifiedAt, ent.admin]);
+  }, [filter, hideOwned, excludeIds, adminAll, ent.verifiedAt, ent.admin]);
 
   const toggle = (id: string) => {
     if (isCoverIncluded(id)) return;
-    if (isPackPurchased(id)) return;
+    if (hasAccess(id)) return;
     if (selectedPackIds.includes(id)) {
       onChange(selectedPackIds.filter((p) => p !== id));
     } else {
@@ -70,7 +77,8 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
       <div className={cn("grid gap-3", compact ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4")}>
         {visibleCovers.map((c) => {
           const included = isCoverIncluded(c.id);
-          const owned = isPackPurchased(c.id);
+          const purchased = isPackPurchased(c.id);
+          const owned = purchased || adminAll;
           const isSelected = selectedPackIds.includes(c.id);
           const indexInCart = selectedPackIds.indexOf(c.id);
           const price = isSelected ? getPackPriceUSD(indexInCart) : getPackPriceUSD(selectedPackIds.length);
@@ -119,7 +127,7 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
               )}
               {owned && !included && (
                 <span className="pointer-events-none absolute top-2 left-2 z-20 text-[10px] uppercase tracking-wide font-bold bg-foreground/80 text-background rounded-full px-2 py-0.5">
-                  Owned
+                  {purchased ? "Owned" : "Admin"}
                 </span>
               )}
               {isSelected && (
@@ -145,7 +153,7 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
                 )}
                 {owned && !included && (
                   <p className="text-[10px] text-white/90 mt-0.5 inline-flex items-center gap-1">
-                    <Lock className="w-3 h-3" /> Unlocked
+                    <Lock className="w-3 h-3" /> {purchased ? "Unlocked" : "Included · admin"}
                   </p>
                 )}
               </div>
@@ -173,7 +181,7 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
         }
         onToggle={() => {
           if (!previewId) return;
-          if (isCoverIncluded(previewId) || isPackPurchased(previewId)) return;
+          if (isCoverIncluded(previewId) || hasAccess(previewId)) return;
           if (selectedPackIds.includes(previewId)) {
             onChange(selectedPackIds.filter((p) => p !== previewId));
           } else {
