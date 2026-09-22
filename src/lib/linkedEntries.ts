@@ -221,6 +221,123 @@ function weekdayRow(date: ParsedDate): number {
   return (new Date(date.year, date.monthIndex, date.day).getDay() + 6) % 7;
 }
 
+/**
+ * Row in a measurement grid whose `col` already holds `value` (case-insensitive),
+ * else the first row with an empty `col`, else a new row after the last used one.
+ */
+function gridRowForValue(
+  dst: Record<string, FieldValue>,
+  field: string,
+  col: string,
+  value: string,
+): number {
+  const grid = (dst[field] as Record<string, string> | undefined) ?? {};
+  const want = value.trim().toLowerCase();
+  let lastUsed = 0;
+  for (const key of Object.keys(grid)) {
+    const row = Number(key.split("-")[0]);
+    if (Number.isFinite(row) && row > lastUsed && String(grid[key] ?? "").trim()) lastUsed = row;
+  }
+  const limit = Math.max(lastUsed, 8);
+  if (want) {
+    for (let row = 0; row <= limit; row++) {
+      if (String(grid[`${row}-${col}`] ?? "").trim().toLowerCase() === want) return row;
+    }
+  }
+  for (let row = 0; row <= limit; row++) {
+    const empty = Object.keys(grid).every(
+      (key) => Number(key.split("-")[0]) !== row || !String(grid[key] ?? "").trim(),
+    );
+    if (empty) return row;
+  }
+  return lastUsed + 1;
+}
+
+const money = (raw: FieldValue | undefined): number => {
+  const n = parseFloat(String(raw ?? "").replace(/[^0-9.-]/g, ""));
+  return Number.isFinite(n) ? n : 0;
+};
+
+const fmtMoney = (n: number): string => (Number.isInteger(n) ? String(n) : n.toFixed(2));
+
+/**
+ * Recompute the money pages from every Complete Tracker day: spending totals per
+ * category for the month's budget, savings deposits per goal, debt payments per
+ * creditor. Summing (instead of copying one day) keeps the totals correct no
+ * matter which day was edited.
+ */
+async function rollUpMoney(date: ParsedDate): Promise<string[]> {
+  const synced: string[] = [];
+  const days = await listEntries("complete-tracker");
+  const spend = new Map<string, number>();
+  const saved = new Map<string, number>();
+  const paid = new Map<string, number>();
+
+  for (const day of days) {
+    const d = parseDate(day.values.date);
+    const dv = day.values;
+    if (d && d.year === date.year && d.monthIndex === date.monthIndex) {
+      const cat = asText(dv.spend_category).trim();
+      const amt = money(dv.spend_amount);
+      if (cat && amt) spend.set(cat, (spend.get(cat) ?? 0) + amt);
+    }
+    const goal = asText(dv.savings_goal_name).trim();
+    const dep = money(dv.saved_today);
+    if (goal && dep) saved.set(goal, (saved.get(goal) ?? 0) + dep);
+    const creditor = asText(dv.debt_creditor).trim();
+    const pay = money(dv.debt_paid_today);
+    if (creditor && pay) paid.set(creditor, (paid.get(creditor) ?? 0) + pay);
+  }
+
+  if (spend.size > 0) {
+    const monthName = MONTH_LOWER[date.monthIndex];
+    const budget = await findOrCreate(
+      "budget-monthly",
+      (e) => asText(e.values.month).toLowerCase() === monthName,
+      { month: monthName },
+    );
+    await persist(budget, (dst) => {
+      if (!dst.month) dst.month = monthName;
+      for (const [cat, total] of spend) {
+        const row = gridRowForValue(dst, "variable", "Category", cat);
+        mergeMeasurementCell(dst, "variable", row, "Category", cat);
+        mergeMeasurementCell(dst, "variable", row, "Actual", fmtMoney(total));
+      }
+    });
+    synced.push("Monthly Budget");
+  }
+
+  if (saved.size > 0) {
+    const all = await listEntries("savings-goals");
+    const entry = all[0] ?? (await createEntry("savings-goals", {}));
+    await persist(entry, (dst) => {
+      for (const [goal, total] of saved) {
+        const row = gridRowForValue(dst, "goals", "Goal name", goal);
+        mergeMeasurementCell(dst, "goals", row, "Goal name", goal);
+        mergeMeasurementCell(dst, "goals", row, "Amount saved", fmtMoney(total));
+        const target = money((dst.goals as Record<string, string> | undefined)?.[`${row}-Target amount`]);
+        if (target) mergeMeasurementCell(dst, "goals", row, "Remaining", fmtMoney(target - total));
+      }
+    });
+    synced.push("Savings Goals");
+  }
+
+  if (paid.size > 0) {
+    const all = await listEntries("debt-tracker");
+    const entry = all[0] ?? (await createEntry("debt-tracker", {}));
+    await persist(entry, (dst) => {
+      for (const [creditor, total] of paid) {
+        const row = gridRowForValue(dst, "debts", "Creditor", creditor);
+        mergeMeasurementCell(dst, "debts", row, "Creditor", creditor);
+        mergeMeasurementCell(dst, "debts", row, "Paid", fmtMoney(total));
+      }
+    });
+    synced.push("Debt Tracker");
+  }
+
+  return synced;
+}
+
 /** Merge into a daily-month-grid value: `{ cells: { [day-monthIndex]: string }, achieved, notes }`. */
 function mergeDailyMonthCell(
   dst: Record<string, FieldValue>,
@@ -860,6 +977,102 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       synced.push("Medications");
     }
 
+    // 22. Notes — one Notes page per day.
+    if (anyFilled(v, ["note_today"])) {
+      const title = `Notes — ${date.iso}`;
+      const entry = await findOrCreate("notes", (e) => asText(e.values.title) === title, { title });
+      await persist(entry, (dst) => {
+        dst.title = title;
+        dst.note = v.note_today as FieldValue;
+      });
+      synced.push(`Notes (${date.iso})`);
+    }
+
+    // 23. Brain Dump — per day.
+    if (anyFilled(v, ["brain_dump_today", "do_now", "do_later"])) {
+      const entry = await findOrCreate(
+        "brain-dump",
+        (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
+        { date: date.iso },
+      );
+      await persist(entry, (dst) => {
+        dst.date = date.iso;
+        if (v.brain_dump_today !== undefined) dst.dump = v.brain_dump_today;
+        copyKeys(v, dst, ["do_now", "do_later"]);
+        if (v.mood_overall != null) dst.mood = v.mood_overall;
+      });
+      synced.push(`Brain Dump (${date.iso})`);
+    }
+
+    // 24. ADHD / Focus Toolkit — per day.
+    const adhdKeys = ["focus_word", "med_taken", "focus_level", "big_three", "wins"];
+    if (anyFilled(v, adhdKeys)) {
+      const entry = await findOrCreate(
+        "adhd-toolkit",
+        (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
+        { date: date.iso },
+      );
+      await persist(entry, (dst) => {
+        dst.date = date.iso;
+        copyKeys(v, dst, adhdKeys);
+        if (v.brain_dump_today !== undefined) dst.brain_dump = v.brain_dump_today;
+      });
+      synced.push(`Focus Toolkit (${date.iso})`);
+    }
+
+    // 25. Therapy Session Notes — per session day.
+    if (anyFilled(v, ["therapy_topics", "therapy_insights", "therapy_actions", "coping_used"])) {
+      const entry = await findOrCreate(
+        "therapy-session",
+        (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
+        { date: date.iso },
+      );
+      await persist(entry, (dst) => {
+        dst.date = date.iso;
+        if (v.therapy_topics !== undefined) dst.topics = v.therapy_topics;
+        if (v.therapy_insights !== undefined) dst.insights = v.therapy_insights;
+        if (v.therapy_actions !== undefined) dst.action_plan = v.therapy_actions;
+        if (v.coping_used !== undefined) dst.tools_discussed = v.coping_used;
+      });
+      synced.push(`Therapy Session Notes (${date.iso})`);
+    }
+
+    // 26. Money roll-ups — budget / savings / debt totals from every day.
+    synced.push(...(await rollUpMoney(date)));
+
+    // 27. Important Dates — one row per dated occasion.
+    if (anyFilled(v, ["important_today", "important_occasion", "important_relationship"])) {
+      const entry = await findOrCreate(
+        "important-dates",
+        (e) => String(e.values.year ?? "") === yearStr,
+        { year: yearStr },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.year) dst.year = yearStr;
+        const row = gridRowForValue(dst, "date_details", "Date", date.iso);
+        mergeMeasurementCell(dst, "date_details", row, "Date", date.iso);
+        mergeMeasurementCell(dst, "date_details", row, "Name/Activity", asText(v.important_today));
+        mergeMeasurementCell(dst, "date_details", row, "Occasion", asText(v.important_occasion));
+        mergeMeasurementCell(dst, "date_details", row, "Relationship", asText(v.important_relationship));
+      });
+      synced.push(`Important Dates (${yearStr})`);
+    }
+
+    // 28. Gift Tracker — one row per person/gift.
+    if (anyFilled(v, ["gift_person", "gift_idea", "gift_budget", "gift_purchased"])) {
+      const person = asText(v.gift_person) || asText(v.gift_idea);
+      const all = await listEntries("gift-tracker");
+      const gifts = all[0] ?? (await createEntry("gift-tracker", {}));
+      await persist(gifts, (dst) => {
+        const row = gridRowForValue(dst, "gift_rows", "Person", person);
+        mergeMeasurementCell(dst, "gift_rows", row, "Person", person);
+        mergeMeasurementCell(dst, "gift_rows", row, "Gift idea", asText(v.gift_idea));
+        mergeMeasurementCell(dst, "gift_rows", row, "Budget", asText(v.gift_budget));
+        mergeMeasurementCell(dst, "gift_rows", row, "Purchased", v.gift_purchased ? "✓" : "");
+      });
+      synced.push("Gift Tracker");
+    }
+
     // 22. Year/month/week-scoped fields shared by every day in the same scope.
     const scoped = await propagateScopedFields(complete);
     if (scoped.length > 0) synced.push("Other days (year/month/week fields)");
@@ -898,7 +1111,7 @@ export async function scaffoldLinkedEntries(complete: PlannerEntry): Promise<str
     const weekIso = isoOf(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate());
 
     // Per-date pages.
-    for (const id of ["daily-tracker", "medical-records", "cleaning-checklist"]) {
+    for (const id of ["daily-tracker", "medical-records", "cleaning-checklist", "brain-dump", "adhd-toolkit"]) {
       await findOrCreate(
         id,
         (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
@@ -1173,6 +1386,76 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
         });
       }
       if (touched > 0) synced.push("Complete Tracker (meals)");
+      return synced;
+    }
+
+    // Notes page → the Complete Tracker day named in its title.
+    if (entry.pageType === "notes") {
+      const iso = /(\d{4}-\d{2}-\d{2})/.exec(asText(v.title))?.[1];
+      if (!iso) return [];
+      const touched = await updateCompleteForDate(iso, (dst) => {
+        dst.note_today = v.note as FieldValue;
+      });
+      if (touched > 0) synced.push("Complete Tracker (notes)");
+      return synced;
+    }
+
+    // Brain Dump → that day's Complete Tracker.
+    if (entry.pageType === "brain-dump") {
+      const date = parseDate(v.date);
+      if (!date) return [];
+      const touched = await updateCompleteForDate(date.iso, (dst) => {
+        if (v.dump !== undefined) dst.brain_dump_today = v.dump;
+        copyKeys(v, dst, ["do_now", "do_later"]);
+      });
+      if (touched > 0) synced.push("Complete Tracker (brain dump)");
+      return synced;
+    }
+
+    // ADHD / Focus Toolkit → that day's Complete Tracker.
+    if (entry.pageType === "adhd-toolkit") {
+      const date = parseDate(v.date);
+      if (!date) return [];
+      const touched = await updateCompleteForDate(date.iso, (dst) => {
+        copyKeys(v, dst, ["focus_word", "med_taken", "focus_level", "big_three", "wins"]);
+      });
+      if (touched > 0) synced.push("Complete Tracker (focus)");
+      return synced;
+    }
+
+    // Therapy Session Notes → that day's Complete Tracker.
+    if (entry.pageType === "therapy-session") {
+      const date = parseDate(v.date);
+      if (!date) return [];
+      const touched = await updateCompleteForDate(date.iso, (dst) => {
+        if (v.topics !== undefined) dst.therapy_topics = v.topics;
+        if (v.insights !== undefined) dst.therapy_insights = v.insights;
+        if (v.action_plan !== undefined) dst.therapy_actions = v.action_plan;
+        if (v.tools_discussed !== undefined) dst.coping_used = v.tools_discussed;
+      });
+      if (touched > 0) synced.push("Complete Tracker (therapy)");
+      return synced;
+    }
+
+    // Important Dates → each dated row lands on that Complete Tracker day.
+    if (entry.pageType === "important-dates") {
+      const grid = (v.date_details as Record<string, string> | undefined) ?? {};
+      const rows = new Set(
+        Object.keys(grid)
+          .map((k) => Number(k.split("-")[0]))
+          .filter((n) => Number.isFinite(n)),
+      );
+      let touched = 0;
+      for (const row of rows) {
+        const iso = String(grid[`${row}-Date`] ?? "").slice(0, 10);
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) continue;
+        touched += await updateCompleteForDate(iso, (dst) => {
+          dst.important_today = grid[`${row}-Name/Activity`] ?? "";
+          dst.important_occasion = grid[`${row}-Occasion`] ?? "";
+          dst.important_relationship = grid[`${row}-Relationship`] ?? "";
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (important dates)");
       return synced;
     }
 
