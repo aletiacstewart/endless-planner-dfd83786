@@ -136,6 +136,44 @@ export default function Auth() {
             <Button onClick={() => setMode("email")} disabled={busy} className="w-full">
               <Mail className="w-4 h-4 mr-2" /> Continue with email
             </Button>
+            <button
+              onClick={() => setMode("password")}
+              className="text-xs text-muted-foreground underline w-full"
+            >
+              Sign in with a password instead
+            </button>
+          </div>
+        )}
+
+        {mode === "password" && (
+          <div className="space-y-3">
+            <label className="block">
+              <span className="field-label block mb-1.5">Email</span>
+              <Input
+                type="email"
+                autoFocus
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+              />
+            </label>
+            <label className="block">
+              <span className="field-label block mb-1.5">Password</span>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && signInPassword()}
+                placeholder="Your password"
+              />
+            </label>
+            <Button onClick={signInPassword} disabled={busy || !email.trim() || !password} className="w-full">
+              {busy ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+              Sign in
+            </Button>
+            <button onClick={() => setMode("choose")} className="text-xs text-muted-foreground underline w-full">
+              Back
+            </button>
           </div>
         )}
 
