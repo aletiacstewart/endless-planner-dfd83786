@@ -34,7 +34,7 @@ export function CoverPicker({
   confirmLabel = "Use this cover",
   onConfirm,
 }: Props) {
-  useEntitlements();
+  const { loading: accessLoading } = useEntitlements();
   const [filter, setFilter] = useState<CoverCollection | "all">("all");
   const navigate = useNavigate();
 
@@ -98,7 +98,7 @@ export function CoverPicker({
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {visibleCovers.map((c) => {
             const isSelected = c.id === selectedId;
-            const locked = isCoverPaid(c.id) && !isPackUnlocked(c.id);
+            const locked = !accessLoading && isCoverPaid(c.id) && !isPackUnlocked(c.id);
             return (
               <button
                 key={c.id}

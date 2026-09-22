@@ -12,6 +12,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { INCLUDED_PACK_IDS } from "@/data/coverPacks";
+import { COVERS } from "@/data/covers";
 
 const CACHE_KEY = "entitlements:v2";
 const GRACE_MS = 7 * 24 * 60 * 60 * 1000;
@@ -182,6 +183,7 @@ export function hasPurchasedPack(packId: string): boolean {
 
 export function ownedPackIds(): string[] {
   const owned = new Set<string>(INCLUDED_PACK_IDS as readonly string[]);
+  if (state.admin) COVERS.forEach((c) => owned.add(c.id));
   state.packs.forEach((p) => owned.add(p));
   return Array.from(owned);
 }

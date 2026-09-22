@@ -27,7 +27,7 @@ export default function AdminPlanner() {
           {loading
             ? "Verifying your account with the server."
             : admin
-              ? "Your account has the admin role, so every planner and cover pack is unlocked for testing."
+              ? "Your account has the admin role, so every planner, cover, matching page-icon set, sticker set, and library image is unlocked for testing."
               : userId
                 ? "This account doesn't have admin access."
                 : "Sign in with an admin account to use this page."}
