@@ -378,17 +378,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "Today’s Vitals",
-        description: "One daily reading for each yearly health tracker.",
-        page: 2,
-        columns: 3,
-        fields: [
-          { key: "daily_blood_sugar", label: "Blood Sugar", type: "text" },
-          { key: "daily_blood_pressure", label: "Blood Pressure", type: "text" },
-          { key: "daily_oxygen", label: "O₂ Level", type: "text" },
-        ],
-      },
-      {
         title: "Wellness",
         description: "Tick a box for each unit. Add anything else in the Other field.",
         columns: 1,
@@ -512,6 +501,17 @@ export const PAGE_TYPES: PageTypeDef[] = [
           { key: "snacks_bp", label: "Snacks — Blood Pressure", type: "text" },
           { key: "snacks_o2", label: "Snacks — O₂ Levels", type: "text" },
           { key: "snacks_notes", label: "Snacks — Notes", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+      {
+        title: "Today’s Vitals",
+        description: "One daily reading for each yearly health tracker.",
+        page: 2,
+        columns: 3,
+        fields: [
+          { key: "daily_blood_sugar", label: "Blood Sugar", type: "text" },
+          { key: "daily_blood_pressure", label: "Blood Pressure", type: "text" },
+          { key: "daily_oxygen", label: "O₂ Level", type: "text" },
         ],
       },
       {
@@ -1652,52 +1652,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
     ],
     summary: (v) => (v.address as string) || "Household info",
-  },
-  {
-    id: "weekly-cleaning",
-    name: "Weekly Cleaning",
-    shortName: "Cleaning Week",
-    description: "Zone-based weekly cleaning by day.",
-    icon: "Sparkles",
-    sections: [
-      {
-        fields: [{ key: "week_of", label: "Week of", type: "date", span: 2 }],
-      },
-      {
-        title: "Daily zones",
-        columns: 2,
-        fields: [
-          { key: "monday", label: "Monday", type: "checkbox-group", options: ["Kitchen", "Trash", "Dishes", "Laundry", "Floors"] },
-          { key: "tuesday", label: "Tuesday", type: "checkbox-group", options: ["Bathrooms", "Mirrors", "Toilets", "Sinks"] },
-          { key: "wednesday", label: "Wednesday", type: "checkbox-group", options: ["Bedrooms", "Sheets", "Dust", "Vacuum"] },
-          { key: "thursday", label: "Thursday", type: "checkbox-group", options: ["Living areas", "Vacuum", "Dust", "Windows"] },
-          { key: "friday", label: "Friday", type: "checkbox-group", options: ["Kitchen deep", "Fridge", "Stove", "Sweep"] },
-          { key: "saturday", label: "Saturday", type: "checkbox-group", options: ["Errands", "Groceries", "Yard", "Cars"] },
-          { key: "sunday", label: "Sunday", type: "checkbox-group", options: ["Reset", "Meal prep", "Plan week", "Rest"] },
-        ],
-      },
-      {
-        title: "Cleaning supplies",
-        description: "Tick what you have; note what needs replacing.",
-        columns: 1,
-        fields: [
-          {
-            key: "supplies",
-            label: "On hand",
-            type: "checkbox-group",
-            span: 2,
-            options: [
-              "All-purpose cleaner", "Glass cleaner", "Bathroom cleaner", "Floor cleaner",
-              "Disinfectant wipes", "Sponges", "Scrub brush", "Microfiber cloths",
-              "Paper towels", "Trash bags", "Laundry detergent", "Dryer sheets",
-              "Gloves", "Mop / broom", "Vacuum bags / filters",
-            ],
-          },
-          { key: "supplies_buy", label: "Need to buy", type: "textarea", rows: 3, span: 2 },
-        ],
-      },
-    ],
-    summary: (v) => (v.week_of ? `Cleaning ${v.week_of}` : "Weekly cleaning"),
   },
   {
     id: "meal-planning",
