@@ -181,7 +181,7 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
         }
         onToggle={() => {
           if (!previewId) return;
-          if (isCoverIncluded(previewId) || isPackPurchased(previewId)) return;
+          if (isCoverIncluded(previewId) || hasAccess(previewId)) return;
           if (selectedPackIds.includes(previewId)) {
             onChange(selectedPackIds.filter((p) => p !== previewId));
           } else {
