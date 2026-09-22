@@ -406,6 +406,25 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       synced.push("Daily Tracker");
     }
 
+    // 1b. Meal Plan & Groceries — today's meals land on that week's meal plan row.
+    if (anyFilled(v, ["breakfast", "lunch", "dinner"])) {
+      const weekStart = mondayOf(date.year, date.monthIndex, date.day);
+      const weekIso = isoOf(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate());
+      const row = weekdayRow(date);
+      const plan = await findOrCreate(
+        "meal-planning",
+        (e) => (e.values.week_of as string | undefined)?.slice(0, 10) === weekIso,
+        { week_of: weekIso },
+      );
+      await persist(plan, (dst) => {
+        if (!dst.week_of) dst.week_of = weekIso;
+        mergeMeasurementCell(dst, "meals", row, "Breakfast", asText(v.breakfast));
+        mergeMeasurementCell(dst, "meals", row, "Lunch", asText(v.lunch));
+        mergeMeasurementCell(dst, "meals", row, "Dinner", asText(v.dinner));
+      });
+      synced.push(`Meal Plan (week of ${weekIso})`);
+    }
+
     // 2-4. Yearly daily-month grids: blood sugar, blood pressure, oxygen.
     type Vital = { id: string; field: string; daily: string; meals: [string, string, string, string]; label: string };
     const vitals: Vital[] = [
