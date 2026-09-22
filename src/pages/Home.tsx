@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { useUserSettings } from "@/hooks/useUserSettings";
 import { getPageImage } from "@/lib/pageImages";
 import { usePlannerCover } from "@/contexts/PlannerCoverContext";
+import { PlannerStyleCard } from "@/components/entry/PlannerStyleCard";
 
 const LAST_BACKUP_KEY = "planner.lastBackupAt";
 const BACKUP_DISMISS_KEY = "planner.backupReminderDismissedUntil";
@@ -229,6 +230,8 @@ export default function Home() {
                   </div>
                   <Icons.ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
                 </button>
+
+                <PlannerStyleCard />
 
                 {showCoverNudge && (
                   <section className="rounded-full border border-primary/30 bg-primary/5 px-4 py-2 flex items-center justify-between gap-3">
