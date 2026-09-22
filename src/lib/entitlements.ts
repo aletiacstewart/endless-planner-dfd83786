@@ -161,20 +161,20 @@ export async function refreshEntitlements(force = false): Promise<EntitlementSta
 // ---------- synchronous reads (from verified state only) ----------
 
 export function hasPlanner(plannerId: string): boolean {
-  if (state.admin) return true;
+  if (hasFullAccess()) return true;
   return state.planners.includes(plannerId);
 }
 
 export function hasPack(packId: string): boolean {
   if ((INCLUDED_PACK_IDS as readonly string[]).includes(packId)) return true;
-  if (state.admin) return true;
+  if (hasFullAccess()) return true;
   return state.packs.includes(packId);
 }
 
 /**
  * True only when the pack was actually paid for (or ships included).
- * Ignores the admin override, so the store never hides its whole catalog
- * from an admin account.
+ * Ignores the admin/tester override, so the store never hides its whole
+ * catalog from those accounts.
  */
 export function hasPurchasedPack(packId: string): boolean {
   if ((INCLUDED_PACK_IDS as readonly string[]).includes(packId)) return true;
@@ -183,13 +183,22 @@ export function hasPurchasedPack(packId: string): boolean {
 
 export function ownedPackIds(): string[] {
   const owned = new Set<string>(INCLUDED_PACK_IDS as readonly string[]);
-  if (state.admin) COVERS.forEach((c) => owned.add(c.id));
+  if (hasFullAccess()) COVERS.forEach((c) => owned.add(c.id));
   state.packs.forEach((p) => owned.add(p));
   return Array.from(owned);
 }
 
 export function isAdmin(): boolean {
   return state.admin;
+}
+
+export function isTester(): boolean {
+  return state.tester;
+}
+
+/** Everything unlocked without paying (admin owner or a tester account). */
+export function hasFullAccess(): boolean {
+  return state.admin || state.tester;
 }
 
 // Keep entitlements in step with auth.
