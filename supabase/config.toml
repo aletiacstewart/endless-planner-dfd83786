@@ -1,34 +1,27 @@
 project_id = "dgwfvvytyfgefckforqk"
 
-[functions.create-checkout]
-verify_jwt = false
-
-[functions.create-portal-session]
-verify_jwt = false
-
-[functions.finalize-purchase]
-verify_jwt = false
-
-[functions.redeem-code]
-verify_jwt = true
-
-[functions.payments-webhook]
-verify_jwt = false
-
-[functions.resend-unlock-code]
-verify_jwt = false
-
-[functions.process-email-queue]
-verify_jwt = true
-
-[functions.send-transactional-email]
-verify_jwt = true
-
-[functions.preview-transactional-email]
-verify_jwt = false
-
-[functions.handle-email-unsubscribe]
-verify_jwt = false
-
-[functions.handle-email-suppression]
-verify_jwt = false
+[functions]
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.create-checkout]
+    verify_jwt = false
+  [functions.create-portal-session]
+    verify_jwt = false
+  [functions.finalize-purchase]
+    verify_jwt = false
+  [functions.handle-email-suppression]
+    verify_jwt = false
+  [functions.handle-email-unsubscribe]
+    verify_jwt = false
+  [functions.payments-webhook]
+    verify_jwt = false
+  [functions.preview-transactional-email]
+    verify_jwt = false
+  [functions.process-email-queue]
+    verify_jwt = true
+  [functions.redeem-code]
+    verify_jwt = true
+  [functions.resend-unlock-code]
+    verify_jwt = false
+  [functions.send-transactional-email]
+    verify_jwt = true
