@@ -240,7 +240,7 @@ export default function Landing() {
           {[
             { q: "Where is my data stored?", a: "On your device, with optional cloud backup so you can restore on any device. Export a JSON backup any time from Settings." },
             { q: "What if I get a new phone?", a: "Sign in on the new device — with active Cloud Sync your planner restores automatically. Otherwise use your unlock code to reinstall." },
-            { q: "How does pricing work?", a: "$19.97 one-time gets you the planner and 1 cover + matching icon set + 60 themed stickers. Extra covers are $5 each — buy 5 or more and save 10%. Optional $10/mo Cloud Sync keeps devices in step." },
+            { q: "How does pricing work?", a: "$19.97 one-time gets you the planner and 1 cover + matching icon set + 60 themed stickers. Extra covers are $5 each. Optional $10/mo Cloud Sync keeps devices in step." },
             { q: "Which devices are supported?", a: "Anything with a modern browser — iPhone, iPad, Android, Mac, Windows, Linux. Install as an app via 'Add to Home Screen'." },
             { q: "Refunds?", a: "Because activation grants immediate digital access, purchases are non-refundable. Reach out if something isn't working and we'll make it right." },
           ].map((f) => (

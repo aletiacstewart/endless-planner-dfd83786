@@ -22,7 +22,7 @@ export const PLANNERS: PlannerDef[] = [
     name: "Change of Life — Wellness Journey",
     tagline: "One planner for your whole life — health, home, money, and mind.",
     description:
-      "Track habits, health, goals, meals, workouts, budget, home, and mental wellness in one beautifully organized planner. A one-time $19.97 activation gets you the planner plus 1 cover & matching icon set of your choice. Add more covers à la carte for $5 each — 5+ save 10%.",
+      "Track habits, health, goals, meals, workouts, budget, home, and mental wellness in one beautifully organized planner. A one-time $19.97 activation gets you the planner plus 1 cover & matching icon set of your choice. Add more covers à la carte for $5 each.",
     heroImage,
     priceUSD: 19.97,
     priceId: "wellness_journey_setup",

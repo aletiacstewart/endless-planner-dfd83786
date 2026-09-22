@@ -1,5 +1,10 @@
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
-import { getStripe, getStripeEnvironment } from "@/lib/stripe";
+import {
+  getStripe,
+  getStripeEnvironment,
+  isPaymentsConfigured,
+  PAYMENTS_NOT_CONFIGURED_MESSAGE,
+} from "@/lib/stripe";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Props {
@@ -14,6 +19,17 @@ interface Props {
 }
 
 export function StripeEmbeddedCheckout(props: Props) {
+  if (!isPaymentsConfigured()) {
+    return (
+      <div
+        id="checkout"
+        className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive"
+      >
+        {PAYMENTS_NOT_CONFIGURED_MESSAGE}
+      </div>
+    );
+  }
+
   const fetchClientSecret = async (): Promise<string> => {
     const { data, error } = await supabase.functions.invoke("create-checkout", {
       body: { ...props, environment: getStripeEnvironment() },

@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { getStripeEnvironment } from "@/lib/stripe";
+import { getStripeEnvironmentSafe } from "@/lib/stripe";
 import { useAuth } from "./useAuth";
 
 export interface SubscriptionRow {
@@ -18,7 +18,7 @@ export function useSubscription() {
 
   const refetch = useCallback(async () => {
     if (!user) { setSub(null); setLoading(false); return; }
-    const env = getStripeEnvironment();
+    const env = getStripeEnvironmentSafe();
     const { data } = await supabase
       .from("subscriptions")
       .select("status, price_id, current_period_end, cancel_at_period_end, stripe_customer_id")
