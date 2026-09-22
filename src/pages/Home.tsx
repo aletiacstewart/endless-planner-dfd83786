@@ -172,60 +172,7 @@ export default function Home() {
       </header>
 
       <main className="px-4 lg:px-8 mt-6">
-        {!bookOpen ? (
-          /* ---------- Closed cover: one planner page, tap or swipe to open ---------- */
-          <div className="cover-open-stage grid grid-cols-1 lg:grid-cols-2">
-            <div className="lg:pr-6 relative">
-              {opening && (
-                <div className="cover-open-inside absolute inset-0 rounded-3xl paper-dot border border-border/60 shadow-inner flex items-center justify-center">
-                  <p className="font-script text-2xl text-primary/70">opening…</p>
-                </div>
-              )}
-              <button
-                type="button"
-                onClick={openBook}
-                onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
-                onTouchEnd={(e) => {
-                  const start = touchStartX.current;
-                  touchStartX.current = null;
-                  if (start !== null && start - e.changedTouches[0].clientX > 40) openBook();
-                }}
-                aria-label={`Open ${plannerName}`}
-                className={`relative block w-full aspect-[2/3] overflow-hidden rounded-3xl border border-border/60 shadow-[var(--shadow-soft)] ${
-                  opening ? "cover-open-flip" : "transition-transform hover:-rotate-1"
-                }`}
-              >
-                <CoverImage
-                  cover={cover}
-                  plannerName={plannerName}
-                  ownerName={settings?.ownerName}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-b from-transparent via-black/30 to-black/70" />
-                {/* Stitched spine on the hinge, page edges on the fore-edge. */}
-                <div aria-hidden className="book-spine pointer-events-none absolute inset-y-0 left-0 w-5" />
-                <div aria-hidden className="book-foredge pointer-events-none absolute inset-y-2 right-0 w-2 rounded-r-3xl" />
-                <div className="absolute inset-x-0 bottom-0 px-5 pb-5 text-left">
-                  <p className="font-display text-3xl sm:text-4xl font-semibold text-white drop-shadow-lg">
-                    {plannerName}
-                  </p>
-                  {settings?.ownerName && (
-                    <p className="font-script text-xl text-white/90 drop-shadow">
-                      {settings.ownerName}
-                    </p>
-                  )}
-                  <p className="font-script text-sm text-white/80 mt-2 drop-shadow">
-                    Swipe or tap to open
-                  </p>
-                </div>
-              </button>
-              <div className="mt-4 flex justify-center">
-                <Button onClick={openBook}>Open planner</Button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          /* ---------- Open spread: sections left, today & entries right ---------- */
+          {/* ---------- Open spread: sections left, today & entries right ---------- */}
           <div className="relative rounded-3xl paper-dot shadow-[var(--shadow-soft)] border border-border/60 overflow-hidden">
             <div
               aria-hidden
