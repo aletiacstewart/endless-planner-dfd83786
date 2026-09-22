@@ -28,8 +28,8 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
   const [filter, setFilter] = useState<CoverCollection | "all">("all");
   const [previewId, setPreviewId] = useState<string | null>(null);
 
-  /** Admin accounts already have access to every cover and icon set. */
-  const adminAll = Boolean(ent.admin) && !ignoreAdmin;
+  /** Admin and tester accounts already have access to every cover and icon set. */
+  const adminAll = Boolean(ent.fullAccess) && !ignoreAdmin;
   const hasAccess = (id: string) => isPackPurchased(id) || adminAll;
 
   const availableCollections = useMemo(() => {
@@ -44,7 +44,7 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
     if (hideOwned && !adminAll) list = list.filter((c) => !isPackPurchased(c.id));
     if (excludeIds.length) list = list.filter((c) => !excludeIds.includes(c.id));
     return list;
-  }, [filter, hideOwned, excludeIds, adminAll, ent.verifiedAt, ent.admin]);
+  }, [filter, hideOwned, excludeIds, adminAll, ent.verifiedAt, ent.fullAccess]);
 
   const toggle = (id: string) => {
     if (isCoverIncluded(id)) return;
@@ -127,7 +127,7 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
               )}
               {owned && !included && (
                 <span className="pointer-events-none absolute top-2 left-2 z-20 text-[10px] uppercase tracking-wide font-bold bg-foreground/80 text-background rounded-full px-2 py-0.5">
-                  {purchased ? "Owned" : "Admin"}
+                  {purchased ? "Owned" : ent.tester && !ent.admin ? "Tester" : "Admin"}
                 </span>
               )}
               {isSelected && (
@@ -153,7 +153,8 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
                 )}
                 {owned && !included && (
                   <p className="text-[10px] text-white/90 mt-0.5 inline-flex items-center gap-1">
-                    <Lock className="w-3 h-3" /> {purchased ? "Unlocked" : "Included · admin"}
+                    <Lock className="w-3 h-3" />{" "}
+                    {purchased ? "Unlocked" : ent.tester && !ent.admin ? "Included · tester" : "Included · admin"}
                   </p>
                 )}
               </div>
