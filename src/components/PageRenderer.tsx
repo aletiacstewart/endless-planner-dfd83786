@@ -3,6 +3,7 @@ import type { PageTypeDef, FieldValue, SectionDef } from "@/lib/pageTypes";
 import { FieldRenderer } from "./FieldRenderer";
 import { cn } from "@/lib/utils";
 import { listDoctors } from "@/lib/doctors";
+import { getCoverPageIcon } from "@/lib/coverIcons";
 
 /** "Notes for Dr. X" caption shown on sections whose fields are scoped by doctor. */
 function ScopeHint({ section, values }: { section: SectionDef; values: Record<string, FieldValue> }) {
@@ -33,11 +34,24 @@ interface Props {
   pageType: PageTypeDef;
   values: Record<string, FieldValue>;
   onChange: (key: string, value: FieldValue) => void;
+  coverId?: string | null;
+  showPageGraphic?: boolean;
 }
 
-export function PageRenderer({ pageType, values, onChange }: Props) {
+export function PageRenderer({ pageType, values, onChange, coverId, showPageGraphic = true }: Props) {
+  const pageGraphic = showPageGraphic ? getCoverPageIcon(coverId, pageType.id) : undefined;
+
   return (
     <div className="space-y-6">
+      {pageGraphic && (
+        <div className="flex justify-center py-1" aria-label={`${pageType.name} themed page graphic`}>
+          <img
+            src={pageGraphic}
+            alt=""
+            className="h-28 w-28 sm:h-32 sm:w-32 lg:h-36 lg:w-36 rounded-2xl object-cover shadow-sm ring-1 ring-border/50"
+          />
+        </div>
+      )}
       {pageType.sections.map((section, idx) => (
         <section key={idx} className="planner-card">
           {section.title && (

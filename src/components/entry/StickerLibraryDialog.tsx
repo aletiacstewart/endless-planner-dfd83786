@@ -9,6 +9,8 @@ import {
   type StickerAsset,
   type StickerCategory,
 } from "@/data/stickers";
+import { getPageIconStickerAssets } from "@/data/pageIconStickers";
+import { useEntitlements } from "@/hooks/useEntitlements";
 
 type Props = {
   open: boolean;
@@ -18,11 +20,20 @@ type Props = {
   onPick: (a: StickerAsset) => void;
 };
 
-export function StickerLibraryDialog({ open, onOpenChange, onPick }: Props) {
+type LibraryTab = StickerCategory | "page-icons";
+
+export function StickerLibraryDialog({ open, onOpenChange, coverId, onPick }: Props) {
   const set = useMemo(() => getStickerSet(), []);
-  const [tab, setTab] = useState<StickerCategory>("celebrations");
+  const [tab, setTab] = useState<LibraryTab>("celebrations");
+  const entitlements = useEntitlements();
   const tintFilter = useStickerTint();
-  const items = set[tab] ?? [];
+  const pageIcons = useMemo(
+    () => coverId && !entitlements.loading && entitlements.hasPack(coverId)
+      ? getPageIconStickerAssets(coverId)
+      : [],
+    [coverId, entitlements.loading, entitlements.fullAccess, entitlements.packs],
+  );
+  const items = tab === "page-icons" ? pageIcons : set[tab] ?? [];
 
 
   return (
@@ -38,6 +49,20 @@ export function StickerLibraryDialog({ open, onOpenChange, onPick }: Props) {
         </DialogHeader>
 
         <div className="flex gap-1 flex-wrap border-b border-border pb-2">
+          {pageIcons.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setTab("page-icons")}
+              className={cn(
+                "px-3 py-1.5 text-[11px] uppercase tracking-widest font-semibold rounded-full transition-colors",
+                tab === "page-icons"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted"
+              )}
+            >
+              Page Icons
+            </button>
+          )}
           {STICKER_CATEGORIES.map((c) => (
             <button
               key={c}
@@ -71,7 +96,8 @@ export function StickerLibraryDialog({ open, onOpenChange, onPick }: Props) {
                   src={a.src}
                   alt={a.label ?? ""}
                   className="w-full h-full object-contain p-1"
-                  style={{ filter: tintFilter }}
+                  style={{ filter: a.tintable === false ? undefined : tintFilter }}
+                  loading="lazy"
                 />
               )}
             </button>
@@ -79,8 +105,8 @@ export function StickerLibraryDialog({ open, onOpenChange, onPick }: Props) {
         </div>
 
         <p className="text-[11px] text-muted-foreground text-center pt-1">
-          Tap as many as you like — the tray stays open. The same library is available with
-          every cover, organised by topic.
+          Tap as many as you like — the tray stays open. Page Icons match the cover currently
+          applied to your journal.
         </p>
 
         <button

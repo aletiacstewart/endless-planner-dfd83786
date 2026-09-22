@@ -24,8 +24,8 @@ export type StickerCategory =
   | "utility";
 
 export type StickerAsset =
-  | { kind: "emoji"; src: string; label?: string }
-  | { kind: "img"; src: string; label?: string };
+  | { kind: "emoji"; src: string; label?: string; tintable?: boolean }
+  | { kind: "img"; src: string; label?: string; tintable?: boolean };
 
 export type StickerSet = Record<StickerCategory, StickerAsset[]>;
 
