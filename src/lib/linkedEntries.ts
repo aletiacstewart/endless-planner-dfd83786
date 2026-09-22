@@ -187,13 +187,6 @@ function mergeMeasurementCell(
   dst[field] = next;
 }
 
-/** Any value rendered as trimmed text for grid cells. */
-function asText(raw: FieldValue | undefined): string {
-  if (raw == null) return "";
-  if (typeof raw === "boolean") return raw ? "✓" : "";
-  return String(raw).trim();
-}
-
 /**
  * Row in the fitness session log that belongs to a date: reuse the existing row
  * for that date, else the first empty row, else append after the last used row.
