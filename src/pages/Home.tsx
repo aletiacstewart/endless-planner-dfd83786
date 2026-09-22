@@ -35,16 +35,7 @@ export default function Home() {
   const [totalEntries, setTotalEntries] = useState(0);
   const [showReminder, setShowReminder] = useState(false);
   const [showCoverNudge, setShowCoverNudge] = useState(false);
-  const [opening, setOpening] = useState(false);
-  const [bookOpen, setBookOpen] = useState(() => {
-    try {
-      return sessionStorage.getItem(BOOK_OPEN_KEY) === "1";
-    } catch {
-      return false;
-    }
-  });
   const backupRef = useRef<HTMLDivElement | null>(null);
-  const touchStartX = useRef<number | null>(null);
 
   useEffect(() => {
     const dismissedUntil = Number(localStorage.getItem(COVER_NUDGE_KEY) || 0);
