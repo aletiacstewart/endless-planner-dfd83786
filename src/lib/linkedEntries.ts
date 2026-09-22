@@ -915,6 +915,13 @@ export async function scaffoldLinkedEntries(complete: PlannerEntry): Promise<str
     );
     created.push("weekly-calendar");
 
+    await findOrCreate(
+      "meal-planning",
+      (e) => (e.values.week_of as string | undefined)?.slice(0, 10) === weekIso,
+      { week_of: weekIso },
+    );
+    created.push("meal-planning");
+
     // Per-month page.
     await findOrCreate(
       "monthly-calendar",
