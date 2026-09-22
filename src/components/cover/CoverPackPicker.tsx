@@ -153,7 +153,7 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
                 )}
                 {owned && !included && (
                   <p className="text-[10px] text-white/90 mt-0.5 inline-flex items-center gap-1">
-                    <Lock className="w-3 h-3" /> Unlocked
+                    <Lock className="w-3 h-3" /> {purchased ? "Unlocked" : "Included · admin"}
                   </p>
                 )}
               </div>
