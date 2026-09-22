@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
   Palette,
@@ -19,6 +19,8 @@ import { StickerLibraryDialog } from "@/components/entry/StickerLibraryDialog";
 import { ColorSwatchGrid } from "@/components/entry/ColorSwatchGrid";
 import { getRecentStickers, saveRecentSticker, type RecentSticker } from "@/lib/recentStickers";
 import type { StickerAsset } from "@/data/stickers";
+import { getPageIconStickerAssets, isPageIconAsset } from "@/data/pageIconStickers";
+import { useEntitlements } from "@/hooks/useEntitlements";
 import { insertInlineSticker } from "@/lib/inlineStickers";
 import {
   FONT_LABELS,
@@ -92,12 +94,19 @@ export function EntryPersonalization({
 }: Props) {
   const swatches = useThemedSwatches();
   const { settings } = useUserSettings();
+  const entitlements = useEntitlements();
   const tintFilter = useStickerTint();
   const [panel, setPanel] = useState<PanelId | null>(null);
   const [stickerTab, setStickerTab] = useState(STICKER_GROUPS[0].id);
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [recents, setRecents] = useState<RecentSticker[]>(() => getRecentStickers());
   const wrapRef = useRef<HTMLDivElement>(null);
+  const pageIconAssets = useMemo(
+    () => settings?.coverId && !entitlements.loading && entitlements.hasPack(settings.coverId)
+      ? getPageIconStickerAssets(settings.coverId)
+      : [],
+    [settings?.coverId, entitlements.loading, entitlements.fullAccess, entitlements.packs],
+  );
 
   /**
    * Self-managed open/close. The chips used to rely on anchored popovers, which
@@ -456,6 +465,20 @@ export function EntryPersonalization({
                 </div>
               )}
               <div className="flex flex-wrap gap-1 mb-2">
+                {pageIconAssets.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setStickerTab("page-icons")}
+                    className={cn(
+                      "px-2 py-1 text-[11px] rounded-full whitespace-nowrap border",
+                      stickerTab === "page-icons"
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "border-border text-muted-foreground",
+                    )}
+                  >
+                    Page Icons
+                  </button>
+                )}
                 {STICKER_GROUPS.map((g) => (
                   <button
                     key={g.id}
@@ -472,8 +495,23 @@ export function EntryPersonalization({
                   </button>
                 ))}
               </div>
-              <div className="flex flex-wrap gap-1">
-                {(STICKER_GROUPS.find((g) => g.id === stickerTab)?.emojis ?? []).map((e, i) => (
+              {stickerTab === "page-icons" ? (
+                <div className="grid grid-cols-5 sm:grid-cols-8 gap-2 max-h-56 overflow-y-auto pr-1">
+                  {pageIconAssets.map((asset) => (
+                    <button
+                      key={asset.src}
+                      type="button"
+                      onClick={() => addFromLibrary(asset)}
+                      title={asset.label}
+                      className="aspect-square min-w-0 rounded-lg border border-border bg-card hover:border-primary hover:bg-primary/5"
+                    >
+                      <img src={asset.src} alt={asset.label ?? ""} className="h-full w-full rounded-lg object-cover" loading="lazy" />
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-1">
+                  {(STICKER_GROUPS.find((g) => g.id === stickerTab)?.emojis ?? []).map((e, i) => (
                   <button
                     key={`${e}-${i}`}
                     type="button"
@@ -482,8 +520,9 @@ export function EntryPersonalization({
                   >
                     {e}
                   </button>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
               <p className="text-[11px] text-muted-foreground mt-2">
                 Tap as many as you like — the tray stays open. Tap outside it (or the
                 Sticker button again) to close, then drag stickers into place.

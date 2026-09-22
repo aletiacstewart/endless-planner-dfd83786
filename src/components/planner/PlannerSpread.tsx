@@ -6,6 +6,7 @@ interface Props {
   pageType: PageTypeDef;
   values: Record<string, FieldValue>;
   onChange: (key: string, value: FieldValue) => void;
+  coverId?: string | null;
   /** Optional per-side split; defaults to first-half / second-half by narrow-section index. */
   split?: number;
   className?: string;
@@ -38,7 +39,7 @@ function isWide(section: SectionDef): boolean {
  *     (with horizontal scroll fallback) so nothing gets clipped.
  *   - Below lg, everything collapses to a single column.
  */
-export function PlannerSpread({ pageType, values, onChange, split, className }: Props) {
+export function PlannerSpread({ pageType, values, onChange, coverId, split, className }: Props) {
   const narrow: SectionDef[] = [];
   const wide: SectionDef[] = [];
   for (const s of pageType.sections) {
@@ -84,15 +85,15 @@ export function PlannerSpread({ pageType, values, onChange, split, className }: 
         {hasNarrow && (
           narrow.length === 1 ? (
             <div>
-              <PageRenderer pageType={leftPage} values={values} onChange={onChange} />
+              <PageRenderer pageType={leftPage} values={values} onChange={onChange} coverId={coverId} />
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
               <div className="min-w-0 lg:pr-6">
-                <PageRenderer pageType={leftPage} values={values} onChange={onChange} />
+                <PageRenderer pageType={leftPage} values={values} onChange={onChange} coverId={coverId} />
               </div>
               <div className="min-w-0 lg:pl-6">
-                <PageRenderer pageType={rightPage} values={values} onChange={onChange} />
+                <PageRenderer pageType={rightPage} values={values} onChange={onChange} coverId={coverId} />
               </div>
             </div>
           )
@@ -103,7 +104,13 @@ export function PlannerSpread({ pageType, values, onChange, split, className }: 
           return (
             <div key={i} className="overflow-x-auto -mx-2 px-2">
               <div className="min-w-full">
-                <PageRenderer pageType={sub} values={values} onChange={onChange} />
+                <PageRenderer
+                  pageType={sub}
+                  values={values}
+                  onChange={onChange}
+                  coverId={coverId}
+                  showPageGraphic={!hasNarrow && i === 0}
+                />
               </div>
             </div>
           );

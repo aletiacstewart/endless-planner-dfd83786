@@ -352,9 +352,9 @@ export default function Entry() {
       >
         <PageFlip flipKey={entry.id} direction={flipDir}>
           {asSpread ? (
-            <PlannerSpread pageType={pageType} values={entry.values} onChange={onChange} />
+            <PlannerSpread pageType={pageType} values={entry.values} onChange={onChange} coverId={settings?.coverId} />
           ) : (
-            <PageRenderer pageType={pageType} values={entry.values} onChange={onChange} />
+            <PageRenderer pageType={pageType} values={entry.values} onChange={onChange} coverId={settings?.coverId} />
           )}
         </PageFlip>
 
