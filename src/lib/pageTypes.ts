@@ -1696,6 +1696,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "This week's meals",
+        page: 1,
         fields: [
           {
             key: "meals",
@@ -1712,7 +1713,8 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Grocery list by meal",
-        description: "What you need to buy for each meal of the week.",
+        description: "Use the larger spaces for every ingredient needed for each meal.",
+        page: 2,
         fields: [
           {
             key: "grocery_by_meal",
@@ -1722,20 +1724,20 @@ export const PAGE_TYPES: PageTypeDef[] = [
             rowCount: 7,
             rowLabel: "Day",
             rowLabels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-            columns: ["Breakfast", "Lunch", "Dinner"],
+            columns: ["Breakfast ingredients", "Lunch ingredients", "Dinner ingredients"],
             columnWidths: ["lg", "lg", "lg"],
+            growable: true,
+            addLabel: "Add grocery row",
           },
         ],
       },
       {
-        title: "Staples",
+        title: "Staples & household",
         description: "Everything else the household needs this week.",
-        columns: 2,
+        page: 2,
+        columns: 1,
         fields: [
-          { key: "produce", label: "Produce", type: "ingredients-list" },
-          { key: "protein", label: "Protein", type: "ingredients-list" },
-          { key: "pantry", label: "Pantry", type: "ingredients-list" },
-          { key: "other", label: "Other", type: "ingredients-list" },
+          { key: "staples", label: "Staples, household items, and anything not tied to one meal", type: "ingredients-list", span: 2 },
         ],
       },
     ],
@@ -1766,9 +1768,13 @@ export const PAGE_TYPES: PageTypeDef[] = [
         columns: 1,
         fields: [
           { key: "feelings", label: "Morning — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_morning_other", span: 2 },
+          { key: "feelings_morning_notes", label: "Morning notes", type: "textarea", rows: 3, span: 2 },
           { key: "feelings_afternoon", label: "Afternoon — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_afternoon_other", span: 2 },
+          { key: "feelings_afternoon_notes", label: "Afternoon notes", type: "textarea", rows: 3, span: 2 },
           { key: "feelings_evening", label: "Evening — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_evening_other", span: 2 },
+          { key: "feelings_evening_notes", label: "Evening notes", type: "textarea", rows: 3, span: 2 },
           { key: "feelings_night", label: "Night — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_night_other", span: 2 },
+          { key: "feelings_night_notes", label: "Night notes", type: "textarea", rows: 3, span: 2 },
         ],
       },
       {
@@ -1776,7 +1782,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         fields: [
           { key: "triggers", label: "What triggered it", type: "textarea", rows: 4 },
           { key: "coping", label: "What helped", type: "textarea", rows: 4 },
-          { key: "gratitude", label: "Grateful for", type: "gratitude-list", max: 3, span: 2 },
+          { key: "sketch", label: "Sketch how today felt", type: "drawing", span: 2 },
         ],
       },
     ],
@@ -1797,21 +1803,36 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "Bring to session",
+        title: "Before the session",
+        page: 1,
         fields: [
           { key: "topics", label: "Topics to discuss", type: "priority-list", max: 5, span: 2 },
+          { key: "current_concerns", label: "What feels most important right now?", type: "textarea", rows: 4, span: 2 },
+          { key: "patterns", label: "Symptoms, patterns, or situations I noticed", type: "textarea", rows: 4, span: 2 },
+          { key: "changes", label: "Changes since my last session", type: "textarea", rows: 4, span: 2 },
+          { key: "session_goals", label: "What I hope to understand or practice", type: "textarea", rows: 3, span: 2 },
+          { key: "questions", label: "Questions I want to ask", type: "priority-list", max: 5, span: 2 },
         ],
       },
       {
-        title: "During / after",
+        title: "During the session",
+        page: 2,
         fields: [
           { key: "insights", label: "Insights", type: "note-style", span: 2 },
+          { key: "emotions_body", label: "Emotions or body responses I noticed", type: "textarea", rows: 4, span: 2 },
+          { key: "tools_discussed", label: "Coping tools or strategies discussed", type: "textarea", rows: 4, span: 2 },
         ],
       },
       {
-        title: "Homework",
+        title: "After the session",
+        page: 2,
         fields: [
           { key: "homework", label: "Between-session practices", type: "priority-list", max: 5, span: 2 },
+          { key: "action_plan", label: "My next small steps", type: "textarea", rows: 4, span: 2 },
+          { key: "barriers", label: "Possible barriers and how I can respond", type: "textarea", rows: 4, span: 2 },
+          { key: "med_questions", label: "Medication or care questions to follow up", type: "textarea", rows: 3, span: 2 },
+          { key: "next_session", label: "Next appointment", type: "date" },
+          { key: "private_reflection", label: "Private reflection", type: "textarea", rows: 5, span: 2 },
         ],
       },
     ],
@@ -1825,20 +1846,40 @@ export const PAGE_TYPES: PageTypeDef[] = [
     icon: "LifeBuoy",
     sections: [
       {
+        title: "Notice what is happening",
+        description: "Write the early clues that tell you it is time to pause and use support.",
+        page: 1,
         columns: 2,
         fields: [
-          { key: "grounding", label: "Grounding (5-4-3-2-1, breath)", type: "textarea", rows: 4 },
-          { key: "movement", label: "Movement that helps", type: "textarea", rows: 4 },
-          { key: "people", label: "People I can call", type: "textarea", rows: 4 },
-          { key: "places", label: "Places that soothe", type: "textarea", rows: 4 },
-          { key: "words", label: "Words / mantras", type: "textarea", rows: 4 },
-          { key: "avoid", label: "Things to avoid when low", type: "textarea", rows: 4 },
+          { key: "warning_signs", label: "Thoughts, situations, or warning signs", type: "textarea", rows: 4 },
+          { key: "body_signals", label: "Body signals I notice", type: "textarea", rows: 4 },
+          { key: "grounding", label: "Grounding steps (for example 5-4-3-2-1)", type: "textarea", rows: 4 },
+          { key: "breathing", label: "Breathing pattern that helps", type: "textarea", rows: 4 },
+          { key: "sensory", label: "Sensory tools: sound, texture, temperature, light", type: "textarea", rows: 4 },
+          { key: "movement", label: "Safe movement that helps", type: "textarea", rows: 4 },
+          { key: "distractions", label: "Healthy distractions for the next 10 minutes", type: "textarea", rows: 4 },
+          { key: "boundaries", label: "Boundaries that protect me", type: "textarea", rows: 4 },
         ],
       },
       {
-        title: "Crisis plan",
+        title: "People, places & reminders",
+        page: 2,
+        columns: 2,
         fields: [
-          { key: "crisis", label: "Steps if things get dark", type: "textarea", rows: 6, span: 2 },
+          { key: "people", label: "Supportive people I can contact", type: "textarea", rows: 4 },
+          { key: "places", label: "Places where I feel safer or calmer", type: "textarea", rows: 4 },
+          { key: "words", label: "Words or reminders I want to hear", type: "textarea", rows: 4 },
+          { key: "avoid", label: "Things that usually make this harder", type: "textarea", rows: 4 },
+          { key: "professional_contacts", label: "Professional or crisis support contacts", type: "textarea", rows: 4, span: 2 },
+        ],
+      },
+      {
+        title: "My step-by-step safety plan",
+        description: "If you may be in immediate danger, contact local emergency services or a trusted person now.",
+        page: 2,
+        fields: [
+          { key: "crisis", label: "1. Pause and move to a safer place  2. Use one grounding tool  3. Contact support  4. Reduce access to anything unsafe  5. Get urgent help if needed", type: "textarea", rows: 7, span: 2 },
+          { key: "safer_followup", label: "When I feel safer: rest, hydrate, document what helped, and arrange follow-up", type: "textarea", rows: 4, span: 2 },
         ],
       },
     ],
@@ -2055,8 +2096,10 @@ export const PAGE_TYPES: PageTypeDef[] = [
             span: 2,
             rowCount: 8,
             rowLabel: "#",
-            columns: ["Name/Activity", "Occasion", "Date", "Notes"],
-            columnKinds: ["text", "occasion", "date", "text"],
+            columns: ["Name/Activity", "Occasion", "Date", "Relationship", "Notes"],
+            columnKinds: ["text", "occasion", "date", "select", "text"],
+            columnOptions: [null, null, null, ["Spouse / Partner", "Parent", "Child", "Sibling", "Grandparent", "Grandchild", "Relative / Extended Family", "Friend", "Coworker", "Client / Business", "Neighbor", "Caregiver", "Other"], null],
+            columnWidths: ["lg", "md", "sm", "md", "lg"],
             growable: true,
             addLabel: "Add person",
           },
@@ -2073,6 +2116,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
     icon: "Gift",
     sections: [
       {
+        page: 1,
         columns: 2,
         fields: [
           { key: "occasion", label: "Occasion", type: "text", placeholder: "Christmas, birthdays…" },
@@ -2081,7 +2125,8 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Gift list",
-        description: "Mark the last two columns with an x once purchased and wrapped.",
+        description: "Mark Purchased and Wrapped as each gift is completed.",
+        page: 1,
         fields: [
           {
             key: "gift_rows",
@@ -2092,15 +2137,19 @@ export const PAGE_TYPES: PageTypeDef[] = [
             rowLabel: "#",
             columns: ["Person", "Occasion", "Gift idea", "Budget", "Purchased", "Wrapped"],
             columnKinds: ["text", "text", "text", "text", "check", "check"],
-            columnWidths: ["md", "md", "lg", "sm", "xs", "xs"],
+            columnWidths: ["md", "md", "lg", "xs", "xs", "xs"],
             growable: true,
             addLabel: "Add person",
+            linkedRowsKey: "gift_notes",
           },
         ],
       },
       {
+        title: "Notes by gift",
+        description: "Each numbered note matches the same numbered gift on page 1.",
+        page: 2,
         fields: [
-          { key: "gift_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
+          { key: "gift_notes", label: "Gift notes", type: "measurement-grid", rowCount: 16, rowLabel: "#", columns: ["Notes"], columnWidths: ["lg"], growable: true, addLabel: "Add note", linkedRowsKey: "gift_rows", span: 2 },
         ],
       },
     ],
