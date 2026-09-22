@@ -143,7 +143,7 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
                     e.stopPropagation();
                     void applyCover(c.id);
                   }}
-                  className="absolute bottom-2 left-2 z-30 h-8 rounded-full px-3 text-[11px] shadow-md"
+                  className="absolute bottom-11 left-2 z-30 h-8 rounded-full px-3 text-[11px] shadow-md"
                 >
                   {c.id === currentCoverId ? (
                     <>
