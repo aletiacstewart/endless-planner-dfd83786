@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { listDoctors, addDoctor, type Doctor } from "@/lib/doctors";
 import { RichTextField } from "@/components/entry/RichTextField";
+import { DrawingCanvas, type DrawingValue } from "@/components/DrawingCanvas";
 
 interface Props {
   field: FieldDef;
@@ -446,11 +447,13 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
       const goalNum = parseInt(String(goalRaw ?? ""), 10);
       const goal = Number.isFinite(goalNum) ? Math.min(12, Math.max(1, goalNum)) : 8;
       const monthName = typeof allValues?.month === "string" ? (allValues.month as string) : "";
+      const yearRaw = Number(allValues?.year);
       return (
         <WaterGrid
           value={value as { marks: Record<string, boolean> } | null}
           goal={goal}
           monthName={monthName}
+          year={Number.isFinite(yearRaw) ? yearRaw : new Date().getFullYear()}
           onChange={onChange}
         />
       );
@@ -477,6 +480,10 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           label={field.label}
           growable={field.growable}
           addLabel={field.addLabel}
+          onRowsChange={field.linkedRowsKey && onChangeAny ? (rows) => {
+            const linked = (allValues?.[field.linkedRowsKey as string] as Record<string, string> | undefined) ?? {};
+            onChangeAny(field.linkedRowsKey as string, { ...linked, __rows: String(rows) });
+          } : undefined}
           onChange={onChange}
         />
       );
@@ -648,6 +655,8 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           onChange={(v) => onChange(v as unknown as FieldValue)}
         />
       );
+    case "drawing":
+      return <DrawingCanvas value={value as DrawingValue | null} label={field.label} onChange={(v) => onChange(v as unknown as FieldValue)} />;
     default:
       return null;
   }
@@ -1398,17 +1407,18 @@ function WaterGrid({
   value,
   goal,
   monthName,
+  year,
   onChange,
 }: {
   value: { marks: Record<string, boolean> } | null;
   goal: number;
   monthName: string;
+  year: number;
   onChange: (v: FieldValue) => void;
 }) {
   const isMobile = useIsMobile();
   const marks = value?.marks ?? {};
   const idx = MONTH_NAMES.indexOf((monthName || "").trim().toLowerCase());
-  const year = new Date().getFullYear();
   const dayCount = idx >= 0 ? new Date(year, idx + 1, 0).getDate() : 31;
 
   const toggle = (glass: number, day: number) => {
@@ -1738,11 +1748,12 @@ function MeasurementGrid({
   label,
   growable,
   addLabel,
+  onRowsChange,
   onChange,
 }: {
   value: Record<string, string> | null;
   columns: string[];
-  columnKinds?: ("text" | "occasion" | "date" | "time" | "select" | "check")[];
+  columnKinds?: ("text" | "occasion" | "date" | "time" | "select" | "check" | "computed-remaining")[];
   columnOptions?: (string[] | null)[];
   columnWidths?: ("xs" | "sm" | "md" | "lg")[];
   rowCount: number;
@@ -1751,6 +1762,7 @@ function MeasurementGrid({
   label: string;
   growable?: boolean;
   addLabel?: string;
+  onRowsChange?: (rows: number) => void;
   onChange: (v: FieldValue) => void;
 }) {
   const isMobile = useIsMobile();
@@ -1815,6 +1827,15 @@ function MeasurementGrid({
                           onChange={(v) => set(row, c, v)}
                           ariaLabel={`${rowName} ${c}`}
                         />
+                      ) : kind === "computed-remaining" ? (
+                        <output className="flex h-7 items-center rounded-md border border-input bg-muted/40 px-2 text-xs" aria-label={`${rowName} ${c}`}>
+                          {(() => {
+                            const target = Number(cellValue(row, "Target amount").replace(/[^0-9.-]/g, ""));
+                            const saved = Number(cellValue(row, "Amount saved").replace(/[^0-9.-]/g, ""));
+                            if (!Number.isFinite(target) || !Number.isFinite(saved)) return "—";
+                            return Math.max(0, target - saved).toLocaleString(undefined, { style: "currency", currency: "USD" });
+                          })()}
+                        </output>
                       ) : kind === "check" ? (
                         <div className="flex justify-center">
                           <Checkbox
@@ -1860,7 +1881,11 @@ function MeasurementGrid({
           variant="outline"
           size="sm"
           className="mt-2 rounded-full"
-          onClick={() => onChange({ ...data, __rows: String(visibleRows + 1) })}
+          onClick={() => {
+            const rows = visibleRows + 1;
+            onChange({ ...data, __rows: String(rows) });
+            onRowsChange?.(rows);
+          }}
         >
           <Plus className="w-4 h-4 mr-1" /> {addLabel ?? "Add row"}
         </Button>
