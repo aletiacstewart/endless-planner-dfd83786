@@ -2,6 +2,6 @@
 
 - [x] Make shared grouped layouts responsive
 - [x] Wrap page styling controls on phones and tablets
-- [ ] Repair Contacts and medication rows on narrow screens
-- [ ] Add movable/closable toolbox guidance
+- [x] Repair Contacts and medication rows on narrow screens
+- [x] Add movable/closable toolbox guidance
 - [ ] Verify representative pages at phone, tablet, and desktop sizes

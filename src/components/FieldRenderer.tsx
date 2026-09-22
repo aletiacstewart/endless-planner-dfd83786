@@ -930,6 +930,8 @@ function MedList({
   };
   return (
     <div>
+      <div className="overflow-x-auto max-w-full pb-1" style={{ WebkitOverflowScrolling: "touch" }}>
+      <div className="min-w-[42rem]">
       <div className={cn("grid gap-x-2 gap-y-1 items-end mb-1", cols)}>
         <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground" />
         <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground px-1">Name</span>
@@ -974,6 +976,8 @@ function MedList({
             </div>
           </div>
         ))}
+      </div>
+      </div>
       </div>
       {growable && (
         <Button
@@ -1787,14 +1791,14 @@ function MeasurementGrid({
     <div className="min-w-0">
       <label className="field-label block mb-2">{label}</label>
       <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
-        <table className="text-xs border-separate border-spacing-1 w-full min-w-full table-fixed">
+        <table className="text-xs border-separate border-spacing-1 w-max min-w-full">
           <thead>
             <tr>
-              <th className="text-left font-normal text-muted-foreground pr-2 w-10">
+              <th className="sticky left-0 z-10 bg-card text-left font-normal text-muted-foreground pr-2 w-10">
                 {rowLabel}
               </th>
               {columns.map((c) => (
-                <th key={c} className="font-normal text-muted-foreground text-left px-1">
+                <th key={c} className="whitespace-nowrap font-normal text-muted-foreground text-left px-1">
                   {c}
                 </th>
               ))}
@@ -1803,7 +1807,7 @@ function MeasurementGrid({
           <tbody>
             {Array.from({ length: visibleRows }, (_, i) => i + 1).map((row) => (
               <tr key={row}>
-                <td className="pr-2 text-muted-foreground text-center whitespace-nowrap">
+                <td className="sticky left-0 z-10 bg-card pr-2 text-muted-foreground text-center whitespace-nowrap">
                   {rowLabels?.[row - 1] ?? row}
                 </td>
                 {columns.map((c, ci) => {
