@@ -221,6 +221,123 @@ function weekdayRow(date: ParsedDate): number {
   return (new Date(date.year, date.monthIndex, date.day).getDay() + 6) % 7;
 }
 
+/**
+ * Row in a measurement grid whose `col` already holds `value` (case-insensitive),
+ * else the first row with an empty `col`, else a new row after the last used one.
+ */
+function gridRowForValue(
+  dst: Record<string, FieldValue>,
+  field: string,
+  col: string,
+  value: string,
+): number {
+  const grid = (dst[field] as Record<string, string> | undefined) ?? {};
+  const want = value.trim().toLowerCase();
+  let lastUsed = 0;
+  for (const key of Object.keys(grid)) {
+    const row = Number(key.split("-")[0]);
+    if (Number.isFinite(row) && row > lastUsed && String(grid[key] ?? "").trim()) lastUsed = row;
+  }
+  const limit = Math.max(lastUsed, 8);
+  if (want) {
+    for (let row = 0; row <= limit; row++) {
+      if (String(grid[`${row}-${col}`] ?? "").trim().toLowerCase() === want) return row;
+    }
+  }
+  for (let row = 0; row <= limit; row++) {
+    const empty = Object.keys(grid).every(
+      (key) => Number(key.split("-")[0]) !== row || !String(grid[key] ?? "").trim(),
+    );
+    if (empty) return row;
+  }
+  return lastUsed + 1;
+}
+
+const money = (raw: FieldValue | undefined): number => {
+  const n = parseFloat(String(raw ?? "").replace(/[^0-9.-]/g, ""));
+  return Number.isFinite(n) ? n : 0;
+};
+
+const fmtMoney = (n: number): string => (Number.isInteger(n) ? String(n) : n.toFixed(2));
+
+/**
+ * Recompute the money pages from every Complete Tracker day: spending totals per
+ * category for the month's budget, savings deposits per goal, debt payments per
+ * creditor. Summing (instead of copying one day) keeps the totals correct no
+ * matter which day was edited.
+ */
+async function rollUpMoney(date: ParsedDate): Promise<string[]> {
+  const synced: string[] = [];
+  const days = await listEntries("complete-tracker");
+  const spend = new Map<string, number>();
+  const saved = new Map<string, number>();
+  const paid = new Map<string, number>();
+
+  for (const day of days) {
+    const d = parseDate(day.values.date);
+    const dv = day.values;
+    if (d && d.year === date.year && d.monthIndex === date.monthIndex) {
+      const cat = asText(dv.spend_category).trim();
+      const amt = money(dv.spend_amount);
+      if (cat && amt) spend.set(cat, (spend.get(cat) ?? 0) + amt);
+    }
+    const goal = asText(dv.savings_goal_name).trim();
+    const dep = money(dv.saved_today);
+    if (goal && dep) saved.set(goal, (saved.get(goal) ?? 0) + dep);
+    const creditor = asText(dv.debt_creditor).trim();
+    const pay = money(dv.debt_paid_today);
+    if (creditor && pay) paid.set(creditor, (paid.get(creditor) ?? 0) + pay);
+  }
+
+  if (spend.size > 0) {
+    const monthName = MONTH_LOWER[date.monthIndex];
+    const budget = await findOrCreate(
+      "budget-monthly",
+      (e) => asText(e.values.month).toLowerCase() === monthName,
+      { month: monthName },
+    );
+    await persist(budget, (dst) => {
+      if (!dst.month) dst.month = monthName;
+      for (const [cat, total] of spend) {
+        const row = gridRowForValue(dst, "variable", "Category", cat);
+        mergeMeasurementCell(dst, "variable", row, "Category", cat);
+        mergeMeasurementCell(dst, "variable", row, "Actual", fmtMoney(total));
+      }
+    });
+    synced.push("Monthly Budget");
+  }
+
+  if (saved.size > 0) {
+    const all = await listEntries("savings-goals");
+    const entry = all[0] ?? (await createEntry("savings-goals", {}));
+    await persist(entry, (dst) => {
+      for (const [goal, total] of saved) {
+        const row = gridRowForValue(dst, "goals", "Goal name", goal);
+        mergeMeasurementCell(dst, "goals", row, "Goal name", goal);
+        mergeMeasurementCell(dst, "goals", row, "Amount saved", fmtMoney(total));
+        const target = money((dst.goals as Record<string, string> | undefined)?.[`${row}-Target amount`]);
+        if (target) mergeMeasurementCell(dst, "goals", row, "Remaining", fmtMoney(target - total));
+      }
+    });
+    synced.push("Savings Goals");
+  }
+
+  if (paid.size > 0) {
+    const all = await listEntries("debt-tracker");
+    const entry = all[0] ?? (await createEntry("debt-tracker", {}));
+    await persist(entry, (dst) => {
+      for (const [creditor, total] of paid) {
+        const row = gridRowForValue(dst, "debts", "Creditor", creditor);
+        mergeMeasurementCell(dst, "debts", row, "Creditor", creditor);
+        mergeMeasurementCell(dst, "debts", row, "Paid", fmtMoney(total));
+      }
+    });
+    synced.push("Debt Tracker");
+  }
+
+  return synced;
+}
+
 /** Merge into a daily-month-grid value: `{ cells: { [day-monthIndex]: string }, achieved, notes }`. */
 function mergeDailyMonthCell(
   dst: Record<string, FieldValue>,
