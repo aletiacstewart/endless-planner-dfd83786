@@ -235,7 +235,7 @@ function StickerItem({
 
         {selected && (
           <div
-            className="absolute left-1/2 -translate-x-1/2 flex w-max max-w-[calc(100vw-2rem)] flex-wrap items-center justify-center gap-1 rounded-xl border border-border bg-popover px-1.5 py-1 shadow-md"
+            className="absolute left-1/2 -translate-x-1/2 flex w-[min(23rem,calc(100vw-2rem))] flex-wrap items-center justify-center gap-1.5 rounded-xl border border-border bg-popover p-2 shadow-md"
             style={{ top: `calc(50% + ${sticker.size / 2 + 8}px)` }}
             onMouseDown={(e) => e.preventDefault()}
             title="Drag the sticker to move it. Tap outside to close these tools."
@@ -243,25 +243,25 @@ function StickerItem({
             <span className="w-full px-1 text-center text-[9px] text-muted-foreground sm:w-auto">
               Drag sticker to move · tap outside to close
             </span>
-            <button type="button" onClick={() => bump(-8)} className="w-6 h-6 rounded flex items-center justify-center hover:bg-muted" aria-label="Smaller">
-              <Minus className="w-3 h-3" />
+            <button type="button" onClick={() => bump(-8)} className="w-11 h-11 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center hover:bg-muted touch-manipulation" aria-label="Smaller">
+              <Minus className="w-4 h-4" />
             </button>
-            <button type="button" onClick={() => bump(8)} className="w-6 h-6 rounded flex items-center justify-center hover:bg-muted" aria-label="Larger">
-              <Plus className="w-3 h-3" />
-            </button>
-            <span className="w-px h-4 bg-border mx-0.5" />
-            <button type="button" onClick={() => rotate(-15)} className="w-6 h-6 rounded flex items-center justify-center hover:bg-muted" aria-label="Rotate left">
-              <RotateCcw className="w-3 h-3" />
-            </button>
-            <button type="button" onClick={() => rotate(15)} className="w-6 h-6 rounded flex items-center justify-center hover:bg-muted" aria-label="Rotate right">
-              <RotateCw className="w-3 h-3" />
+            <button type="button" onClick={() => bump(8)} className="w-11 h-11 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center hover:bg-muted touch-manipulation" aria-label="Larger">
+              <Plus className="w-4 h-4" />
             </button>
             <span className="w-px h-4 bg-border mx-0.5" />
-            <button type="button" onClick={onFront} className="w-6 h-6 rounded flex items-center justify-center hover:bg-muted" aria-label="Bring to front">
-              <BringToFront className="w-3 h-3" />
+            <button type="button" onClick={() => rotate(-15)} className="w-11 h-11 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center hover:bg-muted touch-manipulation" aria-label="Rotate left">
+              <RotateCcw className="w-4 h-4" />
             </button>
-            <button type="button" onClick={onBack} className="w-6 h-6 rounded flex items-center justify-center hover:bg-muted" aria-label="Send to back">
-              <SendToBack className="w-3 h-3" />
+            <button type="button" onClick={() => rotate(15)} className="w-11 h-11 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center hover:bg-muted touch-manipulation" aria-label="Rotate right">
+              <RotateCw className="w-4 h-4" />
+            </button>
+            <span className="w-px h-4 bg-border mx-0.5" />
+            <button type="button" onClick={onFront} className="w-11 h-11 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center hover:bg-muted touch-manipulation" aria-label="Bring to front">
+              <BringToFront className="w-4 h-4" />
+            </button>
+            <button type="button" onClick={onBack} className="w-11 h-11 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center hover:bg-muted touch-manipulation" aria-label="Send to back">
+              <SendToBack className="w-4 h-4" />
             </button>
             {sticker.kind === "img" && (
               <>
@@ -271,21 +271,21 @@ function StickerItem({
                   onClick={() =>
                     onUpdate({ ...sticker, tint: (sticker.tint ?? "theme") === "theme" ? "none" : "theme" })
                   }
-                  className="w-6 h-6 rounded flex items-center justify-center hover:bg-muted"
+                  className="w-11 h-11 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center hover:bg-muted touch-manipulation"
                   aria-label={(sticker.tint ?? "theme") === "theme" ? "Use original colors" : "Match cover colors"}
                   title={(sticker.tint ?? "theme") === "theme" ? "Use original colors" : "Match cover colors"}
                 >
                   {(sticker.tint ?? "theme") === "theme" ? (
-                    <Droplet className="w-3 h-3" />
+                    <Droplet className="w-4 h-4" />
                   ) : (
-                    <Palette className="w-3 h-3" />
+                    <Palette className="w-4 h-4" />
                   )}
                 </button>
               </>
             )}
             <span className="w-px h-4 bg-border mx-0.5" />
-            <button type="button" onClick={onRemove} className="w-6 h-6 rounded flex items-center justify-center text-destructive hover:bg-destructive/10" aria-label="Delete sticker">
-              <X className="w-3.5 h-3.5" />
+            <button type="button" onClick={onRemove} className="w-11 h-11 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center text-destructive hover:bg-destructive/10 touch-manipulation" aria-label="Delete sticker">
+              <X className="w-4 h-4" />
             </button>
           </div>
         )}

@@ -94,14 +94,14 @@ export function EntryThumbnailRail({ entries, activeId, pageTypeName, onSelect, 
               onClick={() => onSelect(it.id)}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "shrink-0 w-16 rounded-xl border overflow-hidden transition-colors cursor-grab active:cursor-grabbing",
+                "shrink-0 w-[4.5rem] min-h-14 rounded-xl border overflow-hidden transition-colors cursor-grab active:cursor-grabbing touch-manipulation",
                 dragId === it.id && "opacity-50",
                 active ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-primary/50",
               )}
               title={`${it.label} — drag to reorder`}
             >
               <span
-                className="block h-10 w-full bg-muted"
+                className="block h-11 w-full bg-muted"
                 style={{
                   backgroundImage: it.icon ? `url(${it.icon})` : undefined,
                   backgroundSize: "cover",

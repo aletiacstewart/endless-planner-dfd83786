@@ -38,7 +38,7 @@ export function StickerLibraryDialog({ open, onOpenChange, coverId, onPick }: Pr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[92dvh] overflow-hidden p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle className="font-storefront text-2xl">Sticker library</DialogTitle>
           <DialogDescription className="text-xs">
@@ -48,13 +48,13 @@ export function StickerLibraryDialog({ open, onOpenChange, coverId, onPick }: Pr
 
         </DialogHeader>
 
-        <div className="flex gap-1 flex-wrap border-b border-border pb-2">
+        <div className="flex gap-1.5 overflow-x-auto no-scrollbar border-b border-border pb-2 sm:flex-wrap sm:overflow-visible">
           {pageIcons.length > 0 && (
             <button
               type="button"
               onClick={() => setTab("page-icons")}
               className={cn(
-                "px-3 py-1.5 text-[11px] uppercase tracking-widest font-semibold rounded-full transition-colors",
+                "min-h-11 shrink-0 px-3 py-2 text-xs uppercase tracking-widest font-semibold rounded-full transition-colors touch-manipulation",
                 tab === "page-icons"
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:bg-muted"
@@ -69,7 +69,7 @@ export function StickerLibraryDialog({ open, onOpenChange, coverId, onPick }: Pr
               type="button"
               onClick={() => setTab(c)}
               className={cn(
-                "px-3 py-1.5 text-[11px] uppercase tracking-widest font-semibold rounded-full transition-colors",
+                "min-h-11 shrink-0 px-3 py-2 text-xs uppercase tracking-widest font-semibold rounded-full transition-colors touch-manipulation",
                 tab === c
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:bg-muted"
@@ -80,13 +80,13 @@ export function StickerLibraryDialog({ open, onOpenChange, coverId, onPick }: Pr
           ))}
         </div>
 
-        <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 max-h-[60vh] overflow-y-auto py-2">
+        <div className="grid grid-cols-4 min-[430px]:grid-cols-5 sm:grid-cols-8 gap-2 max-h-[55dvh] overflow-y-auto overscroll-contain py-2 pr-1">
           {items.map((a, i) => (
             <button
               key={`${a.kind}-${a.src}-${i}`}
               type="button"
               onClick={() => onPick(a)}
-              className="aspect-square rounded-lg border border-border bg-card hover:border-primary hover:bg-primary/5 flex items-center justify-center text-2xl transition-colors"
+              className="aspect-square min-h-12 min-w-12 rounded-lg border border-border bg-card hover:border-primary hover:bg-primary/5 flex items-center justify-center text-3xl transition-colors touch-manipulation"
               title={a.label ?? a.src}
             >
               {a.kind === "emoji" ? (
@@ -112,7 +112,7 @@ export function StickerLibraryDialog({ open, onOpenChange, coverId, onPick }: Pr
         <button
           type="button"
           onClick={() => onOpenChange(false)}
-          className="mx-auto rounded-full border border-border px-4 py-1.5 text-xs font-semibold hover:bg-muted"
+          className="mx-auto min-h-11 rounded-full border border-border px-6 py-2 text-sm font-semibold hover:bg-muted touch-manipulation"
         >
           Done
         </button>

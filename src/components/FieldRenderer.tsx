@@ -128,7 +128,7 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
             id={field.key}
             value={(value as string) ?? ""}
             onChange={(e) => onChange(e.target.value)}
-            className="w-full h-10 rounded-md border border-input bg-background/60 px-3 text-sm"
+            className="w-full h-11 rounded-md border border-input bg-background/60 px-3 text-sm"
           >
             <option value="">Select month</option>
             {["January","February","March","April","May","June","July","August","September","October","November","December"].map((m) => (
@@ -147,7 +147,7 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
             id={field.key}
             value={(value as string) ?? ""}
             onChange={(e) => onChange(e.target.value)}
-            className="w-full h-10 rounded-md border border-input bg-background/60 px-3 text-sm"
+            className="w-full h-11 rounded-md border border-input bg-background/60 px-3 text-sm"
           >
             <option value="">{field.placeholder ?? "Select"}</option>
             {opts.map((o) => (
@@ -227,7 +227,7 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
                       onChange(active ? arr.filter((x) => x !== id) : [...arr, id]);
                     }}
                     className={cn(
-                      "min-w-9 h-9 px-2 rounded-md border text-xs font-medium transition-colors",
+                      "min-w-11 h-11 px-2 rounded-md border text-xs font-medium transition-colors touch-manipulation",
                       active
                         ? "bg-primary text-primary-foreground border-primary"
                         : "bg-background/60 border-input text-muted-foreground"

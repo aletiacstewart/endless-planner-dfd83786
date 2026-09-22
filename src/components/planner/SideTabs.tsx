@@ -211,20 +211,20 @@ export function SideTabs({ activePageType }: Props) {
                   onClick={() => openTab(pt.id)}
                   aria-label={pt.name}
                   aria-current={active ? "page" : undefined}
-                  className="flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 min-w-[64px]"
+                  className="flex min-h-14 min-w-[72px] flex-col items-center gap-1 rounded-xl px-3 py-2 touch-manipulation"
                 >
-                  {renderIcon(pt, "w-6 h-6")}
+                  {renderIcon(pt, "w-7 h-7")}
                   <span className="text-[10px] leading-none">{pt.shortName}</span>
                 </button>
                 <button
                   onClick={() => addTab(pt.id)}
                   aria-label={`New ${pt.shortName} day`}
                   className={cn(
-                    "absolute -top-1 -right-1 rounded-full border border-border p-0.5 shadow-sm",
+                    "absolute -top-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border border-border shadow-sm touch-manipulation",
                     active ? "bg-primary-foreground text-primary" : "bg-card text-foreground",
                   )}
                 >
-                  <Icons.Plus className="w-3 h-3" />
+                  <Icons.Plus className="w-4 h-4" />
                 </button>
               </div>
             );
