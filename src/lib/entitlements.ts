@@ -22,6 +22,8 @@ export interface EntitlementState {
   planners: string[];
   packs: string[];
   admin: boolean;
+  /** Free full-access test account (all planners, covers, icons) — not an owner. */
+  tester: boolean;
   /** When the state was last confirmed by the server. */
   verifiedAt: number;
   /** True once we've attempted at least one resolution this session. */
@@ -35,6 +37,7 @@ const EMPTY: EntitlementState = {
   planners: [],
   packs: [],
   admin: false,
+  tester: false,
   verifiedAt: 0,
   resolved: false,
   stale: false,
