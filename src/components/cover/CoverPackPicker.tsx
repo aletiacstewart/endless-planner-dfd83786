@@ -1,11 +1,13 @@
 import { useMemo, useState } from "react";
-import { Plus, Check, X, Lock, Eye } from "lucide-react";
+import { Plus, Check, X, Lock, Eye, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 import { COLLECTIONS, COVERS, type CoverCollection } from "@/data/covers";
 import { CoverImage } from "@/components/cover/CoverImage";
 import { CoverIconPreviewDialog } from "@/components/cover/CoverIconPreviewDialog";
 import { isCoverIncluded, calcPackTotalUSD, getPackPriceUSD, PACK_PRICE_USD } from "@/data/coverPacks";
 import { isPackUnlocked, isPackPurchased } from "@/lib/unlock";
 import { useEntitlements } from "@/hooks/useEntitlements";
+import { useUserSettings } from "@/hooks/useUserSettings";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
