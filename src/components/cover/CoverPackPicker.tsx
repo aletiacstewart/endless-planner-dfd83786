@@ -76,12 +76,10 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
           const price = isSelected ? getPackPriceUSD(indexInCart) : getPackPriceUSD(selectedPackIds.length);
 
           return (
-            <button
+            <article
               key={c.id}
-              onClick={() => toggle(c.id)}
-              disabled={included || owned}
               className={cn(
-                "relative aspect-square rounded-xl overflow-hidden border-2 transition-all text-left group",
+                "relative aspect-square rounded-xl overflow-hidden border-2 transition-all text-left group isolate",
                 isSelected
                   ? "border-primary shadow-[0_0_0_4px_hsl(var(--primary)/0.2)]"
                   : "border-transparent hover:border-border",
@@ -90,36 +88,47 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
             >
               <CoverImage cover={c} className="absolute inset-0" />
 
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                onClick={() => toggle(c.id)}
+                disabled={included || owned}
+                className="absolute inset-0 z-10 h-full w-full rounded-xl p-0 hover:bg-transparent"
+                aria-label={`${isSelected ? "Remove" : "Add"} ${c.name} cover and icon pack`}
+              />
+
+              <Button
+                type="button"
+                size="icon"
+                variant="secondary"
                 onClick={(e) => {
                   e.stopPropagation();
                   setPreviewId(c.id);
                 }}
-                className="absolute bottom-2 right-2 z-10 w-8 h-8 rounded-full bg-black/55 hover:bg-black/75 text-white flex items-center justify-center backdrop-blur-sm transition-colors"
+                className="absolute bottom-2 right-2 z-30 h-8 w-8 rounded-full bg-background/75 text-foreground shadow-md backdrop-blur-sm hover:bg-background"
                 aria-label={`Preview icons for ${c.name}`}
                 title="Preview matching page icons"
               >
                 <Eye className="w-4 h-4" />
-              </button>
+              </Button>
 
               {included && (
-                <span className="absolute top-2 left-2 text-[10px] uppercase tracking-wide font-bold bg-primary text-primary-foreground rounded-full px-2 py-0.5">
+                <span className="pointer-events-none absolute top-2 left-2 z-20 text-[10px] uppercase tracking-wide font-bold bg-primary text-primary-foreground rounded-full px-2 py-0.5">
                   Included
                 </span>
               )}
               {owned && !included && (
-                <span className="absolute top-2 left-2 text-[10px] uppercase tracking-wide font-bold bg-foreground/80 text-background rounded-full px-2 py-0.5">
+                <span className="pointer-events-none absolute top-2 left-2 z-20 text-[10px] uppercase tracking-wide font-bold bg-foreground/80 text-background rounded-full px-2 py-0.5">
                   Owned
                 </span>
               )}
               {isSelected && (
-                <div className="absolute top-2 right-2 w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg">
+                <div className="pointer-events-none absolute top-2 right-2 z-20 w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg">
                   <Check className="w-4 h-4" strokeWidth={3} />
                 </div>
               )}
 
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-foreground/90 to-transparent p-2">
                 <p className="text-[11px] text-white font-medium truncate">{c.name}</p>
                 {!included && !owned && (
                   <p className="text-[10px] text-white/90 mt-0.5 inline-flex items-center gap-1">
@@ -140,7 +149,7 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
                   </p>
                 )}
               </div>
-            </button>
+            </article>
           );
         })}
       </div>
