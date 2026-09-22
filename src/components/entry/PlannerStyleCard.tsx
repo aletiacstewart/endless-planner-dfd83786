@@ -96,21 +96,22 @@ export function PlannerStyleCard() {
           onReset={resetDraft}
           hideStickers
           resetLabel="Clear"
+          wrapOnMobile
         />
       </div>
 
-      <div className="mt-4 max-w-[13rem]">
+      <div className="mt-4 w-full sm:max-w-[13rem]">
         <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-1.5">Preview</p>
         <StylePreview meta={draft as EntryMeta} />
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        <Button size="sm" onClick={() => setAskOpen(true)} disabled={busy}>
+      <div className="mt-4 flex flex-col items-stretch gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+        <Button size="sm" onClick={() => setAskOpen(true)} disabled={busy} className="w-full sm:w-auto">
           {busy ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : null}
           Apply to all pages
         </Button>
         {dirty && (
-          <Button size="sm" variant="ghost" onClick={() => { setDirty(false); setDraft(saved ?? {}); }}>
+          <Button size="sm" variant="ghost" className="w-full sm:w-auto" onClick={() => { setDirty(false); setDraft(saved ?? {}); }}>
             Discard changes
           </Button>
         )}
