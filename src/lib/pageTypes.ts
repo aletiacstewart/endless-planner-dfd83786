@@ -39,7 +39,8 @@ export type FieldType =
   | "mood-log" // 7-day weekday mood face row
   | "select" // native dropdown driven by field.options
   | "time-select" // dropdown of 15-minute times
-  | "gratitude-list"; // 3 numbered gratitude text rows
+  | "gratitude-list" // 3 numbered gratitude text rows
+  | "drawing"; // touch, mouse, and stylus sketch canvas
 
 export interface FieldDef {
   key: string;
@@ -58,7 +59,7 @@ export interface FieldDef {
   /** For measurement-grid: row-label prefix (e.g. "Wk"). */
   rowLabel?: string;
   /** For measurement-grid: per-column input kind (defaults to "text"). */
-  columnKinds?: ("text" | "occasion" | "date" | "time" | "select" | "check")[];
+  columnKinds?: ("text" | "occasion" | "date" | "time" | "select" | "check" | "computed-remaining")[];
   /** For measurement-grid "select" columns: the options for that column. */
   columnOptions?: (string[] | null)[];
   /** For measurement-grid: per-column width hint so wide text stays on the page. */
@@ -73,6 +74,8 @@ export interface FieldDef {
   growable?: boolean;
   /** Label for the add-row button when growable. */
   addLabel?: string;
+  /** Grow another measurement grid to the same row count. */
+  linkedRowsKey?: string;
   /** For rating: render a small companion text input on the same row, bound to this other field key. */
   otherKey?: string;
   /** For success-fail: render a blank text input alongside the buttons (user-typed label) bound to this key. Hides the field's own label. */
@@ -222,6 +225,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Months",
+        page: 2,
         columns: 3,
         fields: [
           "January", "February", "March",
@@ -232,7 +236,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
           key: `month_${m.toLowerCase()}`,
           label: m,
           type: "textarea",
-          rows: 4,
+          rows: 7,
           placeholder: "Key events, plans, notes…",
         })),
       },
@@ -410,6 +414,16 @@ export const PAGE_TYPES: PageTypeDef[] = [
             otherKey: "sweets_other",
             span: 2,
           },
+        ],
+      },
+      {
+        title: "Today’s vitals",
+        description: "These readings sync with the matching yearly health trackers and Complete Tracker.",
+        columns: 3,
+        fields: [
+          { key: "daily_blood_sugar", label: "Blood Sugar", type: "text" },
+          { key: "daily_blood_pressure", label: "Blood Pressure", type: "text" },
+          { key: "daily_oxygen", label: "O₂ Level", type: "text" },
         ],
       },
       {
@@ -636,7 +650,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Fun Activity Tracker",
-        description: "Write in your own fun activities, then mark Success or Failed for the day.",
+        description: "Write in your own fun activities, then mark Accomplished or Needs Improvement for the day.",
         columns: 1,
         page: 1,
         fields: Array.from({ length: 3 }, (_, i) => i + 1).map((n) => ({
@@ -650,7 +664,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Begin / Break Habits",
-        description: "Write in each habit, choose Begin or Break, then mark Success or Failed for the day.",
+        description: "Write in each habit, choose Begin or Break, then mark Accomplished or Needs Improvement for the day.",
         columns: 1,
         page: 1,
         fields: Array.from({ length: 3 }, (_, i) => i + 1).map((n) => ({
@@ -1083,6 +1097,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         fields: [
           { key: "title", label: "Title", type: "text", span: 2 },
           { key: "note", label: "Notes", type: "note-style", span: 2 },
+          { key: "sketch", label: "Sketch / drawing", type: "drawing", span: 2 },
         ],
       },
     ],
@@ -1206,6 +1221,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
             span: 2,
             placeholder: "What's your word or theme this year?",
           },
+          { key: "sketch", label: "Sketch your vision", type: "drawing", span: 2 },
         ],
       },
     ],
@@ -1229,6 +1245,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Everything on your mind",
         fields: [
           { key: "dump", label: "Dump", type: "note-style", span: 2 },
+          { key: "sketch", label: "Sketch / draw it out", type: "drawing", span: 2 },
         ],
       },
       {
@@ -1812,6 +1829,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         columns: 2,
         fields: [
           { key: "month", label: "Month", type: "month", placeholder: "January" },
+          { key: "year", label: "Year", type: "year", placeholder: "2026" },
           { key: "daily_goal", label: "Daily goal (glasses)", type: "text", compact: true },
         ],
       },
@@ -1858,6 +1876,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         fields: [
           { key: "gratitude_note", label: "One moment worth remembering", type: "textarea", rows: 4, span: 2 },
+          { key: "sketch", label: "Sketch the moment", type: "drawing", span: 2 },
         ],
       },
     ],
