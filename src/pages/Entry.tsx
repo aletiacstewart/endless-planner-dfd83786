@@ -1,6 +1,6 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, ChevronLeft, ChevronRight, Loader2, Plus, Redo2, Trash2, Undo2, X } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Loader2, Plus, Redo2, RotateCcw, Trash2, Undo2, X } from "lucide-react";
 import { createEntry, deleteEntry, getEntry, listEntries, type PlannerEntry } from "@/lib/db";
 import { getPageType, type FieldValue } from "@/lib/pageTypes";
 import { useAutoSave } from "@/hooks/useAutoSave";
@@ -145,6 +145,7 @@ export default function Entry() {
     });
     toast.success("Personalization reset");
   };
+  const confirmPageStyle = () => toast.success("Style applied to this page");
 
   /** Start a fresh sheet of the same page type and jump straight into it. */
   const addSheet = async () => {
@@ -328,7 +329,17 @@ export default function Entry() {
           onChange={onMetaChange}
           onTypography={onTypography}
           onReset={onReset}
+          wrapOnMobile
+          hideReset
         />
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-end">
+          <Button variant="outline" size="sm" onClick={onReset} className="w-full sm:w-auto">
+            <RotateCcw className="mr-1.5 h-4 w-4" /> Reset page style
+          </Button>
+          <Button size="sm" onClick={confirmPageStyle} className="w-full sm:w-auto">
+            <Check className="mr-1.5 h-4 w-4" /> Apply to this page
+          </Button>
+        </div>
       </header>
 
       <main
