@@ -20,6 +20,7 @@ const WIDE_TYPES = new Set([
   "daily-month-grid",
   "measurement-grid",
   "water-grid",
+  "drawing",
 ]);
 
 function isWide(section: SectionDef): boolean {

@@ -241,6 +241,7 @@ export const DAILY_KEYS = [
   "caffeine", "caffeine_other",
   "sweets", "sweets_other",
   "gratitude",
+  "daily_blood_sugar", "daily_blood_pressure", "daily_oxygen",
 ];
 
 /** Keys shared by the Complete Tracker cleaning block and the Cleaning Check List. */
@@ -382,20 +383,21 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
     }
 
     // 2-4. Yearly daily-month grids: blood sugar, blood pressure, oxygen.
-    type Vital = { id: string; field: string; prefixes: [string, string, string, string]; label: string };
+    type Vital = { id: string; field: string; daily: string; meals: [string, string, string, string]; label: string };
     const vitals: Vital[] = [
-      { id: "blood-sugar-tracker", field: "blood_sugar", prefixes: ["breakfast_bs", "lunch_bs", "dinner_bs", "snacks_bs"], label: `Blood Sugar (${yearStr})` },
-      { id: "blood-pressure-tracker", field: "blood_pressure", prefixes: ["breakfast_bp", "lunch_bp", "dinner_bp", "snacks_bp"], label: `Blood Pressure (${yearStr})` },
-      { id: "oxygen-tracker", field: "oxygen", prefixes: ["breakfast_o2", "lunch_o2", "dinner_o2", "snacks_o2"], label: `Oxygen (${yearStr})` },
+      { id: "blood-sugar-tracker", field: "blood_sugar", daily: "daily_blood_sugar", meals: ["breakfast_bs", "lunch_bs", "dinner_bs", "snacks_bs"], label: `Blood Sugar (${yearStr})` },
+      { id: "blood-pressure-tracker", field: "blood_pressure", daily: "daily_blood_pressure", meals: ["breakfast_bp", "lunch_bp", "dinner_bp", "snacks_bp"], label: `Blood Pressure (${yearStr})` },
+      { id: "oxygen-tracker", field: "oxygen", daily: "daily_oxygen", meals: ["breakfast_o2", "lunch_o2", "dinner_o2", "snacks_o2"], label: `Oxygen (${yearStr})` },
     ];
     for (const vital of vitals) {
-      if (!anyFilled(v, vital.prefixes)) continue;
+      if (!anyFilled(v, [vital.daily, ...vital.meals])) continue;
       const entry = await findOrCreate(
         vital.id,
         (e) => String(e.values.year ?? "") === yearStr,
         { year: yearStr },
       );
-      const combined = combineMeals(v, vital.prefixes);
+      const daily = asText(v[vital.daily]).trim();
+      const combined = daily || combineMeals(v, vital.meals);
       await persist(entry, (dst) => {
         if (!dst.year) dst.year = yearStr;
         mergeDailyMonthCell(dst, vital.field, date.day, date.monthIndex, combined);
@@ -403,26 +405,20 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       synced.push(vital.label);
     }
 
-    // 5. Self-Care Check List (year, three daily-month-grids).
-    const selfCare: { src: string; field: string }[] = [
-      { src: "self_physical", field: "physical" },
-      { src: "self_emotional", field: "emotional" },
-      { src: "self_spiritual", field: "spiritual" },
-    ];
-    if (anyFilled(v, selfCare.map((s) => s.src))) {
+    // 5. Self-Care Check List — the Complete Tracker's daily notes live on that week's checklist.
+    const selfCareKeys = ["self_physical", "self_emotional", "self_spiritual"];
+    if (anyFilled(v, selfCareKeys)) {
+      const weekStart = mondayOf(date.year, date.monthIndex, date.day);
+      const weekIso = isoOf(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate());
       const entry = await findOrCreate(
         "self-care-checklist",
-        (e) => String(e.values.year ?? "") === yearStr,
-        { year: yearStr },
+        (e) => String(e.values.week_of ?? "").slice(0, 10) === weekIso,
+        { week_of: weekIso },
       );
       await persist(entry, (dst) => {
-        if (!dst.year) dst.year = yearStr;
-        for (const { src, field } of selfCare) {
-          const text = (v[src] as string | undefined) ?? "";
-          mergeDailyMonthCell(dst, field, date.day, date.monthIndex, text);
-        }
+        copyKeys(v, dst, selfCareKeys);
       });
-      synced.push(`Self-Care (${yearStr})`);
+      synced.push(`Self-Care (${weekIso})`);
     }
 
     // 6. Monthly Calendar — keyed by month + year, mirrors month_calendar values.
@@ -525,6 +521,8 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       "feelings_afternoon", "feelings_afternoon_other",
       "feelings_evening", "feelings_evening_other",
       "feelings_night", "feelings_night_other",
+      "feelings_morning_notes", "feelings_afternoon_notes",
+      "feelings_evening_notes", "feelings_night_notes",
     ];
     if (anyFilled(v, [...moodKeys, "mood_overall"])) {
       const entry = await findOrCreate(
@@ -536,7 +534,6 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
         dst.date = date.iso;
         copyKeys(v, dst, moodKeys);
         if (v.mood_overall != null) dst.mood = v.mood_overall;
-        if (v.gratitude != null) dst.gratitude = v.gratitude;
       });
       synced.push("Mood Journal");
     }
@@ -618,11 +615,12 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       );
       await persist(entry, (dst) => {
         if (!dst.year) dst.year = yearStr;
-        const existing = (dst.yearly_habits as { rows?: { mode: "begin"|"break"|""; label: string }[]; marks?: Record<string, boolean> } | undefined) ?? {};
+        const existing = (dst.yearly_habits as { rows?: { mode: "begin"|"break"|""; label: string }[]; marks?: Record<string, boolean>; dailyRows?: Record<string, { mode: "begin"|"break"|""; label: string; status: string }[]> } | undefined) ?? {};
         const rows = existing.rows && existing.rows.length === 12
           ? [...existing.rows]
           : Array.from({ length: 12 }, () => ({ mode: "" as const, label: "" }));
         const marks = { ...(existing.marks ?? {}) };
+        const dailyRows = { ...(existing.dailyRows ?? {}) };
         // Use the current month's row for today's habits.
         const row = rows[date.monthIndex] ?? { mode: "" as const, label: "" };
         // If multiple habits share the row, last one wins for label/mode (kept simple).
@@ -632,7 +630,8 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
         const k = `${date.monthIndex}-${date.day}`;
         if (anySuccess) marks[k] = true;
         else delete marks[k];
-        dst.yearly_habits = { rows, marks };
+        dailyRows[k] = yhRows.map(({ label, mode, idx }) => ({ label, mode, status: String(v[`habit_${idx + 1}`] ?? "") }));
+        dst.yearly_habits = { rows, marks, dailyRows };
         void row;
       });
       synced.push(`Yearly Habit Tracker (${yearStr})`);
@@ -1057,11 +1056,11 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
     }
 
     // Yearly daily-month grids — vitals.
-    type Vital = { id: string; field: string; prefixes: [string, string, string, string]; label: string };
+    type Vital = { id: string; field: string; daily: string; meals: [string, string, string, string]; label: string };
     const vitals: Vital[] = [
-      { id: "blood-sugar-tracker", field: "blood_sugar", prefixes: ["breakfast_bs", "lunch_bs", "dinner_bs", "snacks_bs"], label: "Complete Tracker (blood sugar)" },
-      { id: "blood-pressure-tracker", field: "blood_pressure", prefixes: ["breakfast_bp", "lunch_bp", "dinner_bp", "snacks_bp"], label: "Complete Tracker (blood pressure)" },
-      { id: "oxygen-tracker", field: "oxygen", prefixes: ["breakfast_o2", "lunch_o2", "dinner_o2", "snacks_o2"], label: "Complete Tracker (oxygen)" },
+      { id: "blood-sugar-tracker", field: "blood_sugar", daily: "daily_blood_sugar", meals: ["breakfast_bs", "lunch_bs", "dinner_bs", "snacks_bs"], label: "Complete Tracker (blood sugar)" },
+      { id: "blood-pressure-tracker", field: "blood_pressure", daily: "daily_blood_pressure", meals: ["breakfast_bp", "lunch_bp", "dinner_bp", "snacks_bp"], label: "Complete Tracker (blood pressure)" },
+      { id: "oxygen-tracker", field: "oxygen", daily: "daily_oxygen", meals: ["breakfast_o2", "lunch_o2", "dinner_o2", "snacks_o2"], label: "Complete Tracker (oxygen)" },
     ];
     const vital = vitals.find((x) => x.id === entry.pageType);
     if (vital) {
@@ -1075,41 +1074,25 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
         const day = Number(m[1]);
         const monthIndex = Number(m[2]);
         const iso = `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-        touched += await updateCompleteForDate(iso, (dst) => splitMealCell(cellVal, vital.prefixes, dst));
+        touched += await updateCompleteForDate(iso, (dst) => {
+          dst[vital.daily] = cellVal;
+          if (/^[BLDS]\s/.test(cellVal)) splitMealCell(cellVal, vital.meals, dst);
+        });
       }
       if (touched > 0) synced.push(vital.label);
       return synced;
     }
 
-    // Self-Care Checklist.
+    // Self-Care Checklist → every Complete day in that week.
     if (entry.pageType === "self-care-checklist") {
-      const year = Number(v.year ?? "");
-      if (!year) return [];
-      const fields: { src: string; field: string }[] = [
-        { src: "self_physical", field: "physical" },
-        { src: "self_emotional", field: "emotional" },
-        { src: "self_spiritual", field: "spiritual" },
-      ];
-      const cellSet = new Set<string>();
-      for (const f of fields) {
-        const grid = (v[f.field] as { cells?: Record<string, string> } | undefined)?.cells ?? {};
-        for (const k of Object.keys(grid)) cellSet.add(k);
-      }
+      const week = parseDate(v.week_of);
+      if (!week) return [];
+      const start = mondayOf(week.year, week.monthIndex, week.day);
+      const fields = ["self_physical", "self_emotional", "self_spiritual"];
       let touched = 0;
-      for (const cellKey of cellSet) {
-        const m = /^(\d+)-(\d+)$/.exec(cellKey);
-        if (!m) continue;
-        const day = Number(m[1]);
-        const monthIndex = Number(m[2]);
-        const iso = `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-        touched += await updateCompleteForDate(iso, (dst) => {
-          for (const f of fields) {
-            const grid = (v[f.field] as { cells?: Record<string, string> } | undefined)?.cells ?? {};
-            const cellVal = grid[cellKey];
-            if (cellVal && cellVal.trim()) dst[f.src] = cellVal;
-            else delete dst[f.src];
-          }
-        });
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(start); d.setDate(start.getDate() + i);
+        touched += await updateCompleteForDate(isoOf(d.getFullYear(), d.getMonth(), d.getDate()), (dst) => copyKeys(v, dst, fields));
       }
       if (touched > 0) synced.push("Complete Tracker (self-care)");
       return synced;
@@ -1146,7 +1129,7 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
       const monthName = String(v.month ?? "").toLowerCase();
       const monthIndex = MONTH_LOWER.indexOf(monthName);
       if (monthIndex < 0) return [];
-      const year = new Date().getFullYear();
+      const year = Number(v.year ?? "") || new Date().getFullYear();
       const marks = (v.water_grid as { marks?: Record<string, boolean> } | undefined)?.marks ?? {};
       const perDay = new Map<number, number>();
       for (const [key, on] of Object.entries(marks)) {
@@ -1236,7 +1219,7 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
     if (entry.pageType === "yearly-habit-tracker") {
       const year = Number(v.year ?? "");
       if (!year) return [];
-      const data = (v.yearly_habits as { rows?: { mode: "begin"|"break"|""; label: string }[]; marks?: Record<string, boolean> } | undefined) ?? {};
+      const data = (v.yearly_habits as { rows?: { mode: "begin"|"break"|""; label: string }[]; marks?: Record<string, boolean>; dailyRows?: Record<string, { mode: "begin"|"break"|""; label: string; status: string }[]> } | undefined) ?? {};
       const rows = data.rows ?? [];
       const marks = data.marks ?? {};
       let touched = 0;
@@ -1249,9 +1232,13 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
         const iso = `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
         const row = rows[monthIndex] ?? { mode: "" as const, label: "" };
         touched += await updateCompleteForDate(iso, (dst) => {
-          if (row.label.trim()) dst.habit_1_label = row.label;
-          if (row.mode) dst.habit_1_mode = row.mode;
-          dst.habit_1 = "success";
+          const savedRows = data.dailyRows?.[k] ?? [{ ...row, status: "success" }];
+          savedRows.slice(0, 3).forEach((saved, index) => {
+            const n = index + 1;
+            if (saved.label.trim()) dst[`habit_${n}_label`] = saved.label;
+            if (saved.mode) dst[`habit_${n}_mode`] = saved.mode;
+            dst[`habit_${n}`] = saved.status || "success";
+          });
         });
       }
       if (touched > 0) synced.push("Complete Tracker (yearly habits)");
@@ -1307,6 +1294,8 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
               "feelings_afternoon", "feelings_afternoon_other",
               "feelings_evening", "feelings_evening_other",
               "feelings_night", "feelings_night_other",
+              "feelings_morning_notes", "feelings_afternoon_notes",
+              "feelings_evening_notes", "feelings_night_notes",
             ];
       const touched = await updateCompleteForDate(date.iso, (dst) => {
         copyKeys(v, dst, keys);
