@@ -260,6 +260,7 @@ export default function Entry() {
               disabled={!canUndo}
               aria-label="Undo"
               title="Undo (Ctrl/Cmd+Z)"
+              className="min-h-11 min-w-11"
             >
               <Undo2 className="w-4 h-4" />
             </Button>
@@ -270,6 +271,7 @@ export default function Entry() {
               disabled={!canRedo}
               aria-label="Redo"
               title="Redo (Ctrl/Cmd+Shift+Z)"
+              className="min-h-11 min-w-11"
             >
               <Redo2 className="w-4 h-4" />
             </Button>
@@ -284,11 +286,12 @@ export default function Entry() {
               aria-label={createLabel}
               title={createLabel}
               disabled={cadence === "list"}
+              className="min-h-11"
             >
               <Plus className="w-4 h-4 sm:mr-1" />
               <span className="hidden sm:inline">{createLabel}</span>
             </Button>
-            <Button variant="ghost" size="icon" onClick={remove} aria-label="Delete">
+            <Button variant="ghost" size="icon" onClick={remove} aria-label="Delete" className="min-h-11 min-w-11">
               <Trash2 className="w-4 h-4 text-destructive" />
             </Button>
             <Button
@@ -297,7 +300,7 @@ export default function Entry() {
               onClick={closeToCover}
               aria-label="Close to cover"
               title="Close to cover"
-              className="rounded-full"
+              className="min-h-11 min-w-11 rounded-full"
             >
               <X className="w-4 h-4" />
             </Button>
@@ -333,10 +336,10 @@ export default function Entry() {
           hideReset
         />
         <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-end">
-          <Button variant="outline" size="sm" onClick={onReset} className="w-full sm:w-auto">
+          <Button variant="outline" size="sm" onClick={onReset} className="min-h-11 w-full sm:w-auto">
             <RotateCcw className="mr-1.5 h-4 w-4" /> Reset page style
           </Button>
-          <Button size="sm" onClick={confirmPageStyle} className="w-full sm:w-auto">
+          <Button size="sm" onClick={confirmPageStyle} className="min-h-11 w-full sm:w-auto">
             <Check className="mr-1.5 h-4 w-4" /> Apply to this page
           </Button>
         </div>
@@ -371,6 +374,7 @@ export default function Entry() {
             onClick={goPrev}
             disabled={!prevEntry}
             aria-label="Previous entry"
+            className="min-h-11"
           >
             <ChevronLeft className="w-4 h-4 mr-1" /> Prev
           </Button>
@@ -385,6 +389,7 @@ export default function Entry() {
             onClick={goNext}
             disabled={!nextEntry}
             aria-label="Next entry"
+            className="min-h-11"
           >
             Next <ChevronRight className="w-4 h-4 ml-1" />
           </Button>

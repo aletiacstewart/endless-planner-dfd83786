@@ -545,7 +545,7 @@ export function EntryPersonalization({
 }
 
 const chipClass =
-  "inline-flex items-center gap-1.5 rounded-full border border-border bg-card/60 px-3 h-8 text-xs font-medium whitespace-nowrap";
+  "inline-flex min-h-11 sm:min-h-10 items-center gap-1.5 rounded-full border border-border bg-card/60 px-3 text-xs font-medium whitespace-nowrap touch-manipulation";
 
 function Chip({
   icon,
