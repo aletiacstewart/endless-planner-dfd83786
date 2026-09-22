@@ -255,6 +255,27 @@
     60%  { opacity: 0.6; }
     100% { opacity: 1; transform: scale(1); }
   }
+
+  /* Closed book cover — stitched spine on the hinge, page edges on the fore-edge. */
+  .book-spine {
+    background: linear-gradient(90deg,
+      hsl(0 0% 0% / 0.45) 0%,
+      hsl(0 0% 0% / 0.18) 55%,
+      transparent 100%);
+  }
+  .book-spine::after {
+    content: "";
+    position: absolute;
+    inset: 6% auto 6% 45%;
+    width: 2px;
+    border-left: 2px dashed hsl(0 0% 100% / 0.35);
+  }
+  .book-foredge {
+    background: linear-gradient(270deg,
+      hsl(0 0% 100% / 0.55) 0%,
+      hsl(0 0% 100% / 0.18) 35%,
+      transparent 100%);
+  }
 }
 
 /* -------------------------------------------------------------------------- */
