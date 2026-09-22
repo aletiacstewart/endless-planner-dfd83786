@@ -550,6 +550,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
 
       {
         title: "Workout",
+        description: "Syncs both ways with the Fitness & Workout Tracker for this date.",
         page: 1,
         columns: 1,
         fields: [
@@ -559,6 +560,16 @@ export const PAGE_TYPES: PageTypeDef[] = [
               { key: "stretch", label: "Stretch", type: "text", span: 2 },
               { key: "other", label: "Other", type: "text", span: 2 },
               { key: "rest_day", label: "Rest day", type: "checkbox", span: 2 },
+              {
+                key: "workout_activity",
+                label: "Today's workout — activity",
+                type: "select",
+                options: ["Walking", "Running", "Cycling", "Swimming", "Strength", "Mobility", "Stretching", "Yoga", "Pilates", "Dance", "Sports", "Hiking", "HIIT", "Rehabilitation / PT", "Other"],
+                span: 2,
+              },
+              { key: "workout_duration", label: "Duration", type: "text", span: 2 },
+              { key: "workout_intensity", label: "Intensity", type: "select", options: ["Light", "Moderate", "Hard"], span: 2 },
+              { key: "workout_notes", label: "Workout notes", type: "textarea", rows: 3, span: 2 },
         ],
       },
       {
