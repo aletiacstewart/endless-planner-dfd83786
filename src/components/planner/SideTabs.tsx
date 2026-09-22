@@ -196,7 +196,7 @@ export function SideTabs({ activePageType }: Props) {
         aria-label="Planner sections"
         className="lg:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border bg-background/95 backdrop-blur"
       >
-        <div className="flex overflow-x-auto no-scrollbar px-2 py-2 gap-1">
+        <div className="flex overflow-x-auto no-scrollbar px-2 py-2 gap-1 [mask-image:linear-gradient(to_right,transparent,black_12px,black_calc(100%-12px),transparent)]">
           {PAGE_TYPES.map((pt) => {
             const active = pt.id === activePageType;
             return (

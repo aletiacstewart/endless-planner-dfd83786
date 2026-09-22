@@ -930,7 +930,55 @@ function MedList({
   };
   return (
     <div>
-      <div className="overflow-x-auto max-w-full pb-1" style={{ WebkitOverflowScrolling: "touch" }}>
+      <div className="space-y-3 lg:hidden">
+        {Array.from({ length: visibleRows }, (_, i) => i + 1).map((n) => (
+          <section key={n} className="rounded-md border border-border bg-card/40 p-3">
+            <p className="mb-2 text-xs font-medium text-muted-foreground">Medication {n}</p>
+            <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+              {(["name", "strength", "reason"] as const).map((key) => {
+                const title = key === "name" ? "Name" : key === "strength" ? "Strength / dose" : "Reason";
+                const dataKey = `${n}_${key}`;
+                return (
+                  <label key={key} className="min-w-0 text-[10px] font-medium uppercase text-muted-foreground">
+                    {title}
+                    <Input
+                      value={data[dataKey] ?? ""}
+                      onChange={(e) => update(dataKey, e.target.value)}
+                      className="mt-1 h-9 w-full bg-background/60 text-sm normal-case"
+                      aria-label={`Med ${n} ${title}`}
+                    />
+                  </label>
+                );
+              })}
+              <div className="min-w-0 text-[10px] font-medium uppercase text-muted-foreground">
+                Doctor
+                <div className="mt-1">
+                  <DoctorPicker
+                    compact
+                    value={data[`${n}_doctor_id`] ?? ""}
+                    fallbackName={data[`${n}_doctor`] ?? ""}
+                    onChange={(v) => update(`${n}_doctor_id`, v)}
+                    ariaLabel={`Med ${n} Doctor`}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-4">
+              {slots.map((slot) => {
+                const key = `${n}_${slot.k}`;
+                const fullLabel = slot.k === "m" ? "Morning" : slot.k === "a" ? "Afternoon" : "Night";
+                return (
+                  <label key={slot.k} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Checkbox checked={data[key] === "1"} onCheckedChange={(c) => update(key, c ? "1" : "")} />
+                    {fullLabel}
+                  </label>
+                );
+              })}
+            </div>
+          </section>
+        ))}
+      </div>
+      <div className="hidden overflow-x-auto max-w-full pb-1 lg:block" style={{ WebkitOverflowScrolling: "touch" }}>
       <div className="min-w-[42rem]">
       <div className={cn("grid gap-x-2 gap-y-1 items-end mb-1", cols)}>
         <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground" />
