@@ -1,4 +1,4 @@
-import { Plus, X, Lock, Check } from "lucide-react";
+import { Plus, X, Lock, Check, Sparkles } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -22,6 +22,10 @@ type Props = {
   isSelected?: boolean;
   price?: number;
   onToggle?: () => void;
+  /** Unlocked covers can be applied to the journal from here. */
+  canApply?: boolean;
+  isCurrent?: boolean;
+  onApply?: () => void;
 };
 
 const PAGE_LABELS: Record<string, string> = Object.fromEntries(
@@ -35,6 +39,9 @@ export function CoverIconPreviewDialog({
   isSelected,
   price,
   onToggle,
+  canApply,
+  isCurrent,
+  onApply,
 }: Props) {
   const cover = coverId ? COVERS.find((c) => c.id === coverId) : null;
   if (!cover) return null;
@@ -99,7 +106,29 @@ export function CoverIconPreviewDialog({
           </div>
         )}
 
-        {onToggle && (
+        {canApply ? (
+          <div className="pt-2 border-t border-border mt-2">
+            <Button
+              className="w-full"
+              variant={isCurrent ? "secondary" : "default"}
+              disabled={isCurrent}
+              onClick={() => {
+                onApply?.();
+                onOpenChange(false);
+              }}
+            >
+              {isCurrent ? (
+                <>
+                  <Check className="w-4 h-4 mr-2" /> Already your cover
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" /> Use this cover
+                </>
+              )}
+            </Button>
+          </div>
+        ) : onToggle ? (
           <div className="pt-2 border-t border-border mt-2">
             {included ? (
               <Button disabled className="w-full" variant="secondary">
@@ -131,7 +160,7 @@ export function CoverIconPreviewDialog({
               </Button>
             )}
           </div>
-        )}
+        ) : null}
       </DialogContent>
     </Dialog>
   );

@@ -1,11 +1,13 @@
 import { useMemo, useState } from "react";
-import { Plus, Check, X, Lock, Eye } from "lucide-react";
+import { Plus, Check, X, Lock, Eye, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 import { COLLECTIONS, COVERS, type CoverCollection } from "@/data/covers";
 import { CoverImage } from "@/components/cover/CoverImage";
 import { CoverIconPreviewDialog } from "@/components/cover/CoverIconPreviewDialog";
 import { isCoverIncluded, calcPackTotalUSD, getPackPriceUSD, PACK_PRICE_USD } from "@/data/coverPacks";
 import { isPackUnlocked, isPackPurchased } from "@/lib/unlock";
 import { useEntitlements } from "@/hooks/useEntitlements";
+import { useUserSettings } from "@/hooks/useUserSettings";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -25,12 +27,23 @@ type Props = {
 
 export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact, excludeIds = [], ignoreAdmin }: Props) {
   const ent = useEntitlements();
+  const { settings, update } = useUserSettings();
   const [filter, setFilter] = useState<CoverCollection | "all">("all");
   const [previewId, setPreviewId] = useState<string | null>(null);
 
   /** Admin and tester accounts already have access to every cover and icon set. */
   const adminAll = Boolean(ent.fullAccess) && !ignoreAdmin;
   const hasAccess = (id: string) => isPackPurchased(id) || adminAll;
+  /** Unlocked covers can be applied to the journal straight from this page. */
+  const canApply = (id: string) => isPackPurchased(id) || Boolean(ent.fullAccess);
+  const currentCoverId = settings?.coverId;
+
+  const applyCover = async (id: string) => {
+    if (!canApply(id) || id === currentCoverId) return;
+    await update({ coverId: id });
+    const name = COVERS.find((c) => c.id === id)?.name ?? "Cover";
+    toast.success(`${name} applied — your planner has re-themed.`);
+  };
 
   const availableCollections = useMemo(() => {
     const used = new Set(COVERS.map((c) => c.collection));
@@ -120,6 +133,30 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
                 <Eye className="w-4 h-4" />
               </Button>
 
+              {canApply(c.id) && (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={c.id === currentCoverId ? "secondary" : "default"}
+                  disabled={c.id === currentCoverId}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    void applyCover(c.id);
+                  }}
+                  className="absolute bottom-11 left-2 z-30 h-8 rounded-full px-3 text-[11px] shadow-md"
+                >
+                  {c.id === currentCoverId ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 mr-1" /> In use
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-3.5 h-3.5 mr-1" /> Use this cover
+                    </>
+                  )}
+                </Button>
+              )}
+
               {included && (
                 <span className="pointer-events-none absolute top-2 left-2 z-20 text-[10px] uppercase tracking-wide font-bold bg-primary text-primary-foreground rounded-full px-2 py-0.5">
                   Included
@@ -175,6 +212,11 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
         open={previewId !== null}
         onOpenChange={(o) => !o && setPreviewId(null)}
         isSelected={previewId ? selectedPackIds.includes(previewId) : false}
+        canApply={previewId ? canApply(previewId) : false}
+        isCurrent={previewId === currentCoverId}
+        onApply={() => {
+          if (previewId) void applyCover(previewId);
+        }}
         price={
           previewId && selectedPackIds.includes(previewId)
             ? getPackPriceUSD(selectedPackIds.indexOf(previewId))
