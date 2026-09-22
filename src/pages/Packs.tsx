@@ -8,7 +8,7 @@ import { isPackPurchased } from "@/lib/unlock";
 import { useEntitlements } from "@/hooks/useEntitlements";
 
 export default function Packs() {
-  const { admin, tester, fullAccess } = useEntitlements();
+  const { admin, fullAccess } = useEntitlements();
   const [searchParams] = useSearchParams();
   const focus = searchParams.get("focus");
   const [previewPrices, setPreviewPrices] = useState(false);
