@@ -156,10 +156,8 @@ export default function Home() {
       <header className="px-4 lg:px-8 pt-5 flex items-center justify-between">
         <div className="min-w-0">
           <h1 className="font-display text-xl truncate">{plannerName}</h1>
-          {bookOpen && (
-            <button onClick={closeBook} className="text-xs text-muted-foreground hover:text-foreground">
-              ← Close planner
-            </button>
+          {settings?.ownerName && (
+            <p className="font-script text-sm text-muted-foreground">{settings.ownerName}</p>
           )}
         </div>
         <Link
