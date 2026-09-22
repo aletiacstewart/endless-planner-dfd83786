@@ -97,6 +97,21 @@ export default function Auth() {
     // useEffect on `user` will run routeAfterSignIn once the session is set.
   };
 
+  const signInPassword = async () => {
+    if (!email.trim() || !password) return;
+    setBusy(true);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+    setBusy(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Signed in — syncing your planner…");
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center px-6" style={{ background: "var(--gradient-paper)" }}>
       <div className="planner-card max-w-md w-full">
