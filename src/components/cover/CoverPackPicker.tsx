@@ -212,6 +212,11 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
         open={previewId !== null}
         onOpenChange={(o) => !o && setPreviewId(null)}
         isSelected={previewId ? selectedPackIds.includes(previewId) : false}
+        canApply={previewId ? canApply(previewId) : false}
+        isCurrent={previewId === currentCoverId}
+        onApply={() => {
+          if (previewId) void applyCover(previewId);
+        }}
         price={
           previewId && selectedPackIds.includes(previewId)
             ? getPackPriceUSD(selectedPackIds.indexOf(previewId))
