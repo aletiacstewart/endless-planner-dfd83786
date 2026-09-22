@@ -1188,9 +1188,8 @@ export const PAGE_TYPES: PageTypeDef[] = [
         page: 1,
         fields: [
           { key: "year", label: "Year", type: "year" },
-          { key: "date", label: "Session date", type: "date" },
-          { key: "weight", label: "Weight", type: "text" },
-          { key: "goal", label: "Today's goal", type: "text", span: 2 },
+          { key: "weight", label: "Current weight", type: "text" },
+          { key: "goal", label: "Fitness goal for the year", type: "text", span: 2 },
         ],
       },
       {
