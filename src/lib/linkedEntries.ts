@@ -8,12 +8,65 @@
  */
 
 import {
-  createEntry,
+  createEntry as dbCreateEntry,
   listEntries,
-  saveEntry,
+  saveEntry as dbSaveEntry,
   type FieldValue,
   type PlannerEntry,
 } from "./db";
+
+/**
+ * A sync run touches ~30 page types and re-reads each one repeatedly.
+ * While a run is active we read every page type from IndexedDB once and
+ * keep it in memory, so a save costs one pass instead of hundreds.
+ */
+let runCache: Map<string, PlannerEntry[]> | null = null;
+
+async function cachedList(pageType: string): Promise<PlannerEntry[]> {
+  if (!runCache) return listEntries(pageType);
+  const hit = runCache.get(pageType);
+  if (hit) return hit;
+  const fresh = await cachedList(pageType);
+  runCache.set(pageType, fresh);
+  return fresh;
+}
+
+function cachePut(entry: PlannerEntry) {
+  if (!runCache) return;
+  const arr = runCache.get(entry.pageType);
+  if (!arr) {
+    runCache.set(entry.pageType, [entry]);
+    return;
+  }
+  const i = arr.findIndex((e) => e.id === entry.id);
+  if (i >= 0) arr[i] = entry;
+  else arr.push(entry);
+}
+
+async function createEntry(
+  pageType: string,
+  defaults: Record<string, FieldValue> = {},
+): Promise<PlannerEntry> {
+  const created = await dbCreateEntry(pageType, defaults);
+  cachePut(created);
+  return created;
+}
+
+async function saveEntry(entry: PlannerEntry): Promise<void> {
+  cachePut(entry);
+  await dbSaveEntry(entry);
+}
+
+/** Runs `fn` with a shared read cache (nested calls reuse the outer cache). */
+async function withRunCache<T>(fn: () => Promise<T>): Promise<T> {
+  const owner = !runCache;
+  if (owner) runCache = new Map();
+  try {
+    return await fn();
+  } finally {
+    if (owner) runCache = null;
+  }
+}
 
 interface ParsedDate {
   year: number;
@@ -51,7 +104,7 @@ async function findOrCreate(
   match: (e: PlannerEntry) => boolean,
   defaults: Record<string, FieldValue> = {},
 ): Promise<PlannerEntry> {
-  const existing = await listEntries(pageType);
+  const existing = await cachedList(pageType);
   const found = existing.find(match);
   if (found) return found;
   return createEntry(pageType, defaults);
@@ -268,7 +321,7 @@ const fmtMoney = (n: number): string => (Number.isInteger(n) ? String(n) : n.toF
  */
 async function rollUpMoney(date: ParsedDate): Promise<string[]> {
   const synced: string[] = [];
-  const days = await listEntries("complete-tracker");
+  const days = await cachedList("complete-tracker");
   const spend = new Map<string, number>();
   const saved = new Map<string, number>();
   const paid = new Map<string, number>();
@@ -308,7 +361,7 @@ async function rollUpMoney(date: ParsedDate): Promise<string[]> {
   }
 
   if (saved.size > 0) {
-    const all = await listEntries("savings-goals");
+    const all = await cachedList("savings-goals");
     const entry = all[0] ?? (await createEntry("savings-goals", {}));
     await persist(entry, (dst) => {
       for (const [goal, total] of saved) {
@@ -323,7 +376,7 @@ async function rollUpMoney(date: ParsedDate): Promise<string[]> {
   }
 
   if (paid.size > 0) {
-    const all = await listEntries("debt-tracker");
+    const all = await cachedList("debt-tracker");
     const entry = all[0] ?? (await createEntry("debt-tracker", {}));
     await persist(entry, (dst) => {
       for (const [creditor, total] of paid) {
@@ -442,11 +495,15 @@ const asText = (v: FieldValue | undefined): string => (typeof v === "string" ? v
  * Only writes when a value actually differs, so this can't loop.
  */
 export async function propagateScopedFields(complete: PlannerEntry): Promise<string[]> {
+  return withRunCache(() => propagateScopedFieldsInner(complete));
+}
+
+async function propagateScopedFieldsInner(complete: PlannerEntry): Promise<string[]> {
   if (complete.pageType !== "complete-tracker") return [];
   const synced: string[] = [];
   try {
     const srcDate = dateOfEntryOrToday(complete);
-    const siblings = (await listEntries("complete-tracker")).filter((e) => e.id !== complete.id);
+    const siblings = (await cachedList("complete-tracker")).filter((e) => e.id !== complete.id);
     if (siblings.length === 0) return [];
 
     for (const sib of siblings) {
@@ -477,10 +534,14 @@ export async function propagateScopedFields(complete: PlannerEntry): Promise<str
  * first day of a new week/month/year starts clean.
  */
 export async function seedScopedFields(entry: PlannerEntry): Promise<void> {
+  return withRunCache(() => seedScopedFieldsInner(entry));
+}
+
+async function seedScopedFieldsInner(entry: PlannerEntry): Promise<void> {
   if (entry.pageType !== "complete-tracker") return;
   try {
     const date = dateOfEntryOrToday(entry);
-    const siblings = (await listEntries("complete-tracker"))
+    const siblings = (await cachedList("complete-tracker"))
       .filter((e) => e.id !== entry.id)
       .sort((a, b) => b.updatedAt - a.updatedAt);
     if (siblings.length === 0) return;
@@ -494,7 +555,7 @@ export async function seedScopedFields(entry: PlannerEntry): Promise<void> {
       if (donor) patch[key] = asText(donor.values[key]);
     }
     if (Object.keys(patch).length === 0) return;
-    const fresh = (await listEntries("complete-tracker")).find((e) => e.id === entry.id) ?? entry;
+    const fresh = (await cachedList("complete-tracker")).find((e) => e.id === entry.id) ?? entry;
     await persist(fresh, (dst) => {
       for (const [k, val] of Object.entries(patch)) dst[k] = val;
     });
@@ -509,6 +570,10 @@ export async function seedScopedFields(entry: PlannerEntry): Promise<void> {
  * Safe to call from auto-save — never throws; failures are logged.
  */
 export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[]> {
+  return withRunCache(() => syncLinkedEntriesInner(complete));
+}
+
+async function syncLinkedEntriesInner(complete: PlannerEntry): Promise<string[]> {
   if (complete.pageType !== "complete-tracker") return [];
   const synced: string[] = [];
   try {
@@ -910,7 +975,7 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
     // 19. Weight Tracker — write today's weight into the active 26-week log.
     const weightToday = (v.weight_today as string | undefined) ?? "";
     if (weightToday.trim()) {
-      const all = await listEntries("weight-tracker");
+      const all = await cachedList("weight-tracker");
       // Pick the most recent entry whose start_date is on/before today.
       const candidates = all
         .map((e) => ({ e, start: (e.values.start_date as string | undefined) ?? "" }))
@@ -945,7 +1010,7 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       return typeof x === "string" && x.trim();
     });
     if (partTodays.length > 0) {
-      const all = await listEntries("measurement-tracker");
+      const all = await cachedList("measurement-tracker");
       const candidates = all
         .map((e) => ({ e, start: (e.values.start_date as string | undefined) ?? "" }))
         .filter((x) => x.start && new Date(x.start).getTime() <= new Date(date.iso).getTime())
@@ -969,7 +1034,7 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
     // 21. Medications — mirror the med_list grid into the master Medications entry.
     const completeMedList = v.med_list as Record<string, string> | undefined;
     if (completeMedList && Object.values(completeMedList).some((x) => typeof x === "string" && x.trim())) {
-      const all = await listEntries("medications");
+      const all = await cachedList("medications");
       const meds = all[0] ?? await createEntry("medications", {});
       await persist(meds, (dst) => {
         dst.med_list = { ...completeMedList };
@@ -1061,7 +1126,7 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
     // 28. Gift Tracker — one row per person/gift.
     if (anyFilled(v, ["gift_person", "gift_idea", "gift_budget", "gift_purchased"])) {
       const person = asText(v.gift_person) || asText(v.gift_idea);
-      const all = await listEntries("gift-tracker");
+      const all = await cachedList("gift-tracker");
       const gifts = all[0] ?? (await createEntry("gift-tracker", {}));
       await persist(gifts, (dst) => {
         const row = gridRowForValue(dst, "gift_rows", "Person", person);
@@ -1089,6 +1154,10 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
  * identity fields are seeded — no values are copied here.
  */
 export async function scaffoldLinkedEntries(complete: PlannerEntry): Promise<string[]> {
+  return withRunCache(() => scaffoldLinkedEntriesInner(complete));
+}
+
+async function scaffoldLinkedEntriesInner(complete: PlannerEntry): Promise<string[]> {
   if (complete.pageType !== "complete-tracker") return [];
   const created: string[] = [];
   try {
@@ -1163,7 +1232,7 @@ export async function scaffoldLinkedEntries(complete: PlannerEntry): Promise<str
 
     // 26-week logs — reuse any log already covering today, else start one.
     for (const id of ["weight-tracker", "measurement-tracker"]) {
-      const all = await listEntries(id);
+      const all = await cachedList(id);
       const covers = all.some((e) => {
         const start = (e.values.start_date as string | undefined) ?? "";
         return start && weekIndexFromStart(start, date) != null;
@@ -1175,7 +1244,7 @@ export async function scaffoldLinkedEntries(complete: PlannerEntry): Promise<str
     }
 
     // Master pages (single entry).
-    const meds = await listEntries("medications");
+    const meds = await cachedList("medications");
     if (meds.length === 0) {
       await createEntry("medications", {});
       created.push("medications");
@@ -1215,7 +1284,7 @@ function splitMealCell(value: string, prefixes: [string, string, string, string]
 }
 
 async function listCompleteByDate(iso: string): Promise<PlannerEntry[]> {
-  const all = await listEntries("complete-tracker");
+  const all = await cachedList("complete-tracker");
   return all.filter((e) => (e.values.date as string | undefined)?.slice(0, 10) === iso);
 }
 
@@ -1260,7 +1329,7 @@ async function fanOutMedicalDays(
   }
 
   if (!skip.complete) {
-    const completes = (await listEntries("complete-tracker")).filter((e) => {
+    const completes = (await cachedList("complete-tracker")).filter((e) => {
       const d = parseDate(e.values.date);
       return d && d.year === year && d.monthIndex === monthIndex;
     });
@@ -1316,6 +1385,10 @@ async function fanOutMedicalDays(
 }
 
 export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]> {
+  return withRunCache(() => syncFromIndividualInner(entry));
+}
+
+async function syncFromIndividualInner(entry: PlannerEntry): Promise<string[]> {
   const synced: string[] = [];
   try {
     const v = entry.values;
@@ -1482,7 +1555,7 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
       const monthIndex = new Date(`${monthName} 1, 2000`).getMonth();
       if (Number.isNaN(monthIndex)) return [];
       const cal = (v.calendar as Record<string, string> | undefined) ?? {};
-      const completes = (await listEntries("complete-tracker")).filter((e) => {
+      const completes = (await cachedList("complete-tracker")).filter((e) => {
         const d = parseDate(e.values.date);
         return d && d.year === year && d.monthIndex === monthIndex;
       });
@@ -1540,7 +1613,7 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
     if (entry.pageType === "yearly-calendar") {
       const year = Number(v.year ?? "");
       if (!year) return [];
-      const completes = (await listEntries("complete-tracker")).filter((e) => {
+      const completes = (await cachedList("complete-tracker")).filter((e) => {
         const d = parseDate(e.values.date);
         return d && d.year === year;
       });
@@ -1824,7 +1897,7 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
     if (entry.pageType === "medications") {
       const list = (v.med_list as Record<string, string> | undefined) ?? {};
       if (Object.values(list).some((x) => typeof x === "string" && x.trim())) {
-        const completes = await listEntries("complete-tracker");
+        const completes = await cachedList("complete-tracker");
         let touched = 0;
         for (const c of completes) {
           const cur = c.values.med_list as Record<string, string> | undefined;
@@ -1845,7 +1918,7 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
       const year = Number(v.year ?? "");
       if (!year) return synced;
       const focus = ((v.yearly_focus as string | undefined) ?? "").trim();
-      const completes = (await listEntries("complete-tracker")).filter((e) => {
+      const completes = (await cachedList("complete-tracker")).filter((e) => {
         const d = parseDate(e.values.date);
         return d && d.year === year;
       });

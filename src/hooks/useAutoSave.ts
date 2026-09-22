@@ -32,6 +32,8 @@ export function useAutoSave(entry: PlannerEntry | null, debounceMs = 500) {
   const [state, setState] = useState<SaveState>("idle");
   const [linkedSummary, setLinkedSummary] = useState<string[]>([]);
   const timer = useRef<number | null>(null);
+  const linkTimer = useRef<number | null>(null);
+  const linking = useRef(false);
   const firstRender = useRef(true);
 
   useEffect(() => {
@@ -42,19 +44,44 @@ export function useAutoSave(entry: PlannerEntry | null, debounceMs = 500) {
     }
     setState("saving");
     if (timer.current) window.clearTimeout(timer.current);
+    // The page's own save stays fast; the cross-page fan-out (which touches
+    // dozens of linked pages) runs on a longer, non-overlapping timer so
+    // typing never waits on it.
     timer.current = window.setTimeout(async () => {
       const next = { ...entry, updatedAt: Date.now() };
       await saveEntry(next);
-      if (next.pageType === "complete-tracker") {
-        const synced = await syncLinkedEntries(next);
-        setLinkedSummary(synced);
-      } else if (REVERSE_SYNC_TYPES.has(next.pageType)) {
-        const synced = await syncFromIndividual(next);
-        setLinkedSummary(synced);
-      }
       setState("saved");
       window.setTimeout(() => setState("idle"), 1200);
+
+      const needsLinking =
+        next.pageType === "complete-tracker" || REVERSE_SYNC_TYPES.has(next.pageType);
+      if (!needsLinking) return;
+      if (linkTimer.current) window.clearTimeout(linkTimer.current);
+      linkTimer.current = window.setTimeout(async () => {
+        if (linking.current) {
+          // A run is in flight; retry shortly so the last edit still fans out.
+          linkTimer.current = window.setTimeout(() => {
+            void runLinking(next);
+          }, 600);
+          return;
+        }
+        void runLinking(next);
+      }, 900);
     }, debounceMs);
+
+    async function runLinking(next: PlannerEntry) {
+      linking.current = true;
+      try {
+        const synced =
+          next.pageType === "complete-tracker"
+            ? await syncLinkedEntries(next)
+            : await syncFromIndividual(next);
+        setLinkedSummary(synced);
+      } finally {
+        linking.current = false;
+      }
+    }
+
     return () => {
       if (timer.current) window.clearTimeout(timer.current);
     };
