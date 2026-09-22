@@ -693,9 +693,13 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       synced.push(`Yearly Focus (${yearStr})`);
     }
 
-    // 16. Workout Tracker — daily-month-grid per category.
+    // 16. Fitness & Workout Tracker — yearly grids per category plus the day's session row.
     const workoutFields = ["cardio", "weights", "yoga", "stretch", "rest_day", "other"];
-    if (workoutFields.some((k) => v[k] != null && v[k] !== "" && v[k] !== false)) {
+    const sessionKeys = ["workout_activity", "workout_duration", "workout_intensity", "workout_notes"];
+    const hasWorkout =
+      workoutFields.some((k) => v[k] != null && v[k] !== "" && v[k] !== false) ||
+      sessionKeys.some((k) => typeof v[k] === "string" && (v[k] as string).trim());
+    if (hasWorkout) {
       const entry = await findOrCreate(
         "workout-tracker",
         (e) => String(e.values.year ?? "") === yearStr,
@@ -710,8 +714,15 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
           else if (raw != null) txt = String(raw);
           mergeDailyMonthCell(dst, k, date.day, date.monthIndex, txt);
         }
+        // Keep one session-log row per date so the fitness page shows the day's workout.
+        const row = sessionRowForDate(dst, date.iso);
+        mergeMeasurementCell(dst, "strength", row, "Date", date.iso);
+        mergeMeasurementCell(dst, "strength", row, "Activity", asText(v.workout_activity));
+        mergeMeasurementCell(dst, "strength", row, "Duration", asText(v.workout_duration));
+        mergeMeasurementCell(dst, "strength", row, "Intensity", asText(v.workout_intensity));
+        mergeMeasurementCell(dst, "strength", row, "Notes", asText(v.workout_notes));
       });
-      synced.push(`Workout Tracker (${yearStr})`);
+      synced.push(`Fitness & Workout Tracker (${yearStr})`);
     }
 
     // (Daily Goal Tracker sync removed — page no longer exists.)
