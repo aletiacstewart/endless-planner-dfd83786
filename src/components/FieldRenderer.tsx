@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useRef, useState, useCallback } from "react";
-import { Plus, X, Angry, Frown, Meh, Smile, Laugh, Calendar as CalendarIcon } from "lucide-react";
+import { Plus, X, Angry, Frown, Meh, Smile, Laugh, Calendar as CalendarIcon, Eye } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -480,6 +480,7 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           label={field.label}
           growable={field.growable}
           addLabel={field.addLabel}
+          rowDetails={field.rowDetails}
           onRowsChange={field.linkedRowsKey && onChangeAny ? (rows) => {
             const linked = (allValues?.[field.linkedRowsKey as string] as Record<string, string> | undefined) ?? {};
             onChangeAny(field.linkedRowsKey as string, { ...linked, __rows: String(rows) });
@@ -1800,6 +1801,7 @@ function MeasurementGrid({
   label,
   growable,
   addLabel,
+  rowDetails,
   onRowsChange,
   onChange,
 }: {
@@ -1814,10 +1816,13 @@ function MeasurementGrid({
   label: string;
   growable?: boolean;
   addLabel?: string;
+  rowDetails?: boolean;
   onRowsChange?: (rows: number) => void;
   onChange: (v: FieldValue) => void;
 }) {
   const isMobile = useIsMobile();
+  const [detailsRow, setDetailsRow] = useState<number | null>(null);
+  const [detailsDraft, setDetailsDraft] = useState<Record<string, string>>({});
   const data = value ?? {};
   const set = (row: number, col: string, v: string) =>
     onChange({ ...data, [`${row}-${col}`]: v });
@@ -1835,10 +1840,65 @@ function MeasurementGrid({
     return (legacy ? data[`${row}-${legacy}`] : undefined) ?? "";
   };
 
+  const openRowDetails = (row: number) => {
+    setDetailsDraft(Object.fromEntries(columns.map((column) => [column, cellValue(row, column)])));
+    setDetailsRow(row);
+  };
+
+  const saveRowDetails = () => {
+    if (detailsRow === null) return;
+    const next = { ...data };
+    columns.forEach((column) => {
+      next[`${detailsRow}-${column}`] = detailsDraft[column] ?? "";
+    });
+    onChange(next);
+    setDetailsRow(null);
+  };
+
+  const detailsButton = (row: number) => (
+    <Button
+      type="button"
+      variant="outline"
+      size="icon"
+      className="h-8 w-8 shrink-0"
+      onClick={() => openRowDetails(row)}
+      aria-label={`View ${rowLabels?.[row - 1] ?? `${rowLabel} ${row}`} details`}
+      title="View details"
+    >
+      <Eye className="h-4 w-4" />
+    </Button>
+  );
+
   return (
     <div className="min-w-0">
       <label className="field-label block mb-2">{label}</label>
-      <div className="overflow-x-auto -mx-2 px-2 pb-2 max-w-full" style={{ WebkitOverflowScrolling: "touch" }}>
+      {rowDetails && (
+        <div className="space-y-2 lg:hidden">
+          {Array.from({ length: visibleRows }, (_, i) => i + 1).map((row) => {
+            const name = cellValue(row, columns[0] ?? "");
+            const secondary = cellValue(row, columns[1] ?? "");
+            return (
+              <div key={row} className="flex min-w-0 items-center gap-3 rounded-md border border-border bg-background/40 p-2.5">
+                <span className="w-6 shrink-0 text-center text-xs text-muted-foreground">
+                  {rowLabels?.[row - 1] ?? row}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium">{name || `Contact ${row}`}</p>
+                  <p className="truncate text-xs text-muted-foreground">{secondary || "No phone added"}</p>
+                </div>
+                {detailsButton(row)}
+              </div>
+            );
+          })}
+        </div>
+      )}
+      <div
+        className={cn(
+          "overflow-x-auto -mx-2 px-2 pb-2 max-w-full",
+          rowDetails && "hidden lg:block",
+        )}
+        style={{ WebkitOverflowScrolling: "touch" }}
+      >
         <table className="text-xs border-separate border-spacing-1 w-max min-w-full">
           <thead>
             <tr>
@@ -1850,6 +1910,7 @@ function MeasurementGrid({
                   {c}
                 </th>
               ))}
+              {rowDetails && <th className="w-10"><span className="sr-only">Actions</span></th>}
             </tr>
           </thead>
           <tbody>
@@ -1922,11 +1983,55 @@ function MeasurementGrid({
                     </td>
                   );
                 })}
+                {rowDetails && <td className="pl-1">{detailsButton(row)}</td>}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      {rowDetails && (
+        <Dialog open={detailsRow !== null} onOpenChange={(open) => !open && setDetailsRow(null)}>
+          <DialogContent className="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-md overflow-y-auto p-4 sm:p-6">
+            <DialogHeader>
+              <DialogTitle>{detailsRow === null ? "Contact details" : `Contact ${detailsRow}`}</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-1">
+              {columns.map((column) => (
+                <div key={column} className="min-w-0">
+                  <label className="field-label mb-1.5 block" htmlFor={`row-details-${detailsRow}-${column}`}>
+                    {column}
+                  </label>
+                  {column.toLowerCase() === "notes" || column.toLowerCase() === "address" ? (
+                    <Textarea
+                      id={`row-details-${detailsRow}-${column}`}
+                      value={detailsDraft[column] ?? ""}
+                      onChange={(event) => setDetailsDraft((current) => ({ ...current, [column]: event.target.value }))}
+                      rows={column.toLowerCase() === "notes" ? 4 : 2}
+                      className="resize-y bg-background/60"
+                    />
+                  ) : (
+                    <Input
+                      id={`row-details-${detailsRow}-${column}`}
+                      value={detailsDraft[column] ?? ""}
+                      onChange={(event) => setDetailsDraft((current) => ({ ...current, [column]: event.target.value }))}
+                      type={column.toLowerCase() === "email" ? "email" : column.toLowerCase() === "phone" ? "tel" : "text"}
+                      className="bg-background/60"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+            <DialogFooter className="gap-2 sm:space-x-0">
+              <Button type="button" variant="outline" onClick={() => setDetailsRow(null)}>
+                Cancel
+              </Button>
+              <Button type="button" onClick={saveRowDetails}>
+                Save changes
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
       {growable && (
         <Button
           type="button"
