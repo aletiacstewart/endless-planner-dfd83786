@@ -216,6 +216,11 @@ function isoOf(year: number, monthIndex: number, day: number) {
   return `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
+/** Weekly-grid row index for a date (Mon = 0 … Sun = 6). */
+function weekdayRow(date: ParsedDate): number {
+  return (new Date(date.year, date.monthIndex, date.day).getDay() + 6) % 7;
+}
+
 /** Merge into a daily-month-grid value: `{ cells: { [day-monthIndex]: string }, achieved, notes }`. */
 function mergeDailyMonthCell(
   dst: Record<string, FieldValue>,
@@ -404,6 +409,25 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       );
       await persist(daily, (dst) => copyKeys(v, dst, DAILY_KEYS));
       synced.push("Daily Tracker");
+    }
+
+    // 1b. Meal Plan & Groceries — today's meals land on that week's meal plan row.
+    if (anyFilled(v, ["breakfast", "lunch", "dinner"])) {
+      const weekStart = mondayOf(date.year, date.monthIndex, date.day);
+      const weekIso = isoOf(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate());
+      const row = weekdayRow(date);
+      const plan = await findOrCreate(
+        "meal-planning",
+        (e) => (e.values.week_of as string | undefined)?.slice(0, 10) === weekIso,
+        { week_of: weekIso },
+      );
+      await persist(plan, (dst) => {
+        if (!dst.week_of) dst.week_of = weekIso;
+        mergeMeasurementCell(dst, "meals", row, "Breakfast", asText(v.breakfast));
+        mergeMeasurementCell(dst, "meals", row, "Lunch", asText(v.lunch));
+        mergeMeasurementCell(dst, "meals", row, "Dinner", asText(v.dinner));
+      });
+      synced.push(`Meal Plan (week of ${weekIso})`);
     }
 
     // 2-4. Yearly daily-month grids: blood sugar, blood pressure, oxygen.
@@ -891,6 +915,13 @@ export async function scaffoldLinkedEntries(complete: PlannerEntry): Promise<str
     );
     created.push("weekly-calendar");
 
+    await findOrCreate(
+      "meal-planning",
+      (e) => (e.values.week_of as string | undefined)?.slice(0, 10) === weekIso,
+      { week_of: weekIso },
+    );
+    created.push("meal-planning");
+
     // Per-month page.
     await findOrCreate(
       "monthly-calendar",
@@ -1115,6 +1146,33 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
         });
       }
       if (touched > 0) synced.push(vital.label);
+      return synced;
+    }
+
+    // Meal Plan → every Complete Tracker day in that week (never creates days).
+    if (entry.pageType === "meal-planning") {
+      const week = parseDate(v.week_of);
+      if (!week) return [];
+      const start = mondayOf(week.year, week.monthIndex, week.day);
+      const grid = (v.meals as Record<string, string> | undefined) ?? {};
+      let touched = 0;
+      for (let row = 0; row < 7; row++) {
+        const d = new Date(start);
+        d.setDate(d.getDate() + row);
+        const iso = isoOf(d.getFullYear(), d.getMonth(), d.getDate());
+        const cells: [string, string][] = [
+          ["breakfast", grid[`${row}-Breakfast`] ?? ""],
+          ["lunch", grid[`${row}-Lunch`] ?? ""],
+          ["dinner", grid[`${row}-Dinner`] ?? ""],
+        ];
+        if (!cells.some(([, val]) => val.trim())) continue;
+        touched += await updateCompleteForDate(iso, (dst) => {
+          for (const [key, val] of cells) {
+            if (val.trim()) dst[key] = val;
+          }
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (meals)");
       return synced;
     }
 
