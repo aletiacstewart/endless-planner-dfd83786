@@ -127,7 +127,7 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
               )}
               {owned && !included && (
                 <span className="pointer-events-none absolute top-2 left-2 z-20 text-[10px] uppercase tracking-wide font-bold bg-foreground/80 text-background rounded-full px-2 py-0.5">
-                  Owned
+                  {purchased ? "Owned" : "Admin"}
                 </span>
               )}
               {isSelected && (
