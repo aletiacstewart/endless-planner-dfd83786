@@ -495,6 +495,10 @@ const asText = (v: FieldValue | undefined): string => (typeof v === "string" ? v
  * Only writes when a value actually differs, so this can't loop.
  */
 export async function propagateScopedFields(complete: PlannerEntry): Promise<string[]> {
+  return withRunCache(() => propagateScopedFieldsInner(complete));
+}
+
+async function propagateScopedFieldsInner(complete: PlannerEntry): Promise<string[]> {
   if (complete.pageType !== "complete-tracker") return [];
   const synced: string[] = [];
   try {
@@ -530,6 +534,10 @@ export async function propagateScopedFields(complete: PlannerEntry): Promise<str
  * first day of a new week/month/year starts clean.
  */
 export async function seedScopedFields(entry: PlannerEntry): Promise<void> {
+  return withRunCache(() => seedScopedFieldsInner(entry));
+}
+
+async function seedScopedFieldsInner(entry: PlannerEntry): Promise<void> {
   if (entry.pageType !== "complete-tracker") return;
   try {
     const date = dateOfEntryOrToday(entry);
@@ -562,6 +570,10 @@ export async function seedScopedFields(entry: PlannerEntry): Promise<void> {
  * Safe to call from auto-save — never throws; failures are logged.
  */
 export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[]> {
+  return withRunCache(() => syncLinkedEntriesInner(complete));
+}
+
+async function syncLinkedEntriesInner(complete: PlannerEntry): Promise<string[]> {
   if (complete.pageType !== "complete-tracker") return [];
   const synced: string[] = [];
   try {
@@ -1142,6 +1154,10 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
  * identity fields are seeded — no values are copied here.
  */
 export async function scaffoldLinkedEntries(complete: PlannerEntry): Promise<string[]> {
+  return withRunCache(() => scaffoldLinkedEntriesInner(complete));
+}
+
+async function scaffoldLinkedEntriesInner(complete: PlannerEntry): Promise<string[]> {
   if (complete.pageType !== "complete-tracker") return [];
   const created: string[] = [];
   try {
@@ -1369,6 +1385,10 @@ async function fanOutMedicalDays(
 }
 
 export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]> {
+  return withRunCache(() => syncFromIndividualInner(entry));
+}
+
+async function syncFromIndividualInner(entry: PlannerEntry): Promise<string[]> {
   const synced: string[] = [];
   try {
     const v = entry.values;
