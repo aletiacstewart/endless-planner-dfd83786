@@ -50,6 +50,8 @@ interface Props {
   resetLabel?: string;
   /** Show every control in wrapped rows on phones instead of a sideways strip. */
   wrapOnMobile?: boolean;
+  /** Hide the reset chip when reset is presented as a larger action below. */
+  hideReset?: boolean;
 }
 
 const FONTS: EntryFont[] = ["serif", "sans", "hand", "mono", "display", "rounded"];
@@ -86,6 +88,7 @@ export function EntryPersonalization({
   hideStickers,
   resetLabel = "Reset",
   wrapOnMobile = false,
+  hideReset = false,
 }: Props) {
   const swatches = useThemedSwatches();
   const { settings } = useUserSettings();
@@ -267,15 +270,17 @@ export function EntryPersonalization({
           )}
 
 
-          <button
-            type="button"
-            onClick={onReset}
-            className={cn(chipClass, "text-destructive")}
-            title="Reset all personalization"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            {resetLabel}
-          </button>
+          {!hideReset && (
+            <button
+              type="button"
+              onClick={onReset}
+              className={cn(chipClass, "text-destructive")}
+              title="Reset all personalization"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              {resetLabel}
+            </button>
+          )}
         </div>
       </div>
 
