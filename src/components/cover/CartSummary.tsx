@@ -1,7 +1,7 @@
 import { Cloud } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getCover } from "@/data/covers";
-import { calcPackTotalUSD, getDiscountLabel } from "@/data/coverPacks";
+import { calcPackTotalUSD } from "@/data/coverPacks";
 import { CoverImage } from "@/components/cover/CoverImage";
 import { CoverIconStrip } from "@/components/cover/CoverIconStrip";
 import { cn } from "@/lib/utils";
@@ -31,11 +31,7 @@ export function CartSummary({
   className,
 }: Props) {
   const includedCover = getCover(includedCoverId);
-  const extrasSubtotal = extraPackIds.length * 5;
-  const extrasDiscounted = calcPackTotalUSD(extraPackIds);
-  const discountAmount = +(extrasSubtotal - extrasDiscounted).toFixed(2);
-  const total = +(activationPriceUSD + extrasDiscounted).toFixed(2);
-  const discountLabel = getDiscountLabel(extraPackIds.length);
+  const total = +(activationPriceUSD + calcPackTotalUSD(extraPackIds)).toFixed(2);
   const emailValid = /.+@.+\..+/.test(email);
 
   return (
@@ -119,12 +115,6 @@ export function CartSummary({
                 </div>
               );
             })}
-            {discountAmount > 0 && (
-              <div className="flex justify-between text-primary font-semibold">
-                <span>Discount ({discountLabel})</span>
-                <span>-${discountAmount.toFixed(2)}</span>
-              </div>
-            )}
           </div>
         )}
 
@@ -133,14 +123,9 @@ export function CartSummary({
           <span>${total.toFixed(2)}</span>
         </div>
 
-        {extraPackIds.length > 0 && discountLabel && discountAmount === 0 && (
-          <p className="text-[11px] text-primary/60 text-center">{discountLabel}</p>
-        )}
-        {extraPackIds.length === 0 && (
-          <p className="text-[11px] text-primary/60 text-center font-light">
-            Buy 5 or more covers and save 10%
-          </p>
-        )}
+        <p className="text-[11px] text-primary/60 text-center font-light">
+          Extra covers are $5 each.
+        </p>
       </div>
 
       <div>
