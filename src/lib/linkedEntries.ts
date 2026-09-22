@@ -1310,6 +1310,30 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
           }
         });
       }
+      // Session log rows → that day's workout fields on the Complete Tracker.
+      const sessions = (v.strength as Record<string, string> | undefined) ?? {};
+      const rows = new Set<number>();
+      for (const key of Object.keys(sessions)) {
+        const row = Number(key.split("-")[0]);
+        if (Number.isFinite(row)) rows.add(row);
+      }
+      for (const row of rows) {
+        const iso = String(sessions[`${row}-Date`] ?? "").slice(0, 10);
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) continue;
+        const cell = (col: string) => String(sessions[`${row}-${col}`] ?? "").trim();
+        touched += await updateCompleteForDate(iso, (dst) => {
+          const map: Record<string, string> = {
+            workout_activity: cell("Activity"),
+            workout_duration: cell("Duration"),
+            workout_intensity: cell("Intensity"),
+            workout_notes: cell("Notes"),
+          };
+          for (const [key, val] of Object.entries(map)) {
+            if (val) dst[key] = val;
+            else delete dst[key];
+          }
+        });
+      }
       if (touched > 0) synced.push("Complete Tracker (workout)");
       return synced;
     }
