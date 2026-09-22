@@ -77,7 +77,8 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
       <div className={cn("grid gap-3", compact ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4")}>
         {visibleCovers.map((c) => {
           const included = isCoverIncluded(c.id);
-          const owned = isPackPurchased(c.id);
+          const purchased = isPackPurchased(c.id);
+          const owned = purchased || adminAll;
           const isSelected = selectedPackIds.includes(c.id);
           const indexInCart = selectedPackIds.indexOf(c.id);
           const price = isSelected ? getPackPriceUSD(indexInCart) : getPackPriceUSD(selectedPackIds.length);
