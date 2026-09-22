@@ -1142,6 +1142,33 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
       return synced;
     }
 
+    // Meal Plan → every Complete Tracker day in that week (never creates days).
+    if (entry.pageType === "meal-planning") {
+      const week = parseDate(v.week_of);
+      if (!week) return [];
+      const start = mondayOf(week.year, week.monthIndex, week.day);
+      const grid = (v.meals as Record<string, string> | undefined) ?? {};
+      let touched = 0;
+      for (let row = 0; row < 7; row++) {
+        const d = new Date(start);
+        d.setDate(d.getDate() + row);
+        const iso = isoOf(d.getFullYear(), d.getMonth(), d.getDate());
+        const cells: [string, string][] = [
+          ["breakfast", grid[`${row}-Breakfast`] ?? ""],
+          ["lunch", grid[`${row}-Lunch`] ?? ""],
+          ["dinner", grid[`${row}-Dinner`] ?? ""],
+        ];
+        if (!cells.some(([, val]) => val.trim())) continue;
+        touched += await updateCompleteForDate(iso, (dst) => {
+          for (const [key, val] of cells) {
+            if (val.trim()) dst[key] = val;
+          }
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (meals)");
+      return synced;
+    }
+
     // Self-Care Checklist → every Complete day in that week.
     if (entry.pageType === "self-care-checklist") {
       const week = parseDate(v.week_of);
