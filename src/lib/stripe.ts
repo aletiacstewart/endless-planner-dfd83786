@@ -32,3 +32,11 @@ export function getStripe(): Promise<Stripe | null> {
 export function getStripeEnvironment(): StripeEnv {
   return paymentsEnvironment();
 }
+
+/** For read paths (subscription lookups, sync) that must not crash when
+ * payments aren't configured for this build. */
+export function getStripeEnvironmentSafe(): StripeEnv {
+  return clientToken?.startsWith("pk_live_") ? "live" : "sandbox";
+}
+
+export const PAYMENTS_NOT_CONFIGURED_MESSAGE = NOT_CONFIGURED;
