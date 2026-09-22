@@ -1,6 +1,6 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { ChevronLeft, Plus, Trash2 } from "lucide-react";
+import { ChevronLeft, Plus, Trash2, X } from "lucide-react";
 import { getPageType } from "@/lib/pageTypes";
 import { getPageImage } from "@/lib/pageImages";
 import { createEntry, deleteEntry, listEntries, type PlannerEntry } from "@/lib/db";
@@ -8,12 +8,14 @@ import { Button } from "@/components/ui/button";
 import { SideTabs } from "@/components/planner/SideTabs";
 import { toast } from "sonner";
 import { useUserSettings } from "@/hooks/useUserSettings";
+import { usePlannerCover } from "@/contexts/PlannerCoverContext";
 
 export default function Section() {
   const { pageTypeId = "" } = useParams();
   const navigate = useNavigate();
   const pageType = getPageType(pageTypeId);
   const { settings } = useUserSettings();
+  const { showCover } = usePlannerCover();
   const [entries, setEntries] = useState<PlannerEntry[]>([]);
 
   useEffect(() => {
@@ -85,12 +87,29 @@ export default function Section() {
 
   const coverImage = getPageImage(pageType.id, settings?.coverId);
 
+  const closeToCover = () => {
+    showCover();
+    navigate("/app");
+  };
+
   return (
     <div className="min-h-screen pb-32 lg:pb-24 lg:pr-24" style={{ background: "var(--gradient-paper)" }}>
       <header className="px-5 pt-8 pb-4">
-        <Link to="/app" className="inline-flex items-center text-sm text-muted-foreground mb-3">
-          <ChevronLeft className="w-4 h-4" /> Home
-        </Link>
+        <div className="flex items-center justify-between gap-3 mb-3">
+          <Link to="/app" className="inline-flex items-center text-sm text-muted-foreground">
+            <ChevronLeft className="w-4 h-4" /> Home
+          </Link>
+          <Button
+            variant="secondary"
+            size="icon"
+            onClick={closeToCover}
+            aria-label="Close to cover"
+            title="Close to cover"
+            className="rounded-full shrink-0"
+          >
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
         <div className="rounded-2xl planner-band px-5 py-4 flex items-center justify-between gap-4">
           <div className="min-w-0">
             <p className="font-script text-xl text-primary/80 leading-none">collection</p>

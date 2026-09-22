@@ -1,6 +1,6 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, ChevronLeft, ChevronRight, Loader2, Plus, Redo2, Trash2, Undo2 } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Loader2, Plus, Redo2, Trash2, Undo2, X } from "lucide-react";
 import { createEntry, deleteEntry, getEntry, listEntries, type PlannerEntry } from "@/lib/db";
 import { getPageType, type FieldValue } from "@/lib/pageTypes";
 import { useAutoSave } from "@/hooks/useAutoSave";
@@ -30,12 +30,14 @@ import {
 } from "@/lib/entryMeta";
 import { toCss } from "@/hooks/useThemedSwatches";
 import { toast } from "sonner";
+import { usePlannerCover } from "@/contexts/PlannerCoverContext";
 
 /** All interior entry pages render as a two-page planner spread on lg+. */
 
 export default function Entry() {
   const { entryId = "" } = useParams();
   const navigate = useNavigate();
+  const { showCover } = usePlannerCover();
   const [entry, setEntry] = useState<PlannerEntry | null>(null);
   const [siblings, setSiblings] = useState<PlannerEntry[]>([]);
   const [flipDir, setFlipDir] = useState<"next" | "prev">("next");
@@ -164,6 +166,11 @@ export default function Entry() {
     navigate(`/section/${pageType.id}`);
   };
 
+  const closeToCover = () => {
+    showCover();
+    navigate("/app");
+  };
+
   // Resolve style values
   const titleSpec = getTypo(meta, "title");
   const subSpec = getTypo(meta, "subtitle");
@@ -275,6 +282,16 @@ export default function Entry() {
             </Button>
             <Button variant="ghost" size="icon" onClick={remove} aria-label="Delete">
               <Trash2 className="w-4 h-4 text-destructive" />
+            </Button>
+            <Button
+              variant="secondary"
+              size="icon"
+              onClick={closeToCover}
+              aria-label="Close to cover"
+              title="Close to cover"
+              className="rounded-full"
+            >
+              <X className="w-4 h-4" />
             </Button>
           </div>
         </div>
