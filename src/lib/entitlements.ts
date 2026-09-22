@@ -140,6 +140,7 @@ export async function refreshEntitlements(force = false): Promise<EntitlementSta
         planners: (planners.data ?? []).map((r) => r.planner_id),
         packs: (packs.data ?? []).map((r) => r.pack_id),
         admin: (roles.data ?? []).some((r) => r.role === "admin"),
+        tester: (roles.data ?? []).some((r) => r.role === "tester"),
         verifiedAt: Date.now(),
         resolved: true,
         stale: false,
