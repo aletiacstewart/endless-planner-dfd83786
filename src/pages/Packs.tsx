@@ -8,15 +8,15 @@ import { isPackPurchased } from "@/lib/unlock";
 import { useEntitlements } from "@/hooks/useEntitlements";
 
 export default function Packs() {
-  const { admin } = useEntitlements();
+  const { admin, tester, fullAccess } = useEntitlements();
   const [searchParams] = useSearchParams();
   const focus = searchParams.get("focus");
   const [previewPrices, setPreviewPrices] = useState(false);
   const [packIds, setPackIds] = useState<string[]>(() =>
     focus && !isPackPurchased(focus) ? [focus] : []
   );
-  // Admin accounts already own every cover and icon set — nothing to buy.
-  const adminAccess = admin && !previewPrices;
+  // Admin and tester accounts already own every cover and icon set — nothing to buy.
+  const adminAccess = fullAccess && !previewPrices;
   const [email, setEmail] = useState("");
   const { openCheckout, checkoutElement, closeCheckout, isOpen } = useStripeCheckout();
 
@@ -57,10 +57,10 @@ export default function Packs() {
           $5 per pack
         </p>
 
-        {admin && (
+        {fullAccess && (
           <div className="mb-8 rounded-xl border border-primary/40 bg-primary-soft/40 px-4 py-3 text-center text-sm">
             {adminAccess
-              ? "Admin account — every cover and its matching page icons, stickers and library art are already unlocked for you."
+              ? `${admin ? "Admin" : "Test"} account — every cover and its matching page icons, stickers and library art are already unlocked for you.`
               : "Price preview on — showing the normal buyer view."}
             <Button
               variant="link"
@@ -71,7 +71,7 @@ export default function Packs() {
                 setPackIds([]);
               }}
             >
-              {adminAccess ? "Preview prices" : "Back to admin view"}
+              {adminAccess ? "Preview prices" : `Back to ${admin ? "admin" : "test"} view`}
             </Button>
           </div>
         )}
