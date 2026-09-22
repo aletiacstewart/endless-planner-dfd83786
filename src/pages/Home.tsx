@@ -15,8 +15,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { useUserSettings } from "@/hooks/useUserSettings";
-import { getCover } from "@/data/covers";
-import { CoverImage } from "@/components/cover/CoverImage";
 import { getPageImage } from "@/lib/pageImages";
 
 const LAST_BACKUP_KEY = "planner.lastBackupAt";
@@ -34,7 +32,6 @@ export default function Home() {
   const [totalEntries, setTotalEntries] = useState(0);
   const [showReminder, setShowReminder] = useState(false);
   const [showCoverNudge, setShowCoverNudge] = useState(false);
-  const [opening, setOpening] = useState(false);
   const backupRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -106,7 +103,6 @@ export default function Home() {
     backupRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
-  const cover = getCover(settings?.coverId);
   const plannerName = settings?.plannerName || "My Planner";
 
   const openToday = async () => {
@@ -117,252 +113,228 @@ export default function Home() {
       (e) => (e.values.date as string | undefined)?.slice(0, 10) === iso,
     );
     const target = existing ?? (await createEntry("daily-tracker", { date: iso }));
-    setOpening(true);
-    window.setTimeout(() => navigate(`/entry/${target.id}`), 720);
+    navigate(`/entry/${target.id}`);
   };
 
+  const sortedPageTypes = [...PAGE_TYPES].sort((a, b) => {
+    if (a.id === "complete-tracker") return -1;
+    if (b.id === "complete-tracker") return 1;
+    return 0;
+  });
 
   return (
     <div className="min-h-screen pb-24" style={{ background: "var(--gradient-paper)" }}>
-      {/* Cover hero — tap to flip the planner open into today's spread. */}
-      <div className="relative w-full">
+      <header className="px-4 lg:px-8 pt-5 flex items-center justify-between">
+        <div className="min-w-0">
+          <h1 className="font-display text-xl truncate">{plannerName}</h1>
+          {settings?.ownerName && (
+            <p className="font-script text-sm text-muted-foreground">{settings.ownerName}</p>
+          )}
+        </div>
         <Link
           to="/settings"
           aria-label="Settings"
-          className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-card/80 backdrop-blur flex items-center justify-center shadow-lg hover:bg-card transition-colors"
+          className="w-10 h-10 rounded-full bg-card/80 backdrop-blur flex items-center justify-center shadow-lg hover:bg-card transition-colors shrink-0"
         >
           <Icons.Settings className="w-5 h-5" />
         </Link>
+      </header>
 
-        <div className="cover-open-stage relative mx-auto w-full aspect-square max-w-md">
-          {opening && (
-            <div className="cover-open-inside absolute inset-0 rounded-2xl paper-dot border border-border/60 shadow-inner flex items-center justify-center">
-              <p className="font-script text-2xl text-primary/70">opening today…</p>
-            </div>
-          )}
-          <button
-            type="button"
-            onClick={opening ? undefined : openToday}
-            aria-label={`Open ${plannerName}`}
-            className={`relative w-full h-full overflow-hidden rounded-2xl shadow-xl block ${opening ? "cover-open-flip" : "transition-transform hover:-rotate-1"}`}
-          >
-            <CoverImage
-              cover={cover}
-              plannerName={plannerName}
-              ownerName={settings?.ownerName}
-              className="absolute inset-0 w-full h-full object-cover"
+      <main className="px-4 lg:px-8 mt-6">
+          {/* ---------- Open spread: sections left, today & entries right ---------- */}
+          <div className="relative rounded-3xl paper-dot shadow-[var(--shadow-soft)] border border-border/60 overflow-hidden">
+            <div
+              aria-hidden
+              className="hidden lg:block absolute inset-y-0 left-1/2 -translate-x-1/2 w-8 spread-spine z-10 pointer-events-none"
             />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-b from-transparent via-black/30 to-black/70" />
-            {/* Book spine highlight on the hinge */}
-            <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-2 bg-gradient-to-r from-black/40 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 px-5 pb-5 text-left">
-              <h1 className="font-display text-3xl sm:text-4xl font-semibold text-white drop-shadow-lg">
-                {plannerName}
-              </h1>
-              {settings?.ownerName && (
-                <p className="font-script text-xl text-white/90 drop-shadow">
-                  {settings.ownerName}
-                </p>
-              )}
-              <p className="font-script text-sm text-white/80 mt-2 drop-shadow">
-                tap to open
-              </p>
-            </div>
-          </button>
-        </div>
-      </div>
-
-
-      <main className="px-5 pt-6 space-y-6">
-        <section>
-          <button
-            onClick={openToday}
-            className="planner-card w-full flex items-center gap-3 text-left border-primary/40 bg-primary-soft/40 hover:bg-primary-soft/60 transition-colors"
-          >
-            <div className="w-11 h-11 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
-              <Icons.Sun className="w-5 h-5 text-primary" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-medium text-sm">Today's tracker</p>
-              <p className="text-xs text-muted-foreground">
-                {new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}
-              </p>
-            </div>
-            <Icons.ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-          </button>
-        </section>
-
-        {showCoverNudge && (
-          <section className="rounded-full border border-primary/30 bg-primary/5 px-4 py-2 flex items-center justify-between gap-3">
-            <Link to="/packs" className="text-sm font-medium text-foreground flex-1 truncate">
-              ✨ Try a new cover &amp; icon pack
-            </Link>
-            <button
-              onClick={() => {
-                localStorage.setItem(COVER_NUDGE_KEY, String(Date.now() + NUDGE_DISMISS_MS));
-                setShowCoverNudge(false);
-              }}
-              aria-label="Dismiss"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <Icons.X className="w-4 h-4" />
-            </button>
-          </section>
-        )}
-        {showReminder && (
-          <section className="rounded-xl border border-accent/40 bg-accent-soft/60 p-4">
-            <div className="flex items-start gap-3">
-              <Icons.AlertTriangle className="w-5 h-5 text-accent shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">
-                  Time to back up your planner
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  It's been a while since your last backup. Download a copy so you never
-                  lose your entries — even if this app or service ever changes.
-                </p>
-                <div className="flex flex-wrap gap-2 mt-3">
-                  <Button size="sm" onClick={scrollToBackup}>
-                    Back up now
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={dismissReminder}>
-                    Remind me later
-                  </Button>
+            <div className="p-5 lg:p-10 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
+              {/* Left page — sections */}
+              <div className="min-w-0 lg:pr-6 border-b border-border/50 pb-8 lg:border-b-0 lg:pb-0">
+                <div className="mb-4">
+                  <h2 className="font-display text-xl">Sections</h2>
+                  <p className="font-script text-base text-muted-foreground mt-1">
+                    "Small steps every day add up to a beautiful life. Begin where you are."
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {sortedPageTypes.map((pt) => {
+                    const Icon = (Icons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[pt.icon] ?? Icons.FileText;
+                    const isFeatured = pt.id === "complete-tracker";
+                    const img = getPageImage(pt.id, settings?.coverId);
+                    return (
+                      <Link
+                        key={pt.id}
+                        to={`/section/${pt.id}`}
+                        className={`planner-card flex flex-col gap-2 p-3 ${isFeatured ? "col-span-2 border-primary/40 bg-primary-soft/40" : ""}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          {img ? (
+                            <img
+                              src={img}
+                              alt=""
+                              className="w-9 h-9 rounded-full object-cover shrink-0 shadow-sm"
+                            />
+                          ) : (
+                            <div className="w-9 h-9 rounded-full bg-primary-soft flex items-center justify-center shrink-0">
+                              <Icon className="w-4 h-4 text-primary" />
+                            </div>
+                          )}
+                          <p className="font-medium text-sm leading-tight">{pt.name}</p>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground line-clamp-2">
+                          {pt.description}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground/80 mt-auto">
+                          {counts[pt.id] || 0} {counts[pt.id] === 1 ? "entry" : "entries"}
+                        </p>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
-            </div>
-          </section>
-        )}
 
-        {recent.length > 0 && (
-          <section>
-            <h2 className="font-display text-xl mb-3">Recent entries</h2>
-            <div className="space-y-2">
-              {recent.map((e) => {
-                const pt = PAGE_TYPES.find((p) => p.id === e.pageType);
-                return (
-                  <Link
-                    key={e.id}
-                    to={`/entry/${e.id}`}
-                    className="planner-card flex items-center justify-between gap-3"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">
-                        {pt?.summary?.(e.values) || pt?.name || "Entry"}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {pt?.name} · {new Date(e.updatedAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <Icons.ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                  </Link>
-                );
-              })}
-            </div>
-          </section>
-        )}
-
-        <section>
-          <div className="mb-4">
-            <h2 className="font-display text-xl">Sections</h2>
-            <p className="font-script text-base text-muted-foreground mt-1">
-              "Small steps every day add up to a beautiful life. Begin where you are."
-            </p>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {[...PAGE_TYPES]
-              .sort((a, b) => {
-                if (a.id === "complete-tracker") return -1;
-                if (b.id === "complete-tracker") return 1;
-                return 0;
-              })
-              .map((pt) => {
-                const Icon = (Icons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[pt.icon] ?? Icons.FileText;
-                const isFeatured = pt.id === "complete-tracker";
-                const img = getPageImage(pt.id, settings?.coverId);
-                return (
-                  <Link
-                    key={pt.id}
-                    to={`/section/${pt.id}`}
-                    className={`planner-card flex flex-col gap-2 p-3 ${isFeatured ? "col-span-2 sm:col-span-3 lg:col-span-4 border-primary/40 bg-primary-soft/40" : ""}`}
-                  >
-                    <div className="flex items-center gap-2">
-                      {img ? (
-                        <img
-                          src={img}
-                          alt=""
-                          className="w-9 h-9 rounded-full object-cover shrink-0 shadow-sm"
-                        />
-                      ) : (
-                        <div className="w-9 h-9 rounded-full bg-primary-soft flex items-center justify-center shrink-0">
-                          <Icon className="w-4 h-4 text-primary" />
-                        </div>
-                      )}
-                      <p className="font-medium text-sm leading-tight">{pt.name}</p>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground line-clamp-2">
-                      {pt.description}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground/80 mt-auto">
-                      {counts[pt.id] || 0} {counts[pt.id] === 1 ? "entry" : "entries"}
-                    </p>
-                  </Link>
-                );
-              })}
-          </div>
-
-        </section>
-
-        <section ref={backupRef} className="planner-card">
-          <h2 className="font-display text-lg mb-1">Backup &amp; restore</h2>
-          <p className="text-xs text-muted-foreground mb-3">
-            Download a complete copy of every entry, from your first day to today.
-            {totalEntries > 0 && ` You currently have ${totalEntries} ${totalEntries === 1 ? "entry" : "entries"}.`}
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="sm">
-                  <Icons.Download className="w-4 h-4 mr-1" /> Export backup
-                  <Icons.ChevronDown className="w-3 h-3 ml-1" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuLabel>Choose a format</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleExport(downloadJson, "JSON")}>
-                  <Icons.FileJson className="w-4 h-4 mr-2" /> JSON (full backup)
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleExport(downloadCsv, "CSV")}>
-                  <Icons.FileSpreadsheet className="w-4 h-4 mr-2" /> CSV
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleExport(downloadXlsx, "Excel")}>
-                  <Icons.Sheet className="w-4 h-4 mr-2" /> Excel (.xlsx)
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => handleExport(() => downloadPdf(plannerName), "PDF")}
+              {/* Right page — today, nudges, recent entries, backup */}
+              <div className="min-w-0 lg:pl-6 space-y-6">
+                <button
+                  onClick={openToday}
+                  className="planner-card w-full flex items-center gap-3 text-left border-primary/40 bg-primary-soft/40 hover:bg-primary-soft/60 transition-colors"
                 >
-                  <Icons.FileText className="w-4 h-4 mr-2" /> PDF
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <label>
-              <input
-                type="file"
-                accept="application/json"
-                className="hidden"
-                onChange={(e) => e.target.files?.[0] && handleImport(e.target.files[0])}
-              />
-              <Button variant="outline" size="sm" asChild>
-                <span><Icons.Upload className="w-4 h-4 mr-1" /> Restore (JSON)</span>
-              </Button>
-            </label>
+                  <div className="w-11 h-11 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+                    <Icons.Sun className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm">Today's tracker</p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}
+                    </p>
+                  </div>
+                  <Icons.ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                </button>
+
+                {showCoverNudge && (
+                  <section className="rounded-full border border-primary/30 bg-primary/5 px-4 py-2 flex items-center justify-between gap-3">
+                    <Link to="/packs" className="text-sm font-medium text-foreground flex-1 truncate">
+                      ✨ Try a new cover &amp; icon pack
+                    </Link>
+                    <button
+                      onClick={() => {
+                        localStorage.setItem(COVER_NUDGE_KEY, String(Date.now() + NUDGE_DISMISS_MS));
+                        setShowCoverNudge(false);
+                      }}
+                      aria-label="Dismiss"
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      <Icons.X className="w-4 h-4" />
+                    </button>
+                  </section>
+                )}
+
+                {showReminder && (
+                  <section className="rounded-xl border border-accent/40 bg-accent-soft/60 p-4">
+                    <div className="flex items-start gap-3">
+                      <Icons.AlertTriangle className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-foreground">
+                          Time to back up your planner
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          It's been a while since your last backup. Download a copy so you never
+                          lose your entries — even if this app or service ever changes.
+                        </p>
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          <Button size="sm" onClick={scrollToBackup}>
+                            Back up now
+                          </Button>
+                          <Button size="sm" variant="ghost" onClick={dismissReminder}>
+                            Remind me later
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                )}
+
+                {recent.length > 0 && (
+                  <section>
+                    <h2 className="font-display text-xl mb-3">Recent entries</h2>
+                    <div className="space-y-2">
+                      {recent.map((e) => {
+                        const pt = PAGE_TYPES.find((p) => p.id === e.pageType);
+                        return (
+                          <Link
+                            key={e.id}
+                            to={`/entry/${e.id}`}
+                            className="planner-card flex items-center justify-between gap-3"
+                          >
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium truncate">
+                                {pt?.summary?.(e.values) || pt?.name || "Entry"}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {pt?.name} · {new Date(e.updatedAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <Icons.ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </section>
+                )}
+
+                <section ref={backupRef} className="planner-card">
+                  <h2 className="font-display text-lg mb-1">Backup &amp; restore</h2>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    Download a complete copy of every entry, from your first day to today.
+                    {totalEntries > 0 && ` You currently have ${totalEntries} ${totalEntries === 1 ? "entry" : "entries"}.`}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button size="sm">
+                          <Icons.Download className="w-4 h-4 mr-1" /> Export backup
+                          <Icons.ChevronDown className="w-3 h-3 ml-1" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        <DropdownMenuLabel>Choose a format</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => handleExport(downloadJson, "JSON")}>
+                          <Icons.FileJson className="w-4 h-4 mr-2" /> JSON (full backup)
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleExport(downloadCsv, "CSV")}>
+                          <Icons.FileSpreadsheet className="w-4 h-4 mr-2" /> CSV
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleExport(downloadXlsx, "Excel")}>
+                          <Icons.Sheet className="w-4 h-4 mr-2" /> Excel (.xlsx)
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleExport(() => downloadPdf(plannerName), "PDF")}
+                        >
+                          <Icons.FileText className="w-4 h-4 mr-2" /> PDF
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    <label>
+                      <input
+                        type="file"
+                        accept="application/json"
+                        className="hidden"
+                        onChange={(e) => e.target.files?.[0] && handleImport(e.target.files[0])}
+                      />
+                      <Button variant="outline" size="sm" asChild>
+                        <span><Icons.Upload className="w-4 h-4 mr-1" /> Restore (JSON)</span>
+                      </Button>
+                    </label>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-3">
+                    Tip: JSON is the only format that can be restored back into the app. CSV,
+                    Excel, and PDF are for keeping your records readable in any other tool.
+                  </p>
+                </section>
+              </div>
+            </div>
           </div>
-          <p className="text-xs text-muted-foreground mt-3">
-            Tip: JSON is the only format that can be restored back into the app. CSV,
-            Excel, and PDF are for keeping your records readable in any other tool.
-          </p>
-        </section>
       </main>
     </div>
   );
