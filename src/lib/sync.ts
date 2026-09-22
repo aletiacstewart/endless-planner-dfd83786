@@ -36,7 +36,7 @@ let subChannel: ReturnType<typeof supabase.channel> | null = null;
 
 async function refreshSubStatus(userId: string): Promise<boolean> {
   try {
-    const env = (await import("./stripe")).getStripeEnvironment();
+    const env = (await import("./stripe")).getStripeEnvironmentSafe();
     const { data } = await supabase
       .from("subscriptions")
       .select("status, current_period_end")
