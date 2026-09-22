@@ -187,6 +187,30 @@ function mergeMeasurementCell(
   dst[field] = next;
 }
 
+/**
+ * Row in the fitness session log that belongs to a date: reuse the existing row
+ * for that date, else the first empty row, else append after the last used row.
+ */
+function sessionRowForDate(dst: Record<string, FieldValue>, iso: string): number {
+  const grid = (dst.strength as Record<string, string> | undefined) ?? {};
+  let lastUsed = 0;
+  for (const key of Object.keys(grid)) {
+    const row = Number(key.split("-")[0]);
+    if (!Number.isFinite(row)) continue;
+    if (row > lastUsed && String(grid[key] ?? "").trim()) lastUsed = row;
+  }
+  for (let row = 1; row <= Math.max(lastUsed, 12); row++) {
+    if (String(grid[`${row}-Date`] ?? "").slice(0, 10) === iso) return row;
+  }
+  for (let row = 1; row <= Math.max(lastUsed, 12); row++) {
+    const empty = Object.keys(grid).every(
+      (key) => Number(key.split("-")[0]) !== row || !String(grid[key] ?? "").trim(),
+    );
+    if (empty) return row;
+  }
+  return lastUsed + 1;
+}
+
 /** Pad date as YYYY-MM-DD. */
 function isoOf(year: number, monthIndex: number, day: number) {
   return `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
@@ -693,9 +717,13 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       synced.push(`Yearly Focus (${yearStr})`);
     }
 
-    // 16. Workout Tracker — daily-month-grid per category.
+    // 16. Fitness & Workout Tracker — yearly grids per category plus the day's session row.
     const workoutFields = ["cardio", "weights", "yoga", "stretch", "rest_day", "other"];
-    if (workoutFields.some((k) => v[k] != null && v[k] !== "" && v[k] !== false)) {
+    const sessionKeys = ["workout_activity", "workout_duration", "workout_intensity", "workout_notes"];
+    const hasWorkout =
+      workoutFields.some((k) => v[k] != null && v[k] !== "" && v[k] !== false) ||
+      sessionKeys.some((k) => typeof v[k] === "string" && (v[k] as string).trim());
+    if (hasWorkout) {
       const entry = await findOrCreate(
         "workout-tracker",
         (e) => String(e.values.year ?? "") === yearStr,
@@ -710,8 +738,15 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
           else if (raw != null) txt = String(raw);
           mergeDailyMonthCell(dst, k, date.day, date.monthIndex, txt);
         }
+        // Keep one session-log row per date so the fitness page shows the day's workout.
+        const row = sessionRowForDate(dst, date.iso);
+        mergeMeasurementCell(dst, "strength", row, "Date", date.iso);
+        mergeMeasurementCell(dst, "strength", row, "Activity", asText(v.workout_activity));
+        mergeMeasurementCell(dst, "strength", row, "Duration", asText(v.workout_duration));
+        mergeMeasurementCell(dst, "strength", row, "Intensity", asText(v.workout_intensity));
+        mergeMeasurementCell(dst, "strength", row, "Notes", asText(v.workout_notes));
       });
-      synced.push(`Workout Tracker (${yearStr})`);
+      synced.push(`Fitness & Workout Tracker (${yearStr})`);
     }
 
     // (Daily Goal Tracker sync removed — page no longer exists.)
@@ -1272,6 +1307,30 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
             } else {
               delete dst[f];
             }
+          }
+        });
+      }
+      // Session log rows → that day's workout fields on the Complete Tracker.
+      const sessions = (v.strength as Record<string, string> | undefined) ?? {};
+      const rows = new Set<number>();
+      for (const key of Object.keys(sessions)) {
+        const row = Number(key.split("-")[0]);
+        if (Number.isFinite(row)) rows.add(row);
+      }
+      for (const row of rows) {
+        const iso = String(sessions[`${row}-Date`] ?? "").slice(0, 10);
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) continue;
+        const cell = (col: string) => String(sessions[`${row}-${col}`] ?? "").trim();
+        touched += await updateCompleteForDate(iso, (dst) => {
+          const map: Record<string, string> = {
+            workout_activity: cell("Activity"),
+            workout_duration: cell("Duration"),
+            workout_intensity: cell("Intensity"),
+            workout_notes: cell("Notes"),
+          };
+          for (const [key, val] of Object.entries(map)) {
+            if (val) dst[key] = val;
+            else delete dst[key];
           }
         });
       }
