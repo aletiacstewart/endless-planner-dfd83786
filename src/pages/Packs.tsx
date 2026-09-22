@@ -8,12 +8,15 @@ import { isPackPurchased } from "@/lib/unlock";
 import { useEntitlements } from "@/hooks/useEntitlements";
 
 export default function Packs() {
-  useEntitlements();
+  const { admin } = useEntitlements();
   const [searchParams] = useSearchParams();
   const focus = searchParams.get("focus");
+  const [previewPrices, setPreviewPrices] = useState(false);
   const [packIds, setPackIds] = useState<string[]>(() =>
     focus && !isPackPurchased(focus) ? [focus] : []
   );
+  // Admin accounts already own every cover and icon set — nothing to buy.
+  const adminAccess = admin && !previewPrices;
   const [email, setEmail] = useState("");
   const { openCheckout, checkoutElement, closeCheckout, isOpen } = useStripeCheckout();
 
