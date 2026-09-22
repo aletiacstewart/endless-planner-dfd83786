@@ -80,7 +80,7 @@ export function PlannerSpread({ pageType, values, onChange, split, className }: 
         />
       )}
 
-      <div className="p-5 lg:p-10 space-y-8">
+      <div className="p-3 sm:p-5 lg:p-10 space-y-6 sm:space-y-8">
         {hasNarrow && (
           narrow.length === 1 ? (
             <div>

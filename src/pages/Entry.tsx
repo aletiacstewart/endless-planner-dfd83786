@@ -244,7 +244,7 @@ export default function Entry() {
         ...styleVars,
       }}
     >
-      <header className="px-5 pt-6 pb-4 sticky top-0 z-20 backdrop-blur bg-background/70 border-b border-border">
+      <header className="px-3 sm:px-5 pt-4 sm:pt-6 pb-4 sticky top-0 z-20 backdrop-blur bg-background/70 border-b border-border">
         <div className="flex items-center justify-between">
           <Link
             to={`/section/${pageType.id}`}

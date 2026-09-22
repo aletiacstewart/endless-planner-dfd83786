@@ -1,9 +1,7 @@
-# Planner overhaul roadmap
+# Responsive planner audit
 
-- [ ] Update requested page content and two-page assignments
-- [ ] Add reusable touch/stylus drawing fields
-- [ ] Improve grid sizing, computed savings, day 31, and alignment
-- [ ] Consolidate cleaning pages and preserve legacy access
-- [ ] Expand Complete Tracker daily fields and bidirectional sync
-- [ ] Add targeted tests and run checks
-- [ ] Verify affected pages in desktop and mobile preview
+- [x] Make shared grouped layouts responsive
+- [x] Wrap page styling controls on phones and tablets
+- [ ] Repair Contacts and medication rows on narrow screens
+- [ ] Add movable/closable toolbox guidance
+- [ ] Verify representative pages at phone, tablet, and desktop sizes
