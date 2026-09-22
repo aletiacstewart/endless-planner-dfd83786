@@ -27,12 +27,23 @@ type Props = {
 
 export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact, excludeIds = [], ignoreAdmin }: Props) {
   const ent = useEntitlements();
+  const { settings, update } = useUserSettings();
   const [filter, setFilter] = useState<CoverCollection | "all">("all");
   const [previewId, setPreviewId] = useState<string | null>(null);
 
   /** Admin and tester accounts already have access to every cover and icon set. */
   const adminAll = Boolean(ent.fullAccess) && !ignoreAdmin;
   const hasAccess = (id: string) => isPackPurchased(id) || adminAll;
+  /** Unlocked covers can be applied to the journal straight from this page. */
+  const canApply = (id: string) => isPackPurchased(id) || Boolean(ent.fullAccess);
+  const currentCoverId = settings?.coverId;
+
+  const applyCover = async (id: string) => {
+    if (!canApply(id) || id === currentCoverId) return;
+    await update({ coverId: id });
+    const name = COVERS.find((c) => c.id === id)?.name ?? "Cover";
+    toast.success(`${name} applied — your planner has re-themed.`);
+  };
 
   const availableCollections = useMemo(() => {
     const used = new Set(COVERS.map((c) => c.collection));
