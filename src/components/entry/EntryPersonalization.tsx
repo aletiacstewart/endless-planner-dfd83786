@@ -163,6 +163,7 @@ export function EntryPersonalization({
       y: 6,
       size: a.kind === "emoji" ? 48 : 96,
       z: topStickerZ(meta.stickers) + 1,
+      tint: a.kind === "img" && isPageIconAsset(a.src) ? "none" : undefined,
     };
     onChange({ stickers: [...(meta.stickers ?? []), s] });
   };
@@ -447,7 +448,7 @@ export function EntryPersonalization({
                         type="button"
                         onClick={() => addRecent(r)}
                         title={r.label ?? "Place again"}
-                        className="w-8 h-8 shrink-0 flex items-center justify-center text-lg rounded border border-border hover:border-primary hover:bg-primary/5"
+                        className="w-11 h-11 sm:w-10 sm:h-10 shrink-0 flex items-center justify-center text-2xl sm:text-xl rounded-lg border border-border hover:border-primary hover:bg-primary/5 touch-manipulation"
                       >
                         {r.kind === "emoji" ? (
                           <span>{r.src}</span>
@@ -470,7 +471,7 @@ export function EntryPersonalization({
                     type="button"
                     onClick={() => setStickerTab("page-icons")}
                     className={cn(
-                      "px-2 py-1 text-[11px] rounded-full whitespace-nowrap border",
+                      "min-h-11 sm:min-h-9 px-3 py-2 text-xs rounded-full whitespace-nowrap border touch-manipulation",
                       stickerTab === "page-icons"
                         ? "bg-primary text-primary-foreground border-primary"
                         : "border-border text-muted-foreground",
@@ -485,7 +486,7 @@ export function EntryPersonalization({
                     type="button"
                     onClick={() => setStickerTab(g.id)}
                     className={cn(
-                      "px-2 py-1 text-[11px] rounded-full whitespace-nowrap border",
+                      "min-h-11 sm:min-h-9 px-3 py-2 text-xs rounded-full whitespace-nowrap border touch-manipulation",
                       stickerTab === g.id
                         ? "bg-primary text-primary-foreground border-primary"
                         : "border-border text-muted-foreground",
@@ -496,27 +497,28 @@ export function EntryPersonalization({
                 ))}
               </div>
               {stickerTab === "page-icons" ? (
-                <div className="grid grid-cols-5 sm:grid-cols-8 gap-2 max-h-56 overflow-y-auto pr-1">
+                <div className="grid grid-cols-4 min-[430px]:grid-cols-5 sm:grid-cols-8 gap-2 max-h-64 overflow-y-auto overscroll-contain pr-1">
                   {pageIconAssets.map((asset) => (
                     <button
                       key={asset.src}
                       type="button"
                       onClick={() => addFromLibrary(asset)}
                       title={asset.label}
-                      className="aspect-square min-w-0 rounded-lg border border-border bg-card hover:border-primary hover:bg-primary/5"
+                      className="aspect-square min-w-11 rounded-lg border border-border bg-card hover:border-primary hover:bg-primary/5 touch-manipulation"
                     >
                       <img src={asset.src} alt={asset.label ?? ""} className="h-full w-full rounded-lg object-cover" loading="lazy" />
                     </button>
                   ))}
                 </div>
               ) : (
-                <div className="flex flex-wrap gap-1">
+                <div className="grid grid-cols-6 min-[430px]:grid-cols-7 sm:grid-cols-10 gap-1.5">
                   {(STICKER_GROUPS.find((g) => g.id === stickerTab)?.emojis ?? []).map((e, i) => (
                   <button
                     key={`${e}-${i}`}
                     type="button"
                     onClick={() => addSticker(e)}
-                    className="w-8 h-8 flex items-center justify-center text-lg rounded hover:bg-muted"
+                    className="min-h-11 min-w-11 flex items-center justify-center text-2xl rounded-lg border border-transparent hover:border-border hover:bg-muted touch-manipulation"
+                    aria-label={`Add ${e} sticker`}
                   >
                     {e}
                   </button>

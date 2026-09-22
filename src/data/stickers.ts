@@ -12,6 +12,8 @@
 import { SHARED_STICKER_MANIFEST, SHARED_STICKER_PER_CATEGORY } from "@/data/stickerPacks";
 
 export type StickerCategory =
+  | "emoji"
+  | "emotions"
   | "celebrations"
   | "school-work"
   | "meals"
@@ -30,6 +32,8 @@ export type StickerAsset =
 export type StickerSet = Record<StickerCategory, StickerAsset[]>;
 
 export const STICKER_CATEGORIES: StickerCategory[] = [
+  "emoji",
+  "emotions",
   "celebrations",
   "school-work",
   "meals",
@@ -43,6 +47,8 @@ export const STICKER_CATEGORIES: StickerCategory[] = [
 ];
 
 export const STICKER_CATEGORY_LABEL: Record<StickerCategory, string> = {
+  emoji: "Emoji",
+  emotions: "Emotions",
   celebrations: "Celebrations",
   "school-work": "School & Work",
   meals: "Meals",
@@ -57,6 +63,30 @@ export const STICKER_CATEGORY_LABEL: Record<StickerCategory, string> = {
 
 /** Emoji fallback + generation subject for each slot, per category. */
 const SLOTS: Record<StickerCategory, Array<[string, string]>> = {
+  emoji: [
+    ["❤️", "red heart"], ["🧡", "orange heart"], ["💛", "yellow heart"],
+    ["💚", "green heart"], ["💙", "blue heart"], ["💜", "purple heart"],
+    ["✨", "sparkles"], ["⭐", "star"], ["🌈", "rainbow"],
+    ["☀️", "sunshine"], ["🌙", "moon"], ["☁️", "cloud"],
+    ["🌸", "flower"], ["🍀", "lucky clover"], ["🔥", "fire"],
+    ["✅", "check mark"], ["📌", "pin"], ["🎯", "target"],
+    ["🎉", "celebration"], ["🎁", "gift"], ["☕", "coffee"],
+    ["🍽️", "meal"], ["🏠", "home"], ["🚗", "car"],
+    ["✈️", "airplane"], ["📚", "books"], ["💡", "idea"],
+    ["💰", "money"], ["🛒", "shopping"], ["📅", "calendar"],
+  ],
+  emotions: [
+    ["😀", "happy"], ["😃", "cheerful"], ["😊", "content"],
+    ["🥰", "loved"], ["😍", "delighted"], ["🤩", "excited"],
+    ["😌", "relieved"], ["😇", "peaceful"], ["🤗", "supported"],
+    ["🙂", "okay"], ["😐", "neutral"], ["😶", "quiet"],
+    ["🙃", "mixed feelings"], ["🤔", "thoughtful"], ["😕", "confused"],
+    ["😟", "worried"], ["😰", "anxious"], ["😨", "afraid"],
+    ["😢", "sad"], ["😭", "very sad"], ["😔", "disappointed"],
+    ["😤", "frustrated"], ["😠", "angry"], ["😡", "very angry"],
+    ["😩", "overwhelmed"], ["😫", "stressed"], ["😴", "tired"],
+    ["🥱", "sleepy"], ["🤒", "unwell"], ["🥳", "celebrating"],
+  ],
   celebrations: [
     ["🎂", "birthday cake"], ["🎈", "balloon cluster"], ["🎁", "wrapped gift"],
     ["🎉", "party popper"], ["🎊", "confetti burst"], ["💍", "anniversary rings"],
