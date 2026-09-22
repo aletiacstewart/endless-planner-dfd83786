@@ -115,24 +115,7 @@ export default function Home() {
     backupRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
-  const cover = getCover(settings?.coverId);
   const plannerName = settings?.plannerName || "My Planner";
-
-  /** Flip the cover open and reveal the inside spread. */
-  const openBook = () => {
-    if (opening || bookOpen) return;
-    setOpening(true);
-    window.setTimeout(() => {
-      setBookOpen(true);
-      setOpening(false);
-      try { sessionStorage.setItem(BOOK_OPEN_KEY, "1"); } catch {}
-    }, 740);
-  };
-
-  const closeBook = () => {
-    setBookOpen(false);
-    try { sessionStorage.removeItem(BOOK_OPEN_KEY); } catch {}
-  };
 
   const openToday = async () => {
     const today = new Date();
