@@ -480,7 +480,8 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           label={field.label}
           growable={field.growable}
           addLabel={field.addLabel}
-          rowDetails={field.rowDetails}
+          // Wide tables get compact rows + a details popup below desktop widths.
+          rowDetails={field.rowDetails ?? (field.columns?.length ?? 0) >= 4}
           onRowsChange={field.linkedRowsKey && onChangeAny ? (rows) => {
             const linked = (allValues?.[field.linkedRowsKey as string] as Record<string, string> | undefined) ?? {};
             onChangeAny(field.linkedRowsKey as string, { ...linked, __rows: String(rows) });
