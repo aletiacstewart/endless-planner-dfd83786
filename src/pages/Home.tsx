@@ -15,14 +15,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { useUserSettings } from "@/hooks/useUserSettings";
-import { getCover } from "@/data/covers";
-import { CoverImage } from "@/components/cover/CoverImage";
 import { getPageImage } from "@/lib/pageImages";
 
 const LAST_BACKUP_KEY = "planner.lastBackupAt";
 const BACKUP_DISMISS_KEY = "planner.backupReminderDismissedUntil";
 const COVER_NUDGE_KEY = "home.coverNudge.dismissedUntil";
-const BOOK_OPEN_KEY = "home.bookOpen";
 const REMIND_AFTER_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 const DISMISS_FOR_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const NUDGE_DISMISS_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
