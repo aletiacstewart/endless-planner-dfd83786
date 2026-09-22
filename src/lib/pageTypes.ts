@@ -74,6 +74,8 @@ export interface FieldDef {
   growable?: boolean;
   /** Label for the add-row button when growable. */
   addLabel?: string;
+  /** Show one row-details action and use compact row summaries below desktop width. */
+  rowDetails?: boolean;
   /** Grow another measurement grid to the same row count. */
   linkedRowsKey?: string;
   /** For rating: render a small companion text input on the same row, bound to this other field key. */
@@ -2047,6 +2049,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
             rowLabel: "#",
             columns: ["Name", "Phone", "Email", "Address", "Notes"],
             columnWidths: ["md", "sm", "md", "lg", "md"],
+            rowDetails: true,
             growable: true,
             addLabel: "Add contact",
           },
