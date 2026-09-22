@@ -54,7 +54,7 @@ export function SplashScreen({ cover, plannerName, ownerName, onOpen }: Props) {
           if (start !== null && start - e.changedTouches[0].clientX > 40) open();
         }}
         aria-label={`Open ${plannerName}`}
-        className={`relative w-full max-w-[560px] aspect-[2/3] rounded-3xl overflow-hidden border border-border/60 shadow-[var(--shadow-soft)] focus:outline-none ${
+        className={`relative mx-auto h-[min(74vh,840px)] max-w-full aspect-[2/3] rounded-3xl overflow-hidden border border-border/60 shadow-[var(--shadow-soft)] focus:outline-none ${
           opening ? "cover-open-flip" : "transition-transform hover:-rotate-1"
         }`}
       >
