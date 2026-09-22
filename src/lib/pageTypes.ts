@@ -1385,68 +1385,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
     summary: (v) => (v.date as string) || "Brain dump",
   },
   {
-    id: "fitness-tracker",
-    name: "Fitness Tracker",
-    shortName: "Fitness",
-    description: "Workouts, cardio, water, and how the body felt.",
-    icon: "Dumbbell",
-    sections: [
-      {
-        columns: 2,
-        fields: [
-          { key: "date", label: "Date", type: "date" },
-          { key: "weight", label: "Weight", type: "text" },
-          { key: "goal", label: "Today's goal", type: "text", span: 2 },
-        ],
-      },
-      {
-        title: "Workout log",
-        page: 1,
-        fields: [
-          {
-            key: "strength",
-            label: "Activities and exercises",
-            type: "measurement-grid",
-            span: 2,
-            rowCount: 12,
-            rowLabel: "#",
-            columns: ["Activity", "Duration", "Intensity", "Sets", "Reps", "Weight / resistance", "Distance / HR", "Notes"],
-            columnKinds: ["select", "text", "select", "text", "text", "text", "text", "text"],
-            columnOptions: [["Walking", "Running", "Cycling", "Swimming", "Strength", "Mobility", "Stretching", "Yoga", "Pilates", "Dance", "Sports", "Hiking", "HIIT", "Rehabilitation / PT", "Other"], null, ["Light", "Moderate", "Hard"], null, null, null, null, null],
-            columnWidths: ["md", "sm", "sm", "xs", "xs", "sm", "sm", "lg"],
-            growable: true,
-            addLabel: "Add exercise",
-          },
-        ],
-      },
-      {
-        title: "Session care",
-        page: 2,
-        columns: 2,
-        fields: [
-          { key: "warm_up", label: "Warm-up", type: "textarea", rows: 3 },
-          { key: "cool_down", label: "Cool-down", type: "textarea", rows: 3 },
-          { key: "steps", label: "Steps", type: "number" },
-          { key: "recovery", label: "Recovery plan", type: "text" },
-        ],
-      },
-      {
-        title: "Fuel & recovery",
-        page: 2,
-        columns: 1,
-        fields: [
-          { key: "water", label: "Water (glasses)", type: "rating", max: 10, span: 2 },
-          { key: "sleep_hours", label: "Sleep (hours)", type: "text", span: 2 },
-          { key: "energy", label: "Energy", type: "rating", max: 5, span: 2 },
-          { key: "soreness", label: "Soreness", type: "rating", max: 5, span: 2 },
-          { key: "pain_notes", label: "Pain or movement limits", type: "textarea", rows: 3, span: 2 },
-          { key: "notes", label: "How it felt", type: "textarea", rows: 3, span: 2 },
-        ],
-      },
-    ],
-    summary: (v) => (v.date as string) || (v.goal as string) || "Workout",
-  },
-  {
     id: "adhd-toolkit",
     name: "ADHD Daily Toolkit",
     shortName: "ADHD",
