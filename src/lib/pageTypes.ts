@@ -1143,6 +1143,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
           { key: "servings", label: "Servings", type: "rating", max: 5 },
           { key: "prep_time", label: "Prep time (min)", type: "number" },
           { key: "cook_time", label: "Cooking time (min)", type: "number" },
+          { key: "cook_temp", label: "Cooking temperature", type: "text", placeholder: "350°F" },
         ],
       },
       {
@@ -2141,6 +2142,11 @@ export const PAGE_TYPES: PageTypeDef[] = [
 
 
 export function getPageType(id: string): PageTypeDef | undefined {
-  const resolved = id === "weekly-cleaning" ? "cleaning-checklist" : id;
+  const aliases: Record<string, string> = {
+    "weekly-cleaning": "cleaning-checklist",
+    // The separate fitness page merged into the single workout tracker.
+    "fitness-tracker": "workout-tracker",
+  };
+  const resolved = aliases[id] ?? id;
   return PAGE_TYPES.find((p) => p.id === resolved);
 }
