@@ -1389,6 +1389,76 @@ export async function syncFromIndividual(entry: PlannerEntry): Promise<string[]>
       return synced;
     }
 
+    // Notes page → the Complete Tracker day named in its title.
+    if (entry.pageType === "notes") {
+      const iso = /(\d{4}-\d{2}-\d{2})/.exec(asText(v.title))?.[1];
+      if (!iso) return [];
+      const touched = await updateCompleteForDate(iso, (dst) => {
+        dst.note_today = v.note as FieldValue;
+      });
+      if (touched > 0) synced.push("Complete Tracker (notes)");
+      return synced;
+    }
+
+    // Brain Dump → that day's Complete Tracker.
+    if (entry.pageType === "brain-dump") {
+      const date = parseDate(v.date);
+      if (!date) return [];
+      const touched = await updateCompleteForDate(date.iso, (dst) => {
+        if (v.dump !== undefined) dst.brain_dump_today = v.dump;
+        copyKeys(v, dst, ["do_now", "do_later"]);
+      });
+      if (touched > 0) synced.push("Complete Tracker (brain dump)");
+      return synced;
+    }
+
+    // ADHD / Focus Toolkit → that day's Complete Tracker.
+    if (entry.pageType === "adhd-toolkit") {
+      const date = parseDate(v.date);
+      if (!date) return [];
+      const touched = await updateCompleteForDate(date.iso, (dst) => {
+        copyKeys(v, dst, ["focus_word", "med_taken", "focus_level", "big_three", "wins"]);
+      });
+      if (touched > 0) synced.push("Complete Tracker (focus)");
+      return synced;
+    }
+
+    // Therapy Session Notes → that day's Complete Tracker.
+    if (entry.pageType === "therapy-session") {
+      const date = parseDate(v.date);
+      if (!date) return [];
+      const touched = await updateCompleteForDate(date.iso, (dst) => {
+        if (v.topics !== undefined) dst.therapy_topics = v.topics;
+        if (v.insights !== undefined) dst.therapy_insights = v.insights;
+        if (v.action_plan !== undefined) dst.therapy_actions = v.action_plan;
+        if (v.tools_discussed !== undefined) dst.coping_used = v.tools_discussed;
+      });
+      if (touched > 0) synced.push("Complete Tracker (therapy)");
+      return synced;
+    }
+
+    // Important Dates → each dated row lands on that Complete Tracker day.
+    if (entry.pageType === "important-dates") {
+      const grid = (v.date_details as Record<string, string> | undefined) ?? {};
+      const rows = new Set(
+        Object.keys(grid)
+          .map((k) => Number(k.split("-")[0]))
+          .filter((n) => Number.isFinite(n)),
+      );
+      let touched = 0;
+      for (const row of rows) {
+        const iso = String(grid[`${row}-Date`] ?? "").slice(0, 10);
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) continue;
+        touched += await updateCompleteForDate(iso, (dst) => {
+          dst.important_today = grid[`${row}-Name/Activity`] ?? "";
+          dst.important_occasion = grid[`${row}-Occasion`] ?? "";
+          dst.important_relationship = grid[`${row}-Relationship`] ?? "";
+        });
+      }
+      if (touched > 0) synced.push("Complete Tracker (important dates)");
+      return synced;
+    }
+
     // Self-Care Checklist → every Complete day in that week.
     if (entry.pageType === "self-care-checklist") {
       const week = parseDate(v.week_of);
