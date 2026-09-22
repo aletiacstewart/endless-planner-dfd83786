@@ -16,6 +16,7 @@ import { EntryThumbnailRail } from "@/components/entry/EntryThumbnailRail";
 import { useEntryHistory } from "@/hooks/useEntryHistory";
 import {
   getMeta,
+  resolveEntryStyle,
   withMeta,
   withTypography,
   getTypo,
@@ -31,6 +32,7 @@ import {
 import { toCss } from "@/hooks/useThemedSwatches";
 import { toast } from "sonner";
 import { usePlannerCover } from "@/contexts/PlannerCoverContext";
+import { useUserSettings } from "@/hooks/useUserSettings";
 
 /** All interior entry pages render as a two-page planner spread on lg+. */
 
@@ -38,6 +40,8 @@ export default function Entry() {
   const { entryId = "" } = useParams();
   const navigate = useNavigate();
   const { showCover } = usePlannerCover();
+  const { settings } = useUserSettings();
+  const globalStyle = settings?.pageStyle;
   const [entry, setEntry] = useState<PlannerEntry | null>(null);
   const [siblings, setSiblings] = useState<PlannerEntry[]>([]);
   const [flipDir, setFlipDir] = useState<"next" | "prev">("next");
@@ -122,15 +126,18 @@ export default function Entry() {
           ? "Update list"
           : "New day";
 
-  const meta = getMeta(entry);
+  const ownMeta = getMeta(entry);
+  // The planner-wide look fills in anything this page doesn't override.
+  const meta = resolveEntryStyle(globalStyle, ownMeta);
   const asSpread = true;
 
   const onChange = (key: string, value: FieldValue) => {
     update({ ...entry, values: { ...entry.values, [key]: value } });
   };
-  const onMetaChange = (patch: Partial<EntryMeta>) => update(withMeta(entry, patch));
+  const onMetaChange = (patch: Partial<EntryMeta>) =>
+    update(withMeta(entry, "stickers" in patch ? patch : { ...patch, styled: true }));
   const onTypography = (group: "title" | "subtitle" | "body", patch: Partial<TypoSpec>) =>
-    update(withTypography(entry, group, patch));
+    update(withMeta(withTypography(entry, group, patch), { styled: true }));
   const onReset = () => {
     update({
       ...entry,

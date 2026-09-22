@@ -1,5 +1,6 @@
 import { getDB } from "./db";
 import { DEFAULT_COVER_ID } from "@/data/covers";
+import type { PlannerStyle } from "./entryMeta";
 
 export interface UserSettings {
   plannerName: string;
@@ -7,6 +8,9 @@ export interface UserSettings {
   coverId: string;
   onboarded: boolean;
   createdAt: number;
+  /** Planner-wide page look, applied to every page unless a page overrides it. */
+  pageStyle?: PlannerStyle;
+  pageStyleAppliedAt?: number;
 }
 
 const SETTINGS_KEY = "user-settings";

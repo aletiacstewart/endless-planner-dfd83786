@@ -44,6 +44,10 @@ interface Props {
   onChange: (patch: Partial<EntryMeta>) => void;
   onTypography: (group: "title" | "subtitle" | "body", patch: Partial<TypoSpec>) => void;
   onReset: () => void;
+  /** Hide sticker + library chips (stickers are per page, not planner-wide). */
+  hideStickers?: boolean;
+  /** Label for the reset chip. */
+  resetLabel?: string;
 }
 
 const FONTS: EntryFont[] = ["serif", "sans", "hand", "mono", "display", "rounded"];
@@ -72,7 +76,14 @@ const PATTERNS: { v: EntryPattern; label: string }[] = [
 /** Which chip's panel is currently expanded. */
 type PanelId = "title" | "subtitle" | "body" | "background" | "cards" | "accent" | "density" | "sticker";
 
-export function EntryPersonalization({ meta, onChange, onTypography, onReset }: Props) {
+export function EntryPersonalization({
+  meta,
+  onChange,
+  onTypography,
+  onReset,
+  hideStickers,
+  resetLabel = "Reset",
+}: Props) {
   const swatches = useThemedSwatches();
   const { settings } = useUserSettings();
   const tintFilter = useStickerTint();
@@ -219,24 +230,29 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
             label={DENSITIES.find((d) => d.v === (meta.density ?? "cozy"))?.label ?? "Cozy"}
           />
 
-          <Divider />
+          {!hideStickers && (
+            <>
+              <Divider />
 
-          <Chip
-            active={panel === "sticker"}
-            onClick={() => toggle("sticker")}
-            icon={<StickerIcon className="w-3.5 h-3.5" />}
-            label="Sticker"
-          />
+              <Chip
+                active={panel === "sticker"}
+                onClick={() => toggle("sticker")}
+                icon={<StickerIcon className="w-3.5 h-3.5" />}
+                label="Sticker"
+              />
 
-          <button
-            type="button"
-            className={chipClass}
-            onClick={() => setLibraryOpen(true)}
-            title="Open themed sticker library for your active cover"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            Library
-          </button>
+              <button
+                type="button"
+                className={chipClass}
+                onClick={() => setLibraryOpen(true)}
+                title="Open themed sticker library for your active cover"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Library
+              </button>
+            </>
+          )}
+
 
           <button
             type="button"
@@ -245,7 +261,7 @@ export function EntryPersonalization({ meta, onChange, onTypography, onReset }: 
             title="Reset all personalization"
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            Reset
+            {resetLabel}
           </button>
         </div>
       </div>

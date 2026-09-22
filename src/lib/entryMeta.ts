@@ -54,6 +54,9 @@ export interface EntryMeta {
   accentWidth?: EntryAccentWidth;
   density?: EntryDensity;
   stickers?: Sticker[];
+  /** Set once a page's look has been changed on the page itself. */
+  styled?: boolean;
+
 
   // Legacy — still read for old entries
   color?: string;
@@ -214,4 +217,62 @@ export function newStickerId(): string {
 /** Convenience accessors with sensible defaults. */
 export function getTypo(meta: EntryMeta, group: "title" | "subtitle" | "body"): TypoSpec {
   return meta.typography?.[group] ?? {};
+}
+
+/** Style keys shared between the planner-wide look and a single page. */
+export const STYLE_KEYS = [
+  "typography",
+  "background",
+  "sectionTint",
+  "accentWidth",
+  "density",
+  "color",
+  "font",
+  "fontSize",
+] as const;
+
+/** The planner-wide look: style only, never stickers. */
+export type PlannerStyle = Pick<
+  EntryMeta,
+  "typography" | "background" | "sectionTint" | "accentWidth" | "density" | "color"
+>;
+
+/** True when any style key is set on this page's own meta. */
+export function hasOwnStyle(meta: EntryMeta): boolean {
+  if (meta.styled) return true;
+  return STYLE_KEYS.some((k) => meta[k] !== undefined);
+}
+
+/** Remove style keys, keeping stickers and anything else untouched. */
+export function stripEntryStyle(meta: EntryMeta): EntryMeta {
+  const next: EntryMeta = { ...meta };
+  STYLE_KEYS.forEach((k) => {
+    delete next[k];
+  });
+  delete next.styled;
+  return next;
+}
+
+/**
+ * Merge the planner-wide look with a page's own overrides. Anything set on the
+ * page wins; the planner-wide look fills in the rest. Stickers stay per page.
+ */
+export function resolveEntryStyle(
+  global: PlannerStyle | undefined,
+  meta: EntryMeta,
+): EntryMeta {
+  if (!global) return meta;
+  return {
+    ...meta,
+    typography: {
+      title: { ...(global.typography?.title ?? {}), ...(meta.typography?.title ?? {}) },
+      subtitle: { ...(global.typography?.subtitle ?? {}), ...(meta.typography?.subtitle ?? {}) },
+      body: { ...(global.typography?.body ?? {}), ...(meta.typography?.body ?? {}) },
+    },
+    background: meta.background ?? global.background,
+    sectionTint: meta.sectionTint ?? global.sectionTint,
+    accentWidth: meta.accentWidth ?? global.accentWidth,
+    density: meta.density ?? global.density,
+    color: meta.color ?? global.color,
+  };
 }

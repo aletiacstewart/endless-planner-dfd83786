@@ -11,6 +11,8 @@ interface Props {
   activePageType: string;
 }
 
+const OPEN_KEY = "planner.sideTabs.open";
+
 /**
  * Vertical planner tabs — one per page type. Clicking a tab opens the most
  * recent entry of that type, or creates a fresh blank one. Rendered as a
@@ -25,6 +27,21 @@ export function SideTabs({ activePageType }: Props) {
   const [busy, setBusy] = useState<string | null>(null);
   const { settings } = useUserSettings();
   const coverId = settings?.coverId;
+  // Collapsed by default so the section rail never covers the page.
+  const [open, setOpen] = useState(() => localStorage.getItem(OPEN_KEY) === "1");
+
+  useEffect(() => {
+    localStorage.setItem(OPEN_KEY, open ? "1" : "0");
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
 
   const pack = useMemo(() => (coverId ? getCoverIconPack(coverId) : null), [coverId]);
 
@@ -111,45 +128,68 @@ export function SideTabs({ activePageType }: Props) {
 
   return (
     <>
-      {/* Desktop: right-edge vertical tab rail — always fully visible. */}
-      <nav
-        aria-label="Planner sections"
-        className="hidden lg:flex flex-col gap-1.5 fixed right-2 top-1/2 -translate-y-1/2 z-30 max-h-[85vh] overflow-y-auto no-scrollbar rounded-2xl bg-card/85 backdrop-blur border border-border shadow-[var(--shadow-card)] p-1.5"
-      >
-        {PAGE_TYPES.map((pt) => {
-          const active = pt.id === activePageType;
-          return (
-            <div
-              key={pt.id}
-              className={cn(
-                "group flex items-center rounded-xl transition-colors",
-                active ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted",
-              )}
-            >
-              <button
-                onClick={() => openTab(pt.id)}
-                aria-label={pt.name}
-                aria-current={active ? "page" : undefined}
-                className="flex flex-1 items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-medium"
-              >
-                {renderIcon(pt, "w-6 h-6")}
-                <span className="whitespace-nowrap">{pt.shortName}</span>
-              </button>
-              <button
-                onClick={() => addTab(pt.id)}
-                aria-label={`New ${pt.shortName} day`}
-                title={`New ${pt.shortName} day`}
-                className={cn(
-                  "mr-1 rounded-lg p-1 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100",
-                  active ? "hover:bg-primary-foreground/20" : "hover:bg-background",
-                )}
-              >
-                <Icons.Plus className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          );
-        })}
-      </nav>
+      {/* Desktop: collapsed to a slim edge tab so the page stays readable. */}
+      <div className="hidden lg:block">
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+          aria-label={open ? "Hide sections" : "Show sections"}
+          title={open ? "Hide sections" : "Show sections"}
+          className="fixed right-0 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-1 rounded-l-xl border border-r-0 border-border bg-card/90 backdrop-blur px-1.5 py-3 shadow-[var(--shadow-card)] hover:bg-muted"
+        >
+          {open ? (
+            <Icons.ChevronRight className="w-4 h-4" />
+          ) : (
+            <>
+              <Icons.ChevronLeft className="w-4 h-4" />
+              <span className="text-[10px] tracking-widest [writing-mode:vertical-rl]">Sections</span>
+            </>
+          )}
+        </button>
+
+        {open && (
+          <nav
+            aria-label="Planner sections"
+            className="flex flex-col gap-1 fixed right-8 top-1/2 -translate-y-1/2 z-30 max-h-[80vh] overflow-y-auto no-scrollbar rounded-2xl bg-card/95 backdrop-blur border border-border shadow-[var(--shadow-card)] p-1"
+          >
+            {PAGE_TYPES.map((pt) => {
+              const active = pt.id === activePageType;
+              return (
+                <div
+                  key={pt.id}
+                  className={cn(
+                    "group flex items-center rounded-lg transition-colors",
+                    active ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted",
+                  )}
+                >
+                  <button
+                    onClick={() => { void openTab(pt.id); setOpen(false); }}
+                    aria-label={pt.name}
+                    aria-current={active ? "page" : undefined}
+                    className="flex flex-1 items-center gap-1.5 rounded-lg px-1.5 py-1 text-[11px] font-medium"
+                  >
+                    {renderIcon(pt, "w-4 h-4")}
+                    <span className="whitespace-nowrap">{pt.shortName}</span>
+                  </button>
+                  <button
+                    onClick={() => { void addTab(pt.id); setOpen(false); }}
+                    aria-label={`New ${pt.shortName} day`}
+                    title={`New ${pt.shortName} day`}
+                    className={cn(
+                      "mr-0.5 rounded p-0.5 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100",
+                      active ? "hover:bg-primary-foreground/20" : "hover:bg-background",
+                    )}
+                  >
+                    <Icons.Plus className="w-3 h-3" />
+                  </button>
+                </div>
+              );
+            })}
+          </nav>
+        )}
+      </div>
+
 
       {/* Mobile: bottom horizontal strip */}
       <nav
