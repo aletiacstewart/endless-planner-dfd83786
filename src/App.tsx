@@ -28,6 +28,7 @@ import { useEntitlements } from "./hooks/useEntitlements";
 import { purgeLegacyUnlockKeys } from "./lib/unlock";
 import { PLANNERS } from "./data/planners";
 import { initSync } from "./lib/sync";
+import { PlannerCoverProvider } from "./contexts/PlannerCoverContext";
 
 const queryClient = new QueryClient();
 
@@ -62,7 +63,7 @@ function PlannerApp() {
   if (!settings.onboarded) return <OnboardingFlow />;
 
   return (
-    <>
+    <PlannerCoverProvider showCover={() => setSplashed(false)}>
       {!splashed && (
         <SplashScreen
           cover={getCover(settings.coverId)}
@@ -77,7 +78,7 @@ function PlannerApp() {
         <Route path="/entry/:entryId" element={<Entry />} />
         <Route path="/settings" element={<Settings />} />
       </Routes>
-    </>
+    </PlannerCoverProvider>
   );
 }
 

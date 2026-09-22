@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { useUserSettings } from "@/hooks/useUserSettings";
 import { getPageImage } from "@/lib/pageImages";
+import { usePlannerCover } from "@/contexts/PlannerCoverContext";
 
 const LAST_BACKUP_KEY = "planner.lastBackupAt";
 const BACKUP_DISMISS_KEY = "planner.backupReminderDismissedUntil";
@@ -27,6 +28,7 @@ const NUDGE_DISMISS_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 export default function Home() {
   const navigate = useNavigate();
   const { settings } = useUserSettings();
+  const { showCover } = usePlannerCover();
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [recent, setRecent] = useState<PlannerEntry[]>([]);
   const [totalEntries, setTotalEntries] = useState(0);
@@ -105,6 +107,11 @@ export default function Home() {
 
   const plannerName = settings?.plannerName || "My Planner";
 
+  const closeToCover = () => {
+    showCover();
+    navigate("/app");
+  };
+
   const openToday = async () => {
     const today = new Date();
     const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
@@ -131,13 +138,25 @@ export default function Home() {
             <p className="font-script text-sm text-muted-foreground">{settings.ownerName}</p>
           )}
         </div>
-        <Link
-          to="/settings"
-          aria-label="Settings"
-          className="w-10 h-10 rounded-full bg-card/80 backdrop-blur flex items-center justify-center shadow-lg hover:bg-card transition-colors shrink-0"
-        >
-          <Icons.Settings className="w-5 h-5" />
-        </Link>
+        <div className="flex items-center gap-2 shrink-0">
+          <Link
+            to="/settings"
+            aria-label="Settings"
+            className="w-10 h-10 rounded-full bg-card/80 backdrop-blur flex items-center justify-center shadow-lg hover:bg-card transition-colors"
+          >
+            <Icons.Settings className="w-5 h-5" />
+          </Link>
+          <Button
+            variant="secondary"
+            size="icon"
+            onClick={closeToCover}
+            aria-label="Close to cover"
+            title="Close to cover"
+            className="rounded-full shadow-lg"
+          >
+            <Icons.X className="w-4 h-4" />
+          </Button>
+        </div>
       </header>
 
       <main className="px-4 lg:px-8 mt-6">
