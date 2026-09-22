@@ -961,6 +961,15 @@ export const PAGE_TYPES: PageTypeDef[] = [
           { key: "week_reflection", label: "Weekly reflection", type: "textarea", rows: 4, span: 2 },
         ],
       },
+      {
+        title: "Daily notes shared with Complete Tracker",
+        description: "These notes stay consistent across every day in this self-care week.",
+        fields: [
+          { key: "self_physical", label: "Physical self-care", type: "textarea", rows: 3, span: 2 },
+          { key: "self_emotional", label: "Emotional self-care", type: "textarea", rows: 3, span: 2 },
+          { key: "self_spiritual", label: "Spiritual self-care", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
     ],
     summary: (v) => (v.week_of ? `Self-care ${v.week_of}` : "Self-care week"),
   },
@@ -1867,6 +1876,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         columns: 2,
         fields: [
           { key: "month", label: "Month", type: "month", placeholder: "January" },
+          { key: "year", label: "Year", type: "year", placeholder: "2026" },
           { key: "sleep_goal", label: "Nightly goal (hours)", type: "text", compact: true },
         ],
       },
