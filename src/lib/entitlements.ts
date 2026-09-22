@@ -22,6 +22,8 @@ export interface EntitlementState {
   planners: string[];
   packs: string[];
   admin: boolean;
+  /** Free full-access test account (all planners, covers, icons) — not an owner. */
+  tester: boolean;
   /** When the state was last confirmed by the server. */
   verifiedAt: number;
   /** True once we've attempted at least one resolution this session. */
@@ -35,6 +37,7 @@ const EMPTY: EntitlementState = {
   planners: [],
   packs: [],
   admin: false,
+  tester: false,
   verifiedAt: 0,
   resolved: false,
   stale: false,
@@ -57,6 +60,7 @@ function readCache(): Partial<EntitlementState> {
       planners: Array.isArray(parsed.planners) ? parsed.planners : [],
       packs: Array.isArray(parsed.packs) ? parsed.packs : [],
       admin: Boolean(parsed.admin),
+      tester: Boolean(parsed.tester),
       verifiedAt: parsed.verifiedAt ?? 0,
       stale: true,
     };
@@ -74,6 +78,7 @@ function writeCache(s: EntitlementState) {
         planners: s.planners,
         packs: s.packs,
         admin: s.admin,
+        tester: s.tester,
         verifiedAt: s.verifiedAt,
       }),
     );
@@ -135,6 +140,7 @@ export async function refreshEntitlements(force = false): Promise<EntitlementSta
         planners: (planners.data ?? []).map((r) => r.planner_id),
         packs: (packs.data ?? []).map((r) => r.pack_id),
         admin: (roles.data ?? []).some((r) => r.role === "admin"),
+        tester: (roles.data ?? []).some((r) => r.role === "tester"),
         verifiedAt: Date.now(),
         resolved: true,
         stale: false,
@@ -161,20 +167,20 @@ export async function refreshEntitlements(force = false): Promise<EntitlementSta
 // ---------- synchronous reads (from verified state only) ----------
 
 export function hasPlanner(plannerId: string): boolean {
-  if (state.admin) return true;
+  if (hasFullAccess()) return true;
   return state.planners.includes(plannerId);
 }
 
 export function hasPack(packId: string): boolean {
   if ((INCLUDED_PACK_IDS as readonly string[]).includes(packId)) return true;
-  if (state.admin) return true;
+  if (hasFullAccess()) return true;
   return state.packs.includes(packId);
 }
 
 /**
  * True only when the pack was actually paid for (or ships included).
- * Ignores the admin override, so the store never hides its whole catalog
- * from an admin account.
+ * Ignores the admin/tester override, so the store never hides its whole
+ * catalog from those accounts.
  */
 export function hasPurchasedPack(packId: string): boolean {
   if ((INCLUDED_PACK_IDS as readonly string[]).includes(packId)) return true;
@@ -183,13 +189,22 @@ export function hasPurchasedPack(packId: string): boolean {
 
 export function ownedPackIds(): string[] {
   const owned = new Set<string>(INCLUDED_PACK_IDS as readonly string[]);
-  if (state.admin) COVERS.forEach((c) => owned.add(c.id));
+  if (hasFullAccess()) COVERS.forEach((c) => owned.add(c.id));
   state.packs.forEach((p) => owned.add(p));
   return Array.from(owned);
 }
 
 export function isAdmin(): boolean {
   return state.admin;
+}
+
+export function isTester(): boolean {
+  return state.tester;
+}
+
+/** Everything unlocked without paying (admin owner or a tester account). */
+export function hasFullAccess(): boolean {
+  return state.admin || state.tester;
 }
 
 // Keep entitlements in step with auth.

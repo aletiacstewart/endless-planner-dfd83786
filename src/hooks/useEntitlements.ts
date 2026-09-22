@@ -20,6 +20,8 @@ export function useEntitlements() {
 
   return {
     ...state,
+    /** Everything unlocked without paying: owner (admin) or a tester account. */
+    fullAccess: state.admin || state.tester,
     loading: !state.resolved,
     hasPlanner: (id: string) => hasPlanner(id),
     hasPack: (id: string) => hasPack(id),
