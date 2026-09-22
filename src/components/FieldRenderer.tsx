@@ -832,42 +832,71 @@ function PairedCompactMobile({
   );
 }
 
+/** Ingredient rows stored as "amount | ingredient" so older plain-text rows still load. */
+const SEP = " | ";
+function splitIngredient(raw: string): { amount: string; name: string } {
+  const at = raw.indexOf(SEP);
+  return at >= 0
+    ? { amount: raw.slice(0, at), name: raw.slice(at + SEP.length) }
+    : { amount: "", name: raw };
+}
+function joinIngredient(amount: string, name: string): string {
+  return amount ? `${amount}${SEP}${name}` : name;
+}
+
 function IngredientsList({
   value,
   onChange,
+  label = "Ingredients",
 }: {
   value: string[] | null;
   onChange: (v: FieldValue) => void;
+  label?: string;
 }) {
-  const items = value ?? [""];
-  const update = (i: number, v: string) => {
+  const items = value?.length ? value : [""];
+  const update = (i: number, amount: string, name: string) => {
     const next = [...items];
-    next[i] = v;
+    next[i] = joinIngredient(amount, name);
     onChange(next);
   };
   return (
-    <div>
-      <label className="field-label block mb-1.5">Ingredients</label>
+    <div className="min-w-0">
+      <label className="field-label block mb-1.5">{label}</label>
       <div className="space-y-2">
-        {items.map((it, i) => (
-          <div key={i} className="flex gap-2">
-            <Input
-              value={it}
-              onChange={(e) => update(i, e.target.value)}
-              placeholder={`Ingredient ${i + 1}`}
-              className="bg-background/60"
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => onChange(items.filter((_, idx) => idx !== i))}
-              aria-label="Remove ingredient"
-            >
-              <X className="w-4 h-4" />
-            </Button>
-          </div>
-        ))}
+        <div className="hidden sm:flex gap-2 text-[11px] text-muted-foreground">
+          <span className="w-28">Amount</span>
+          <span>Ingredient</span>
+        </div>
+        {items.map((it, i) => {
+          const { amount, name } = splitIngredient(it);
+          return (
+            <div key={i} className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
+              <Input
+                value={amount}
+                onChange={(e) => update(i, e.target.value, name)}
+                placeholder="1 cup"
+                aria-label={`Amount for ingredient ${i + 1}`}
+                className="w-24 sm:w-28 shrink-0 bg-background/60"
+              />
+              <Input
+                value={name}
+                onChange={(e) => update(i, amount, e.target.value)}
+                placeholder={`Ingredient ${i + 1}`}
+                aria-label={`Ingredient ${i + 1}`}
+                className="min-w-0 flex-1 bg-background/60"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => onChange(items.filter((_, idx) => idx !== i))}
+                aria-label="Remove ingredient"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+          );
+        })}
         <Button
           type="button"
           variant="outline"
