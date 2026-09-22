@@ -26,7 +26,6 @@ const REVERSE_SYNC_TYPES = new Set([
   "mood-journal",
   "sleep-tracker",
   "water-tracker",
-  "cleaning-checklist",
 ]);
 
 export function useAutoSave(entry: PlannerEntry | null, debounceMs = 500) {
