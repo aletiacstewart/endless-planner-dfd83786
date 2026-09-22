@@ -187,6 +187,37 @@ function mergeMeasurementCell(
   dst[field] = next;
 }
 
+/** Any value rendered as trimmed text for grid cells. */
+function asText(raw: FieldValue | undefined): string {
+  if (raw == null) return "";
+  if (typeof raw === "boolean") return raw ? "✓" : "";
+  return String(raw).trim();
+}
+
+/**
+ * Row in the fitness session log that belongs to a date: reuse the existing row
+ * for that date, else the first empty row, else append after the last used row.
+ */
+function sessionRowForDate(dst: Record<string, FieldValue>, iso: string): number {
+  const grid = (dst.strength as Record<string, string> | undefined) ?? {};
+  let lastUsed = 0;
+  for (const key of Object.keys(grid)) {
+    const row = Number(key.split("-")[0]);
+    if (!Number.isFinite(row)) continue;
+    if (row > lastUsed && String(grid[key] ?? "").trim()) lastUsed = row;
+  }
+  for (let row = 1; row <= Math.max(lastUsed, 12); row++) {
+    if (String(grid[`${row}-Date`] ?? "").slice(0, 10) === iso) return row;
+  }
+  for (let row = 1; row <= Math.max(lastUsed, 12); row++) {
+    const empty = Object.keys(grid).every(
+      (key) => Number(key.split("-")[0]) !== row || !String(grid[key] ?? "").trim(),
+    );
+    if (empty) return row;
+  }
+  return lastUsed + 1;
+}
+
 /** Pad date as YYYY-MM-DD. */
 function isoOf(year: number, monthIndex: number, day: number) {
   return `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
