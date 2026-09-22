@@ -200,11 +200,64 @@ async function flushQueue() {
 
 // ---------- public push API ----------
 
+/**
+ * A single Complete Tracker save fans out to dozens of linked pages.
+ * Pushing each one separately floods the network, so pushes are coalesced
+ * into one batched upsert per short window (last write per id wins).
+ */
+const pendingPush = new Map<string, PlannerEntry>();
+let pushTimer: number | null = null;
+
+function rowFor(e: PlannerEntry, userId: string) {
+  return {
+    id: e.id,
+    user_id: userId,
+    page_type: e.pageType,
+    title: e.title ?? null,
+    values: e.values as any,
+    client_created_at: e.createdAt,
+    client_updated_at: e.updatedAt,
+    deleted_at: null,
+  };
+}
+
+async function flushPending() {
+  pushTimer = null;
+  const userId = currentUserId;
+  const batch = [...pendingPush.values()];
+  pendingPush.clear();
+  if (!userId || batch.length === 0) return;
+  if (batch.length === 1) {
+    const entry = batch[0];
+    const ok = navigator.onLine && (await pushOp({ kind: "entry-upsert", entry }, userId));
+    if (!ok) await enqueue({ kind: "entry-upsert", entry });
+    return;
+  }
+  let ok = navigator.onLine;
+  if (ok) {
+    try {
+      const { error } = await supabase
+        .from("planner_entries")
+        .upsert(batch.map((e) => rowFor(e, userId)), { onConflict: "id" });
+      if (error) throw error;
+    } catch (err) {
+      console.warn("sync batch push failed", err);
+      ok = false;
+    }
+  }
+  if (!ok) {
+    for (const entry of batch) await enqueue({ kind: "entry-upsert", entry });
+  }
+}
+
 export async function pushEntry(entry: PlannerEntry) {
   if (!currentUserId || !hasActiveSub) return;
   if (inboundIds.has(entry.id)) return;
-  const ok = navigator.onLine && (await pushOp({ kind: "entry-upsert", entry }, currentUserId));
-  if (!ok) await enqueue({ kind: "entry-upsert", entry });
+  pendingPush.set(entry.id, entry);
+  if (pushTimer !== null) return;
+  pushTimer = window.setTimeout(() => {
+    void flushPending();
+  }, 400);
 }
 
 export async function pushDelete(id: string) {
