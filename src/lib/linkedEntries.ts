@@ -860,6 +860,102 @@ export async function syncLinkedEntries(complete: PlannerEntry): Promise<string[
       synced.push("Medications");
     }
 
+    // 22. Notes — one Notes page per day.
+    if (anyFilled(v, ["note_today"])) {
+      const title = `Notes — ${date.iso}`;
+      const entry = await findOrCreate("notes", (e) => asText(e.values.title) === title, { title });
+      await persist(entry, (dst) => {
+        dst.title = title;
+        dst.note = v.note_today as FieldValue;
+      });
+      synced.push(`Notes (${date.iso})`);
+    }
+
+    // 23. Brain Dump — per day.
+    if (anyFilled(v, ["brain_dump_today", "do_now", "do_later"])) {
+      const entry = await findOrCreate(
+        "brain-dump",
+        (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
+        { date: date.iso },
+      );
+      await persist(entry, (dst) => {
+        dst.date = date.iso;
+        if (v.brain_dump_today !== undefined) dst.dump = v.brain_dump_today;
+        copyKeys(v, dst, ["do_now", "do_later"]);
+        if (v.mood_overall != null) dst.mood = v.mood_overall;
+      });
+      synced.push(`Brain Dump (${date.iso})`);
+    }
+
+    // 24. ADHD / Focus Toolkit — per day.
+    const adhdKeys = ["focus_word", "med_taken", "focus_level", "big_three", "wins"];
+    if (anyFilled(v, adhdKeys)) {
+      const entry = await findOrCreate(
+        "adhd-toolkit",
+        (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
+        { date: date.iso },
+      );
+      await persist(entry, (dst) => {
+        dst.date = date.iso;
+        copyKeys(v, dst, adhdKeys);
+        if (v.brain_dump_today !== undefined) dst.brain_dump = v.brain_dump_today;
+      });
+      synced.push(`Focus Toolkit (${date.iso})`);
+    }
+
+    // 25. Therapy Session Notes — per session day.
+    if (anyFilled(v, ["therapy_topics", "therapy_insights", "therapy_actions", "coping_used"])) {
+      const entry = await findOrCreate(
+        "therapy-session",
+        (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
+        { date: date.iso },
+      );
+      await persist(entry, (dst) => {
+        dst.date = date.iso;
+        if (v.therapy_topics !== undefined) dst.topics = v.therapy_topics;
+        if (v.therapy_insights !== undefined) dst.insights = v.therapy_insights;
+        if (v.therapy_actions !== undefined) dst.action_plan = v.therapy_actions;
+        if (v.coping_used !== undefined) dst.tools_discussed = v.coping_used;
+      });
+      synced.push(`Therapy Session Notes (${date.iso})`);
+    }
+
+    // 26. Money roll-ups — budget / savings / debt totals from every day.
+    synced.push(...(await rollUpMoney(date)));
+
+    // 27. Important Dates — one row per dated occasion.
+    if (anyFilled(v, ["important_today", "important_occasion", "important_relationship"])) {
+      const entry = await findOrCreate(
+        "important-dates",
+        (e) => String(e.values.year ?? "") === yearStr,
+        { year: yearStr },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.year) dst.year = yearStr;
+        const row = gridRowForValue(dst, "date_details", "Date", date.iso);
+        mergeMeasurementCell(dst, "date_details", row, "Date", date.iso);
+        mergeMeasurementCell(dst, "date_details", row, "Name/Activity", asText(v.important_today));
+        mergeMeasurementCell(dst, "date_details", row, "Occasion", asText(v.important_occasion));
+        mergeMeasurementCell(dst, "date_details", row, "Relationship", asText(v.important_relationship));
+      });
+      synced.push(`Important Dates (${yearStr})`);
+    }
+
+    // 28. Gift Tracker — one row per person/gift.
+    if (anyFilled(v, ["gift_person", "gift_idea", "gift_budget", "gift_purchased"])) {
+      const person = asText(v.gift_person) || asText(v.gift_idea);
+      const all = await listEntries("gift-tracker");
+      const gifts = all[0] ?? (await createEntry("gift-tracker", {}));
+      await persist(gifts, (dst) => {
+        const row = gridRowForValue(dst, "gift_rows", "Person", person);
+        mergeMeasurementCell(dst, "gift_rows", row, "Person", person);
+        mergeMeasurementCell(dst, "gift_rows", row, "Gift idea", asText(v.gift_idea));
+        mergeMeasurementCell(dst, "gift_rows", row, "Budget", asText(v.gift_budget));
+        mergeMeasurementCell(dst, "gift_rows", row, "Purchased", v.gift_purchased ? "✓" : "");
+      });
+      synced.push("Gift Tracker");
+    }
+
     // 22. Year/month/week-scoped fields shared by every day in the same scope.
     const scoped = await propagateScopedFields(complete);
     if (scoped.length > 0) synced.push("Other days (year/month/week fields)");
