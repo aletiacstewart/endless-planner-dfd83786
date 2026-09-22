@@ -406,7 +406,7 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
       );
     }
     case "ingredients-list":
-      return <IngredientsList value={value as string[]} onChange={onChange} />;
+      return <IngredientsList value={value as string[]} label={field.label} onChange={onChange} />;
     case "calendar-grid": {
       // Prefer explicit month/year fields, otherwise derive from a date field (e.g. daily tracker).
       let derivedMonth = typeof allValues?.month === "string" ? (allValues.month as string) : "";
