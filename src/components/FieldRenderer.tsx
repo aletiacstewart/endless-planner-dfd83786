@@ -26,6 +26,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { listDoctors, addDoctor, type Doctor } from "@/lib/doctors";
 import { RichTextField } from "@/components/entry/RichTextField";
 import { DrawingCanvas, type DrawingValue } from "@/components/DrawingCanvas";
+import { JournalPhotoField } from "@/components/JournalPhotoField";
 
 interface Props {
   field: FieldDef;
@@ -659,6 +660,8 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
       );
     case "drawing":
       return <DrawingCanvas value={value as unknown as DrawingValue | null} label={field.label} onChange={(v) => onChange(v as unknown as FieldValue)} />;
+    case "image":
+      return <JournalPhotoField value={(value as string | null) ?? null} label={field.label} onChange={(v) => onChange(v)} />;
     default:
       return null;
   }

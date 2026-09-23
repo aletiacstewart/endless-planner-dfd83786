@@ -16,6 +16,7 @@ export const PAGE_SUBJECTS = {
   "monthly-calendar": "a graceful crescent-to-full moon phase arc, five moons in a soft curve, celestial and clean",
   "weekly-calendar": "seven small round pebbles arranged in a gentle horizontal row, meditative and balanced",
   "daily-tracker": "a small hourglass beside a rising sun with soft rays, symbolizing one day",
+  "daily-journal": "an open blank journal with a feather pen, a small instant-photo frame, and a delicate pencil arranged as a creative memory emblem — no writing",
   "complete-tracker": "a small treasure chest with a wax seal bearing a stylized checkmark motif",
   "yearly-habit-tracker": "a circular growing vine wreath with small buds along its length, forming a full ring",
   "weight-tracker": "a delicate balance scale holding a feather on one side and a smooth pebble on the other",
