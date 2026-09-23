@@ -42,7 +42,7 @@ const promptsSrc = readFileSync(join(__dirname, "icons/prompts.ts"), "utf8");
 // Extract PAGE_SUBJECTS keys (page ids) from the TS source.
 const PAGE_IDS = [
   "my-goals", "yearly-calendar", "monthly-calendar", "weekly-calendar",
-  "daily-tracker", "complete-tracker", "yearly-habit-tracker", "weight-tracker",
+  "daily-tracker", "daily-journal", "complete-tracker", "yearly-habit-tracker", "weight-tracker",
   "measurement-tracker", "blood-sugar-tracker", "blood-pressure-tracker",
   "oxygen-tracker", "self-care-checklist", "cleaning-checklist", "recipe",
   "notes", "workout-tracker", "medications", "medical-records", "yearly-focus",
