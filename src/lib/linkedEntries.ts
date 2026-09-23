@@ -26,7 +26,7 @@ async function cachedList(pageType: string): Promise<PlannerEntry[]> {
   if (!runCache) return listEntries(pageType);
   const hit = runCache.get(pageType);
   if (hit) return hit;
-  const fresh = await cachedList(pageType);
+  const fresh = await listEntries(pageType);
   runCache.set(pageType, fresh);
   return fresh;
 }
