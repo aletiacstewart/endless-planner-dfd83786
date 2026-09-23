@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
+import { PLANNERS } from "@/data/planners";
 import { toast } from "sonner";
+
+const PLANNER = PLANNERS[0];
 
 export default function Subscribe() {
   const navigate = useNavigate();
@@ -15,7 +18,7 @@ export default function Subscribe() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      toast.message("Sign in to subscribe to Cloud sync");
+      toast.message("Sign in to start your planner membership");
       navigate("/auth", { replace: true, state: { next: "/subscribe" } });
     }
   }, [user, authLoading, navigate]);
@@ -23,9 +26,11 @@ export default function Subscribe() {
   const subscribe = () => {
     if (!user?.email) return;
     openCheckout({
-      priceId: "endless_planner_cloud_monthly",
+      priceId: PLANNER.priceId,
+      quantity: 1,
       customerEmail: user.email,
       userId: user.id,
+      plannerId: PLANNER.id,
       returnUrl: `${window.location.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}&sub=1`,
     });
   };
@@ -44,14 +49,16 @@ export default function Subscribe() {
       </header>
 
       <section className="px-6 py-12 max-w-xl mx-auto">
-        <h1 className="font-display text-3xl text-center mb-2">Endless Planner Cloud</h1>
-        <p className="text-center text-muted-foreground mb-8">$10/month — cancel anytime.</p>
+        <h1 className="font-display text-3xl text-center mb-2">Endless Planner membership</h1>
+        <p className="text-center text-muted-foreground mb-8">$21.97/month — cancel anytime.</p>
 
         <ul className="space-y-2 mb-8">
           {[
-            "Automatic cloud backup of all your entries",
+            "The complete planner — 40 guided pages",
+            "1 cover & matching icon set of your choice",
+            "Automatic cloud backup of everything you write",
             "Sync across phone, tablet, and desktop",
-            "Restore your planner on any new device",
+            "Two-way Google & Apple calendar sync",
             "Ongoing planner updates & new features",
           ].map((f) => (
             <li key={f} className="flex items-start gap-2 text-sm">
@@ -63,7 +70,7 @@ export default function Subscribe() {
 
         {isActive ? (
           <div className="planner-card text-center space-y-3">
-            <p className="text-sm">You're already subscribed to Cloud sync.</p>
+            <p className="text-sm">Your membership is active.</p>
             <Button variant="outline" onClick={() => navigate("/settings")}>Manage in Settings</Button>
           </div>
         ) : (
@@ -72,8 +79,11 @@ export default function Subscribe() {
               Signed in as <span className="font-medium">{user?.email}</span>
             </p>
             <Button size="lg" className="w-full" onClick={subscribe}>
-              Subscribe — $10/month
+              Start membership — $21.97/month
             </Button>
+            <p className="text-xs text-muted-foreground mt-3 text-center">
+              Extra covers are $5 each — 10% off 2–5, 20% off 6 or more.
+            </p>
           </>
         )}
       </section>
