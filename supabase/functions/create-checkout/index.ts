@@ -46,11 +46,14 @@ function packDiscountPercent(count: number): number {
 }
 
 // Reuse a stable coupon per discount rate so receipts show the saving.
+// Scoped with applies_to so it only ever discounts the cover-pack product —
+// a membership + covers session must keep the subscription at full price.
 async function resolveCoupon(
   stripe: ReturnType<typeof createStripeClient>,
   percentOff: number,
+  productId: string,
 ): Promise<string> {
-  const id = `cover_packs_${percentOff}_off`;
+  const id = `cover_packs_${percentOff}_off_covers_only`;
   try {
     const existing = await stripe.coupons.retrieve(id);
     if (existing && !(existing as any).deleted) return existing.id;
@@ -62,9 +65,11 @@ async function resolveCoupon(
     percent_off: percentOff,
     duration: "once",
     name: `${percentOff}% off cover packs`,
+    applies_to: { products: [productId] },
   });
   return created.id;
 }
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
