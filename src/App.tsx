@@ -8,6 +8,7 @@ import Index from "./pages/Index.tsx";
 import Section from "./pages/Section.tsx";
 import Entry from "./pages/Entry.tsx";
 import Settings from "./pages/Settings.tsx";
+import GoogleCalendarReturn from "./pages/oauth/GoogleCalendarReturn.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Landing from "./pages/Landing.tsx";
 import Unlock from "./pages/Unlock.tsx";
@@ -77,6 +78,7 @@ function PlannerApp() {
         <Route path="/section/:pageTypeId" element={<Section />} />
         <Route path="/entry/:entryId" element={<Entry />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/oauth/google-calendar/return" element={<GoogleCalendarReturn />} />
       </Routes>
     </PlannerCoverProvider>
   );

@@ -22,6 +22,13 @@
       "when": 1790127139370,
       "tag": "0002_create_calendar_feed_tokens",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790181733620,
+      "tag": "0003_google_calendar_two_way_sync",
+      "breakpoints": true
     }
   ]
 }

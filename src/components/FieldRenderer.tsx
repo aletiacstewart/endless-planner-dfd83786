@@ -1116,6 +1116,8 @@ function CalendarGrid({
 }) {
   const data = value ?? {};
   const typeOf = (day: number) => data[`t${day}`] || DEFAULT_APPT_TYPE;
+  /** Read-only events pulled from the user's Google Calendar (keys `g<day>`, registry `g:<id>`). */
+  const googleNote = (day: number) => (data[`g${day}`] ?? "").trim();
   const update = (day: number, v: string, type?: string) => {
     const next: Record<string, string> = { ...data, [String(day)]: v };
     const t = type ?? filterType ?? typeOf(day);
@@ -1240,7 +1242,8 @@ function CalendarGrid({
         ))}
         {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => {
           const note = visibleNote(d);
-          const filled = note.trim().length > 0;
+          const gNote = googleNote(d);
+          const filled = note.trim().length > 0 || gNote.length > 0;
           const isOpen = openDay === d;
           return (
             <button
@@ -1270,6 +1273,11 @@ function CalendarGrid({
               {filled && !compact && (
                 <span className="mt-0.5 text-[9px] leading-tight text-foreground/80 line-clamp-2 break-words">
                   {note}
+                </span>
+              )}
+              {!compact && gNote && (
+                <span className="mt-0.5 text-[9px] leading-tight text-primary line-clamp-2 break-words">
+                  {gNote.split("\n").join(" · ")}
                 </span>
               )}
               {filled && compact && (
@@ -1309,6 +1317,14 @@ function CalendarGrid({
             className="bg-background/60 resize-none flex-1"
             autoFocus
           />
+          {openDay !== null && googleNote(openDay) && (
+            <div className="mt-2 rounded-md border border-border bg-muted/40 p-2 text-xs text-muted-foreground shrink-0">
+              <p className="font-medium text-foreground/70 mb-1">From Google Calendar</p>
+              {googleNote(openDay).split("\n").map((line, i) => (
+                <p key={i}>{line}</p>
+              ))}
+            </div>
+          )}
         </>
       ) : (
         <div className="flex-1 flex items-center justify-center text-center text-sm text-muted-foreground p-4">
@@ -1342,6 +1358,14 @@ function CalendarGrid({
           className="bg-background/60 resize-none"
           autoFocus
         />
+        {openDay !== null && googleNote(openDay) && (
+          <div className="rounded-md border border-border bg-muted/40 p-2 text-xs text-muted-foreground">
+            <p className="font-medium text-foreground/70 mb-1">From Google Calendar</p>
+            {googleNote(openDay).split("\n").map((line, i) => (
+              <p key={i}>{line}</p>
+            ))}
+          </div>
+        )}
         <DialogFooter className="gap-2 sm:gap-2">
           <Button variant="ghost" onClick={() => setOpenDay(null)}>
             Close
