@@ -6,15 +6,21 @@ import { CoverPackPicker, CoverPackSummary } from "@/components/cover/CoverPackP
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { isPackPurchased } from "@/lib/unlock";
 import { useEntitlements } from "@/hooks/useEntitlements";
+import { PACK_DISCOUNT_HINT, calcPackTotalUSD } from "@/data/coverPacks";
 
 export default function Packs() {
   const { admin, fullAccess } = useEntitlements();
   const [searchParams] = useSearchParams();
   const focus = searchParams.get("focus");
+  const preselected = (searchParams.get("pre") ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter((id) => id && !isPackPurchased(id));
   const [previewPrices, setPreviewPrices] = useState(false);
-  const [packIds, setPackIds] = useState<string[]>(() =>
-    focus && !isPackPurchased(focus) ? [focus] : []
-  );
+  const [packIds, setPackIds] = useState<string[]>(() => {
+    if (preselected.length > 0) return preselected;
+    return focus && !isPackPurchased(focus) ? [focus] : [];
+  });
   // Admin and tester accounts already own every cover and icon set — nothing to buy.
   const adminAccess = fullAccess && !previewPrices;
   const [email, setEmail] = useState("");
@@ -54,7 +60,7 @@ export default function Packs() {
           Each pack re-themes the whole planner — cover, palette, and matching page icons.
         </p>
         <p className="text-center text-xs text-muted-foreground mb-8">
-          $5 per pack
+          {PACK_DISCOUNT_HINT}
         </p>
 
         {fullAccess && (
@@ -96,7 +102,7 @@ export default function Packs() {
               className="w-full px-4 py-3 rounded-md border border-input bg-background"
             />
             <Button size="lg" className="w-full" onClick={buy}>
-              Checkout — {packIds.length} pack{packIds.length === 1 ? "" : "s"}
+              Checkout — ${calcPackTotalUSD(packIds).toFixed(2)} for {packIds.length} pack{packIds.length === 1 ? "" : "s"}
             </Button>
           </div>
         </div>

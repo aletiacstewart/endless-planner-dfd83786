@@ -11,7 +11,6 @@ import {
   calcPackDiscountUSD,
   getDiscountLabel,
   getPackPriceUSD,
-  PACK_PRICE_USD,
   PACK_DISCOUNT_HINT,
 } from "@/data/coverPacks";
 import { isPackUnlocked, isPackPurchased } from "@/lib/unlock";

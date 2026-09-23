@@ -347,13 +347,13 @@ function SubscriptionSection() {
       <section className="planner-card space-y-3">
         <div className="flex items-center gap-2">
           <CreditCard className="w-5 h-5 text-muted-foreground" />
-          <h2 className="font-display text-xl">Cloud sync subscription</h2>
+          <h2 className="font-display text-xl">Planner membership</h2>
         </div>
         <p className="text-xs text-muted-foreground">
-          Subscribe to $10/month Cloud to keep your planner synced across every device, with automatic cloud backups.
+          Your $21.97/month membership keeps the planner open, backed up in the cloud, synced on every device and connected to your calendar.
         </p>
         <Button className="w-full" onClick={() => navigate("/subscribe")}>
-          Subscribe to Cloud sync
+          Start my membership — $21.97/month
         </Button>
       </section>
     );
@@ -373,7 +373,7 @@ function SubscriptionSection() {
     <section className="planner-card space-y-3">
       <div className="flex items-center gap-2">
         <CreditCard className="w-5 h-5 text-primary" />
-        <h2 className="font-display text-xl">Cloud sync subscription</h2>
+        <h2 className="font-display text-xl">Planner membership</h2>
       </div>
       <div className="text-sm space-y-1">
         <p>
@@ -394,7 +394,7 @@ function SubscriptionSection() {
         )}
         {subscription.status === "past_due" && (
           <p className="text-xs text-destructive">
-            Update your card in the billing portal to keep Cloud sync running.
+            Update your card in the billing portal to keep your planner open.
           </p>
         )}
       </div>
