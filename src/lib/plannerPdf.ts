@@ -53,14 +53,39 @@ interface Img {
 
 const imgCache = new Map<string, Img | null>();
 
-function loadHtmlImage(src: string): Promise<HTMLImageElement> {
+function loadHtmlImage(src: string, anonymous: boolean): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.crossOrigin = "anonymous";
+    // Only ask for CORS on cross-origin URLs — some same-origin asset proxies
+    // reject the preflight and the load fails for no good reason.
+    if (anonymous) img.crossOrigin = "anonymous";
     img.onload = () => resolve(img);
     img.onerror = () => reject(new Error(`Could not load ${src}`));
     img.src = src;
   });
+}
+
+/** Load with the most permissive settings that work, trying both CORS modes. */
+async function loadAnyway(src: string): Promise<HTMLImageElement | null> {
+  const isAbsolute = /^https?:\/\//i.test(src);
+  const crossOrigin = isAbsolute && !src.startsWith(window.location.origin);
+  try {
+    return await loadHtmlImage(src, crossOrigin);
+  } catch {
+    try {
+      return await loadHtmlImage(src, !crossOrigin);
+    } catch {
+      return null;
+    }
+  }
+}
+
+/** Ellipsis-truncate to fit a width, so contents rows never end mid-word. */
+function fitText(doc: jsPDF, text: string, width: number): string {
+  if (doc.getTextWidth(text) <= width) return text;
+  let out = text;
+  while (out.length > 1 && doc.getTextWidth(`${out}…`) > width) out = out.slice(0, -1);
+  return `${out.trimEnd()}…`;
 }
 
 async function rasterize(src: string, maxPx: number, keepAlpha: boolean): Promise<Img | null> {
