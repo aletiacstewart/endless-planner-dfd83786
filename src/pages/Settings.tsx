@@ -203,6 +203,17 @@ function BackupSection() {
           }}
         />
       </div>
+
+      <div className="pt-2 border-t border-border space-y-2">
+        <p className="text-xs text-muted-foreground">
+          Want a printable copy? This makes one PDF book of your whole planner — cover, every page you've filled in, your artwork, photos and sketches.
+        </p>
+        <Button onClick={onPdf} disabled={busy} className="w-full">
+          {pdfStatus ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <FileDown className="w-4 h-4 mr-2" />}
+          {pdfStatus ? "Building your PDF…" : "Export full planner (PDF)"}
+        </Button>
+        {pdfStatus && <p className="text-xs text-muted-foreground text-center">{pdfStatus}</p>}
+      </div>
     </section>
   );
 }
