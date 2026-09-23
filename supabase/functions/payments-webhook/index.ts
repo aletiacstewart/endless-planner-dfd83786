@@ -186,14 +186,71 @@ async function upsertSubscription(sub: any, env: StripeEnv) {
     },
     { onConflict: "stripe_subscription_id" },
   );
+
+  // Planner access follows the membership.
+  await syncPlannerAccess(userId, sub, email, env);
+}
+
+const MEMBERSHIP_PLANNER_ID = "wellness-journey";
+const ACTIVE_STATUSES = ["active", "trialing", "past_due", "incomplete"];
+
+/**
+ * The $21.97/month membership *is* planner access: grant the unlock row while the
+ * subscription is live, remove it once it ends (data is untouched — resubscribing
+ * restores access immediately).
+ */
+async function syncPlannerAccess(userId: string | null, sub: any, email: string | null, env: StripeEnv) {
+  if (!userId) return;
+  const supa = getSupabase();
+  const periodEnd = sub.items?.data?.[0]?.current_period_end ?? sub.current_period_end;
+  const stillInPeriod = periodEnd ? periodEnd * 1000 > Date.now() : false;
+  const entitled =
+    ACTIVE_STATUSES.includes(sub.status) || (sub.status === "canceled" && stillInPeriod);
+
+  if (entitled) {
+    const { data: existing } = await supa
+      .from("user_planner_unlocks")
+      .select("unlock_code")
+      .eq("user_id", userId)
+      .eq("planner_id", MEMBERSHIP_PLANNER_ID)
+      .maybeSingle();
+    if ((existing as any)?.unlock_code) return;
+    const code = makeCode();
+    if (email) {
+      await supa.from("purchases").insert({
+        planner_id: MEMBERSHIP_PLANNER_ID,
+        email,
+        unlock_code: code,
+        stripe_session_id: `sub_${sub.id}`,
+        environment: env,
+      });
+    }
+    const { error } = await supa.from("user_planner_unlocks").upsert(
+      { user_id: userId, planner_id: MEMBERSHIP_PLANNER_ID, unlock_code: code },
+      { onConflict: "user_id,planner_id" },
+    );
+    if (error) console.error("Grant planner access failed", error);
+  } else {
+    const { error } = await supa
+      .from("user_planner_unlocks")
+      .delete()
+      .eq("user_id", userId)
+      .eq("planner_id", MEMBERSHIP_PLANNER_ID);
+    if (error) console.error("Revoke planner access failed", error);
+  }
 }
 
 async function markSubscriptionCanceled(sub: any, env: StripeEnv) {
-  await getSupabase()
+  const supa = getSupabase();
+  const { data } = await supa
     .from("subscriptions")
     .update({ status: "canceled", cancel_at_period_end: false, updated_at: new Date().toISOString() })
     .eq("stripe_subscription_id", sub.id)
-    .eq("environment", env);
+    .eq("environment", env)
+    .select("user_id, email")
+    .maybeSingle();
+  const userId = (data as any)?.user_id ?? null;
+  await syncPlannerAccess(userId, { ...sub, status: "canceled", current_period_end: null }, (data as any)?.email ?? null, env);
 }
 
 Deno.serve(async (req) => {

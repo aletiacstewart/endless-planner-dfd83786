@@ -1,7 +1,10 @@
 // Cover Packs = cover + matching page-icon set, sold as add-ons.
 //
 // Pricing:
-//   $5 per pack (flat) — no volume discounts
+//   $5 per pack, with a volume discount on the whole cart:
+//     1 pack        → full price
+//     2–5 packs     → 10% off
+//     6 or more     → 20% off
 
 import { COVERS, getCover } from "@/data/covers";
 
@@ -18,20 +21,41 @@ export function isCoverPaid(_coverId: string): boolean {
   return true;
 }
 
-/** Per-pack price shown in the picker (pre-discount). */
+/** Cart-wide discount rate (0, 0.1 or 0.2) for a given number of packs. */
+export function discountRateForCount(count: number): number {
+  if (count >= 6) return 0.2;
+  if (count >= 2) return 0.1;
+  return 0;
+}
+
+/** Per-pack price shown in the picker (list price — discount applies to the cart). */
 export function getPackPriceUSD(_indexInCart: number): number {
   return PACK_PRICE_USD;
 }
 
-/** Flat total for a cart of pack ids — $5 each, no discounts. */
-export function calcPackTotalUSD(packIds: string[]): number {
+/** Cart subtotal before any discount. */
+export function calcPackSubtotalUSD(packIds: string[]): number {
   return round2(packIds.length * PACK_PRICE_USD);
 }
 
-export function getDiscountLabel(_count: number): string | null {
-  return null;
+/** Dollar amount saved on this cart. */
+export function calcPackDiscountUSD(packIds: string[]): number {
+  return round2(calcPackSubtotalUSD(packIds) * discountRateForCount(packIds.length));
 }
 
+/** Cart total with the volume discount applied. */
+export function calcPackTotalUSD(packIds: string[]): number {
+  return round2(calcPackSubtotalUSD(packIds) - calcPackDiscountUSD(packIds));
+}
+
+export function getDiscountLabel(count: number): string | null {
+  const rate = discountRateForCount(count);
+  if (rate === 0) return null;
+  return `${Math.round(rate * 100)}% off ${count} covers`;
+}
+
+/** Short hint shown before/while building a cart. */
+export const PACK_DISCOUNT_HINT = "$5 each — 10% off 2–5 covers, 20% off 6 or more.";
 
 export function listAllPaidCovers() {
   return COVERS;

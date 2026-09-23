@@ -37,6 +37,35 @@ async function resolveOrCreateCustomer(
   return created.id;
 }
 
+// Cover packs: $5 each with a cart-wide volume discount.
+//   2–5 packs → 10% off, 6 or more → 20% off
+function packDiscountPercent(count: number): number {
+  if (count >= 6) return 20;
+  if (count >= 2) return 10;
+  return 0;
+}
+
+// Reuse a stable coupon per discount rate so receipts show the saving.
+async function resolveCoupon(
+  stripe: ReturnType<typeof createStripeClient>,
+  percentOff: number,
+): Promise<string> {
+  const id = `cover_packs_${percentOff}_off`;
+  try {
+    const existing = await stripe.coupons.retrieve(id);
+    if (existing && !(existing as any).deleted) return existing.id;
+  } catch {
+    // not created yet in this environment
+  }
+  const created = await stripe.coupons.create({
+    id,
+    percent_off: percentOff,
+    duration: "once",
+    name: `${percentOff}% off cover packs`,
+  });
+  return created.id;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") {
@@ -96,25 +125,37 @@ Deno.serve(async (req) => {
       throw new Error("Sign in required to subscribe");
     }
 
+    let discounts: any[] | undefined = undefined;
+
     if (!isRecurring && packs.length > 0) {
       const flat = priceByKey.get("cover_pack_flat");
       if (!flat) throw new Error("Cover pack price not found (cover_pack_flat)");
       line_items.push({ price: flat.id, quantity: packs.length });
-    }
 
-    // Cover packs are a flat $5 each — no volume discounts.
-    const discounts: any[] | undefined = undefined;
+      const percentOff = packDiscountPercent(packs.length);
+      if (percentOff > 0) {
+        discounts = [{ coupon: await resolveCoupon(stripe, percentOff) }];
+      }
+    }
 
     // Resolve or create a Stripe Customer so userId lives on a searchable object.
     const customerId = (customerEmail || userId)
       ? await resolveOrCreateCustomer(stripe, { email: customerEmail, userId })
       : undefined;
 
+    const chosenCoverId = typeof selectedCoverId === "string" ? selectedCoverId : "";
+
+    // A membership checkout grants the planner plus the one cover the buyer picked.
+    // Extra covers are always bought as a separate one-time checkout.
+    const grantedPackIds = isRecurring
+      ? (chosenCoverId ? [chosenCoverId] : [])
+      : packs;
+
     const metadata = {
-      planner_id: includesPlanner && !isRecurring ? (plannerId || "wellness-journey") : "",
-      includes_planner: includesPlanner && !isRecurring ? "true" : "false",
-      pack_ids: packs.join(","),
-      selected_cover_id: typeof selectedCoverId === "string" ? selectedCoverId : "",
+      planner_id: includesPlanner ? (plannerId || "wellness-journey") : "",
+      includes_planner: includesPlanner ? "true" : "false",
+      pack_ids: grantedPackIds.join(","),
+      selected_cover_id: chosenCoverId,
       subscription_price_id: isRecurring ? priceId : "",
       userId: typeof userId === "string" ? userId : "",
     };
