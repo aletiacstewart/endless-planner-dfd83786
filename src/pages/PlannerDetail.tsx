@@ -50,7 +50,7 @@ export default function PlannerDetail() {
     .map((id) => getPageType(id))
     .filter((p): p is NonNullable<ReturnType<typeof getPageType>> => Boolean(p));
 
-  const total = planner.priceUSD + calcPackTotalUSD(extraPackIds);
+  const packsTotal = calcPackTotalUSD(extraPackIds);
   const cartCount = (includedCoverId ? 1 : 0) + extraPackIds.length;
   const includedCover = getCover(includedCoverId);
 
@@ -66,13 +66,28 @@ export default function PlannerDetail() {
   };
 
   const buy = () => {
+    // The membership is a subscription, so it must be tied to an account.
+    if (!user?.id) {
+      toast.message("Create your account to start your membership");
+      navigate("/auth", { state: { next: `/planner/${planner.id}` } });
+      return;
+    }
+    // Extra covers are a separate one-time purchase — remember them for after checkout.
+    try {
+      if (extraPackIds.length > 0) {
+        sessionStorage.setItem("pendingPackIds", extraPackIds.join(","));
+      } else {
+        sessionStorage.removeItem("pendingPackIds");
+      }
+    } catch {
+      // storage unavailable — extras can still be bought from the covers shop
+    }
     openCheckout({
       priceId: planner.priceId,
       quantity: 1,
-      customerEmail: email || user?.email,
-      userId: user?.id,
-      returnUrl: `${window.location.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}&planner=${planner.id}`,
-      packIds: extraPackIds,
+      customerEmail: email || user.email,
+      userId: user.id,
+      returnUrl: `${window.location.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}&sub=1&planner=${planner.id}`,
       plannerId: planner.id,
       selectedCoverId: includedCoverId,
     });
