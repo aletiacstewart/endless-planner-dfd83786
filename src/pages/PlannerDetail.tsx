@@ -32,7 +32,27 @@ export default function PlannerDetail() {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [highlightCover]);
 
-
+  // Returning from sign-in: restore the saved selection, then open checkout.
+  const wantsCheckout = searchParams.get("checkout") === "1";
+  const [resumed, setResumed] = useState(false);
+  useEffect(() => {
+    if (!wantsCheckout || !user?.id || resumed || !planner) return;
+    try {
+      const saved = JSON.parse(sessionStorage.getItem("pendingCheckout") || "null");
+      if (saved?.plannerId === planner.id) {
+        setIncludedCoverId(saved.includedCoverId || "");
+        setExtraPackIds(saved.extraPackIds || []);
+      }
+    } catch {}
+    setResumed(true);
+  }, [wantsCheckout, user?.id, resumed, planner]);
+  useEffect(() => {
+    if (resumed && wantsCheckout && user?.id && includedCoverId && !isOpen) {
+      buy();
+      navigate(`/planner/${plannerId}`, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resumed]);
 
 
   const availableCollections = useMemo(() => {
@@ -68,10 +88,15 @@ export default function PlannerDetail() {
   const buy = () => {
     // The membership is a subscription, so it must be tied to an account.
     if (!user?.id) {
+      sessionStorage.setItem(
+        "pendingCheckout",
+        JSON.stringify({ plannerId: planner.id, includedCoverId, extraPackIds })
+      );
       toast.message("Create your account to start your membership");
-      navigate("/auth", { state: { next: `/planner/${planner.id}` } });
+      navigate(`/auth?next=${encodeURIComponent(`/planner/${planner.id}?checkout=1`)}`);
       return;
     }
+    sessionStorage.removeItem("pendingCheckout");
     // Membership + any extra covers are paid together in one checkout.
     openCheckout({
       priceId: planner.priceId,

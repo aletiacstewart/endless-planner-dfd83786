@@ -27,9 +27,12 @@ export default function Auth() {
     try { await supabase.rpc("link_user_purchases"); } catch {}
     try { await refreshUnlocks(); } catch {}
     try { await reconcileNow(); } catch {}
-    // Support ?next redirect (e.g. from Subscribe page requiring auth)
+    // Support ?next redirect (e.g. from Subscribe page requiring auth), with
+    // a stored fallback so Google sign-in (full page redirect) keeps it too.
     const params = new URLSearchParams(window.location.search);
-    const next = params.get("next");
+    const stateNext = (window.history.state?.usr as { next?: string } | undefined)?.next;
+    const next = params.get("next") || stateNext || sessionStorage.getItem("authNext");
+    sessionStorage.removeItem("authNext");
     if (next && next.startsWith("/")) {
       navigate(next, { replace: true });
       return;
@@ -50,6 +53,8 @@ export default function Auth() {
   const signInGoogle = async () => {
     setBusy(true);
     try {
+      const n = new URLSearchParams(window.location.search).get("next");
+      if (n && n.startsWith("/")) sessionStorage.setItem("authNext", n);
       const res = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: window.location.origin + "/auth",
       });
