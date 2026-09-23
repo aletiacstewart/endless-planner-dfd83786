@@ -31,6 +31,7 @@ export async function addDoctor(input: Omit<Doctor, "id">): Promise<Doctor> {
   const doc: Doctor = { id: newId(), ...input };
   const next = [...arr, doc];
   await db.put("meta", { key: DOCTORS_KEY, value: next });
+  import("./plannerExtras").then((m) => m.scheduleExtrasPush()).catch(() => {});
   return doc;
 }
 

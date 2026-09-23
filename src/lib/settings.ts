@@ -11,6 +11,8 @@ export interface UserSettings {
   /** Planner-wide page look, applied to every page unless a page overrides it. */
   pageStyle?: PlannerStyle;
   pageStyleAppliedAt?: number;
+  /** Last local change — used to decide which side wins during cloud sync. */
+  updatedAt?: number;
 }
 
 const SETTINGS_KEY = "user-settings";
@@ -32,7 +34,7 @@ export async function loadSettings(): Promise<UserSettings> {
 
 export async function saveSettings(patch: Partial<UserSettings>): Promise<UserSettings> {
   const current = await loadSettings();
-  const next: UserSettings = { ...current, ...patch };
+  const next: UserSettings = { ...current, ...patch, updatedAt: Date.now() };
   if (!next.createdAt) next.createdAt = Date.now();
   const db = await getDB();
   await db.put("meta", { key: SETTINGS_KEY, value: next });

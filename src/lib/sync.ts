@@ -175,7 +175,8 @@ async function pushOp(op: QueueOp, userId: string): Promise<boolean> {
           owner_name: s.ownerName,
           cover_id: s.coverId,
           onboarded: s.onboarded,
-          client_updated_at: Date.now(),
+          data: (await (await import("./plannerExtras")).collectExtras()) as any,
+          client_updated_at: s.updatedAt || Date.now(),
         },
         { onConflict: "user_id" }
       );
@@ -332,18 +333,30 @@ async function reconcileSettings(userId: string) {
   }
   const localRow = await db.get("meta", "user-settings");
   const local = (localRow?.value as UserSettings) || null;
-  if (remote && (!local || Number(remote.client_updated_at) > (local.createdAt || 0))) {
-    const next: UserSettings = {
-      plannerName: remote.planner_name,
-      ownerName: remote.owner_name,
-      coverId: remote.cover_id || (local?.coverId ?? ""),
-      onboarded: remote.onboarded,
-      createdAt: local?.createdAt || Date.now(),
-    };
-    await db.put("meta", { key: "user-settings", value: next });
+  const localTs = local?.updatedAt || 0;
+  if (remote && (!local || Number(remote.client_updated_at) > localTs)) {
+    await applyRemoteSettings(remote, local);
   } else if (local) {
     await pushOp({ kind: "settings", settings: local }, userId);
   }
+}
+
+async function applyRemoteSettings(r: any, local: UserSettings | null) {
+  const db = await getDB();
+  const extras = (r.data ?? {}) as import("./plannerExtras").PlannerExtras;
+  const next: UserSettings = {
+    ...(local ?? ({} as UserSettings)),
+    ...(extras.settings ?? {}),
+    plannerName: r.planner_name,
+    ownerName: r.owner_name,
+    coverId: r.cover_id || (local?.coverId ?? ""),
+    onboarded: r.onboarded,
+    createdAt: local?.createdAt || extras.settings?.createdAt || Date.now(),
+    updatedAt: Number(r.client_updated_at) || Date.now(),
+  };
+  await db.put("meta", { key: "user-settings", value: next });
+  const { applyExtras } = await import("./plannerExtras");
+  await applyExtras(extras, { settings: false });
 }
 
 async function reconcileEntitlements() {
@@ -406,14 +419,8 @@ function startRealtime(userId: string) {
         const db = await getDB();
         const localRow = await db.get("meta", "user-settings");
         const local = (localRow?.value as UserSettings) || null;
-        const next: UserSettings = {
-          plannerName: r.planner_name,
-          ownerName: r.owner_name,
-          coverId: r.cover_id,
-          onboarded: r.onboarded,
-          createdAt: local?.createdAt || Date.now(),
-        };
-        await db.put("meta", { key: "user-settings", value: next });
+        if (local?.updatedAt && Number(r.client_updated_at) <= local.updatedAt) return;
+        await applyRemoteSettings(r, local);
         emitDataChanged();
       }
     )
