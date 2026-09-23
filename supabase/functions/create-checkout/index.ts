@@ -132,14 +132,20 @@ Deno.serve(async (req) => {
 
     let discounts: any[] | undefined = undefined;
 
-    if (!isRecurring && packs.length > 0) {
+    // Extra covers ride along in the same session as one-time line items.
+    // In subscription mode Stripe bills them on the first invoice only, so the
+    // first charge is membership + covers and renewals stay membership-only.
+    if (packs.length > 0) {
       const flat = priceByKey.get("cover_pack_flat");
       if (!flat) throw new Error("Cover pack price not found (cover_pack_flat)");
       line_items.push({ price: flat.id, quantity: packs.length });
 
       const percentOff = packDiscountPercent(packs.length);
       if (percentOff > 0) {
-        discounts = [{ coupon: await resolveCoupon(stripe, percentOff) }];
+        const productId = typeof flat.product === "string" ? flat.product : flat.product?.id;
+        if (productId) {
+          discounts = [{ coupon: await resolveCoupon(stripe, percentOff, productId) }];
+        }
       }
     }
 
@@ -150,11 +156,12 @@ Deno.serve(async (req) => {
 
     const chosenCoverId = typeof selectedCoverId === "string" ? selectedCoverId : "";
 
-    // A membership checkout grants the planner plus the one cover the buyer picked.
-    // Extra covers are always bought as a separate one-time checkout.
+    // A membership checkout grants the planner, the chosen cover, and any extra
+    // covers paid for in the same session.
     const grantedPackIds = isRecurring
-      ? (chosenCoverId ? [chosenCoverId] : [])
+      ? Array.from(new Set([...(chosenCoverId ? [chosenCoverId] : []), ...packs]))
       : packs;
+
 
     const metadata = {
       planner_id: includesPlanner ? (plannerId || "wellness-journey") : "",
