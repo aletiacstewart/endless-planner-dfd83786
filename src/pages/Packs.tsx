@@ -59,9 +59,14 @@ export default function Packs() {
         <p className="text-center text-muted-foreground mb-2">
           Each pack re-themes the whole planner — cover, palette, and matching page icons.
         </p>
-        <p className="text-center text-xs text-muted-foreground mb-8">
+        <p className="text-center text-xs text-muted-foreground mb-2">
           {PACK_DISCOUNT_HINT}
         </p>
+        <p className="text-center text-xs text-muted-foreground mb-8">
+          Covers are a one-time purchase and yours to keep — buying more never changes your
+          $21.97/month membership or its renewal date.
+        </p>
+
 
         {fullAccess && (
           <div className="mb-8 rounded-xl border border-primary/40 bg-primary-soft/40 px-4 py-3 text-center text-sm">
