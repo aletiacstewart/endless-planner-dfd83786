@@ -4,7 +4,15 @@ import { toast } from "sonner";
 import { COLLECTIONS, COVERS, type CoverCollection } from "@/data/covers";
 import { CoverImage } from "@/components/cover/CoverImage";
 import { CoverIconPreviewDialog } from "@/components/cover/CoverIconPreviewDialog";
-import { isCoverIncluded, calcPackTotalUSD, getPackPriceUSD, PACK_PRICE_USD } from "@/data/coverPacks";
+import {
+  isCoverIncluded,
+  calcPackTotalUSD,
+  calcPackSubtotalUSD,
+  calcPackDiscountUSD,
+  getDiscountLabel,
+  getPackPriceUSD,
+  PACK_DISCOUNT_HINT,
+} from "@/data/coverPacks";
 import { isPackUnlocked, isPackPurchased } from "@/lib/unlock";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { useUserSettings } from "@/hooks/useUserSettings";
@@ -203,7 +211,12 @@ export function CoverPackPicker({ selectedPackIds, onChange, hideOwned, compact,
       {selectedPackIds.length > 0 && (
         <div className="text-xs text-muted-foreground text-center">
           {selectedPackIds.length} pack{selectedPackIds.length === 1 ? "" : "s"} selected · packs total <strong className="text-foreground">${total.toFixed(2)}</strong>
-          <span className="block mt-0.5">${PACK_PRICE_USD} per pack</span>
+          {getDiscountLabel(selectedPackIds.length) && (
+            <span className="block mt-0.5 text-primary font-medium">
+              {getDiscountLabel(selectedPackIds.length)} — you save ${calcPackDiscountUSD(selectedPackIds).toFixed(2)}
+            </span>
+          )}
+          <span className="block mt-0.5">{PACK_DISCOUNT_HINT}</span>
         </div>
       )}
 
@@ -246,7 +259,10 @@ function chipClass(active: boolean) {
 }
 
 export function CoverPackSummary({ packIds, plannerPriceUSD }: { packIds: string[]; plannerPriceUSD?: number }) {
+  const packSubtotal = calcPackSubtotalUSD(packIds);
+  const packDiscount = calcPackDiscountUSD(packIds);
   const packTotal = calcPackTotalUSD(packIds);
+  const discountLabel = getDiscountLabel(packIds.length);
   const grand = (plannerPriceUSD ?? 0) + packTotal;
   return (
     <div className="text-sm space-y-1">
@@ -259,7 +275,13 @@ export function CoverPackSummary({ packIds, plannerPriceUSD }: { packIds: string
       {packIds.length > 0 && (
         <div className="flex justify-between text-muted-foreground">
           <span>{packIds.length} cover &amp; icon pack{packIds.length === 1 ? "" : "s"}</span>
-          <span>${packTotal.toFixed(2)}</span>
+          <span>${packSubtotal.toFixed(2)}</span>
+        </div>
+      )}
+      {packDiscount > 0 && (
+        <div className="flex justify-between text-primary font-medium">
+          <span>{discountLabel}</span>
+          <span>−${packDiscount.toFixed(2)}</span>
         </div>
       )}
       <div className="flex justify-between font-display text-xl pt-2 border-t border-border">

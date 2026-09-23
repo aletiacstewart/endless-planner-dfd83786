@@ -8,6 +8,7 @@ export default function ThankYou() {
   const navigate = useNavigate();
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const [message, setMessage] = useState("Confirming your purchase…");
+  const [pendingPacks, setPendingPacks] = useState<string[]>([]);
 
   useEffect(() => {
     const sessionId = params.get("session_id");
@@ -20,10 +21,22 @@ export default function ThankYou() {
       return;
     }
 
-    // Subscription checkout: the webhook has already recorded the sub row.
+    // Membership checkout: the webhook has already recorded the subscription
+    // and unlocked the planner.
     if (isSub) {
       setStatus("ok");
-      setMessage("Your subscription is active. Cloud sync is now enabled across all your devices.");
+      setMessage(
+        "Your membership is active — the planner is unlocked, backed up in the cloud and syncing on every device.",
+      );
+      try {
+        const saved = (sessionStorage.getItem("pendingPackIds") ?? "")
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+        setPendingPacks(saved);
+      } catch {
+        // storage unavailable — extras can still be bought from the covers shop
+      }
       return;
     }
 
@@ -60,6 +73,23 @@ export default function ThankYou() {
           {status === "ok" ? "You're all set!" : status === "error" ? "Hmm." : "One moment…"}
         </h1>
         <p className="text-muted-foreground mb-6">{message}</p>
+        {status === "ok" && pendingPacks.length > 0 && (
+          <div className="mb-6 space-y-2">
+            <p className="text-sm">
+              You also picked {pendingPacks.length} extra cover{pendingPacks.length === 1 ? "" : "s"}.
+              Finish that one-time purchase whenever you're ready.
+            </p>
+            <button
+              onClick={() => {
+                try { sessionStorage.removeItem("pendingPackIds"); } catch { /* ignore */ }
+                navigate(`/packs?pre=${pendingPacks.join(",")}`);
+              }}
+              className="w-full rounded-md bg-primary text-primary-foreground h-11 text-sm font-medium"
+            >
+              Buy my extra covers
+            </button>
+          </div>
+        )}
         {status === "ok" && (
           <p className="text-xs text-muted-foreground">
             Didn't get the email? Check your spam folder, or use the link from any device to unlock the planner.
