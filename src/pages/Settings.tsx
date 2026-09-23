@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, ImageIcon, Download, Upload, Cloud, CloudOff, LogOut, RefreshCw, CreditCard, Loader2 } from "lucide-react";
+import { ArrowLeft, ImageIcon, Download, Upload, Cloud, CloudOff, LogOut, RefreshCw, CreditCard, Loader2, FileDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CoverImage } from "@/components/cover/CoverImage";
@@ -119,6 +119,32 @@ export default function Settings() {
 function BackupSection() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
+  const [pdfStatus, setPdfStatus] = useState<string | null>(null);
+
+  const onPdf = async () => {
+    setBusy(true);
+    setPdfStatus("Getting started…");
+    try {
+      const { exportPlannerPdf } = await import("@/lib/plannerPdf");
+      const result = await exportPlannerPdf((done, total, label) => {
+        setPdfStatus(`${label} — ${Math.min(done, total)} of ${total}`);
+      });
+      if (result.entries === 0) {
+        toast.info("Your planner is still empty — the PDF has just your cover.");
+      } else if (result.missingPhotos > 0) {
+        toast.success(
+          `PDF ready — ${result.pages} pages. ${result.missingPhotos} photo(s) couldn't be included; sign in on this device to add them.`,
+        );
+      } else {
+        toast.success(`PDF ready — ${result.pages} pages`);
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't build your PDF");
+    } finally {
+      setBusy(false);
+      setPdfStatus(null);
+    }
+  };
 
   const onExport = async () => {
     setBusy(true);
@@ -176,6 +202,17 @@ function BackupSection() {
             e.target.value = "";
           }}
         />
+      </div>
+
+      <div className="pt-2 border-t border-border space-y-2">
+        <p className="text-xs text-muted-foreground">
+          Want a printable copy? This makes one PDF book of your whole planner — cover, every page you've filled in, your artwork, photos and sketches.
+        </p>
+        <Button onClick={onPdf} disabled={busy} className="w-full">
+          {pdfStatus ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <FileDown className="w-4 h-4 mr-2" />}
+          {pdfStatus ? "Building your PDF…" : "Export full planner (PDF)"}
+        </Button>
+        {pdfStatus && <p className="text-xs text-muted-foreground text-center">{pdfStatus}</p>}
       </div>
     </section>
   );
