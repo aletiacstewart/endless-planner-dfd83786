@@ -7,6 +7,7 @@ import { getCoverPageIcon } from "@/lib/coverIcons";
 import { Button } from "@/components/ui/button";
 import { ScanLine } from "lucide-react";
 import { MedicalScannerDialog, type ScanMode } from "./medical/MedicalScannerDialog";
+import { ContactImportBar } from "./contacts/ContactImportBar";
 
 /** Camera scanning for medication labels and medical paperwork. */
 function ScanBar({
@@ -92,6 +93,12 @@ export function PageRenderer({ pageType, values, onChange, coverId, showPageGrap
       )}
       {showPageGraphic && pageType.id === "medical-records" && (
         <ScanBar mode="medical" values={values} onChange={onChange} />
+      )}
+      {showPageGraphic && pageType.id === "contacts" && (
+        <ContactImportBar variant="contacts" values={values} onChange={onChange} />
+      )}
+      {showPageGraphic && pageType.id === "emergency-contacts" && (
+        <ContactImportBar variant="emergency" values={values} onChange={onChange} />
       )}
       {pageType.sections.map((section, idx) => (
         <section key={idx} className="planner-card">
