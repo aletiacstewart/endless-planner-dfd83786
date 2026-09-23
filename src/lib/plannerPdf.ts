@@ -625,6 +625,8 @@ async function renderField(
 ) {
   if (isEmptyValue(value)) return;
 
+  if (await renderTypedField(book, field, value)) return;
+
   if (field.type === "drawing" && typeof value === "string") {
     book.label(field.label);
     const img = await getImage(value, 1400, true);
@@ -632,6 +634,7 @@ async function renderField(
     else book.paragraph("(sketch could not be included)", 9.5);
     return;
   }
+
 
   if (field.type === "image" && typeof value === "string") {
     book.label(field.label);
