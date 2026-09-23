@@ -18,6 +18,7 @@ export function getCustomColors(): string[] {
 function write(next: string[]) {
   try { localStorage.setItem(KEY, JSON.stringify(next)); } catch {}
   listeners.forEach((l) => l(next));
+  import("./plannerExtras").then((m) => m.scheduleExtrasPush()).catch(() => {});
 }
 
 export function addCustomColor(hsl: string): string[] {

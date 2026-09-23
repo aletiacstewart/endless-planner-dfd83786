@@ -121,7 +121,9 @@ export async function createEntry(pageType: string, defaults: Record<string, Fie
 export async function exportAll(): Promise<string> {
   const db = await getDB();
   const entries = await db.getAll("entries");
-  return JSON.stringify({ version: 1, exportedAt: Date.now(), entries }, null, 2);
+  const { collectExtras } = await import("./plannerExtras");
+  const extras = await collectExtras();
+  return JSON.stringify({ version: 2, exportedAt: Date.now(), entries, ...extras }, null, 2);
 }
 
 export async function getAllEntries(): Promise<PlannerEntry[]> {
@@ -130,7 +132,7 @@ export async function getAllEntries(): Promise<PlannerEntry[]> {
 }
 
 export async function importAll(json: string, mode: "merge" | "replace" = "merge"): Promise<number> {
-  const data = JSON.parse(json) as { entries?: PlannerEntry[] };
+  const data = JSON.parse(json) as { entries?: PlannerEntry[] } & import("./plannerExtras").PlannerExtras;
   if (!data?.entries || !Array.isArray(data.entries)) throw new Error("Invalid backup file");
   const db = await getDB();
   if (mode === "replace") {
@@ -145,6 +147,13 @@ export async function importAll(json: string, mode: "merge" | "replace" = "merge
     }
   }
   await tx.done;
+  // Restore settings, doctors, colors and any other saved extras.
+  const { applyExtras, scheduleExtrasPush } = await import("./plannerExtras");
+  await applyExtras(data);
+  // Mirror everything restored up to the cloud backup (no-op when signed out).
+  const sync = await import("./sync");
+  for (const entry of data.entries) if (entry?.id && entry?.pageType) void sync.pushEntry(entry);
+  scheduleExtrasPush();
   return count;
 }
 

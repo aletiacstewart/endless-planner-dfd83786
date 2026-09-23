@@ -9,7 +9,7 @@
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { getAllEntries, type PlannerEntry } from "./db";
+import { getAllEntries, exportAll, type PlannerEntry } from "./db";
 import { PAGE_TYPES } from "./pageTypes";
 
 function downloadBlob(blob: Blob, filename: string) {
@@ -56,8 +56,8 @@ function escapeCsv(s: string): string {
 /* -------------------------------------------------------------------------- */
 
 export async function downloadJson(): Promise<number> {
-  const entries = await getAllEntries();
-  const json = JSON.stringify({ version: 1, exportedAt: Date.now(), entries }, null, 2);
+  const json = await exportAll();
+  const entries = (JSON.parse(json).entries ?? []) as PlannerEntry[];
   downloadBlob(new Blob([json], { type: "application/json" }), `planner-backup-${todayStamp()}.json`);
   return entries.length;
 }
