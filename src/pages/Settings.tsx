@@ -119,6 +119,32 @@ export default function Settings() {
 function BackupSection() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
+  const [pdfStatus, setPdfStatus] = useState<string | null>(null);
+
+  const onPdf = async () => {
+    setBusy(true);
+    setPdfStatus("Getting started…");
+    try {
+      const { exportPlannerPdf } = await import("@/lib/plannerPdf");
+      const result = await exportPlannerPdf((done, total, label) => {
+        setPdfStatus(`${label} — ${Math.min(done, total)} of ${total}`);
+      });
+      if (result.entries === 0) {
+        toast.info("Your planner is still empty — the PDF has just your cover.");
+      } else if (result.missingPhotos > 0) {
+        toast.success(
+          `PDF ready — ${result.pages} pages. ${result.missingPhotos} photo(s) couldn't be included; sign in on this device to add them.`,
+        );
+      } else {
+        toast.success(`PDF ready — ${result.pages} pages`);
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't build your PDF");
+    } finally {
+      setBusy(false);
+      setPdfStatus(null);
+    }
+  };
 
   const onExport = async () => {
     setBusy(true);
