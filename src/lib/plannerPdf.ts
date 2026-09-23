@@ -641,10 +641,10 @@ export async function exportPlannerPdf(onProgress?: PdfProgress): Promise<Planne
     const slice = contents.slice(p * ROWS_PER_CONTENTS_PAGE, (p + 1) * ROWS_PER_CONTENTS_PAGE);
     for (const row of slice) {
       doc.setFont("helvetica", "bold");
-      doc.text((doc.splitTextToSize(row.label, 200) as string[])[0], M, y);
+      doc.text(fitText(doc, row.label, 195), M, y);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(110, 110, 130);
-      doc.text((doc.splitTextToSize(row.sub, 250) as string[])[0], M + 210, y);
+      doc.text(fitText(doc, row.sub, 250), M + 210, y);
       doc.setTextColor(0, 0, 0);
       doc.text(String(row.page), PW - M, y, { align: "right" });
       doc.setDrawColor(230, 230, 238);
