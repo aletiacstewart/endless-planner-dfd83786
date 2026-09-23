@@ -368,6 +368,255 @@ function genericObjectRows(data: Record<string, unknown>): string[][] {
     .map(([k, v]) => [prettyKey(k), scalarText(v)]);
 }
 
+/* -- shapes written by FieldRenderer, rendered faithfully in the export ----- */
+
+interface DrawingLike {
+  strokes?: { color?: string; width?: number; eraser?: boolean; points?: { x: number; y: number }[] }[];
+}
+
+/** Sketches are stored as normalised vector strokes — rasterise them for the PDF. */
+function drawingToImage(value: DrawingLike, wPx = 1100, hPx = 620): Img | null {
+  const strokes = (value.strokes ?? []).filter((s) => (s.points?.length ?? 0) > 0 && !s.eraser);
+  if (!strokes.length) return null;
+  const canvas = document.createElement("canvas");
+  canvas.width = wPx;
+  canvas.height = hPx;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, wPx, hPx);
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  for (const s of strokes) {
+    // Stored colours may be CSS variables that no longer resolve outside the app.
+    const colour = s.color && /^(#|rgb)/i.test(s.color) ? s.color : "#2b2b3a";
+    ctx.strokeStyle = colour;
+    ctx.lineWidth = Math.max(1, (s.width ?? 3) * (wPx / 700));
+    ctx.beginPath();
+    (s.points ?? []).forEach((p, i) =>
+      i ? ctx.lineTo(p.x * wPx, p.y * hPx) : ctx.moveTo(p.x * wPx, p.y * hPx),
+    );
+    ctx.stroke();
+  }
+  return { dataUrl: canvas.toDataURL("image/jpeg", 0.85), w: wPx, h: hPx, format: "JPEG" };
+}
+
+/** Checkbox groups store ids like "Cardio-0" — show the label the user ticked. */
+function tickLabel(id: unknown): string {
+  return String(id ?? "").replace(/-\d+$/, "").trim();
+}
+
+function numericKeyRows(data: Record<string, unknown>, head: [string, string]): { head: string[]; rows: string[][] } {
+  const rows = Object.entries(data)
+    .filter(([k, v]) => !k.startsWith("__") && !k.startsWith("g:") && !isEmptyValue(v))
+    .map(([k, v]) => ({ k: k.replace(/^g/, ""), text: scalarText(v) }))
+    .filter((r) => r.text)
+    .sort((a, b) => (Number(a.k) || 0) - (Number(b.k) || 0))
+    .map((r) => [r.k, r.text]);
+  return { head, rows };
+}
+
+function markedDays(marks: Record<string, unknown>, rowIndex: number): string {
+  return Object.entries(marks ?? {})
+    .filter(([k, v]) => Boolean(v) && Number(k.split("-")[0]) === rowIndex)
+    .map(([k]) => k.split("-")[1])
+    .sort((a, b) => Number(a) - Number(b))
+    .join(", ");
+}
+
+const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function monthNames(list: string): string {
+  return list
+    .split(", ")
+    .filter(Boolean)
+    .map((m) => MONTH_LABELS[Number(m)] ?? m)
+    .join(", ");
+}
+
+function medListRows(data: Record<string, unknown>): { head: string[]; rows: string[][] } {
+  const numbers = new Set<number>();
+  for (const k of Object.keys(data)) {
+    const n = Number(k.split("_")[0]);
+    if (Number.isFinite(n) && n > 0) numbers.add(n);
+  }
+  const cell = (n: number, key: string) => scalarText(data[`${n}_${key}`] ?? "");
+  const rows: string[][] = [];
+  for (const n of [...numbers].sort((a, b) => a - b)) {
+    const times = (["m", "a", "n"] as const)
+      .filter((k) => Boolean(data[`${n}_${k}`]))
+      .map((k) => ({ m: "Morning", a: "Afternoon", n: "Night" })[k]);
+    const cells = [cell(n, "name"), cell(n, "strength"), cell(n, "reason"), cell(n, "doctor"), times.join(", ")];
+    if (cells.every((c) => !c)) continue;
+    rows.push([String(n), ...cells]);
+  }
+  return { head: ["#", "Medication", "Strength", "Reason", "Prescriber", "When"], rows };
+}
+
+/**
+ * Renders the field types that store structured data (grids, calendars, tick
+ * lists, sketches). Returns true when it handled the field.
+ */
+async function renderTypedField(book: Book, field: FieldDef, value: FieldValue): Promise<boolean> {
+  const obj = value !== null && typeof value === "object" ? (value as Record<string, unknown>) : null;
+
+  switch (field.type) {
+    case "drawing": {
+      if (!obj) return false;
+      const img = drawingToImage(obj as DrawingLike);
+      book.label(field.label);
+      if (img) await book.image(img, CONTENT_W, 300);
+      else book.paragraph("(sketch is empty)", 9.5);
+      return true;
+    }
+    case "checkbox-group": {
+      if (!Array.isArray(value)) return false;
+      const labels = value.map(tickLabel).filter(Boolean);
+      if (!labels.length) return true;
+      book.label(field.label);
+      for (const l of labels) book.paragraph(`[x] ${l}`, 10.5, 10);
+      return true;
+    }
+    case "priority-list": {
+      if (!Array.isArray(value)) return false;
+      const items = value as { done?: boolean; text?: string }[];
+      const lines = items.filter((i) => (i?.text ?? "").trim());
+      if (!lines.length) return true;
+      book.label(field.label);
+      for (const i of lines) book.paragraph(`${i.done ? "[x]" : "[ ]"} ${i.text}`, 10.5, 10);
+      return true;
+    }
+    case "calendar-grid":
+    case "calendar-notes":
+    case "month-note-picker": {
+      if (!obj) return false;
+      const { head, rows } = numericKeyRows(obj, ["Day", "Notes & appointments"]);
+      if (!rows.length) return true;
+      book.label(field.label);
+      book.table(head, rows);
+      return true;
+    }
+    case "hourly-timeline": {
+      if (!obj) return false;
+      const { head, rows } = numericKeyRows(obj, ["Hour", "Plan"]);
+      if (!rows.length) return true;
+      book.label(field.label);
+      book.table(head, rows);
+      return true;
+    }
+    case "time-schedule": {
+      const rows = Array.isArray(value)
+        ? (value as { time?: string; text?: string }[])
+            .filter((r) => (r?.text ?? "").trim() || (r?.time ?? "").trim())
+            .map((r) => [r.time ?? "", r.text ?? ""])
+        : obj
+          ? numericKeyRows(obj, ["Time", "Plan"]).rows
+          : [];
+      if (!rows.length) return true;
+      book.label(field.label);
+      book.table(["Time", "Plan"], rows);
+      return true;
+    }
+    case "med-list": {
+      if (!obj) return false;
+      const { head, rows } = medListRows(obj);
+      if (!rows.length) return true;
+      book.label(field.label);
+      book.table(head, rows);
+      return true;
+    }
+    case "habit-grid": {
+      if (!obj) return false;
+      const habits = (obj.habits as string[]) ?? [];
+      const marks = (obj.marks as Record<string, unknown>) ?? {};
+      const rows = habits
+        .map((h, i) => [h || `Habit ${i + 1}`, markedDays(marks, i)])
+        .filter(([h, days]) => h.trim() || days);
+      if (!rows.length) return true;
+      book.label(field.label);
+      book.table(["Habit", "Days marked"], rows);
+      return true;
+    }
+    case "month-tracker": {
+      if (!obj) return false;
+      const items = (obj.items as string[]) ?? [];
+      const marks = (obj.marks as Record<string, unknown>) ?? {};
+      const rows = items
+        .map((h, i) => [h || `Item ${i + 1}`, monthNames(markedDays(marks, i))])
+        .filter(([h, m]) => h.trim() || m);
+      if (!rows.length) return true;
+      book.label(field.label);
+      book.table(["Item", "Months marked"], rows);
+      return true;
+    }
+    case "yearly-habit-grid": {
+      if (!obj) return false;
+      const habitRows = (obj.rows as { mode?: string; label?: string }[]) ?? [];
+      const marks = (obj.marks as Record<string, unknown>) ?? {};
+      const rows = habitRows
+        .map((r, i) => [
+          r?.label || `Habit ${i + 1}`,
+          r?.mode === "break" ? "Break" : r?.mode === "begin" ? "Begin" : "",
+          monthNames(markedDays(marks, i)),
+        ])
+        .filter(([label, , m]) => label.trim() || m);
+      if (!rows.length) return true;
+      book.label(field.label);
+      book.table(["Habit", "Goal", "Months marked"], rows);
+      return true;
+    }
+    case "water-grid": {
+      if (!obj) return false;
+      const marks = (obj.marks as Record<string, unknown>) ?? {};
+      const perDay = new Map<number, number>();
+      for (const [k, v] of Object.entries(marks)) {
+        if (!v) continue;
+        const day = Number(k.split("-")[1]);
+        if (!Number.isFinite(day)) continue;
+        perDay.set(day, (perDay.get(day) ?? 0) + 1);
+      }
+      const rows = [...perDay.entries()]
+        .sort((a, b) => a[0] - b[0])
+        .map(([day, count]) => [String(day), String(count)]);
+      if (!rows.length) return true;
+      book.label(field.label);
+      book.table(["Day", "Glasses"], rows);
+      return true;
+    }
+    case "daily-month-grid": {
+      if (!obj) return false;
+      const cells = (obj.cells as Record<string, unknown>) ?? {};
+      const achieved = (obj.achieved as Record<string, unknown>) ?? {};
+      const notes = (obj.notes as Record<string, unknown>) ?? {};
+      const days = new Set<string>([...Object.keys(cells), ...Object.keys(achieved), ...Object.keys(notes)]);
+      const rows = [...days]
+        .sort((a, b) => (Number(a.split("-")[0]) || 0) - (Number(b.split("-")[0]) || 0))
+        .map((d) => [
+          d.split("-")[0],
+          scalarText(cells[d] ?? ""),
+          achieved[d] ? "Yes" : "",
+          scalarText(notes[d] ?? ""),
+        ])
+        .filter((r) => r[1] || r[2] || r[3]);
+      if (!rows.length) return true;
+      book.label(field.label);
+      book.table([obj.rowLabel ? scalarText(obj.rowLabel) : "Day", "Reading", "Goal met", "Notes"], rows);
+      return true;
+    }
+    case "mood-log":
+    case "smart-goal": {
+      if (!obj) return false;
+      const rows = genericObjectRows(obj);
+      if (!rows.length) return true;
+      book.label(field.label);
+      book.table(field.type === "mood-log" ? ["Time of day", "Mood"] : ["SMART", "Detail"], rows);
+      return true;
+    }
+    default:
+      return false;
+  }
+}
+
 async function renderField(
   book: Book,
   field: FieldDef,
