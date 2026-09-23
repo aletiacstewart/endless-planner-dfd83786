@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { getAllEntries } from "@/lib/db";
 import { collectPlannerEvents, downloadIcs } from "@/lib/calendarExport";
+import { GoogleCalendarSyncSection } from "@/components/calendar/GoogleCalendarSync";
 
 const FUNCTIONS_BASE = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/calendar-feed`;
 
@@ -141,6 +142,8 @@ export function CalendarSyncCard() {
           Sign in with cloud sync to get a live calendar link that updates on its own.
         </p>
       )}
+
+      <GoogleCalendarSyncSection />
     </section>
   );
 }
