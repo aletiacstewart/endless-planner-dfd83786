@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams, useSearchParams, Navigate } from "react-router-dom";
+import { Link, useParams, useSearchParams, useNavigate, Navigate } from "react-router-dom";
 import { ArrowLeft, ShoppingBag } from "lucide-react";
 import { getPlanner } from "@/data/planners";
 import { getPageType } from "@/lib/pageTypes";
@@ -10,6 +10,7 @@ import { COLLECTIONS, COVERS, type CoverCollection, getCover } from "@/data/cove
 import { calcPackTotalUSD } from "@/data/coverPacks";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 export default function PlannerDetail() {
   const { plannerId = "" } = useParams();
@@ -17,6 +18,7 @@ export default function PlannerDetail() {
   const highlightCover = searchParams.get("cover") ?? "";
   const planner = getPlanner(plannerId);
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { openCheckout, checkoutElement, closeCheckout, isOpen } = useStripeCheckout();
   const [email, setEmail] = useState(user?.email ?? "");
   const [includedCoverId, setIncludedCoverId] = useState<string>("");
@@ -127,7 +129,7 @@ export default function PlannerDetail() {
             </h1>
             <p className="text-primary/70 text-base md:text-lg leading-relaxed max-w-lg font-light">
               {planner.tagline}. Every cover ships with 20 matching page icons and a 60-piece themed
-              sticker set — pick one to include with activation, add more for $5 each.
+              sticker set — pick one to include with your membership, add more for $5 each — 10% off 2–5, 20% off 6 or more.
             </p>
           </div>
 
@@ -172,7 +174,7 @@ export default function PlannerDetail() {
               )}
             </div>
             <span className="bg-primary text-primary-foreground px-6 py-3 rounded-full text-[11px] font-bold uppercase tracking-[0.2em] shadow-lg shadow-primary/20">
-              ${total.toFixed(2)} · Checkout
+              ${planner.priceUSD.toFixed(2)}/mo · Checkout
             </span>
           </button>
         </div>
@@ -245,7 +247,7 @@ export default function PlannerDetail() {
       <div className="md:hidden fixed inset-x-0 bottom-0 bg-card border-t border-primary/10 p-3 flex items-center justify-between gap-3 z-40 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         <div>
           <div className="text-[10px] uppercase tracking-widest text-primary/60 font-bold">Total</div>
-          <div className="font-storefront text-lg text-primary">${total.toFixed(2)}</div>
+          <div className="font-storefront text-lg text-primary">${planner.priceUSD.toFixed(2)}/mo</div>
         </div>
         <button
           onClick={scrollToCart}
