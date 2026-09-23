@@ -188,7 +188,7 @@ async function upsertSubscription(sub: any, env: StripeEnv) {
   );
 
   // Planner access follows the membership.
-  await syncPlannerAccess(userId, sub, email);
+  await syncPlannerAccess(userId, sub, email, env);
 }
 
 const MEMBERSHIP_PLANNER_ID = "wellness-journey";
@@ -199,7 +199,7 @@ const ACTIVE_STATUSES = ["active", "trialing", "past_due", "incomplete"];
  * subscription is live, remove it once it ends (data is untouched — resubscribing
  * restores access immediately).
  */
-async function syncPlannerAccess(userId: string | null, sub: any, email: string | null) {
+async function syncPlannerAccess(userId: string | null, sub: any, email: string | null, env: StripeEnv) {
   if (!userId) return;
   const supa = getSupabase();
   const periodEnd = sub.items?.data?.[0]?.current_period_end ?? sub.current_period_end;
@@ -222,7 +222,7 @@ async function syncPlannerAccess(userId: string | null, sub: any, email: string 
         email,
         unlock_code: code,
         stripe_session_id: `sub_${sub.id}`,
-        environment: sub.__env ?? "sandbox",
+        environment: env,
       });
     }
     const { error } = await supa.from("user_planner_unlocks").upsert(
@@ -250,7 +250,7 @@ async function markSubscriptionCanceled(sub: any, env: StripeEnv) {
     .select("user_id, email")
     .maybeSingle();
   const userId = (data as any)?.user_id ?? null;
-  await syncPlannerAccess(userId, { ...sub, status: "canceled", current_period_end: null }, (data as any)?.email ?? null);
+  await syncPlannerAccess(userId, { ...sub, status: "canceled", current_period_end: null }, (data as any)?.email ?? null, env);
 }
 
 Deno.serve(async (req) => {
