@@ -37,6 +37,35 @@ async function resolveOrCreateCustomer(
   return created.id;
 }
 
+// Cover packs: $5 each with a cart-wide volume discount.
+//   2–5 packs → 10% off, 6 or more → 20% off
+function packDiscountPercent(count: number): number {
+  if (count >= 6) return 20;
+  if (count >= 2) return 10;
+  return 0;
+}
+
+// Reuse a stable coupon per discount rate so receipts show the saving.
+async function resolveCoupon(
+  stripe: ReturnType<typeof createStripeClient>,
+  percentOff: number,
+): Promise<string> {
+  const id = `cover_packs_${percentOff}_off`;
+  try {
+    const existing = await stripe.coupons.retrieve(id);
+    if (existing && !(existing as any).deleted) return existing.id;
+  } catch {
+    // not created yet in this environment
+  }
+  const created = await stripe.coupons.create({
+    id,
+    percent_off: percentOff,
+    duration: "once",
+    name: `${percentOff}% off cover packs`,
+  });
+  return created.id;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") {
