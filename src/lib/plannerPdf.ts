@@ -90,7 +90,8 @@ function fitText(doc: jsPDF, text: string, width: number): string {
 
 async function rasterize(src: string, maxPx: number, keepAlpha: boolean): Promise<Img | null> {
   try {
-    const img = await loadHtmlImage(src);
+    const img = await loadAnyway(src);
+    if (!img) return null;
     const scale = Math.min(1, maxPx / Math.max(img.naturalWidth, img.naturalHeight));
     const w = Math.max(1, Math.round(img.naturalWidth * scale));
     const h = Math.max(1, Math.round(img.naturalHeight * scale));
