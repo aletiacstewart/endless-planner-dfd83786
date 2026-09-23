@@ -26,19 +26,11 @@ export default function ThankYou() {
     if (isSub) {
       setStatus("ok");
       setMessage(
-        "Your membership is active — the planner is unlocked, backed up in the cloud and syncing on every device.",
+        "Your membership is active — the planner is unlocked, every cover you bought is ready, and your work is backed up and syncing on every device.",
       );
-      try {
-        const saved = (sessionStorage.getItem("pendingPackIds") ?? "")
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean);
-        setPendingPacks(saved);
-      } catch {
-        // storage unavailable — extras can still be bought from the covers shop
-      }
       return;
     }
+
 
     // Pack-only checkout: no planner id, the webhook has already emailed unlock codes.
     if (!planner) {
