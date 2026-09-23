@@ -35,6 +35,33 @@ const queryClient = new QueryClient();
 
 const PRIMARY_PLANNER_ID = PLANNERS[0].id;
 
+function MembershipLocked() {
+  return (
+    <div className="min-h-screen flex items-center justify-center px-6 bg-background">
+      <div className="planner-card max-w-md w-full text-center space-y-4">
+        <h1 className="font-display text-2xl">Your planner is waiting</h1>
+        <p className="text-sm text-muted-foreground">
+          The Endless Planner membership is $21.97 a month and includes the whole planner, cloud
+          backup, syncing on every device and two-way calendar sync.
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Everything you've already written, your photos and your settings are safely stored — they
+          come straight back the moment your membership is active again.
+        </p>
+        <a
+          href="/subscribe"
+          className="inline-flex items-center justify-center w-full h-11 rounded-md bg-primary text-primary-foreground text-sm font-medium"
+        >
+          Start my membership — $21.97/month
+        </a>
+        <a href="/" className="block text-xs underline text-muted-foreground">
+          Back to home
+        </a>
+      </div>
+    </div>
+  );
+}
+
 function RequireUnlock({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const { loading, hasPlanner, userId } = useEntitlements();
@@ -50,7 +77,7 @@ function RequireUnlock({ children }: { children: React.ReactNode }) {
     return <Navigate to="/auth" replace state={{ from: location }} />;
   }
   if (!hasPlanner(PRIMARY_PLANNER_ID)) {
-    return <Navigate to="/" replace state={{ from: location }} />;
+    return <MembershipLocked />;
   }
   return <>{children}</>;
 }
