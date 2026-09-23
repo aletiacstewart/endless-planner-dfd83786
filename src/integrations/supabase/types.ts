@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      calendar_feed_tokens: {
+        Row: {
+          created_at: string
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          token?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       device_activations: {
         Row: {
           created_at: string

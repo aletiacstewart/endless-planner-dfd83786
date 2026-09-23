@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CoverImage } from "@/components/cover/CoverImage";
 import { CoverPicker } from "@/components/cover/CoverPicker";
+import { CalendarSyncCard } from "@/components/calendar/CalendarSyncCard";
+
 import { useUserSettings } from "@/hooks/useUserSettings";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -95,7 +97,10 @@ export default function Settings() {
 
         <SubscriptionSection />
 
+        <CalendarSyncCard />
+
         <BackupSection />
+
 
         <Link to="/app" className="block text-center text-sm text-muted-foreground underline pt-2">
           Back to planner

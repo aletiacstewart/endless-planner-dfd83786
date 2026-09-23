@@ -25,3 +25,8 @@ project_id = "dgwfvvytyfgefckforqk"
     verify_jwt = false
   [functions.send-transactional-email]
     verify_jwt = true
+  [functions.scan-medical-document]
+    verify_jwt = false
+  [functions.calendar-feed]
+    verify_jwt = false
+

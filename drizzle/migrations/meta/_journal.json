@@ -15,6 +15,13 @@
       "when": 1790122850272,
       "tag": "0001_secure_journal_photo_storage",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790127139370,
+      "tag": "0002_create_calendar_feed_tokens",
+      "breakpoints": true
     }
   ]
 }

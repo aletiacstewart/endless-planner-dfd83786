@@ -4,6 +4,42 @@ import { FieldRenderer } from "./FieldRenderer";
 import { cn } from "@/lib/utils";
 import { listDoctors } from "@/lib/doctors";
 import { getCoverPageIcon } from "@/lib/coverIcons";
+import { Button } from "@/components/ui/button";
+import { ScanLine } from "lucide-react";
+import { MedicalScannerDialog, type ScanMode } from "./medical/MedicalScannerDialog";
+import { ContactImportBar } from "./contacts/ContactImportBar";
+
+/** Camera scanning for medication labels and medical paperwork. */
+function ScanBar({
+  mode,
+  values,
+  onChange,
+}: {
+  mode: ScanMode;
+  values: Record<string, FieldValue>;
+  onChange: (key: string, value: FieldValue) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="planner-card flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h2 className="font-display text-lg">
+          {mode === "prescription" ? "Scan a prescription" : "Scan medical papers"}
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          {mode === "prescription"
+            ? "Photograph a bottle label and the medication details fill themselves in."
+            : "Photograph a visit summary, lab report or appointment slip to fill this record in."}
+        </p>
+      </div>
+      <Button type="button" onClick={() => setOpen(true)} className="touch-manipulation">
+        <ScanLine className="mr-2 h-4 w-4" />
+        {mode === "prescription" ? "Scan prescription bottle" : "Scan medical papers"}
+      </Button>
+      <MedicalScannerDialog mode={mode} open={open} onOpenChange={setOpen} values={values} onChange={onChange} />
+    </div>
+  );
+}
 
 /** "Notes for Dr. X" caption shown on sections whose fields are scoped by doctor. */
 function ScopeHint({ section, values }: { section: SectionDef; values: Record<string, FieldValue> }) {
@@ -51,6 +87,18 @@ export function PageRenderer({ pageType, values, onChange, coverId, showPageGrap
             className="h-28 w-28 sm:h-32 sm:w-32 lg:h-36 lg:w-36 rounded-2xl object-cover shadow-sm ring-1 ring-border/50"
           />
         </div>
+      )}
+      {showPageGraphic && pageType.id === "medications" && (
+        <ScanBar mode="prescription" values={values} onChange={onChange} />
+      )}
+      {showPageGraphic && pageType.id === "medical-records" && (
+        <ScanBar mode="medical" values={values} onChange={onChange} />
+      )}
+      {showPageGraphic && pageType.id === "contacts" && (
+        <ContactImportBar variant="contacts" values={values} onChange={onChange} />
+      )}
+      {showPageGraphic && pageType.id === "emergency-contacts" && (
+        <ContactImportBar variant="emergency" values={values} onChange={onChange} />
       )}
       {pageType.sections.map((section, idx) => (
         <section key={idx} className="planner-card">
