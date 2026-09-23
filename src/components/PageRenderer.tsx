@@ -87,6 +87,12 @@ export function PageRenderer({ pageType, values, onChange, coverId, showPageGrap
           />
         </div>
       )}
+      {showPageGraphic && pageType.id === "medications" && (
+        <ScanBar mode="prescription" values={values} onChange={onChange} />
+      )}
+      {showPageGraphic && pageType.id === "medical-records" && (
+        <ScanBar mode="medical" values={values} onChange={onChange} />
+      )}
       {pageType.sections.map((section, idx) => (
         <section key={idx} className="planner-card">
           {section.title && (
