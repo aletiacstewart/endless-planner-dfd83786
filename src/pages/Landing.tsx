@@ -143,12 +143,12 @@ export default function Landing() {
             </h2>
             <div className="bg-primary-foreground/10 backdrop-blur-md border border-primary-foreground/20 p-6 rounded-sm max-w-sm">
               <p className="text-primary-foreground text-sm font-light leading-relaxed mb-4">
-                Sync your beautifully curated planner across every device for $10/month.
-                Cancel anytime.
+                One membership, $21.97/month: the whole planner, cloud backup, syncing on
+                every device and two-way calendar sync. Cancel anytime.
               </p>
               <Button asChild variant="secondary" className="w-full rounded-none text-[10px] uppercase tracking-[0.2em] font-bold h-11">
                 <Link to="/subscribe">
-                  <Cloud className="w-3.5 h-3.5 mr-2" /> Activate Cloud Sync
+                  <Cloud className="w-3.5 h-3.5 mr-2" /> Start my membership
                 </Link>
               </Button>
             </div>
@@ -163,9 +163,9 @@ export default function Landing() {
         </h2>
         <div className="grid md:grid-cols-3 gap-8">
           {[
-            { n: "01", t: "Pick your covers", d: "$19.97 one-time activation gets you the planner and 1 cover of your choice. Add more for $5 each — no subscription required." },
+            { n: "01", t: "Pick your covers", d: "$21.97/month gets you the planner and 1 cover of your choice. Add more for $5 each — 10% off 2–5 covers, 20% off 6 or more." },
             { n: "02", t: "Install by email", d: "We'll email your private install link — add it to your phone, tablet, or desktop as an app." },
-            { n: "03", t: "Sync everywhere", d: "Optional $10/mo cloud sync keeps your entries in step across every device. Works offline either way." },
+            { n: "03", t: "Sync everywhere", d: "Cloud backup, every-device sync and two-way calendar sync are all included. Works offline too." },
           ].map((s) => (
             <div key={s.n} className="border-t border-primary/20 pt-6">
               <div className="font-storefront text-4xl text-primary/40 mb-4">{s.n}</div>
@@ -238,11 +238,11 @@ export default function Landing() {
         </h2>
         <div className="space-y-6">
           {[
-            { q: "Where is my data stored?", a: "On your device, with optional cloud backup so you can restore on any device. Export a JSON backup any time from Settings." },
-            { q: "What if I get a new phone?", a: "Sign in on the new device — with active Cloud Sync your planner restores automatically. Otherwise use your unlock code to reinstall." },
-            { q: "How does pricing work?", a: "$19.97 one-time gets you the planner and 1 cover + matching icon set + 60 themed stickers. Extra covers are $5 each. Optional $10/mo Cloud Sync keeps devices in step." },
+            { q: "Where is my data stored?", a: "On your device and backed up in the cloud, so you can restore on any device. Export a JSON backup any time from Settings." },
+            { q: "What if I get a new phone?", a: "Sign in on the new device and your planner restores automatically — your membership includes backup and sync." },
+            { q: "How does pricing work?", a: "$21.97/month gets you the planner, cloud backup, every-device sync, two-way calendar sync and 1 cover + matching icon set + 60 themed stickers. Extra covers are $5 each — 10% off 2–5, 20% off 6 or more. Cancel anytime." },
             { q: "Which devices are supported?", a: "Anything with a modern browser — iPhone, iPad, Android, Mac, Windows, Linux. Install as an app via 'Add to Home Screen'." },
-            { q: "Refunds?", a: "Because activation grants immediate digital access, purchases are non-refundable. Reach out if something isn't working and we'll make it right." },
+            { q: "Refunds?", a: "Cancel any time and your membership stops at the end of the month — your writing stays safe and returns if you come back. Extra cover purchases are non-refundable. Reach out if something isn't working and we'll make it right." },
           ].map((f) => (
             <div key={f.q} className="border-t border-primary/10 pt-5">
               <h3 className="font-storefront text-xl text-primary mb-2">{f.q}</h3>
