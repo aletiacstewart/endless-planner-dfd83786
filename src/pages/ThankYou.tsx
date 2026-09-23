@@ -8,6 +8,7 @@ export default function ThankYou() {
   const navigate = useNavigate();
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const [message, setMessage] = useState("Confirming your purchase…");
+  const [pendingPacks, setPendingPacks] = useState<string[]>([]);
 
   useEffect(() => {
     const sessionId = params.get("session_id");
@@ -20,10 +21,22 @@ export default function ThankYou() {
       return;
     }
 
-    // Subscription checkout: the webhook has already recorded the sub row.
+    // Membership checkout: the webhook has already recorded the subscription
+    // and unlocked the planner.
     if (isSub) {
       setStatus("ok");
-      setMessage("Your subscription is active. Cloud sync is now enabled across all your devices.");
+      setMessage(
+        "Your membership is active — the planner is unlocked, backed up in the cloud and syncing on every device.",
+      );
+      try {
+        const saved = (sessionStorage.getItem("pendingPackIds") ?? "")
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+        setPendingPacks(saved);
+      } catch {
+        // storage unavailable — extras can still be bought from the covers shop
+      }
       return;
     }
 
