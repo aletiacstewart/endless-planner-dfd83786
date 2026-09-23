@@ -22,6 +22,7 @@ const WIDE_TYPES = new Set([
   "measurement-grid",
   "water-grid",
   "drawing",
+  "image",
 ]);
 
 function isWide(section: SectionDef): boolean {

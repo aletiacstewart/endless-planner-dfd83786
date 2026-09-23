@@ -8,6 +8,13 @@
       "when": 1790108969217,
       "tag": "0000_add_tester_role",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790122850272,
+      "tag": "0001_secure_journal_photo_storage",
+      "breakpoints": true
     }
   ]
 }

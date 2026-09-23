@@ -1053,6 +1053,21 @@ async function syncLinkedEntriesInner(complete: PlannerEntry): Promise<string[]>
       synced.push(`Notes (${date.iso})`);
     }
 
+    // Daily Journal — dated writing, photo, and sketch.
+    const journalKeys = ["journal_title", "journal_body", "journal_photo", "journal_sketch"];
+    if (anyFilled(v, journalKeys)) {
+      const journal = await findOrCreate(
+        "daily-journal",
+        (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
+        { date: date.iso },
+      );
+      await persist(journal, (dst) => {
+        dst.date = date.iso;
+        copyKeys(v, dst, journalKeys);
+      });
+      synced.push(`Daily Journal (${date.iso})`);
+    }
+
     // 23. Brain Dump — per day.
     if (anyFilled(v, ["brain_dump_today", "do_now", "do_later"])) {
       const entry = await findOrCreate(
@@ -1180,7 +1195,7 @@ async function scaffoldLinkedEntriesInner(complete: PlannerEntry): Promise<strin
     const weekIso = isoOf(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate());
 
     // Per-date pages.
-    for (const id of ["daily-tracker", "medical-records", "cleaning-checklist", "brain-dump", "adhd-toolkit"]) {
+    for (const id of ["daily-tracker", "daily-journal", "medical-records", "cleaning-checklist", "brain-dump", "adhd-toolkit"]) {
       await findOrCreate(
         id,
         (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
@@ -1470,6 +1485,22 @@ async function syncFromIndividualInner(entry: PlannerEntry): Promise<string[]> {
         dst.note_today = v.note as FieldValue;
       });
       if (touched > 0) synced.push("Complete Tracker (notes)");
+      return synced;
+    }
+
+    // Daily Journal → the Complete Tracker day with the same date.
+    if (entry.pageType === "daily-journal") {
+      const date = parseDate(v.date);
+      if (!date) return [];
+      const complete = await findOrCreate(
+        "complete-tracker",
+        (e) => (e.values.date as string | undefined)?.slice(0, 10) === date.iso,
+        { date: date.iso },
+      );
+      await persist(complete, (dst) => {
+        copyKeys(v, dst, ["journal_title", "journal_body", "journal_photo", "journal_sketch"]);
+      });
+      synced.push("Complete Tracker (daily journal)");
       return synced;
     }
 

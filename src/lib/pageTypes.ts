@@ -40,7 +40,8 @@ export type FieldType =
   | "select" // native dropdown driven by field.options
   | "time-select" // dropdown of 15-minute times
   | "gratitude-list" // 3 numbered gratitude text rows
-  | "drawing"; // touch, mouse, and stylus sketch canvas
+  | "drawing" // touch, mouse, and stylus sketch canvas
+  | "image"; // private user photo stored in cloud storage
 
 export interface FieldDef {
   key: string;
@@ -743,6 +744,18 @@ export const PAGE_TYPES: PageTypeDef[] = [
         page: 2,
         fields: [
           { key: "note_today", label: "Notes for today", type: "note-style", span: 2 },
+        ],
+      },
+      {
+        title: "Daily Journal",
+        description: "Syncs both ways with your Daily Journal for this day.",
+        columns: 1,
+        page: 2,
+        fields: [
+          { key: "journal_title", label: "Journal title", type: "text", span: 2 },
+          { key: "journal_body", label: "Journal", type: "note-style", span: 2 },
+          { key: "journal_photo", label: "Photo", type: "image", span: 2 },
+          { key: "journal_sketch", label: "Sketch", type: "drawing", span: 2 },
         ],
       },
       {
@@ -2128,6 +2141,34 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
     ],
     summary: (v) => (v.date as string) || "Gratitude log",
+  },
+  {
+    id: "daily-journal",
+    name: "Daily Journal",
+    shortName: "Journal",
+    description: "Write about your day, save a photo, and sketch a memory.",
+    icon: "BookHeart",
+    sections: [
+      {
+        page: 1,
+        columns: 1,
+        fields: [
+          { key: "date", label: "Date", type: "date", span: 2 },
+          { key: "journal_title", label: "Title", type: "text", span: 2, placeholder: "A moment from today" },
+          { key: "journal_body", label: "Journal", type: "note-style", span: 2 },
+        ],
+      },
+      {
+        title: "Today's Memory",
+        page: 2,
+        columns: 1,
+        fields: [
+          { key: "journal_photo", label: "Photo", type: "image", span: 2 },
+          { key: "journal_sketch", label: "Sketch", type: "drawing", span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => (v.journal_title as string) || (v.date as string) || "Daily journal",
   },
   {
     id: "emergency-contacts",

@@ -27,7 +27,7 @@ MAXPX = 512
 
 PAGES = [
     "my-goals", "yearly-calendar", "monthly-calendar", "weekly-calendar",
-    "daily-tracker", "complete-tracker", "yearly-habit-tracker", "weight-tracker",
+    "daily-tracker", "daily-journal", "complete-tracker", "yearly-habit-tracker", "weight-tracker",
     "measurement-tracker", "blood-sugar-tracker", "blood-pressure-tracker",
     "oxygen-tracker", "self-care-checklist", "cleaning-checklist", "recipe",
     "notes", "workout-tracker", "medications", "medical-records", "yearly-focus",
