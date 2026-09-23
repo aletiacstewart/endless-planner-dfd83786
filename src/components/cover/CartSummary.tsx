@@ -148,15 +148,15 @@ export function CartSummary({
 
         <div className="flex justify-between font-storefront text-2xl text-primary pt-3 border-t border-primary/10">
           <span>Today</span>
-          <span>${activationPriceUSD.toFixed(2)}/mo</span>
+          <span>${(activationPriceUSD + packTotal).toFixed(2)}</span>
         </div>
 
-        {extraPackIds.length > 0 && (
-          <p className="text-[11px] text-primary/60 text-center font-light">
-            Your extra covers (${packTotal.toFixed(2)} one-time) are paid for right after you start
-            your membership.
-          </p>
-        )}
+        <p className="text-[11px] text-primary/60 text-center font-light">
+          {extraPackIds.length > 0
+            ? `Membership $${activationPriceUSD.toFixed(2)} + covers $${packTotal.toFixed(2)} one-time, charged together. Then $${activationPriceUSD.toFixed(2)}/month — covers never recur.`
+            : `Then $${activationPriceUSD.toFixed(2)}/month · cancel anytime.`}
+        </p>
+
 
         <p className="text-[11px] text-primary/60 text-center font-light">
           {PACK_DISCOUNT_HINT}

@@ -72,16 +72,7 @@ export default function PlannerDetail() {
       navigate("/auth", { state: { next: `/planner/${planner.id}` } });
       return;
     }
-    // Extra covers are a separate one-time purchase — remember them for after checkout.
-    try {
-      if (extraPackIds.length > 0) {
-        sessionStorage.setItem("pendingPackIds", extraPackIds.join(","));
-      } else {
-        sessionStorage.removeItem("pendingPackIds");
-      }
-    } catch {
-      // storage unavailable — extras can still be bought from the covers shop
-    }
+    // Membership + any extra covers are paid together in one checkout.
     openCheckout({
       priceId: planner.priceId,
       quantity: 1,
@@ -90,8 +81,10 @@ export default function PlannerDetail() {
       returnUrl: `${window.location.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}&sub=1&planner=${planner.id}`,
       plannerId: planner.id,
       selectedCoverId: includedCoverId,
+      packIds: extraPackIds,
     });
   };
+
 
   const scrollToCart = () => {
     document
