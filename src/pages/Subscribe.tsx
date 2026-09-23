@@ -19,7 +19,7 @@ export default function Subscribe() {
   useEffect(() => {
     if (!authLoading && !user) {
       toast.message("Sign in to start your planner membership");
-      navigate("/auth", { replace: true, state: { next: "/subscribe" } });
+      navigate(`/auth?next=${encodeURIComponent("/subscribe?checkout=1")}`, { replace: true });
     }
   }, [user, authLoading, navigate]);
 
@@ -34,6 +34,15 @@ export default function Subscribe() {
       returnUrl: `${window.location.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}&sub=1`,
     });
   };
+
+  useEffect(() => {
+    const wants = new URLSearchParams(window.location.search).get("checkout") === "1";
+    if (wants && user?.email && !subLoading && !isActive && !isOpen) {
+      subscribe();
+      navigate("/subscribe", { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.email, subLoading, isActive]);
 
   if (authLoading || subLoading) {
     return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>;
