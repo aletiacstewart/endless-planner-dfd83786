@@ -460,6 +460,7 @@ export type Database = {
           client_updated_at: number
           cover_id: string
           created_at: string
+          data: Json
           onboarded: boolean
           owner_name: string
           planner_name: string
@@ -470,6 +471,7 @@ export type Database = {
           client_updated_at?: number
           cover_id?: string
           created_at?: string
+          data?: Json
           onboarded?: boolean
           owner_name?: string
           planner_name?: string
@@ -480,6 +482,7 @@ export type Database = {
           client_updated_at?: number
           cover_id?: string
           created_at?: string
+          data?: Json
           onboarded?: boolean
           owner_name?: string
           planner_name?: string
