@@ -7,7 +7,6 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { CoverCard } from "@/components/cover/CoverCard";
 import { CartSummary } from "@/components/cover/CartSummary";
 import { COLLECTIONS, COVERS, type CoverCollection, getCover } from "@/data/covers";
-import { calcPackTotalUSD } from "@/data/coverPacks";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -52,7 +51,6 @@ export default function PlannerDetail() {
     .map((id) => getPageType(id))
     .filter((p): p is NonNullable<ReturnType<typeof getPageType>> => Boolean(p));
 
-  const packsTotal = calcPackTotalUSD(extraPackIds);
   const cartCount = (includedCoverId ? 1 : 0) + extraPackIds.length;
   const includedCover = getCover(includedCoverId);
 
