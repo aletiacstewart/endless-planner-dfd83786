@@ -9,6 +9,13 @@ function notify(next: UserSettings) {
   subscribers.forEach((cb) => cb(next));
 }
 
+// Reload from disk whenever sync swaps or refreshes local data (e.g. account switch).
+if (typeof window !== "undefined") {
+  import("@/lib/sync").then(({ onDataChanged }) => {
+    onDataChanged(() => { loadSettings().then(notify).catch(() => {}); });
+  });
+}
+
 export function useUserSettings() {
   const [settings, setSettings] = useState<UserSettings | null>(cache);
   const [loading, setLoading] = useState(cache === null);
