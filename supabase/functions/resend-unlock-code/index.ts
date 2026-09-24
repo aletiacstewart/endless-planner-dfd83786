@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
 
     // Always respond OK to avoid leaking which emails are registered.
     if (purchases && purchases.length > 0) {
-      const origin = req.headers.get("origin") || "";
+      const origin = req.headers.get("origin") || "https://brandedbydigital.com";
       for (const p of purchases as any[]) {
         const installLink = `${origin}/unlock?code=${p.unlock_code}`;
         try {

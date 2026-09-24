@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
       if (error) throw error;
     }
 
-    const origin = req.headers.get("origin") || "";
+    const origin = req.headers.get("origin") || "https://brandedbydigital.com";
     const installLink = `${origin}/unlock?code=${unlock_code}`;
 
     // Send transactional email if available; do not fail the purchase if email fails

@@ -18,8 +18,15 @@ function makeCode(): string {
   return `${a.slice(0, 4)}-${a.slice(4, 8)}-${a.slice(8, 16)}`.toUpperCase();
 }
 
-async function fulfill(session: any, env: StripeEnv, origin: string) {
+const SITE_URL = "https://brandedbydigital.com";
+
+async function fulfill(session: any, env: StripeEnv, _origin: string) {
   if (session.payment_status !== "paid") return;
+  let origin = SITE_URL;
+  try {
+    if (session.return_url) origin = new URL(session.return_url).origin;
+    else if (session.success_url) origin = new URL(session.success_url).origin;
+  } catch { /* keep SITE_URL */ }
   const sessionId = session.id;
   const email = session.customer_details?.email || session.customer_email;
   const meta = session.metadata || {};
@@ -265,7 +272,7 @@ Deno.serve(async (req) => {
   const env: StripeEnv = rawEnv;
   try {
     const event = await verifyWebhook(req, env);
-    const origin = req.headers.get("origin") || `https://${url.host}`;
+    const origin = req.headers.get("origin") || SITE_URL;
     switch (event.type) {
       case "checkout.session.completed":
       case "checkout.session.async_payment_succeeded":
