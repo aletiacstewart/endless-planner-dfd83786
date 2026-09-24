@@ -15,7 +15,13 @@ import { useAuth } from "@/hooks/useAuth";
 export default function Auth() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
-  const [mode, setMode] = useState<"choose" | "email" | "otp" | "password">("choose");
+  const [mode, setMode] = useState<"choose" | "email" | "otp" | "password">(() => {
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get("next") ?? "";
+    return params.get("mode") === "signin" || next.startsWith("/unlock") || next.includes("checkout=1")
+      ? "password"
+      : "choose";
+  });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
