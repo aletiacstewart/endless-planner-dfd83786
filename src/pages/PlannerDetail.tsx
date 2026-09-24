@@ -281,6 +281,14 @@ export default function PlannerDetail() {
               email={email}
               onEmailChange={setEmail}
               onCheckout={buy}
+              needsAccount={!user}
+              password={password}
+              confirm={confirm}
+              onPasswordChange={setPassword}
+              onConfirmChange={setConfirm}
+              accountError={accountError}
+              onSignInInstead={signInInstead}
+              busy={creating}
               disabled={!planner.available || !includedCoverId}
             />
           </div>
