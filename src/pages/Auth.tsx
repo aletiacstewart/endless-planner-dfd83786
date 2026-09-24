@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Loader2, Mail } from "lucide-react";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ import { useAuth } from "@/hooks/useAuth";
 export default function Auth() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const routingAfterSignIn = useRef(false);
   const [mode, setMode] = useState<"choose" | "email" | "otp" | "password">(() => {
     const params = new URLSearchParams(window.location.search);
     const next = params.get("next") ?? "";
@@ -28,27 +29,28 @@ export default function Auth() {
   const [busy, setBusy] = useState(false);
 
   const routeAfterSignIn = async () => {
-    // Claim any anonymous purchases/subscriptions bought with this email, then
-    // pull the server-verified entitlements for this account.
-    try { await supabase.rpc("link_user_purchases"); } catch {}
-    try { await refreshUnlocks(); } catch {}
-    try { await reconcileNow(); } catch {}
-    // Support ?next redirect (e.g. from Subscribe page requiring auth), with
-    // a stored fallback so Google sign-in (full page redirect) keeps it too.
+    if (routingAfterSignIn.current) return;
+    routingAfterSignIn.current = true;
+
+    // Route immediately after authentication. Cloud reconciliation can take a
+    // while on large planners and must never hold someone on the sign-in page.
     const params = new URLSearchParams(window.location.search);
     const stateNext = (window.history.state?.usr as { next?: string } | undefined)?.next;
     const next = params.get("next") || stateNext || sessionStorage.getItem("authNext");
     sessionStorage.removeItem("authNext");
     if (next && next.startsWith("/")) {
       navigate(next, { replace: true });
-      return;
-    }
-    if (isUnlocked(PLANNERS[0].id)) {
+    } else if (isUnlocked(PLANNERS[0].id)) {
       navigate("/app", { replace: true });
     } else {
-      toast.message("Signed in. Enter your unlock code to open your planner.");
-      navigate("/", { replace: true });
+      navigate("/app", { replace: true });
     }
+
+    void (async () => {
+      try { await supabase.rpc("link_user_purchases"); } catch {}
+      try { await refreshUnlocks(); } catch {}
+      try { await reconcileNow(); } catch {}
+    })();
   };
 
   useEffect(() => {
@@ -104,7 +106,7 @@ export default function Auth() {
       toast.error(error.message);
       return;
     }
-    toast.success("Signed in — syncing your planner…");
+    toast.success("Signed in — opening your planner…");
     // useEffect on `user` will run routeAfterSignIn once the session is set.
   };
 
@@ -148,7 +150,7 @@ export default function Auth() {
       toast.error(error.message);
       return;
     }
-    toast.success("Signed in — syncing your planner…");
+    toast.success("Signed in — opening your planner…");
   };
 
   return (
