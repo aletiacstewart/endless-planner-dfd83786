@@ -95,7 +95,7 @@ export default function PlannerDetail() {
       "pendingCheckout",
       JSON.stringify({ plannerId: planner.id, includedCoverId, extraPackIds })
     );
-    navigate(`/auth?next=${encodeURIComponent(`/planner/${planner.id}?checkout=1`)}`);
+    navigate(`/auth?mode=signin&next=${encodeURIComponent(`/planner/${planner.id}?checkout=1`)}`);
   };
 
   const startCheckout = (userId: string, customerEmail: string) => {
