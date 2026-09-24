@@ -458,12 +458,59 @@ export function initSync() {
   });
 }
 
+/**
+ * This device's planner data belongs to one account at a time. When a
+ * different account signs in, park the previous account's pages + settings
+ * under a per-account stash and load the new account's own stash (if any),
+ * so one person's planner never shows up in someone else's account.
+ */
+async function switchLocalAccount(userId: string) {
+  const db = await getDB();
+  const prevRow = await db.get("meta", META_CURRENT_USER);
+  const prev = (prevRow?.value as string | undefined) ?? null;
+  if (prev === userId) return;
+
+  const entries = await db.getAll("entries");
+  const settingsRow = await db.get("meta", "user-settings");
+  if (prev || entries.length || settingsRow) {
+    await db.put("meta", {
+      key: `stash:${prev ?? "signed-out"}`,
+      value: { entries, settings: settingsRow?.value ?? null },
+    });
+  }
+
+  const tx = db.transaction(["entries", "meta"], "readwrite");
+  await tx.objectStore("entries").clear();
+  await tx.objectStore("meta").delete("user-settings");
+  await tx.objectStore("meta").delete(META_LAST_SYNC);
+  const stash = (await tx.objectStore("meta").get(`stash:${userId}`))?.value as
+    | { entries: PlannerEntry[]; settings: unknown }
+    | undefined;
+  if (stash) {
+    for (const e of stash.entries ?? []) await tx.objectStore("entries").put(e);
+    if (stash.settings) await tx.objectStore("meta").put({ key: "user-settings", value: stash.settings });
+    await tx.objectStore("meta").delete(`stash:${userId}`);
+  }
+  await tx.objectStore("meta").put({ key: META_CURRENT_USER, value: userId });
+  await tx.done;
+
+  // Drop queued uploads from the previous account.
+  const qdb = await ensureQueueStore();
+  if (qdb) {
+    const qtx = qdb.transaction(QUEUE_STORE, "readwrite");
+    qtx.objectStore(QUEUE_STORE).clear();
+    await new Promise((r) => (qtx.oncomplete = () => r(null)));
+  }
+  emitDataChanged();
+}
+
 async function handleSignIn(userId: string) {
   currentUserId = userId;
   try {
-    const db = await getDB();
-    await db.put("meta", { key: META_CURRENT_USER, value: userId });
-  } catch {}
+    await switchLocalAccount(userId);
+  } catch (e) {
+    console.warn("account switch failed", e);
+  }
   await refreshSubStatus(userId);
   await fullReconcile(userId);
   if (hasActiveSub) startRealtime(userId);
