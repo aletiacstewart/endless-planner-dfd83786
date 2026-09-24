@@ -10,6 +10,7 @@ import { COLLECTIONS, COVERS, type CoverCollection, getCover } from "@/data/cove
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function PlannerDetail() {
   const { plannerId = "" } = useParams();
@@ -23,6 +24,10 @@ export default function PlannerDetail() {
   const [includedCoverId, setIncludedCoverId] = useState<string>("");
   const [extraPackIds, setExtraPackIds] = useState<string[]>([]);
   const [filter, setFilter] = useState<CoverCollection | "all">("all");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [accountError, setAccountError] = useState("");
+  const [creating, setCreating] = useState(false);
 
   // Arriving from a cover card scrolls to and highlights that cover, but never
   // selects it — the user must explicitly choose the included cover.
@@ -85,29 +90,52 @@ export default function PlannerDetail() {
     setIncludedCoverId(id);
   };
 
-  const buy = () => {
-    // The membership is a subscription, so it must be tied to an account.
-    if (!user?.id) {
-      sessionStorage.setItem(
-        "pendingCheckout",
-        JSON.stringify({ plannerId: planner.id, includedCoverId, extraPackIds })
-      );
-      toast.message("Create your account to start your membership");
-      navigate(`/auth?next=${encodeURIComponent(`/planner/${planner.id}?checkout=1`)}`);
-      return;
-    }
+  const signInInstead = () => {
+    sessionStorage.setItem(
+      "pendingCheckout",
+      JSON.stringify({ plannerId: planner.id, includedCoverId, extraPackIds })
+    );
+    navigate(`/auth?next=${encodeURIComponent(`/planner/${planner.id}?checkout=1`)}`);
+  };
+
+  const startCheckout = (userId: string, customerEmail: string) => {
     sessionStorage.removeItem("pendingCheckout");
     // Membership + any extra covers are paid together in one checkout.
     openCheckout({
       priceId: planner.priceId,
       quantity: 1,
-      customerEmail: email || user.email,
-      userId: user.id,
+      customerEmail,
+      userId,
       returnUrl: `${window.location.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}&sub=1&planner=${planner.id}`,
       plannerId: planner.id,
       selectedCoverId: includedCoverId,
       packIds: extraPackIds,
     });
+  };
+
+  const buy = async () => {
+    if (user?.id) {
+      startCheckout(user.id, email || user.email || "");
+      return;
+    }
+    // Not signed in: create the account right here, then go to payment.
+    setAccountError("");
+    setCreating(true);
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: { emailRedirectTo: `${window.location.origin}/auth?next=/app` },
+    });
+    setCreating(false);
+    if (error) {
+      setAccountError(error.message);
+      return;
+    }
+    if (!data.user || (data.user.identities && data.user.identities.length === 0)) {
+      setAccountError("This email already has an account — sign in instead.");
+      return;
+    }
+    startCheckout(data.user.id, email.trim());
   };
 
 
