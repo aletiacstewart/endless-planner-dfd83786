@@ -102,6 +102,24 @@ export default function Auth() {
     // useEffect on `user` will run routeAfterSignIn once the session is set.
   };
 
+  const [needsConfirm, setNeedsConfirm] = useState(false);
+
+  const resendActivation = async () => {
+    if (!email.trim()) return;
+    setBusy(true);
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: email.trim(),
+      options: { emailRedirectTo: window.location.origin + "/auth?next=/app" },
+    });
+    setBusy(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Activation email sent — check your inbox (and spam).");
+  };
+
   const signInPassword = async () => {
     if (!email.trim() || !password) return;
     setBusy(true);
@@ -111,6 +129,16 @@ export default function Auth() {
     });
     setBusy(false);
     if (error) {
+      const code = (error as { code?: string }).code;
+      if (code === "email_not_confirmed" || /not confirmed/i.test(error.message)) {
+        setNeedsConfirm(true);
+        toast.error("Please activate your account first — tap the link in the email we sent you.");
+        return;
+      }
+      if (code === "invalid_credentials") {
+        toast.error("That email and password don't match. Check for typos and try again.");
+        return;
+      }
       toast.error(error.message);
       return;
     }
@@ -176,6 +204,14 @@ export default function Auth() {
               {busy ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
               Sign in
             </Button>
+            {needsConfirm && (
+              <div className="rounded-md border border-border p-3 text-sm space-y-2">
+                <p>Your account isn't activated yet. Open the email we sent to <strong>{email}</strong> and tap the activation link.</p>
+                <Button variant="outline" className="w-full" onClick={resendActivation} disabled={busy}>
+                  Resend activation email
+                </Button>
+              </div>
+            )}
             <button onClick={() => setMode("choose")} className="text-xs text-muted-foreground underline w-full">
               Back
             </button>
