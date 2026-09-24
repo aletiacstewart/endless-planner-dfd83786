@@ -18,8 +18,8 @@ export default function Subscribe() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      toast.message("Sign in to start your planner membership");
-      navigate(`/auth?next=${encodeURIComponent("/subscribe?checkout=1")}`, { replace: true });
+      // New visitors create their account inside the checkout on the planner page.
+      navigate(`/planner/${PLANNER.id}`, { replace: true });
     }
   }, [user, authLoading, navigate]);
 

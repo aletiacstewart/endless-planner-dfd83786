@@ -8,6 +8,7 @@ export default function ThankYou() {
   const navigate = useNavigate();
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const [message, setMessage] = useState("Confirming your purchase…");
+  const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
     const sessionId = params.get("session_id");
@@ -24,9 +25,18 @@ export default function ThankYou() {
     // and unlocked the planner.
     if (isSub) {
       setStatus("ok");
-      setMessage(
-        "Your membership is active — the planner is unlocked, every cover you bought is ready, and your work is backed up and syncing on every device.",
-      );
+      supabase.auth.getSession().then(({ data }) => {
+        if (data.session) {
+          setSignedIn(true);
+          setMessage(
+            "Your membership is active — the planner is unlocked, every cover you bought is ready, and your work is backed up and syncing on every device.",
+          );
+        } else {
+          setMessage(
+            "Payment received! Check your email and tap the link to activate your account — it will open your planner. After that, sign in any time with the email and password you just chose.",
+          );
+        }
+      });
       return;
     }
 
@@ -69,7 +79,15 @@ export default function ThankYou() {
             Didn't get the email? Check your spam folder, or use the link from any device to unlock the planner.
           </p>
         )}
-        <button onClick={() => navigate("/")} className="mt-6 underline text-sm">
+        {signedIn && (
+          <button
+            onClick={() => navigate("/app")}
+            className="mt-6 w-full h-11 rounded-md bg-primary text-primary-foreground text-sm font-medium"
+          >
+            Open my planner
+          </button>
+        )}
+        <button onClick={() => navigate("/")} className="mt-6 block mx-auto underline text-sm">
           Back to home
         </button>
       </div>

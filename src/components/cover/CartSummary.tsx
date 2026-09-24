@@ -23,6 +23,14 @@ type Props = {
   onCheckout: () => void;
   disabled?: boolean;
   className?: string;
+  needsAccount?: boolean;
+  password?: string;
+  confirm?: string;
+  onPasswordChange?: (v: string) => void;
+  onConfirmChange?: (v: string) => void;
+  accountError?: string;
+  onSignInInstead?: () => void;
+  busy?: boolean;
 };
 
 export function CartSummary({
@@ -35,6 +43,14 @@ export function CartSummary({
   onCheckout,
   disabled,
   className,
+  needsAccount,
+  password,
+  confirm,
+  onPasswordChange,
+  onConfirmChange,
+  accountError,
+  onSignInInstead,
+  busy,
 }: Props) {
   const includedCover = getCover(includedCoverId);
   const packSubtotal = calcPackSubtotalUSD(extraPackIds);
@@ -42,6 +58,7 @@ export function CartSummary({
   const packTotal = calcPackTotalUSD(extraPackIds);
   const discountLabel = getDiscountLabel(extraPackIds.length);
   const emailValid = /.+@.+\..+/.test(email);
+  const accountValid = (password?.length ?? 0) >= 8 && password === confirm;
 
   return (
     <aside
@@ -163,24 +180,65 @@ export function CartSummary({
         </p>
       </div>
 
-      <div>
-        <label className="text-[10px] uppercase tracking-[0.25em] font-bold text-primary/60 block mb-1.5">
-          Send install link to
-        </label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => onEmailChange(e.target.value)}
-          placeholder="you@example.com"
-          className="w-full px-3 py-2.5 rounded-sm border border-input bg-background text-sm"
-        />
-      </div>
+      {needsAccount ? (
+        <div className="space-y-2 rounded-sm border border-primary/15 p-3">
+          <p className="text-[10px] uppercase tracking-[0.25em] font-bold text-primary/60">
+            Create your account
+          </p>
+          <input
+            type="email"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => onEmailChange(e.target.value)}
+            placeholder="you@example.com"
+            className="w-full px-3 h-11 rounded-sm border border-input bg-background text-sm"
+          />
+          <input
+            type="password"
+            autoComplete="new-password"
+            value={password ?? ""}
+            onChange={(e) => onPasswordChange?.(e.target.value)}
+            placeholder="Password (8+ characters)"
+            className="w-full px-3 h-11 rounded-sm border border-input bg-background text-sm"
+          />
+          <input
+            type="password"
+            autoComplete="new-password"
+            value={confirm ?? ""}
+            onChange={(e) => onConfirmChange?.(e.target.value)}
+            placeholder="Confirm password"
+            className="w-full px-3 h-11 rounded-sm border border-input bg-background text-sm"
+          />
+          {accountError && <p className="text-[11px] text-destructive">{accountError}</p>}
+          {onSignInInstead && (
+            <button type="button" onClick={onSignInInstead} className="text-[11px] underline text-primary/70">
+              Already have an account? Sign in instead
+            </button>
+          )}
+          <p className="text-[11px] text-primary/60 font-light">
+            After paying, we'll email you a link to activate your account and open your planner.
+          </p>
+        </div>
+      ) : (
+        <div>
+          <label className="text-[10px] uppercase tracking-[0.25em] font-bold text-primary/60 block mb-1.5">
+            Send install link to
+          </label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => onEmailChange(e.target.value)}
+            placeholder="you@example.com"
+            className="w-full px-3 py-2.5 rounded-sm border border-input bg-background text-sm"
+          />
+        </div>
+      )}
 
       <Button
         size="lg"
         className="w-full rounded-sm h-12 text-[11px] uppercase tracking-[0.2em] font-bold"
         onClick={onCheckout}
-        disabled={disabled || !emailValid || !includedCover}
+        disabled={disabled || busy || !emailValid || !includedCover || (needsAccount && !accountValid)}
       >
         {includedCover
           ? `Start membership — $${activationPriceUSD.toFixed(2)}/mo`
