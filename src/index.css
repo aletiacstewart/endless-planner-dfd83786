@@ -210,7 +210,6 @@
   /* Inside a spread, cards go semi-transparent so the dot grid reads through. */
   .paper-dot .planner-card {
     background-color: hsl(var(--card) / 0.72);
-    backdrop-filter: blur(2px);
     border-color: hsl(var(--border) / 0.5);
   }
 
@@ -219,7 +218,6 @@
   .page-flip-in {
     animation: page-flip-in 380ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
     transform-origin: center left;
-    will-change: transform, opacity;
   }
   @keyframes page-flip-in {
     0%   { transform: rotateY(var(--flip-from, 6deg)); opacity: 0; }
