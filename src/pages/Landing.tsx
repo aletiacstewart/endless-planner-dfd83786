@@ -50,10 +50,10 @@ export default function Landing() {
             Already own
           </a>
           <Link
-            to="/auth"
+            to="/auth?switch=1"
             className="text-[11px] uppercase tracking-[0.2em] text-primary/70 hover:text-primary font-semibold"
           >
-            Sign in
+            {user ? "Sign out" : "Sign in"}
           </Link>
         </div>
       </header>
