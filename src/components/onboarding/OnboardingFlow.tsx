@@ -11,10 +11,10 @@ import { useCoverTheme } from "@/hooks/useCoverTheme";
 type Step = "welcome" | "name" | "cover";
 
 export function OnboardingFlow() {
-  const { update } = useUserSettings();
+  const { settings, update } = useUserSettings();
   const [step, setStep] = useState<Step>("welcome");
-  const [plannerName, setPlannerName] = useState("");
-  const [ownerName, setOwnerName] = useState("");
+  const [plannerName, setPlannerName] = useState(settings?.plannerName ?? "");
+  const [ownerName, setOwnerName] = useState(settings?.ownerName ?? "");
   const [coverId, setCoverId] = useState(DEFAULT_COVER_ID);
 
   // Live-preview the selected cover's theme as the user browses.
