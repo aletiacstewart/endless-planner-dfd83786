@@ -849,6 +849,43 @@ async function syncLinkedEntriesInner(complete: PlannerEntry): Promise<string[]>
       synced.push(`Weekly Calendar (${weekIso})`);
     }
 
+    // 9b. Weekly Calendar — the Complete Tracker's "This Week" boxes.
+    {
+      const wdays = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"];
+      const wkeys = [...wdays.map((d) => `week_${d}`), "weekly_goals", "weekly_reflection"];
+      if (anyFilled(v, wkeys)) {
+        const ws = mondayOf(date.year, date.monthIndex, date.day);
+        const wIso = `${ws.getFullYear()}-${String(ws.getMonth()+1).padStart(2,"0")}-${String(ws.getDate()).padStart(2,"0")}`;
+        const wEntry = await findOrCreate(
+          "weekly-calendar",
+          (e) => (e.values.week_of as string | undefined)?.slice(0,10) === wIso,
+          { week_of: wIso },
+        );
+        await persist(wEntry, (dst) => {
+          if (!dst.week_of) dst.week_of = wIso;
+          for (const d of wdays) dst[d] = (v[`week_${d}`] as FieldValue) ?? "";
+          dst.weekly_goals = (v.weekly_goals as FieldValue) ?? "";
+          dst.reflection = (v.weekly_reflection as FieldValue) ?? "";
+        });
+        synced.push(`Weekly Calendar (${wIso})`);
+      }
+    }
+
+    // 9c. Daily Spend — same date.
+    if (anyFilled(v, ["spend_items"])) {
+      const iso = isoOf(date.year, date.monthIndex, date.day);
+      const sEntry = await findOrCreate(
+        "daily-spend",
+        (e) => (e.values.date as string | undefined)?.slice(0,10) === iso,
+        { date: iso },
+      );
+      await persist(sEntry, (dst) => {
+        if (!dst.date) dst.date = iso;
+        dst.spend_items = v.spend_items as FieldValue;
+      });
+      synced.push("Daily Spend");
+    }
+
     // (Habit Tracker sync removed — page no longer exists.)
 
     // 11. Yearly Habit Tracker — habit_N_label, habit_N_mode + success per day.
@@ -1563,6 +1600,16 @@ async function syncFromIndividualInner(entry: PlannerEntry): Promise<string[]> {
     }
 
     // Notes page → the Complete Tracker day named in its title.
+    if (entry.pageType === "daily-spend") {
+      const iso = asText(v.date).slice(0, 10);
+      if (!iso) return [];
+      const touched = await updateCompleteForDate(iso, (dst) => {
+        dst.spend_items = v.spend_items as FieldValue;
+      });
+      if (touched > 0) synced.push("Complete Tracker (spending)");
+      return synced;
+    }
+
     if (entry.pageType === "notes") {
       const iso = /(\d{4}-\d{2}-\d{2})/.exec(asText(v.title))?.[1];
       if (!iso) return [];
@@ -1772,6 +1819,7 @@ async function syncFromIndividualInner(entry: PlannerEntry): Promise<string[]> {
           else delete dst.weekly_goals;
           if (wReflect.trim()) dst.weekly_reflection = wReflect;
           else delete dst.weekly_reflection;
+          for (const d of days) dst[`week_${d}`] = (v[d] as FieldValue) ?? "";
         });
       }
       if (touched > 0) synced.push("Complete Tracker (week)");

@@ -6,6 +6,7 @@ type SaveState = "idle" | "saving" | "saved";
 
 const REVERSE_SYNC_TYPES = new Set([
   "daily-tracker",
+  "daily-spend",
   "blood-sugar-tracker",
   "blood-pressure-tracker",
   "oxygen-tracker",
