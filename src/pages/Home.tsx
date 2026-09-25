@@ -19,6 +19,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { signOut as syncSignOut } from "@/lib/sync";
 import { getPageImage } from "@/lib/pageImages";
 import { usePlannerCover } from "@/contexts/PlannerCoverContext";
+import { calendarYear, entryYear, getActiveYear, setActiveYear } from "@/lib/plannerYear";
+import { getAllEntries } from "@/lib/db";
+import { saveSettings } from "@/lib/settings";
 import { PlannerStyleCard } from "@/components/entry/PlannerStyleCard";
 
 const LAST_BACKUP_KEY = "planner.lastBackupAt";
@@ -31,6 +34,30 @@ const NUDGE_DISMISS_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 export default function Home() {
   const navigate = useNavigate();
   const { settings } = useUserSettings();
+  const [activeYear, setActiveYearState] = useState(getActiveYear());
+  const [years, setYears] = useState<number[]>([getActiveYear()]);
+
+  // New Year: new members start on this year; returning members get the carry-over page once.
+  useEffect(() => {
+    if (!settings) return;
+    (async () => {
+      const now = calendarYear();
+      const all = await getAllEntries();
+      const ys = new Set<number>([now, getActiveYear(), ...all.map(entryYear)]);
+      setYears([...ys].sort((a, b) => b - a));
+      if (settings.rolloverDone?.[String(now)]) return;
+      const hasOlder = all.some((e) => entryYear(e) < now);
+      const last = settings.plannerYear ?? (hasOlder ? now - 1 : now);
+      if (last < now && hasOlder) { navigate("/new-year"); return; }
+      if (!settings.plannerYear) await saveSettings({ plannerYear: now });
+    })();
+  }, [settings?.plannerYear, settings?.rolloverDone]);
+
+  const switchYear = async (y: number) => {
+    await setActiveYear(y);
+    setActiveYearState(y);
+    window.location.reload();
+  };
   const { user } = useAuth();
   const { showCover } = usePlannerCover();
   const [counts, setCounts] = useState<Record<string, number>>({});
@@ -153,6 +180,14 @@ export default function Home() {
           )}
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          <select
+            aria-label="Planner year"
+            value={activeYear}
+            onChange={(e) => switchYear(Number(e.target.value))}
+            className="h-10 min-w-11 rounded-full bg-card/80 px-3 text-sm shadow-lg touch-manipulation"
+          >
+            {years.map((y) => <option key={y} value={y}>{y}</option>)}
+          </select>
           {user && (
             <button
               onClick={handleSignOut}

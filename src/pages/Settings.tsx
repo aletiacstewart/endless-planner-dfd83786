@@ -297,6 +297,9 @@ function AccountSection() {
         >
           <RefreshCw className={`w-4 h-4 mr-2 ${busy ? "animate-spin" : ""}`} /> Sync now
         </Button>
+        <Button variant="outline" asChild>
+          <Link to="/new-year">Move pages from last year</Link>
+        </Button>
         <Button
           variant="outline"
           onClick={async () => {
