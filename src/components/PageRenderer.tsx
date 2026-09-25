@@ -1,4 +1,4 @@
-import { Component, useEffect, useState, type ReactNode } from "react";
+import { Component, memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { PageTypeDef, FieldValue, SectionDef } from "@/lib/pageTypes";
 import { FieldRenderer } from "./FieldRenderer";
 import { cn } from "@/lib/utils";
@@ -106,35 +106,12 @@ function useStagedCount(total: number, resetKey: string) {
   return count;
 }
 
-export function PageRenderer({ pageType, values, onChange, coverId, showPageGraphic = true }: Props) {
-  const visibleCount = useStagedCount(pageType.sections.length, pageType.id);
-  const pageGraphic = showPageGraphic ? getCoverPageIcon(coverId, pageType.id) : undefined;
 
+type SectionProps = { section: SectionDef; idx: number; values: Record<string, FieldValue>; onChange: (key: string, value: FieldValue) => void; version: number };
+/** Re-renders only when `version` changes — computed from which keys changed. */
+const SectionView = memo(function SectionView({ section, idx, values, onChange }: SectionProps) {
   return (
-    <div className="space-y-6">
-      {pageGraphic && (
-        <div className="flex justify-center py-1" aria-label={`${pageType.name} themed page graphic`}>
-          <img
-            src={pageGraphic}
-            alt=""
-            className="h-28 w-28 sm:h-32 sm:w-32 lg:h-36 lg:w-36 rounded-2xl object-cover shadow-sm ring-1 ring-border/50"
-          />
-        </div>
-      )}
-      {showPageGraphic && pageType.id === "medications" && (
-        <ScanBar mode="prescription" values={values} onChange={onChange} />
-      )}
-      {showPageGraphic && pageType.id === "medical-records" && (
-        <ScanBar mode="medical" values={values} onChange={onChange} />
-      )}
-      {showPageGraphic && pageType.id === "contacts" && (
-        <ContactImportBar variant="contacts" values={values} onChange={onChange} />
-      )}
-      {showPageGraphic && pageType.id === "emergency-contacts" && (
-        <ContactImportBar variant="emergency" values={values} onChange={onChange} />
-      )}
-      {pageType.sections.slice(0, visibleCount).map((section, idx) => (
-        <section key={idx} className="planner-card" style={idx >= FIRST_BATCH ? { contentVisibility: "auto", containIntrinsicSize: "auto 600px" } : undefined}>
+        <section className="planner-card" style={idx >= FIRST_BATCH ? { contentVisibility: "auto", containIntrinsicSize: "auto 600px" } : undefined}>
           <SectionBoundary>
           {section.title && (
             <h2 className="font-display text-xl mb-1">{section.title}</h2>
@@ -239,6 +216,72 @@ export function PageRenderer({ pageType, values, onChange, coverId, showPageGrap
           )}
           </SectionBoundary>
         </section>
+  );
+}, (a, b) => a.version === b.version && a.section === b.section && a.idx === b.idx);
+
+export function PageRenderer({ pageType, values, onChange, coverId, showPageGraphic = true }: Props) {
+  const visibleCount = useStagedCount(pageType.sections.length, pageType.id);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  const stableOnChange = useCallback((k: string, v: FieldValue) => onChangeRef.current(k, v), []);
+  // Map each field key to its section so typing only redraws that section.
+  const keyToSection = useMemo(() => {
+    const m = new Map<string, number>();
+    pageType.sections.forEach((sec, i) => {
+      const fields = sec.groups?.length ? sec.groups.flatMap((g) => g.fields) : sec.fields;
+      fields.forEach((f) => m.set(f.key, i));
+    });
+    return m;
+  }, [pageType]);
+  const prevValues = useRef(values);
+  const versionsRef = useRef<number[]>([]);
+  const versions = useMemo(() => {
+    const prev = prevValues.current;
+    prevValues.current = values;
+    const v = versionsRef.current.slice();
+    if (prev !== values) {
+      const keys = new Set([...Object.keys(prev), ...Object.keys(values)]);
+      let bumpAll = false;
+      const bump = new Set<number>();
+      keys.forEach((k) => {
+        if (prev[k] === values[k]) return;
+        const i = keyToSection.get(k);
+        // Shared keys (date/month/year, paired or scoped keys) can affect other sections.
+        if (i === undefined || k === "date" || k === "month" || k === "year" || k === "daily_goal") bumpAll = true;
+        else bump.add(i);
+      });
+      pageType.sections.forEach((_, i) => { if (bumpAll || bump.has(i)) v[i] = (v[i] ?? 0) + 1; });
+    }
+    versionsRef.current = v;
+    return v;
+  }, [values, keyToSection, pageType]);
+  const pageGraphic = showPageGraphic ? getCoverPageIcon(coverId, pageType.id) : undefined;
+
+  return (
+    <div className="space-y-6">
+      {pageGraphic && (
+        <div className="flex justify-center py-1" aria-label={`${pageType.name} themed page graphic`}>
+          <img
+            src={pageGraphic}
+            alt=""
+            className="h-28 w-28 sm:h-32 sm:w-32 lg:h-36 lg:w-36 rounded-2xl object-cover shadow-sm ring-1 ring-border/50"
+          />
+        </div>
+      )}
+      {showPageGraphic && pageType.id === "medications" && (
+        <ScanBar mode="prescription" values={values} onChange={onChange} />
+      )}
+      {showPageGraphic && pageType.id === "medical-records" && (
+        <ScanBar mode="medical" values={values} onChange={onChange} />
+      )}
+      {showPageGraphic && pageType.id === "contacts" && (
+        <ContactImportBar variant="contacts" values={values} onChange={onChange} />
+      )}
+      {showPageGraphic && pageType.id === "emergency-contacts" && (
+        <ContactImportBar variant="emergency" values={values} onChange={onChange} />
+      )}
+      {pageType.sections.slice(0, visibleCount).map((section, idx) => (
+        <SectionView key={idx} section={section} idx={idx} values={values} onChange={stableOnChange} version={versions[idx] ?? 0} />
       ))}
     </div>
   );
