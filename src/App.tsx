@@ -8,6 +8,8 @@ import Index from "./pages/Index.tsx";
 import Section from "./pages/Section.tsx";
 import Entry from "./pages/Entry.tsx";
 import Settings from "./pages/Settings.tsx";
+import YearRollover from "./pages/YearRollover.tsx";
+import { setActiveYearLocal } from "./lib/plannerYear";
 import GoogleCalendarReturn from "./pages/oauth/GoogleCalendarReturn.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Landing from "./pages/Landing.tsx";
@@ -85,6 +87,11 @@ function RequireUnlock({ children }: { children: React.ReactNode }) {
 
 function PlannerApp() {
   const { settings, loading } = useUserSettings();
+  useEffect(() => {
+    if (settings?.plannerYear && String(settings.plannerYear) !== localStorage.getItem("planner-active-year")) {
+      setActiveYearLocal(settings.plannerYear);
+    }
+  }, [settings?.plannerYear]);
   const [splashed, setSplashed] = useState(false);
   useCoverTheme(settings?.coverId);
 
@@ -106,6 +113,7 @@ function PlannerApp() {
         <Route path="/section/:pageTypeId" element={<Section />} />
         <Route path="/entry/:entryId" element={<Entry />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/new-year" element={<YearRollover />} />
         <Route path="/oauth/google-calendar/return" element={<GoogleCalendarReturn />} />
       </Routes>
     </PlannerCoverProvider>

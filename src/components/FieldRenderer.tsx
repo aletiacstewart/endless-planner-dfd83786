@@ -1,3 +1,4 @@
+import { getActiveYear } from "@/lib/plannerYear";
 import { Fragment, useEffect, useRef, useState, useCallback } from "react";
 import { Plus, X, Angry, Frown, Meh, Smile, Laugh, Calendar as CalendarIcon, Eye } from "lucide-react";
 import {
@@ -486,7 +487,7 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           value={value as { marks: Record<string, boolean> } | null}
           goal={goal}
           monthName={monthName}
-          year={Number.isFinite(yearRaw) ? yearRaw : new Date().getFullYear()}
+          year={Number.isFinite(yearRaw) ? yearRaw : getActiveYear()}
           onChange={onChange}
         />
       );
@@ -1176,7 +1177,7 @@ function CalendarGrid({
   }
   const yearNum = (() => {
     const n = parseInt((year ?? "").trim(), 10);
-    return Number.isNaN(n) || n < 1000 || n > 9999 ? now.getFullYear() : n;
+    return Number.isNaN(n) || n < 1000 || n > 9999 ? getActiveYear() : n;
   })();
 
   const monthName = MONTH_NAMES[monthIndex].charAt(0).toUpperCase() + MONTH_NAMES[monthIndex].slice(1);
@@ -2193,7 +2194,7 @@ function CalendarNotes({
   }
   const yearNum = (() => {
     const n = parseInt((year ?? "").trim(), 10);
-    return Number.isNaN(n) || n < 1000 || n > 9999 ? now.getFullYear() : n;
+    return Number.isNaN(n) || n < 1000 || n > 9999 ? getActiveYear() : n;
   })();
   const monthName = MONTH_NAMES[monthIndex].charAt(0).toUpperCase() + MONTH_NAMES[monthIndex].slice(1);
 

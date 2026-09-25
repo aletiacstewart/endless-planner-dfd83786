@@ -146,7 +146,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
     icon: "Target",
     sections: [
       {
-        fields: [{ key: "year", label: "Year", type: "year", placeholder: "2026", span: 2 }],
+        fields: [{ key: "year", label: "Year", type: "year", placeholder: String(new Date().getFullYear()), span: 2 }],
       },
       ...goalKeys.map((k, i) => ({
         title: `Goal ${i + 1}`,
@@ -223,7 +223,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
     sections: [
       {
         page: 1,
-        fields: [{ key: "year", label: "Year", type: "year", placeholder: "2025" }],
+        fields: [{ key: "year", label: "Year", type: "year", placeholder: String(new Date().getFullYear()) }],
       },
       {
         title: "Add a dated note",
@@ -262,7 +262,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         columns: 2,
         fields: [
           { key: "month", label: "Month", type: "month", placeholder: "January" },
-          { key: "year", label: "Year", type: "year", placeholder: "2025" },
+          { key: "year", label: "Year", type: "year", placeholder: String(new Date().getFullYear()) },
         ],
       },
       {
@@ -1359,7 +1359,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         page: 1,
         fields: [
           { key: "month", label: "Month", type: "month", placeholder: "January" },
-          { key: "year", label: "Year", type: "year", placeholder: "2026" },
+          { key: "year", label: "Year", type: "year", placeholder: String(new Date().getFullYear()) },
           {
             key: "medical_calendar",
             label: "Medical appointments",
@@ -2028,7 +2028,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         columns: 2,
         fields: [
           { key: "month", label: "Month", type: "month", placeholder: "January" },
-          { key: "year", label: "Year", type: "year", placeholder: "2026" },
+          { key: "year", label: "Year", type: "year", placeholder: String(new Date().getFullYear()) },
           { key: "sleep_goal", label: "Nightly goal (hours)", type: "text", compact: true },
         ],
       },
@@ -2075,7 +2075,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         columns: 2,
         fields: [
           { key: "month", label: "Month", type: "month", placeholder: "January" },
-          { key: "year", label: "Year", type: "year", placeholder: "2026" },
+          { key: "year", label: "Year", type: "year", placeholder: String(new Date().getFullYear()) },
           { key: "daily_goal", label: "Daily goal (glasses)", type: "text", compact: true },
         ],
       },
@@ -2245,7 +2245,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
     icon: "Cake",
     sections: [
       {
-        fields: [{ key: "year", label: "Year", type: "year", placeholder: "2026" }],
+        fields: [{ key: "year", label: "Year", type: "year", placeholder: String(new Date().getFullYear()) }],
       },
       {
         title: "Details",
