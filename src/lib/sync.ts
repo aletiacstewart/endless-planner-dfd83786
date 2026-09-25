@@ -385,7 +385,7 @@ async function fullReconcile(userId: string) {
 function startRealtime(userId: string) {
   stopRealtime();
   realtimeChannel = supabase
-    .channel(`sync-${userId}`)
+    .channel(`sync-${userId}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`)
     .on(
       "postgres_changes",
       { event: "*", schema: "public", table: "planner_entries", filter: `user_id=eq.${userId}` },
