@@ -62,7 +62,7 @@ export default function YearRollover() {
       await saveSettings({ rolloverDone: { ...(s.rolloverDone ?? {}), [String(toYear)]: true } });
       await setActiveYear(toYear);
       toast.success(move && copied ? `Moved ${copied} page${copied === 1 ? "" : "s"} into ${toYear}` : `Your ${toYear} planner is ready`);
-      navigate("/app");
+      window.location.assign("/app");
     } finally {
       setBusy(false);
     }
