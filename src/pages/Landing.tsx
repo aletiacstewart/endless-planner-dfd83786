@@ -72,7 +72,8 @@ export default function Landing() {
             </h1>
             <p className="text-primary/70 text-lg leading-relaxed max-w-lg font-light">
               Beautifully designed digital planners for phone, tablet, and desktop.
-              Every cover ships with 20 matching page icons and a 60-piece themed sticker set.
+              Every cover includes 42 matching page icons. The shared library has 180 illustrated
+              stickers and 60 emojis — 240 pieces total.
             </p>
           </div>
 
@@ -82,7 +83,7 @@ export default function Landing() {
               Activation
             </span>
             <Button asChild size="lg" className="rounded-full px-6 md:px-8 text-[11px] uppercase tracking-[0.2em] font-bold">
-              <Link to={`/planner/${flagshipPlanner.id}`}>
+              <Link to={`/planner/${flagshipPlanner.slug}`}>
                 ${flagshipPlanner.priceUSD} · Start
               </Link>
             </Button>
@@ -113,14 +114,14 @@ export default function Landing() {
         <CoverCarousel
           covers={previewCovers}
           hrefFor={(c) =>
-            `/planner/${flagshipPlanner.id}?cover=${encodeURIComponent(c.id)}`
+            `/planner/${flagshipPlanner.slug}?cover=${encodeURIComponent(c.id)}`
           }
         />
 
 
         <div className="text-center mt-12">
           <Button asChild variant="outline" className="rounded-full px-8 text-[11px] uppercase tracking-[0.2em] font-bold">
-            <Link to={`/planner/${flagshipPlanner.id}`}>View all {COVERS.length} covers</Link>
+            <Link to={`/planner/${flagshipPlanner.slug}`}>View all {COVERS.length} covers</Link>
           </Button>
         </div>
       </section>
@@ -242,7 +243,7 @@ export default function Landing() {
           {[
             { q: "Where is my data stored?", a: "On your device and backed up in the cloud, so you can restore on any device. Export a JSON backup any time from Settings." },
             { q: "What if I get a new phone?", a: "Sign in on the new device and your planner restores automatically — your membership includes backup and sync." },
-            { q: "How does pricing work?", a: "$21.97/month gets you the planner, cloud backup, every-device sync, two-way calendar sync and 1 cover + matching icon set + 60 themed stickers. Extra covers are $5 each — 10% off 2–5, 20% off 6 or more. Cancel anytime." },
+            { q: "How does pricing work?", a: "$21.97/month gets you the planner, cloud backup, every-device sync, two-way calendar sync, 1 cover with 42 matching page icons, plus the shared library of 180 illustrated stickers and 60 emojis (240 pieces total). Extra covers are $5 each — 10% off 2–5, 20% off 6 or more. Cancel anytime." },
             { q: "Which devices are supported?", a: "Anything with a modern browser — iPhone, iPad, Android, Mac, Windows, Linux. Install as an app via 'Add to Home Screen'." },
             { q: "Refunds?", a: "Cancel any time and your membership stops at the end of the month — your writing stays safe and returns if you come back. Extra cover purchases are non-refundable. Reach out if something isn't working and we'll make it right." },
           ].map((f) => (

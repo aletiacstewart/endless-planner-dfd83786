@@ -31,6 +31,12 @@ export default function PlannerDetail() {
   const [coverTitle, setCoverTitle] = useState("");
   const [ownerName, setOwnerName] = useState("");
 
+  // Preserve old bookmarks while keeping the customer-facing address current.
+  useEffect(() => {
+    if (!planner || plannerId === planner.slug) return;
+    navigate(`/planner/${planner.slug}${window.location.search}`, { replace: true });
+  }, [navigate, planner, plannerId]);
+
   // Arriving from a cover card scrolls to and highlights that cover, but never
   // selects it — the user must explicitly choose the included cover.
   useEffect(() => {
@@ -56,7 +62,7 @@ export default function PlannerDetail() {
   useEffect(() => {
     if (resumed && wantsCheckout && user?.id && includedCoverId && !isOpen) {
       buy();
-      navigate(`/planner/${plannerId}`, { replace: true });
+      navigate(`/planner/${planner.slug}`, { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resumed]);
@@ -97,7 +103,7 @@ export default function PlannerDetail() {
       "pendingCheckout",
       JSON.stringify({ plannerId: planner.id, includedCoverId, extraPackIds })
     );
-    navigate(`/auth?mode=signin&next=${encodeURIComponent(`/planner/${planner.id}?checkout=1`)}`);
+    navigate(`/auth?mode=signin&next=${encodeURIComponent(`/planner/${planner.slug}?checkout=1`)}`);
   };
 
   const startCheckout = (userId: string, customerEmail: string) => {
@@ -182,8 +188,9 @@ export default function PlannerDetail() {
               Curate your <i className="font-normal">digital</i> ritual.
             </h1>
             <p className="text-primary/70 text-base md:text-lg leading-relaxed max-w-lg font-light">
-              {planner.tagline}. Every cover ships with 20 matching page icons and a 60-piece themed
-              sticker set — pick one to include with your membership, add more for $5 each — 10% off 2–5, 20% off 6 or more.
+              {planner.tagline}. Every cover includes 42 matching page icons. Your membership also
+              includes 180 illustrated stickers and 60 emojis — 240 library pieces total. Pick one
+              cover to include, then add more for $5 each — 10% off 2–5, 20% off 6 or more.
             </p>
           </div>
 

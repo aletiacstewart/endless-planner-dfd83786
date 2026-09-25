@@ -3,6 +3,8 @@ const heroImage = "";
 
 export interface PlannerDef {
   id: string;
+  /** Customer-facing URL segment. Keep id stable for purchases and access records. */
+  slug: string;
   name: string;
   tagline: string;
   description: string;
@@ -19,26 +21,28 @@ export interface PlannerDef {
 export const PLANNERS: PlannerDef[] = [
   {
     id: "wellness-journey",
+    slug: "curated-planner",
     name: "Curated Planner",
     tagline: "One planner for your whole life — health, home, money, and mind.",
     description:
-      "Track habits, health, goals, meals, workouts, budget, home, and mental wellness in one beautifully organized planner. $21.97/month includes the planner, cloud backup, sync on every device and two-way calendar sync, plus 1 cover & matching icon set of your choice. Add more covers for $5 each — 10% off 2–5, 20% off 6 or more.",
+      "Track habits, health, goals, meals, workouts, budget, home, and mental wellness in one beautifully organized planner. $21.97/month includes the planner, cloud backup, sync on every device and two-way calendar sync, plus 1 cover with 42 matching page icons and access to 180 illustrated stickers and 60 emojis. Add more covers for $5 each — 10% off 2–5, 20% off 6 or more.",
     heroImage,
     priceUSD: 21.97,
     priceId: "endless_planner_all_access_monthly",
     pageTypeIds: PAGE_TYPES.map((p) => p.id),
     highlights: [
-      "40 guided pages — calendars, journal, habits, health, sleep, goals, budget, home & mind",
+      "42 guided pages — calendars, journal, habits, health, sleep, goals, budget, home & mind",
       "Budget, debt & savings pages built in",
       "Home management: cleaning zones, meal plan & grocery lists",
       "Mental health: mood journal, therapy prep & coping toolkit",
-      "Includes 1 cover & matching icon set — add more for $5 each",
+      "Includes 1 cover with 42 matching page icons — add more for $5 each",
+      "Shared library: 180 illustrated stickers + 60 emojis (240 pieces total)",
       "Cloud backup, sync on every device & two-way calendar sync included",
     ],
     available: true,
   },
 ];
 
-export function getPlanner(id: string): PlannerDef | undefined {
-  return PLANNERS.find((p) => p.id === id);
+export function getPlanner(idOrSlug: string): PlannerDef | undefined {
+  return PLANNERS.find((p) => p.id === idOrSlug || p.slug === idOrSlug);
 }
