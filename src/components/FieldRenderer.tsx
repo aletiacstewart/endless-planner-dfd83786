@@ -1050,8 +1050,8 @@ function MedList({
           </section>
         ))}
       </div>
-      <div className="hidden overflow-x-auto max-w-full pb-1 lg:block" style={{ WebkitOverflowScrolling: "touch" }}>
-      <div className="min-w-[42rem]">
+      <div className="hidden max-w-full pb-1 lg:block">
+      <div className="w-full">
       <div className={cn("grid gap-x-2 gap-y-1 items-end mb-1", cols)}>
         <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground" />
         <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground px-1">Name</span>
