@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Component, memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { PageTypeDef, FieldValue, SectionDef } from "@/lib/pageTypes";
 import { FieldRenderer } from "./FieldRenderer";
 import { cn } from "@/lib/utils";
@@ -74,34 +74,45 @@ interface Props {
   showPageGraphic?: boolean;
 }
 
-export function PageRenderer({ pageType, values, onChange, coverId, showPageGraphic = true }: Props) {
-  const pageGraphic = showPageGraphic ? getCoverPageIcon(coverId, pageType.id) : undefined;
+class SectionBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  componentDidCatch(err: unknown) { console.error("Section failed to render", err); }
+  render() {
+    if (this.state.failed) {
+      return <p className="text-sm text-muted-foreground">Couldn't load this section. Your other sections still work.</p>;
+    }
+    return this.props.children;
+  }
+}
 
+/** Big pages (Complete Tracker) render a few sections first, then the rest in small batches so the page appears right away. */
+const FIRST_BATCH = 3;
+const BATCH = 3;
+function useStagedCount(total: number, resetKey: string) {
+  const [count, setCount] = useState(Math.min(total, FIRST_BATCH));
+  useEffect(() => { setCount(Math.min(total, FIRST_BATCH)); }, [resetKey, total]);
+  useEffect(() => {
+    if (count >= total) return;
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (id: number) => void };
+    let id: number;
+    if (w.requestIdleCallback) {
+      id = w.requestIdleCallback(() => setCount((c) => Math.min(total, c + BATCH)), { timeout: 120 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    id = window.setTimeout(() => setCount((c) => Math.min(total, c + BATCH)), 16);
+    return () => window.clearTimeout(id);
+  }, [count, total]);
+  return count;
+}
+
+
+type SectionProps = { section: SectionDef; idx: number; values: Record<string, FieldValue>; onChange: (key: string, value: FieldValue) => void; version: number };
+/** Re-renders only when `version` changes — computed from which keys changed. */
+const SectionView = memo(function SectionView({ section, idx, values, onChange }: SectionProps) {
   return (
-    <div className="space-y-6">
-      {pageGraphic && (
-        <div className="flex justify-center py-1" aria-label={`${pageType.name} themed page graphic`}>
-          <img
-            src={pageGraphic}
-            alt=""
-            className="h-28 w-28 sm:h-32 sm:w-32 lg:h-36 lg:w-36 rounded-2xl object-cover shadow-sm ring-1 ring-border/50"
-          />
-        </div>
-      )}
-      {showPageGraphic && pageType.id === "medications" && (
-        <ScanBar mode="prescription" values={values} onChange={onChange} />
-      )}
-      {showPageGraphic && pageType.id === "medical-records" && (
-        <ScanBar mode="medical" values={values} onChange={onChange} />
-      )}
-      {showPageGraphic && pageType.id === "contacts" && (
-        <ContactImportBar variant="contacts" values={values} onChange={onChange} />
-      )}
-      {showPageGraphic && pageType.id === "emergency-contacts" && (
-        <ContactImportBar variant="emergency" values={values} onChange={onChange} />
-      )}
-      {pageType.sections.map((section, idx) => (
-        <section key={idx} className="planner-card">
+        <section className="planner-card" style={idx >= FIRST_BATCH ? { contentVisibility: "auto", containIntrinsicSize: "auto 600px" } : undefined}>
+          <SectionBoundary>
           {section.title && (
             <h2 className="font-display text-xl mb-1">{section.title}</h2>
           )}
@@ -203,7 +214,79 @@ export function PageRenderer({ pageType, values, onChange, coverId, showPageGrap
               })()}
             </div>
           )}
+          </SectionBoundary>
         </section>
+  );
+}, (a, b) => a.version === b.version && a.section === b.section && a.idx === b.idx);
+
+export function PageRenderer({ pageType, values, onChange, coverId, showPageGraphic = true }: Props) {
+  const visibleCount = useStagedCount(pageType.sections.length, pageType.id);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  const stableOnChange = useCallback((k: string, v: FieldValue) => onChangeRef.current(k, v), []);
+  // Map each field key to its section so typing only redraws that section.
+  const keyToSection = useMemo(() => {
+    const m = new Map<string, number>();
+    pageType.sections.forEach((sec, i) => {
+      const fields = sec.groups?.length ? sec.groups.flatMap((g) => g.fields) : sec.fields;
+      fields.forEach((f) => m.set(f.key, i));
+    });
+    // Keys other fields read (doctor scope etc.) must redraw everything.
+    pageType.sections.forEach((sec) => {
+      const fields = sec.groups?.length ? sec.groups.flatMap((g) => g.fields) : sec.fields;
+      fields.forEach((f) => { if (f.scopeByKey) m.delete(f.scopeByKey); });
+    });
+    return m;
+  }, [pageType]);
+  const prevValues = useRef(values);
+  const versionsRef = useRef<number[]>([]);
+  const versions = useMemo(() => {
+    const prev = prevValues.current;
+    prevValues.current = values;
+    const v = versionsRef.current.slice();
+    if (prev !== values) {
+      const keys = new Set([...Object.keys(prev), ...Object.keys(values)]);
+      let bumpAll = false;
+      const bump = new Set<number>();
+      keys.forEach((k) => {
+        if (prev[k] === values[k]) return;
+        const i = keyToSection.get(k);
+        // Shared keys (date/month/year, paired or scoped keys) can affect other sections.
+        if (i === undefined || k === "date" || k === "month" || k === "year" || k === "daily_goal") bumpAll = true;
+        else bump.add(i);
+      });
+      pageType.sections.forEach((_, i) => { if (bumpAll || bump.has(i)) v[i] = (v[i] ?? 0) + 1; });
+    }
+    versionsRef.current = v;
+    return v;
+  }, [values, keyToSection, pageType]);
+  const pageGraphic = showPageGraphic ? getCoverPageIcon(coverId, pageType.id) : undefined;
+
+  return (
+    <div className="space-y-6">
+      {pageGraphic && (
+        <div className="flex justify-center py-1" aria-label={`${pageType.name} themed page graphic`}>
+          <img
+            src={pageGraphic}
+            alt=""
+            className="h-28 w-28 sm:h-32 sm:w-32 lg:h-36 lg:w-36 rounded-2xl object-cover shadow-sm ring-1 ring-border/50"
+          />
+        </div>
+      )}
+      {showPageGraphic && pageType.id === "medications" && (
+        <ScanBar mode="prescription" values={values} onChange={onChange} />
+      )}
+      {showPageGraphic && pageType.id === "medical-records" && (
+        <ScanBar mode="medical" values={values} onChange={onChange} />
+      )}
+      {showPageGraphic && pageType.id === "contacts" && (
+        <ContactImportBar variant="contacts" values={values} onChange={onChange} />
+      )}
+      {showPageGraphic && pageType.id === "emergency-contacts" && (
+        <ContactImportBar variant="emergency" values={values} onChange={onChange} />
+      )}
+      {pageType.sections.slice(0, visibleCount).map((section, idx) => (
+        <SectionView key={idx} section={section} idx={idx} values={values} onChange={stableOnChange} version={versions[idx] ?? 0} />
       ))}
     </div>
   );
