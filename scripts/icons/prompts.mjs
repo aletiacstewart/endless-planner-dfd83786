@@ -51,6 +51,7 @@ export const PAGE_SUBJECTS = {
   "emergency-contacts": "a small shield emblem with a simple plus-cross sigil at its center and a slender handset silhouette crossed behind it — no letters",
   contacts: "a small closed address book with a ribbon marker beside a tiny envelope and a simple silhouette portrait medallion",
   "important-dates": "a small blank square page torn from a calendar with a single heart pinned to it and two tiny drifting balloons — the page is completely blank",
+  "daily-spend": "a small open coin purse with a few round coins and a folded paper receipt beside it — the receipt is completely blank",
   "gift-tracker": "a small wrapped gift box with a flowing satin bow and a tiny blank gift tag on a string — the tag is completely blank",
 };
 
