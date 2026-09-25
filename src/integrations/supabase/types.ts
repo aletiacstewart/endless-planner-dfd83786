@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_events: {
+        Row: {
+          created_at: string
+          detail: Json
+          email: string | null
+          id: string
+          kind: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: Json
+          email?: string | null
+          id?: string
+          kind: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          detail?: Json
+          email?: string | null
+          id?: string
+          kind?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       app_user_connections: {
         Row: {
           connection_key_ciphertext: string
