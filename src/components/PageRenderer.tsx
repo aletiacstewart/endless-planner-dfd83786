@@ -231,6 +231,11 @@ export function PageRenderer({ pageType, values, onChange, coverId, showPageGrap
       const fields = sec.groups?.length ? sec.groups.flatMap((g) => g.fields) : sec.fields;
       fields.forEach((f) => m.set(f.key, i));
     });
+    // Keys other fields read (doctor scope etc.) must redraw everything.
+    pageType.sections.forEach((sec) => {
+      const fields = sec.groups?.length ? sec.groups.flatMap((g) => g.fields) : sec.fields;
+      fields.forEach((f) => { if (f.scopeByKey) m.delete(f.scopeByKey); });
+    });
     return m;
   }, [pageType]);
   const prevValues = useRef(values);
