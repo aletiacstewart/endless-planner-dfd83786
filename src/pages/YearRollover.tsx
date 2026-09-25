@@ -51,7 +51,7 @@ export default function YearRollover() {
         for (const g of groups) {
           if (!picked.has(g.page.id)) continue;
           for (const e of g.entries) {
-            const values = { ...e.values, __year: toYear };
+            const values: Record<string, import("@/lib/db").FieldValue> = { ...e.values, __year: toYear };
             if (values.year != null && String(values.year).trim() !== "") values.year = String(toYear);
             await saveEntry({ ...e, id: newId(), values, createdAt: now, updatedAt: now });
             copied++;
