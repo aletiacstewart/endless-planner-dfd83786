@@ -441,6 +441,17 @@ export const DAILY_KEYS = [
   "sweets", "sweets_other",
   "gratitude",
   "daily_blood_sugar", "daily_blood_pressure", "daily_oxygen",
+  "priorities", "hourly", "day_rating",
+];
+
+/** Symptom Tracker grid field -> matching Complete Tracker daily field. */
+const SYMPTOM_FIELDS: [string, string][] = [
+  ["hot_flashes", "daily_hot_flashes"],
+  ["night_sweats", "daily_night_sweats"],
+  ["brain_fog", "daily_brain_fog"],
+  ["mood_swings", "daily_mood_swings"],
+  ["sleep_disruption", "daily_sleep_disruption"],
+  ["symptoms_other", "daily_symptoms_other"],
 ];
 
 /** Keys shared by the Complete Tracker cleaning block and the Cleaning Check List. */
@@ -633,6 +644,23 @@ async function syncLinkedEntriesInner(complete: PlannerEntry): Promise<string[]>
         mergeDailyMonthCell(dst, vital.field, date.day, date.monthIndex, combined);
       });
       synced.push(vital.label);
+    }
+
+    // 4b. Yearly Symptom Tracker — one grid per symptom.
+    if (anyFilled(v, SYMPTOM_FIELDS.map(([, d]) => d))) {
+      const entry = await findOrCreate(
+        "symptom-tracker",
+        (e) => String(e.values.year ?? "") === yearStr,
+        { year: yearStr },
+      );
+      await persist(entry, (dst) => {
+        if (!dst.year) dst.year = yearStr;
+        for (const [grid, daily] of SYMPTOM_FIELDS) {
+          const val = asText(v[daily]).trim();
+          if (val) mergeDailyMonthCell(dst, grid, date.day, date.monthIndex, val);
+        }
+      });
+      synced.push(`Symptoms (${yearStr})`);
     }
 
     // 5. Self-Care Check List — the Complete Tracker's daily notes live on that week's checklist.
@@ -1237,6 +1265,7 @@ async function scaffoldLinkedEntriesInner(complete: PlannerEntry): Promise<strin
       "blood-sugar-tracker",
       "blood-pressure-tracker",
       "oxygen-tracker",
+      "symptom-tracker",
       "self-care-checklist",
       "workout-tracker",
     ];
@@ -1447,6 +1476,62 @@ async function syncFromIndividualInner(entry: PlannerEntry): Promise<string[]> {
         });
       }
       if (touched > 0) synced.push(vital.label);
+      return synced;
+    }
+
+    // Symptom Tracker → each dated cell lands on that Complete Tracker day.
+    if (entry.pageType === "symptom-tracker") {
+      const year = Number(v.year ?? "");
+      if (!year) return [];
+      let touched = 0;
+      const byDay = new Map<string, Record<string, string>>();
+      for (const [grid, daily] of SYMPTOM_FIELDS) {
+        const cells = (v[grid] as { cells?: Record<string, string> } | undefined)?.cells ?? {};
+        for (const [cellKey, cellVal] of Object.entries(cells)) {
+          const m = /^(\d+)-(\d+)$/.exec(cellKey);
+          if (!m) continue;
+          const iso = `${year}-${String(Number(m[2]) + 1).padStart(2, "0")}-${String(Number(m[1])).padStart(2, "0")}`;
+          const row = byDay.get(iso) ?? {};
+          row[daily] = cellVal;
+          byDay.set(iso, row);
+        }
+      }
+      for (const [iso, vals] of byDay) {
+        touched += await updateCompleteForDate(iso, (dst) => Object.assign(dst, vals));
+      }
+      if (touched > 0) synced.push("Complete Tracker (symptoms)");
+      return synced;
+    }
+
+    // Gift Tracker → Complete Tracker day whose "Gift for" matches the Person,
+    // falling back to the most recent Complete Tracker day.
+    if (entry.pageType === "gift-tracker") {
+      const grid = (v.gift_rows as Record<string, string> | undefined) ?? {};
+      const rows = [...new Set(Object.keys(grid).map((k) => Number(k.split("-")[0])).filter((n) => Number.isFinite(n)))].sort((a, b) => a - b);
+      const completes = await cachedList("complete-tracker");
+      const latest = [...completes].sort((a, b) =>
+        String(b.values.date ?? "").localeCompare(String(a.values.date ?? "")) || b.updatedAt - a.updatedAt,
+      )[0];
+      let touched = 0;
+      let fallback: Record<string, FieldValue> | null = null;
+      for (const row of rows) {
+        const person = String(grid[`${row}-Person`] ?? "").trim();
+        const idea = String(grid[`${row}-Gift idea`] ?? "").trim();
+        if (!person && !idea) continue;
+        const vals: Record<string, FieldValue> = {
+          gift_person: person,
+          gift_idea: idea,
+          gift_budget: String(grid[`${row}-Budget`] ?? ""),
+          gift_purchased: Boolean(String(grid[`${row}-Purchased`] ?? "").trim()),
+        };
+        const matches = person
+          ? completes.filter((c) => asText(c.values.gift_person).trim().toLowerCase() === person.toLowerCase())
+          : [];
+        if (matches.length === 0) { fallback = vals; continue; }
+        for (const c of matches) { await persist(c, (dst) => Object.assign(dst, vals)); touched++; }
+      }
+      if (fallback && latest) { await persist(latest, (dst) => Object.assign(dst, fallback!)); touched++; }
+      if (touched > 0) synced.push("Complete Tracker (gifts)");
       return synced;
     }
 

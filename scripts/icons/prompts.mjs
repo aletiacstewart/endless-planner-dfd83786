@@ -23,6 +23,7 @@ export const PAGE_SUBJECTS = {
   "measurement-tracker": "a softly coiled measuring ribbon shaped like a decorative curl",
   "blood-sugar-tracker": "a single translucent honey droplet resting on a curled leaf",
   "blood-pressure-tracker": "a small stylized anatomical heart with three concentric soft rings radiating outward",
+  "symptom-tracker": "a gentle thermometer entwined with a single fan-shaped leaf and a crescent moon, symbolizing tracking body changes",
   "oxygen-tracker": "a pair of lung-shaped leaves joined at the stem, symbolizing breath",
   "self-care-checklist": "a small round bathtub with a lit candle beside it and a steaming teacup, cozy trio",
   "cleaning-checklist": "a slender broom crossed with a folded stack of linen and a small spray bottle",

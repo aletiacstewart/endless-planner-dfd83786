@@ -27,6 +27,14 @@ const REVERSE_SYNC_TYPES = new Set([
   "sleep-tracker",
   "water-tracker",
   "daily-journal",
+  "meal-planning",
+  "notes",
+  "brain-dump",
+  "adhd-toolkit",
+  "therapy-session",
+  "important-dates",
+  "gift-tracker",
+  "symptom-tracker",
 ]);
 
 export function useAutoSave(entry: PlannerEntry | null, debounceMs = 500) {
