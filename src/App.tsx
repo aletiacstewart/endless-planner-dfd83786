@@ -18,6 +18,7 @@ import PlannerDetail from "./pages/PlannerDetail.tsx";
 import Packs from "./pages/Packs.tsx";
 import Subscribe from "./pages/Subscribe.tsx";
 import AdminPlanner from "./pages/AdminPlanner.tsx";
+import AdminDashboard from "./pages/AdminDashboard.tsx";
 import Auth from "./pages/Auth.tsx";
 import { OnboardingFlow } from "./components/onboarding/OnboardingFlow";
 import { SplashScreen } from "./components/SplashScreen";
@@ -128,6 +129,7 @@ const App = () => {
           <Route path="/unlock" element={<Unlock />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin-planner" element={<AdminPlanner />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/thank-you" element={<ThankYou />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
           <Route

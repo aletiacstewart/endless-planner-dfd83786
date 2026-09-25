@@ -134,6 +134,7 @@ function BackupSection() {
       const result = await exportPlannerPdf((done, total, label) => {
         setPdfStatus(`${label} — ${Math.min(done, total)} of ${total}`);
       });
+      import("@/lib/adminEvents").then((m) => m.logAdminEvent("pdf_export", { count: result.entries })).catch(() => {});
       if (result.entries === 0) {
         toast.info("Your planner is still empty — the PDF has just your cover.");
       } else if (result.missingPhotos > 0) {

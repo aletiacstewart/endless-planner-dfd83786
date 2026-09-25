@@ -123,6 +123,7 @@ export async function exportAll(): Promise<string> {
   const entries = await db.getAll("entries");
   const { collectExtras } = await import("./plannerExtras");
   const extras = await collectExtras();
+  import("./adminEvents").then((m) => m.logAdminEvent("backup_export", { count: entries.length })).catch(() => {});
   return JSON.stringify({ version: 2, exportedAt: Date.now(), entries, ...extras }, null, 2);
 }
 
@@ -154,6 +155,7 @@ export async function importAll(json: string, mode: "merge" | "replace" = "merge
   const sync = await import("./sync");
   for (const entry of data.entries) if (entry?.id && entry?.pageType) void sync.pushEntry(entry);
   scheduleExtrasPush();
+  import("./adminEvents").then((m) => m.logAdminEvent("backup_restore", { count, mode })).catch(() => {});
   return count;
 }
 

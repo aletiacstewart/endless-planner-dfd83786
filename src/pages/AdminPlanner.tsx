@@ -38,6 +38,11 @@ export default function AdminPlanner() {
               Open the planner
             </button>
           )}
+          {admin && (
+            <button onClick={() => navigate("/admin/dashboard")} className="underline">
+              Owner dashboard
+            </button>
+          )}
           {!admin && !loading && !userId && (
             <button onClick={() => navigate("/auth")} className="underline">
               Sign in
