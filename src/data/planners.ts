@@ -19,7 +19,7 @@ export interface PlannerDef {
 export const PLANNERS: PlannerDef[] = [
   {
     id: "wellness-journey",
-    name: "Change of Life — Wellness Journey",
+    name: "Curated Planner",
     tagline: "One planner for your whole life — health, home, money, and mind.",
     description:
       "Track habits, health, goals, meals, workouts, budget, home, and mental wellness in one beautifully organized planner. $21.97/month includes the planner, cloud backup, sync on every device and two-way calendar sync, plus 1 cover & matching icon set of your choice. Add more covers for $5 each — 10% off 2–5, 20% off 6 or more.",
