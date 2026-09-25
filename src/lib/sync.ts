@@ -504,6 +504,26 @@ async function switchLocalAccount(userId: string) {
   emitDataChanged();
 }
 
+/** Cover title/name chosen at checkout fill a brand-new account's empty settings. */
+async function applyPendingCoverText() {
+  try {
+    const { loadSettings, saveSettings } = await import("./settings");
+    const cur = await loadSettings();
+    if (cur.plannerName || cur.ownerName) { sessionStorage.removeItem("pendingCoverText"); return; }
+    let text: { plannerName?: string; ownerName?: string } = {};
+    const raw = sessionStorage.getItem("pendingCoverText");
+    if (raw) text = JSON.parse(raw);
+    else {
+      const meta = (await supabase.auth.getUser()).data.user?.user_metadata ?? {};
+      text = { plannerName: meta.planner_name ?? "", ownerName: meta.owner_name ?? "" };
+    }
+    sessionStorage.removeItem("pendingCoverText");
+    if (!text.plannerName && !text.ownerName) return;
+    await saveSettings({ plannerName: text.plannerName ?? "", ownerName: text.ownerName ?? "" });
+    emitDataChanged();
+  } catch { /* non-fatal */ }
+}
+
 async function handleSignIn(userId: string) {
   currentUserId = userId;
   try {
@@ -513,6 +533,7 @@ async function handleSignIn(userId: string) {
   }
   await refreshSubStatus(userId);
   await fullReconcile(userId);
+  await applyPendingCoverText();
   if (hasActiveSub) startRealtime(userId);
 
   // React to subscription changes without needing a page reload.

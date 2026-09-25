@@ -31,6 +31,10 @@ type Props = {
   accountError?: string;
   onSignInInstead?: () => void;
   busy?: boolean;
+  coverTitle?: string;
+  ownerName?: string;
+  onCoverTitleChange?: (v: string) => void;
+  onOwnerNameChange?: (v: string) => void;
 };
 
 export function CartSummary({
@@ -51,6 +55,10 @@ export function CartSummary({
   accountError,
   onSignInInstead,
   busy,
+  coverTitle,
+  ownerName,
+  onCoverTitleChange,
+  onOwnerNameChange,
 }: Props) {
   const includedCover = getCover(includedCoverId);
   const packSubtotal = calcPackSubtotalUSD(extraPackIds);
@@ -179,6 +187,34 @@ export function CartSummary({
           {PACK_DISCOUNT_HINT}
         </p>
       </div>
+
+      {onCoverTitleChange && (
+        <div className="space-y-2 rounded-sm border border-primary/15 p-3">
+          <p className="text-[10px] uppercase tracking-[0.25em] font-bold text-primary/60">
+            Personalize your cover
+          </p>
+          <input
+            value={coverTitle ?? ""}
+            maxLength={60}
+            onChange={(e) => onCoverTitleChange(e.target.value)}
+            placeholder="Cover title (e.g. Sarah's Wellness Planner)"
+            aria-label="Cover title"
+            className="w-full px-3 h-11 rounded-sm border border-input bg-background text-sm"
+          />
+          <input
+            value={ownerName ?? ""}
+            maxLength={60}
+            onChange={(e) => onOwnerNameChange?.(e.target.value)}
+            placeholder="Your name (optional)"
+            aria-label="Your name"
+            className="w-full px-3 h-11 rounded-sm border border-input bg-background text-sm"
+          />
+          <div className="rounded-sm bg-muted/60 py-3 text-center">
+            <p className="font-display text-base truncate px-2">{coverTitle?.trim() || "My Planner"}</p>
+            {ownerName?.trim() && <p className="font-script text-sm text-muted-foreground truncate px-2">{ownerName}</p>}
+          </div>
+        </div>
+      )}
 
       {needsAccount ? (
         <div className="space-y-2 rounded-sm border border-primary/15 p-3">
