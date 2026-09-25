@@ -218,6 +218,56 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           />
         </div>
       );
+    case "meal-row": {
+      // Meal name plus small blood sugar / blood pressure / O2 inputs on one line.
+      const bsKey = `${field.key}_bs`;
+      const bpKey = `${field.key}_bp`;
+      const o2Key = `${field.key}_o2`;
+      const small = "bg-background/60 h-8 w-[4.5rem] px-2 text-center text-xs";
+      return (
+        <div>
+          {label}
+          <div className="flex items-center gap-2 flex-wrap">
+            <Input
+              id={field.key}
+              type="text"
+              value={(value as string) ?? ""}
+              onChange={(e) => onChange(e.target.value)}
+              placeholder={field.placeholder ?? "What did you eat?"}
+              className="bg-background/60 h-9 flex-1 min-w-[10rem]"
+            />
+            {onChangeAny && (
+              <>
+                <Input
+                  type="text"
+                  value={(allValues?.[bsKey] as string) ?? ""}
+                  onChange={(e) => onChangeAny(bsKey, e.target.value)}
+                  placeholder="Sugar"
+                  aria-label={`${field.label} — Blood Sugar`}
+                  className={small}
+                />
+                <Input
+                  type="text"
+                  value={(allValues?.[bpKey] as string) ?? ""}
+                  onChange={(e) => onChangeAny(bpKey, e.target.value)}
+                  placeholder="BP"
+                  aria-label={`${field.label} — Blood Pressure`}
+                  className={small}
+                />
+                <Input
+                  type="text"
+                  value={(allValues?.[o2Key] as string) ?? ""}
+                  onChange={(e) => onChangeAny(o2Key, e.target.value)}
+                  placeholder="O₂"
+                  aria-label={`${field.label} — O₂ Levels`}
+                  className={small}
+                />
+              </>
+            )}
+          </div>
+        </div>
+      );
+    }
     case "textarea":
       return (
         <div>

@@ -43,6 +43,7 @@ export type FieldType =
   | "drawing" // touch, mouse, and stylus sketch canvas
   | "computed-total" // read-only sum of one column of a measurement-grid (sumKey, sumColumn)
   | "page-links" // buttons linking to other pages (options "id|Name")
+  | "meal-row" // meal name + small blood sugar / blood pressure / O2 inputs on one line (keys: key, key_bs, key_bp, key_o2)
   | "image"; // private user photo stored in cloud storage
 
 export interface FieldDef {
@@ -526,22 +527,13 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Meals",
         page: 1,
         fields: [
-          { key: "breakfast", label: "Breakfast", type: "text", span: 2 },
-          { key: "breakfast_bs", label: "Breakfast — Blood Sugar", type: "text" },
-          { key: "breakfast_bp", label: "Breakfast — Blood Pressure", type: "text" },
-          { key: "breakfast_o2", label: "Breakfast — O₂ Levels", type: "text" },
+          { key: "breakfast", label: "Breakfast", type: "meal-row", span: 2 },
           { key: "breakfast_notes", label: "Breakfast — Notes", type: "textarea", rows: 3, span: 2 },
 
-          { key: "lunch", label: "Lunch", type: "text", span: 2 },
-          { key: "lunch_bs", label: "Lunch — Blood Sugar", type: "text" },
-          { key: "lunch_bp", label: "Lunch — Blood Pressure", type: "text" },
-          { key: "lunch_o2", label: "Lunch — O₂ Levels", type: "text" },
+          { key: "lunch", label: "Lunch", type: "meal-row", span: 2 },
           { key: "lunch_notes", label: "Lunch — Notes", type: "textarea", rows: 3, span: 2 },
 
-          { key: "dinner", label: "Dinner", type: "text", span: 2 },
-          { key: "dinner_bs", label: "Dinner — Blood Sugar", type: "text" },
-          { key: "dinner_bp", label: "Dinner — Blood Pressure", type: "text" },
-          { key: "dinner_o2", label: "Dinner — O₂ Levels", type: "text" },
+          { key: "dinner", label: "Dinner", type: "meal-row", span: 2 },
           { key: "dinner_notes", label: "Dinner — Notes", type: "textarea", rows: 3, span: 2 },
 
           { key: "snacks", label: "Snacks", type: "text", span: 2 },
@@ -703,8 +695,8 @@ export const PAGE_TYPES: PageTypeDef[] = [
         page: 2,
         fields: [
           { key: "brain_dump_today", label: "Everything on your mind", type: "note-style", span: 2 },
-          { key: "do_now", label: "Do now", type: "priority-list", max: 5, span: 2 },
-          { key: "do_later", label: "Do later", type: "priority-list", max: 5, span: 2 },
+          { key: "do_now", label: "Do now", type: "priority-list", max: 3, span: 2 },
+          { key: "do_later", label: "Do later", type: "priority-list", max: 3, span: 2 },
         ],
       },
       {
@@ -1445,8 +1437,8 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Sort it out",
         columns: 2,
         fields: [
-          { key: "do_now", label: "Do now", type: "priority-list", max: 5 },
-          { key: "do_later", label: "Do later", type: "priority-list", max: 5 },
+          { key: "do_now", label: "Do now", type: "priority-list", max: 3 },
+          { key: "do_later", label: "Do later", type: "priority-list", max: 3 },
           { key: "delegate", label: "Delegate / ask for help", type: "textarea", rows: 3 },
           { key: "let_go", label: "Let go", type: "textarea", rows: 3 },
         ],
