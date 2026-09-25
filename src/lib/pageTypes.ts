@@ -445,7 +445,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
     id: "complete-tracker",
     name: "Complete Tracker",
     shortName: "Complete",
-    description: "All-in-one daily log — meals, vitals, wellness, meds, measurements, monthly calendar and more. Auto-syncs to your individual trackers.",
+    description: "All-in-one daily log in two pages — Page 1: your day & body (calendar, meals, vitals, wellness, workout, measurements, sleep). Page 2: mind, home & life (mood, gratitude, habits, notes, journal, money, medical). Auto-syncs to your individual trackers.",
     icon: "LayoutGrid",
     sections: [
       {
@@ -660,6 +660,26 @@ export const PAGE_TYPES: PageTypeDef[] = [
         page: 2,
         fields: [
           { key: "med_list", label: "Medications", type: "med-list", rowCount: 20, span: 2, growable: true, addLabel: "Add medication" },
+        ],
+      },
+      {
+        title: "Gratitude",
+        description: "Three good things — syncs to your Gratitude Log.",
+        page: 2,
+        columns: 1,
+        fields: [
+          { key: "gratitude", label: "Grateful for", type: "gratitude-list", max: 3, span: 2 },
+          { key: "gratitude_note", label: "One moment worth remembering", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+      {
+        title: "Self-Care",
+        page: 2,
+        columns: 2,
+        fields: [
+          { key: "self_physical", label: "Physical Self-Care", type: "textarea", rows: 3, span: 2 },
+          { key: "self_emotional", label: "Emotional Self-Care", type: "textarea", rows: 3, span: 2 },
+          { key: "self_spiritual", label: "Spiritual Self-Care", type: "textarea", rows: 3, span: 2 },
         ],
       },
       {
