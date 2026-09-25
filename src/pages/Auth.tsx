@@ -9,17 +9,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { isUnlocked, refreshUnlocks } from "@/lib/unlock";
 import { PLANNERS } from "@/data/planners";
-import { reconcileNow } from "@/lib/sync";
+import { reconcileNow, signOut as syncSignOut } from "@/lib/sync";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function Auth() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const routingAfterSignIn = useRef(false);
+  // When someone arrives to switch accounts we must not bounce them straight
+  // back into the planner they are already signed into.
+  const [switching, setSwitching] = useState(
+    () => new URLSearchParams(window.location.search).get("switch") === "1",
+  );
   const [mode, setMode] = useState<"choose" | "email" | "otp" | "password">(() => {
     const params = new URLSearchParams(window.location.search);
     const next = params.get("next") ?? "";
-    return params.get("mode") === "signin" || next.startsWith("/unlock") || next.includes("checkout=1")
+    return params.get("mode") === "signin" || params.get("switch") === "1" || next.startsWith("/unlock") || next.includes("checkout=1")
       ? "password"
       : "choose";
   });
@@ -27,6 +32,7 @@ export default function Auth() {
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
   const [busy, setBusy] = useState(false);
+
 
   const routeAfterSignIn = async () => {
     if (routingAfterSignIn.current) return;
