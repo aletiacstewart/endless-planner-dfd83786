@@ -1,0 +1,1 @@
+Use each planner's `slug` for customer-facing URLs and keep its `id` for checkout and entitlements, so renaming a page cannot break purchases or access.
