@@ -930,7 +930,12 @@ function MedList({
   const isMobile = useIsMobile();
   const data = value ?? {};
   const extra = Number(data.__rows ?? "") || 0;
-  const visibleRows = growable ? Math.max(rowCount, extra) : rowCount;
+  // Never hide rows that already hold data (e.g. older days saved with 20 rows).
+  const lastFilled = Object.entries(data).reduce((mx, [k, v]) => {
+    const n = Number(k.split("_")[0]);
+    return Number.isFinite(n) && v && String(v).trim() ? Math.max(mx, n) : mx;
+  }, 0);
+  const visibleRows = growable ? Math.max(rowCount, extra, lastFilled) : rowCount;
   const update = (key: string, v: string) => onChange({ ...data, [key]: v });
   const cols = "grid-cols-[1.25rem_minmax(0,2fr)_minmax(0,1.4fr)_minmax(0,1.6fr)_minmax(0,1.4fr)_5rem]";
   const slots: { k: "m" | "a" | "n"; label: string }[] = [

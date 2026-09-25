@@ -596,8 +596,9 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Measurements",
+        description: "Today's measurements only — start values live on your Measurement and Weight pages.",
         page: 1,
-        columns: 1,
+        columns: 2,
         fields: [
               ...([
                 ["body_fat", "Body Fat %"],
@@ -609,21 +610,13 @@ export const PAGE_TYPES: PageTypeDef[] = [
                 ["thigh", "Thigh"],
                 ["calf", "Calf"],
               ] as const).map(([k, label]) => ({
-                key: `m_${k}`,
-                label,
-                type: "paired-compact" as const,
-                pairKeys: [`m_${k}_start`, `m_${k}_today`] as [string, string],
-                pairLabels: ["Start", "Today"] as [string, string],
+                key: `m_${k}_today`,
+                label: `${label} today`,
+                type: "text" as const,
               })),
-              {
-                key: "weight",
-                label: "Weight",
-                type: "paired-compact" as const,
-                pairKeys: ["weight_start", "weight_today"] as [string, string],
-                pairLabels: ["Start", "Today"] as [string, string],
-              },
+              { key: "weight_today", label: "Weight today", type: "text" },
               { key: "weight_today_notes", label: "Weight — notes", type: "text" },
-              { key: "weight_result", label: "Result Weight", type: "text", compact: true },
+              { key: "measurements_more", label: "More measurements today", type: "measurement-grid", span: 2, rowCount: 1, rowLabel: "#", columns: ["Measurement", "Today", "Notes"], growable: true, addLabel: "Add measurement" },
         ],
       },
       {
@@ -669,10 +662,10 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Medical Records",
-        description: "Track appointment notes, test results, and lab notes.",
+        description: "Today's visit — appointment notes, test results and lab notes for this day.",
         page: 2,
         fields: [
-          { key: "doctor_id", label: "Doctor seen", type: "doctor-picker", span: 2 },
+          { key: "doctor_id", label: "Doctor seen today", type: "doctor-picker", span: 2 },
         ],
       },
       {
@@ -682,14 +675,15 @@ export const PAGE_TYPES: PageTypeDef[] = [
           { key: "medical_appointment_notes", label: "Appointment Notes", type: "textarea", rows: 5, span: 2, scopeByKey: "doctor_id" },
           { key: "test_results", label: "Test Results", type: "textarea", rows: 5, span: 2, scopeByKey: "doctor_id" },
           { key: "lab_result_notes", label: "Lab Result Notes", type: "textarea", rows: 5, span: 2, scopeByKey: "doctor_id" },
+          { key: "medical_visits_more", label: "Other visits today", type: "measurement-grid", span: 2, rowCount: 1, rowLabel: "#", columns: ["Doctor", "Appointment notes", "Test results", "Lab notes"], growable: true, addLabel: "Add visit" },
         ],
       },
       {
         title: "Medicines",
-        description: "Tick M (Morning), A (Afternoon), or N (Night) for each medication.",
+        description: "Medications taken today — tick M (Morning), A (Afternoon), or N (Night).",
         page: 2,
         fields: [
-          { key: "med_list", label: "Medications", type: "med-list", rowCount: 20, span: 2, growable: true, addLabel: "Add medication" },
+          { key: "med_list", label: "Medications", type: "med-list", rowCount: 3, span: 2, growable: true, addLabel: "Add medication" },
         ],
       },
       {
@@ -742,6 +736,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
           modeKey: `habit_${n}_mode`,
           span: 2 as const,
         })),
+          { key: "habits_more", label: "More habits today", type: "measurement-grid", span: 2, rowCount: 1, rowLabel: "#", columns: ["Habit", "Begin / Break", "Done / Missed"], growable: true, addLabel: "Add habit" },
         ],
       },
       {
@@ -756,23 +751,22 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "This Week",
-        description: "Today's note plus the week's goals & reflection — sync to your Weekly Calendar.",
+        description: "Today's note for the week — syncs to today's weekday on your Weekly Calendar. Weekly goals live on the Weekly page.",
         columns: 1,
         page: 1,
         fields: [
-          { key: "week_note_today", label: "Note for today's weekday", type: "textarea", rows: 3, span: 2 },
-          { key: "weekly_goals", label: "Weekly Goals", type: "textarea", rows: 3, span: 2 },
-          { key: "weekly_reflection", label: "How is your week going?", type: "textarea", rows: 3, span: 2 },
+          { key: "week_note_today", label: "Today's note for the week", type: "textarea", rows: 3, span: 2 },
+          { key: "week_notes_more", label: "More notes for today", type: "measurement-grid", span: 2, rowCount: 1, rowLabel: "#", columns: ["Note"], growable: true, addLabel: "Add note" },
         ],
       },
       {
         title: "This Year",
-        description: "A note for this month plus a yearly focus — sync to your Yearly Calendar.",
+        description: "Today's note for the year — syncs to this month on your Yearly Calendar. Word of the Year lives on the Yearly page.",
         columns: 1,
         page: 1,
         fields: [
-          { key: "month_note_today", label: "Note for this month", type: "textarea", rows: 3, span: 2 },
-          { key: "yearly_focus", label: "Yearly Focus / Word of the Year", type: "textarea", rows: 2, span: 2 },
+          { key: "month_note_today", label: "Today's note for the year", type: "textarea", rows: 3, span: 2 },
+          { key: "year_notes_more", label: "More notes for today", type: "measurement-grid", span: 2, rowCount: 1, rowLabel: "#", columns: ["Note"], growable: true, addLabel: "Add note" },
         ],
       },
       {
@@ -864,6 +858,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
           { key: "gift_idea", label: "Gift bought / idea", type: "text" },
           { key: "gift_budget", label: "Gift cost ($)", type: "text" },
           { key: "gift_purchased", label: "Purchased", type: "checkbox" },
+          { key: "dates_gifts_more", label: "More dates & gifts today", type: "measurement-grid", span: 2, rowCount: 1, rowLabel: "#", columns: ["Date / activity", "Occasion", "For", "Gift", "Cost ($)"], growable: true, addLabel: "Add date or gift" },
         ],
       },
     ],
