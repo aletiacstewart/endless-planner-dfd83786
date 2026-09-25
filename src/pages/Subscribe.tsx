@@ -19,7 +19,7 @@ export default function Subscribe() {
   useEffect(() => {
     if (!authLoading && !user) {
       // New visitors create their account inside the checkout on the planner page.
-      navigate(`/planner/${PLANNER.id}`, { replace: true });
+      navigate(`/planner/${PLANNER.slug}`, { replace: true });
     }
   }, [user, authLoading, navigate]);
 
@@ -63,8 +63,9 @@ export default function Subscribe() {
 
         <ul className="space-y-2 mb-8">
           {[
-            "The complete planner — 40 guided pages",
-            "1 cover & matching icon set of your choice",
+            `The complete planner — ${PLANNER.pageTypeIds.length} guided pages`,
+            "1 cover with 42 matching page icons of your choice",
+            "180 illustrated stickers + 60 emojis — 240 library pieces total",
             "Automatic cloud backup of everything you write",
             "Sync across phone, tablet, and desktop",
             "Two-way Google & Apple calendar sync",
