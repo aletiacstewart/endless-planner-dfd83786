@@ -350,7 +350,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         columns: 2,
         fields: [
           { key: "daily_goal", label: "Daily Goal", type: "textarea", rows: 3 },
-          { key: "daily_habit", label: "Daily Habit Tracker", type: "success-fail" },
+          { key: "daily_habit", label: "Quick daily check", type: "success-fail" },
         ],
       },
       {
@@ -465,8 +465,30 @@ export const PAGE_TYPES: PageTypeDef[] = [
         columns: 2,
         page: 1,
         fields: [
-          { key: "daily_goal", label: "Daily Goal", type: "textarea", rows: 3 },
-          { key: "daily_habit", label: "Daily Habit Tracker", type: "success-fail" },
+          { key: "daily_goal", label: "Daily Goal", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+      {
+        title: "Top 3 priorities",
+        description: "Syncs both ways with your Daily Tracker.",
+        page: 1,
+        fields: [
+          { key: "priorities", label: "Top priorities", type: "priority-list", max: 3, span: 2 },
+        ],
+      },
+      {
+        title: "Hourly schedule",
+        description: "Syncs both ways with your Daily Tracker.",
+        page: 1,
+        fields: [
+          { key: "hourly", label: "Schedule", type: "time-schedule", span: 2 },
+        ],
+      },
+      {
+        title: "How the day felt",
+        page: 1,
+        fields: [
+          { key: "day_rating", label: "How the day felt", type: "mood-rating", span: 2 },
         ],
       },
       {
@@ -515,6 +537,20 @@ export const PAGE_TYPES: PageTypeDef[] = [
           { key: "daily_blood_sugar", label: "Blood Sugar", type: "text" },
           { key: "daily_blood_pressure", label: "Blood Pressure", type: "text" },
           { key: "daily_oxygen", label: "O₂ Level", type: "text" },
+        ],
+      },
+      {
+        title: "Today’s Symptoms",
+        description: "Syncs both ways with your Yearly Symptom Tracker (e.g. mild / 3x / none).",
+        page: 1,
+        columns: 3,
+        fields: [
+          { key: "daily_hot_flashes", label: "Hot flashes", type: "text" },
+          { key: "daily_night_sweats", label: "Night sweats", type: "text" },
+          { key: "daily_brain_fog", label: "Brain fog", type: "text" },
+          { key: "daily_mood_swings", label: "Mood swings", type: "text" },
+          { key: "daily_sleep_disruption", label: "Sleep disruption", type: "text" },
+          { key: "daily_symptoms_other", label: "Other", type: "text", span: 2 },
         ],
       },
       {
@@ -692,10 +728,12 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Begin / Break Habits",
-        description: "Write in each habit, choose Begin or Break, then mark Accomplished or Needs Improvement for the day.",
+        description: "Quick daily check for the day overall, then your named habits — named habits sync to your Yearly Habit Tracker.",
         columns: 1,
         page: 1,
-        fields: Array.from({ length: 3 }, (_, i) => i + 1).map((n) => ({
+        fields: [
+          { key: "daily_habit", label: "Quick daily check", type: "success-fail" as const, span: 2 as const },
+          ...Array.from({ length: 3 }, (_, i) => i + 1).map((n) => ({
           key: `habit_${n}`,
           label: `Habit ${n}`,
           type: "success-fail" as const,
@@ -704,6 +742,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
           modeKey: `habit_${n}_mode`,
           span: 2 as const,
         })),
+        ],
       },
       {
         title: "Cleaning",
@@ -809,7 +848,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Dates & Gifts",
-        description: "Syncs to your Important Dates and Gift Tracker.",
+        description: "Syncs both ways with your Important Dates and Gift Tracker.",
         columns: 2,
         page: 1,
         fields: [
@@ -985,6 +1024,44 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
     ],
     summary: (v) => (v.year ? `Oxygen ${v.year}` : "Oxygen tracker"),
+  },
+  {
+    id: "symptom-tracker",
+    cadence: "year",
+    name: "Yearly Symptom Tracker",
+    shortName: "Symptoms",
+    description: "Daily log of hot flashes, night sweats, brain fog, mood swings, sleep disruption and more for the whole year.",
+    icon: "Activity",
+    sections: [
+      {
+        fields: [{ key: "year", label: "Year", type: "year" }],
+      },
+      {
+        title: "Hot flashes",
+        fields: [{ key: "hot_flashes", label: "Hot flashes", type: "daily-month-grid", span: 2 }],
+      },
+      {
+        title: "Night sweats",
+        fields: [{ key: "night_sweats", label: "Night sweats", type: "daily-month-grid", span: 2 }],
+      },
+      {
+        title: "Brain fog",
+        fields: [{ key: "brain_fog", label: "Brain fog", type: "daily-month-grid", span: 2 }],
+      },
+      {
+        title: "Mood swings",
+        fields: [{ key: "mood_swings", label: "Mood swings", type: "daily-month-grid", span: 2 }],
+      },
+      {
+        title: "Sleep disruption",
+        fields: [{ key: "sleep_disruption", label: "Sleep disruption", type: "daily-month-grid", span: 2 }],
+      },
+      {
+        title: "Other",
+        fields: [{ key: "symptoms_other", label: "Other", type: "daily-month-grid", span: 2 }],
+      },
+    ],
+    summary: (v) => (v.year ? `Symptoms ${v.year}` : "Symptom tracker"),
   },
   {
     id: "self-care-checklist",
