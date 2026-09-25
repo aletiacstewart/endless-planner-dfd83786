@@ -28,6 +28,8 @@ export default function PlannerDetail() {
   const [confirm, setConfirm] = useState("");
   const [accountError, setAccountError] = useState("");
   const [creating, setCreating] = useState(false);
+  const [coverTitle, setCoverTitle] = useState("");
+  const [ownerName, setOwnerName] = useState("");
 
   // Arriving from a cover card scrolls to and highlights that cover, but never
   // selects it — the user must explicitly choose the included cover.
@@ -100,6 +102,11 @@ export default function PlannerDetail() {
 
   const startCheckout = (userId: string, customerEmail: string) => {
     sessionStorage.removeItem("pendingCheckout");
+    if (coverTitle.trim() || ownerName.trim()) {
+      const text = { plannerName: coverTitle.trim().slice(0, 60), ownerName: ownerName.trim().slice(0, 60) };
+      sessionStorage.setItem("pendingCoverText", JSON.stringify(text));
+      import("@/lib/settings").then((m) => m.saveSettings(text)).catch(() => {});
+    }
     // Membership + any extra covers are paid together in one checkout.
     openCheckout({
       priceId: planner.priceId,
@@ -124,7 +131,10 @@ export default function PlannerDetail() {
     const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
       password,
-      options: { emailRedirectTo: `${window.location.origin}/auth?next=/app` },
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth?next=/app`,
+        data: { planner_name: coverTitle.trim().slice(0, 60), owner_name: ownerName.trim().slice(0, 60) },
+      },
     });
     setCreating(false);
     if (error) {
@@ -289,6 +299,10 @@ export default function PlannerDetail() {
               accountError={accountError}
               onSignInInstead={signInInstead}
               busy={creating}
+              coverTitle={coverTitle}
+              ownerName={ownerName}
+              onCoverTitleChange={setCoverTitle}
+              onOwnerNameChange={setOwnerName}
               disabled={!planner.available || !includedCoverId}
             />
           </div>

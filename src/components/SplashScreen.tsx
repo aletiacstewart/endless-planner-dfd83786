@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { CoverImage } from "@/components/cover/CoverImage";
 import { type Cover } from "@/data/covers";
+import { useNavigate } from "react-router-dom";
+import { useEntitlements } from "@/hooks/useEntitlements";
 
 type Props = {
   cover: Cover;
@@ -14,6 +16,8 @@ type Props = {
  * Tap the cover, press the pill, or swipe right-to-left to open it.
  */
 export function SplashScreen({ cover, plannerName, ownerName, onOpen }: Props) {
+  const navigate = useNavigate();
+  const { admin } = useEntitlements();
   const [hintVisible, setHintVisible] = useState(false);
   const [opening, setOpening] = useState(false);
   const touchStartX = useRef<number | null>(null);
@@ -96,6 +100,16 @@ export function SplashScreen({ cover, plannerName, ownerName, onOpen }: Props) {
         >
           Swipe or tap to open
         </span>
+        {admin && (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); navigate("/admin/dashboard"); }}
+            onTouchStart={(e) => e.stopPropagation()}
+            className="mt-1 min-h-11 px-4 text-xs underline text-primary touch-manipulation"
+          >
+            Owner dashboard
+          </button>
+        )}
       </div>
     </div>
   );
