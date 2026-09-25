@@ -52,13 +52,16 @@ export function newId(): string {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+/** Entries for the planner year currently open (see plannerYear.ts). */
 export async function listEntries(pageType?: string): Promise<PlannerEntry[]> {
   const db = await getDB();
+  const { getActiveYear, entryYear } = await import("./plannerYear");
+  const year = getActiveYear();
   if (pageType) {
     const items = await db.getAllFromIndex("entries", "by-pageType", pageType);
-    return sortEntries(items);
+    return sortEntries(items.filter((e) => entryYear(e) === year));
   }
-  const all = await db.getAll("entries");
+  const all = (await db.getAll("entries")).filter((e) => entryYear(e) === year);
   return all.sort((a, b) => b.updatedAt - a.updatedAt);
 }
 
@@ -107,12 +110,21 @@ export async function deleteEntry(id: string): Promise<void> {
 
 export async function createEntry(pageType: string, defaults: Record<string, FieldValue> = {}): Promise<PlannerEntry> {
   const now = Date.now();
+  const { getActiveYear } = await import("./plannerYear");
+  const { getPageType } = await import("./pageTypes");
+  const year = getActiveYear();
+  const values: Record<string, FieldValue> = { ...defaults };
+  if (values.__year == null) values.__year = year;
+  for (const sec of getPageType(pageType)?.sections ?? []) {
+    const fields = [...sec.fields, ...(sec.groups ?? []).flatMap((g) => g.fields)];
+    for (const f of fields) if (f.type === "year" && values[f.key] == null) values[f.key] = String(year);
+  }
   const entry: PlannerEntry = {
     id: newId(),
     pageType,
     createdAt: now,
     updatedAt: now,
-    values: defaults,
+    values,
   };
   await saveEntry(entry);
   return entry;

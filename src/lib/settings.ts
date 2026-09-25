@@ -11,6 +11,10 @@ export interface UserSettings {
   /** Planner-wide page look, applied to every page unless a page overrides it. */
   pageStyle?: PlannerStyle;
   pageStyleAppliedAt?: number;
+  /** Planner year the user has open (2026, 2027, ...). */
+  plannerYear?: number;
+  /** Years whose New Year carry-over page has been completed. */
+  rolloverDone?: Record<string, boolean>;
   /** Last local change — used to decide which side wins during cloud sync. */
   updatedAt?: number;
 }
