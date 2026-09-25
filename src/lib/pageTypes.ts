@@ -450,7 +450,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
     id: "complete-tracker",
     name: "Complete Tracker",
     shortName: "Complete",
-    description: "One day at a glance — links to your other pages at the top, then today from every daily page: Page 1 day & body (goal, priorities, schedule, monthly calendar, this week, meals, water, workout, sleep, vitals, symptoms, self-care, calendar, this week). Page 2 mind, home & notes (self-care, cleaning, mood, gratitude, journal, brain dump, focus, therapy, medical, medicines, notes, spending). Syncs both ways by date.",
+    description: "One day at a glance — links to your other pages at the top, then today from every daily page: Page 1 day & body (goal, priorities, schedule, monthly calendar, this week, meals, water, workout, sleep, vitals, symptoms, notes, spending). Page 2 mind, home & notes (self-care, cleaning, mood, gratitude, journal, brain dump, focus, therapy, medical, medicines). Syncs both ways by date.",
     icon: "LayoutGrid",
     sections: [
       {
