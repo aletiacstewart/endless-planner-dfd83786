@@ -190,6 +190,30 @@ export default function Auth() {
           Sign in once, and your planner — entries, settings, and packs — will follow you to every phone, tablet, or computer.
         </p>
 
+        {user && (
+          <div className="rounded-md border border-border p-3 mb-5 space-y-2">
+            <p className="text-sm">
+              You're signed in as <strong>{user.email ?? "your account"}</strong>.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button variant="outline" className="flex-1 min-h-11" onClick={signOutHere} disabled={busy}>
+                {busy ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <LogOut className="w-4 h-4 mr-2" />}
+                Sign out & switch account
+              </Button>
+              <Button
+                variant="secondary"
+                className="flex-1 min-h-11"
+                onClick={() => { setSwitching(false); routeAfterSignIn(); }}
+                disabled={busy}
+              >
+                Stay signed in
+              </Button>
+            </div>
+          </div>
+        )}
+
+
+
         {mode === "choose" && (
           <div className="space-y-3">
             <Button onClick={signInGoogle} disabled={busy} className="w-full" variant="outline">
