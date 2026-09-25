@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Component, useEffect, useState, type ReactNode } from "react";
 import type { PageTypeDef, FieldValue, SectionDef } from "@/lib/pageTypes";
 import { FieldRenderer } from "./FieldRenderer";
 import { cn } from "@/lib/utils";
@@ -74,7 +74,40 @@ interface Props {
   showPageGraphic?: boolean;
 }
 
+class SectionBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  componentDidCatch(err: unknown) { console.error("Section failed to render", err); }
+  render() {
+    if (this.state.failed) {
+      return <p className="text-sm text-muted-foreground">Couldn't load this section. Your other sections still work.</p>;
+    }
+    return this.props.children;
+  }
+}
+
+/** Big pages (Complete Tracker) render a few sections first, then the rest in small batches so the page appears right away. */
+const FIRST_BATCH = 3;
+const BATCH = 3;
+function useStagedCount(total: number, resetKey: string) {
+  const [count, setCount] = useState(Math.min(total, FIRST_BATCH));
+  useEffect(() => { setCount(Math.min(total, FIRST_BATCH)); }, [resetKey, total]);
+  useEffect(() => {
+    if (count >= total) return;
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (id: number) => void };
+    let id: number;
+    if (w.requestIdleCallback) {
+      id = w.requestIdleCallback(() => setCount((c) => Math.min(total, c + BATCH)), { timeout: 120 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    id = window.setTimeout(() => setCount((c) => Math.min(total, c + BATCH)), 16);
+    return () => window.clearTimeout(id);
+  }, [count, total]);
+  return count;
+}
+
 export function PageRenderer({ pageType, values, onChange, coverId, showPageGraphic = true }: Props) {
+  const visibleCount = useStagedCount(pageType.sections.length, pageType.id);
   const pageGraphic = showPageGraphic ? getCoverPageIcon(coverId, pageType.id) : undefined;
 
   return (
@@ -100,8 +133,9 @@ export function PageRenderer({ pageType, values, onChange, coverId, showPageGrap
       {showPageGraphic && pageType.id === "emergency-contacts" && (
         <ContactImportBar variant="emergency" values={values} onChange={onChange} />
       )}
-      {pageType.sections.map((section, idx) => (
-        <section key={idx} className="planner-card">
+      {pageType.sections.slice(0, visibleCount).map((section, idx) => (
+        <section key={idx} className="planner-card" style={idx >= FIRST_BATCH ? { contentVisibility: "auto", containIntrinsicSize: "auto 600px" } : undefined}>
+          <SectionBoundary>
           {section.title && (
             <h2 className="font-display text-xl mb-1">{section.title}</h2>
           )}
@@ -203,6 +237,7 @@ export function PageRenderer({ pageType, values, onChange, coverId, showPageGrap
               })()}
             </div>
           )}
+          </SectionBoundary>
         </section>
       ))}
     </div>
