@@ -41,6 +41,7 @@ export type FieldType =
   | "time-select" // dropdown of 15-minute times
   | "gratitude-list" // 3 numbered gratitude text rows
   | "drawing" // touch, mouse, and stylus sketch canvas
+  | "computed-total" // read-only sum of one column of a measurement-grid (sumKey, sumColumn)
   | "page-links" // buttons linking to other pages (options "id|Name")
   | "image"; // private user photo stored in cloud storage
 
@@ -48,6 +49,9 @@ export interface FieldDef {
   key: string;
   label: string;
   type: FieldType;
+  /** computed-total: grid key and column index to add up. */
+  sumKey?: string;
+  sumColumn?: number;
   placeholder?: string;
   rows?: number;
   max?: number; // for rating
@@ -446,7 +450,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
     id: "complete-tracker",
     name: "Complete Tracker",
     shortName: "Complete",
-    description: "One day at a glance — links to your other pages at the top, then today from every daily page: Page 1 day & body (goal, priorities, schedule, meals, water, workout, sleep, vitals, symptoms, self-care, cleaning). Page 2 mind & notes (mood, gratitude, journal, brain dump, focus, therapy, medical, medicines, notes). Syncs both ways by date.",
+    description: "One day at a glance — links to your other pages at the top, then today from every daily page: Page 1 day & body (goal, priorities, schedule, monthly calendar, this week, meals, water, workout, sleep, vitals, symptoms, self-care, calendar, this week). Page 2 mind, home & notes (self-care, cleaning, mood, gratitude, journal, brain dump, focus, therapy, medical, medicines, notes, spending). Syncs both ways by date.",
     icon: "LayoutGrid",
     sections: [
       {
@@ -454,7 +458,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         description: "Pages that aren't tracked day by day — tap to open.",
         page: 1,
         fields: [
-          { key: "_page_links", label: "Open a page", type: "page-links", options: ["my-goals|My Goals", "yearly-calendar|Yearly Calendar", "monthly-calendar|Monthly Calendar", "weekly-calendar|Weekly Calendar", "yearly-habit-tracker|Yearly Habit Tracker", "weight-tracker|Weight Tracker", "measurement-tracker|Measurement Tracker", "blood-sugar-tracker|Blood Sugar", "blood-pressure-tracker|Blood Pressure", "oxygen-tracker|Oxygen (O₂)", "symptom-tracker|Symptom Tracker", "recipe|Recipes", "yearly-focus|Yearly Focus", "budget-monthly|Monthly Budget", "debt-tracker|Debt Tracker", "savings-goals|Savings Goals", "home-info|Household Info", "coping-toolkit|Coping Toolkit", "medications|Medications", "emergency-contacts|Emergency Contacts", "contacts|Contacts", "important-dates|Important Dates", "gift-tracker|Gift Tracker"], span: 2 },
+          { key: "_page_links", label: "Open a page", type: "page-links", options: ["my-goals|My Goals", "yearly-calendar|Yearly Calendar", "weekly-calendar|Weekly Calendar", "yearly-habit-tracker|Yearly Habit Tracker", "weight-tracker|Weight Tracker", "measurement-tracker|Measurement Tracker", "blood-sugar-tracker|Blood Sugar", "blood-pressure-tracker|Blood Pressure", "oxygen-tracker|Oxygen (O₂)", "symptom-tracker|Symptom Tracker", "recipe|Recipes", "yearly-focus|Yearly Focus", "budget-monthly|Monthly Budget", "debt-tracker|Debt Tracker", "savings-goals|Savings Goals", "home-info|Household Info", "coping-toolkit|Coping Toolkit", "medications|Medications", "emergency-contacts|Emergency Contacts", "contacts|Contacts", "important-dates|Important Dates", "gift-tracker|Gift Tracker"], span: 2 },
         ],
       },
       {
@@ -478,6 +482,14 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
+        title: "Monthly Calendar",
+        description: "The whole month at a glance — tap a day to add or view a note.",
+        page: 1,
+        fields: [
+          { key: "month_calendar", label: "Monthly calendar", type: "calendar-grid", compact: true, span: 2 },
+        ],
+      },
+      {
         title: "Top 3 priorities",
         description: "Syncs both ways with your Daily Tracker.",
         page: 1,
@@ -491,6 +503,23 @@ export const PAGE_TYPES: PageTypeDef[] = [
         page: 1,
         fields: [
           { key: "hourly", label: "Schedule", type: "time-schedule", span: 2 },
+        ],
+      },
+      {
+        title: "This Week",
+        description: "Syncs both ways with your Weekly Calendar for this week.",
+        page: 1,
+        columns: 2,
+        fields: [
+          { key: "week_monday", label: "Monday", type: "textarea", rows: 2 },
+          { key: "week_tuesday", label: "Tuesday", type: "textarea", rows: 2 },
+          { key: "week_wednesday", label: "Wednesday", type: "textarea", rows: 2 },
+          { key: "week_thursday", label: "Thursday", type: "textarea", rows: 2 },
+          { key: "week_friday", label: "Friday", type: "textarea", rows: 2 },
+          { key: "week_saturday", label: "Saturday", type: "textarea", rows: 2 },
+          { key: "week_sunday", label: "Sunday", type: "textarea", rows: 2 },
+          { key: "weekly_goals", label: "Weekly Goals", type: "textarea", rows: 3, span: 2 },
+          { key: "weekly_reflection", label: "How did your week go?", type: "textarea", rows: 3, span: 2 },
         ],
       },
       {
@@ -591,7 +620,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Self-Care",
-        page: 1,
+        page: 2,
         columns: 2,
         fields: [
           { key: "self_physical", label: "Physical Self-Care", type: "textarea", rows: 3, span: 2 },
@@ -602,7 +631,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Cleaning",
         description: "What you cleaned today — syncs to your Cleaning Check List for this day.",
-        page: 1,
+        page: 2,
         columns: 1,
         fields: [
           { key: "cleaning_rooms", label: "Rooms cleaned today", type: "checkbox-group", options: ["Kitchen", "Dining Room", "Living Room", "Primary Bedroom", "Bedroom 2", "Bedroom 3", "Bathroom 1", "Bathroom 2", "Laundry", "Hallway / Entry", "Office", "Outside / Porch"], span: 2 },
@@ -717,6 +746,15 @@ export const PAGE_TYPES: PageTypeDef[] = [
         page: 2,
         fields: [
           { key: "note_today", label: "Notes for today", type: "note-style", span: 2 },
+        ],
+      },
+      {
+        title: "Today's Spending",
+        description: "Syncs both ways with your Daily Spend page for this day.",
+        page: 2,
+        fields: [
+          { key: "spend_items", label: "Spending", type: "measurement-grid", span: 2, rowCount: 3, rowLabel: "#", columns: ["Item", "Category", "Amount ($)", "Paid with", "Notes"], columnKinds: ["text", "select", "text", "select", "text"], columnOptions: [null, ["Groceries", "Dining", "Gas", "Bills", "Shopping", "Health", "Kids", "Pets", "Fun", "Other"], null, ["Cash", "Debit", "Credit", "Other"], null], growable: true, addLabel: "Add purchase" },
+          { key: "spend_total", label: "Total spent today ($)", type: "computed-total", sumKey: "spend_items", sumColumn: 2 },
         ],
       },
     ],
@@ -1489,6 +1527,25 @@ export const PAGE_TYPES: PageTypeDef[] = [
   },
 
   // ============ BUDGET PLANNER ============
+  {
+    id: "daily-spend",
+    name: "Daily Spend",
+    shortName: "Spend",
+    description: "Everything you spent today, with an automatic total — syncs with the Complete Tracker.",
+    icon: "Wallet",
+    sections: [
+      { fields: [{ key: "date", label: "Date", type: "date", span: 2 }] },
+      {
+        title: "Spending",
+        fields: [
+          { key: "spend_items", label: "Spending", type: "measurement-grid", span: 2, rowCount: 3, rowLabel: "#", columns: ["Item", "Category", "Amount ($)", "Paid with", "Notes"], columnKinds: ["text", "select", "text", "select", "text"], columnOptions: [null, ["Groceries", "Dining", "Gas", "Bills", "Shopping", "Health", "Kids", "Pets", "Fun", "Other"], null, ["Cash", "Debit", "Credit", "Other"], null], growable: true, addLabel: "Add purchase" },
+          { key: "spend_total", label: "Total spent today ($)", type: "computed-total", sumKey: "spend_items", sumColumn: 2 },
+          { key: "spend_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+    ],
+    summary: (v) => (v.date ? `Spend ${v.date}` : "Daily spend"),
+  },
   {
     id: "budget-monthly",
     name: "Monthly Budget",

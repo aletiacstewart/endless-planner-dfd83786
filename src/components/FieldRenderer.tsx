@@ -87,6 +87,24 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
   );
 
   switch (field.type) {
+    case "computed-total": {
+      const grid = (allValues?.[field.sumKey ?? ""] as Record<string, string> | undefined) ?? {};
+      const col = field.sumColumn ?? 0;
+      const total = Object.entries(grid).reduce((sum, [k, v]) => {
+        const m = /^(\d+)-(\d+)$/.exec(k);
+        if (!m || Number(m[2]) !== col) return sum;
+        const n = parseFloat(String(v).replace(/[^0-9.-]/g, ""));
+        return Number.isFinite(n) ? sum + n : sum;
+      }, 0);
+      return (
+        <div className="space-y-1">
+          {labelEl}
+          <div className="min-h-11 flex items-center px-3 rounded-md border border-border bg-muted text-foreground font-medium">
+            ${total.toFixed(2)}
+          </div>
+        </div>
+      );
+    }
     case "page-links":
       return (
         <div className="flex flex-wrap gap-2">
