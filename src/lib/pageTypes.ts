@@ -450,7 +450,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
     id: "complete-tracker",
     name: "Complete Tracker",
     shortName: "Complete",
-    description: "One day at a glance — links to your other pages at the top, then today from every daily page: Page 1 day & body (goal, priorities, schedule, monthly calendar, this week, meals, water, workout, sleep, vitals, symptoms, self-care, calendar, this week). Page 2 mind, home & notes (self-care, cleaning, mood, gratitude, journal, brain dump, focus, therapy, medical, medicines, notes, spending). Syncs both ways by date.",
+    description: "One day at a glance — links to your other pages at the top, then today from every daily page: Page 1 day & body (goal, priorities, schedule, monthly calendar, this week, meals, water, workout, sleep, vitals, symptoms, notes, spending). Page 2 mind, home & notes (self-care, cleaning, mood, gratitude, journal, brain dump, focus, therapy, medical, medicines). Syncs both ways by date.",
     icon: "LayoutGrid",
     sections: [
       {
@@ -619,6 +619,24 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
+        title: "Today's Notes",
+        description: "Syncs to your Notes page for this day.",
+        columns: 1,
+        page: 1,
+        fields: [
+          { key: "note_today", label: "Notes for today", type: "note-style", span: 2 },
+        ],
+      },
+      {
+        title: "Today's Spending",
+        description: "Syncs both ways with your Daily Spend page for this day.",
+        page: 1,
+        fields: [
+          { key: "spend_items", label: "Spending", type: "measurement-grid", span: 2, rowCount: 3, rowLabel: "#", columns: ["Item", "Category", "Amount ($)", "Paid with", "Notes"], columnKinds: ["text", "select", "text", "select", "text"], columnOptions: [null, ["Groceries", "Dining", "Gas", "Bills", "Shopping", "Health", "Kids", "Pets", "Fun", "Other"], null, ["Cash", "Debit", "Credit", "Other"], null], growable: true, addLabel: "Add purchase" },
+          { key: "spend_total", label: "Total spent today ($)", type: "computed-total", sumKey: "spend_items", columns: ["Amount ($)"], sumColumn: 0 },
+        ],
+      },
+      {
         title: "Self-Care",
         page: 2,
         columns: 2,
@@ -737,24 +755,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
         page: 2,
         fields: [
           { key: "med_list", label: "Medications", type: "med-list", rowCount: 3, span: 2, growable: true, addLabel: "Add medication" },
-        ],
-      },
-      {
-        title: "Today's Notes",
-        description: "Syncs to your Notes page for this day.",
-        columns: 1,
-        page: 2,
-        fields: [
-          { key: "note_today", label: "Notes for today", type: "note-style", span: 2 },
-        ],
-      },
-      {
-        title: "Today's Spending",
-        description: "Syncs both ways with your Daily Spend page for this day.",
-        page: 2,
-        fields: [
-          { key: "spend_items", label: "Spending", type: "measurement-grid", span: 2, rowCount: 3, rowLabel: "#", columns: ["Item", "Category", "Amount ($)", "Paid with", "Notes"], columnKinds: ["text", "select", "text", "select", "text"], columnOptions: [null, ["Groceries", "Dining", "Gas", "Bills", "Shopping", "Health", "Kids", "Pets", "Fun", "Other"], null, ["Cash", "Debit", "Credit", "Other"], null], growable: true, addLabel: "Add purchase" },
-          { key: "spend_total", label: "Total spent today ($)", type: "computed-total", sumKey: "spend_items", columns: ["Amount ($)"], sumColumn: 0 },
         ],
       },
     ],
