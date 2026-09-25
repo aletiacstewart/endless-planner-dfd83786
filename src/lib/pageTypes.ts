@@ -445,7 +445,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
     id: "complete-tracker",
     name: "Complete Tracker",
     shortName: "Complete",
-    description: "All-in-one daily log in two pages — Page 1: your day & body (goal, priorities, schedule, calendar, meals, vitals, symptoms, wellness, workout, measurements, sleep, mood, dates & gifts). Page 2: mind, home & life (medical, medicines, gratitude, self-care, fun, habits, cleaning, week & year, notes, journal, brain dump, focus, therapy, money). Auto-syncs to your individual trackers.",
+    description: "All-in-one daily log in two pages — Page 1: your day & body (goal, priorities, schedule, calendar, meals, vitals, symptoms, wellness, workout, measurements, sleep, mood, dates & gifts). Page 2: mind, home & life (medical, medicines, gratitude, self-care, fun, habits, cleaning, notes, journal, brain dump, focus, therapy, money). Auto-syncs to your individual trackers.",
     icon: "LayoutGrid",
     sections: [
       {
@@ -482,13 +482,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
         page: 1,
         fields: [
           { key: "hourly", label: "Schedule", type: "time-schedule", span: 2 },
-        ],
-      },
-      {
-        title: "How the day felt",
-        page: 1,
-        fields: [
-          { key: "day_rating", label: "How the day felt", type: "mood-rating", span: 2 },
         ],
       },
       {
@@ -571,17 +564,11 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "Workout",
+        title: "Today's Workout",
         description: "Syncs both ways with the Fitness & Workout Tracker for this date.",
         page: 1,
         columns: 1,
         fields: [
-              { key: "cardio", label: "Cardio", type: "text", span: 2 },
-              { key: "yoga", label: "Yoga", type: "text", span: 2 },
-              { key: "weights", label: "Weights", type: "text", span: 2 },
-              { key: "stretch", label: "Stretch", type: "text", span: 2 },
-              { key: "other", label: "Other", type: "text", span: 2 },
-              { key: "rest_day", label: "Rest day", type: "checkbox", span: 2 },
               {
                 key: "workout_activity",
                 label: "Today's workout — activity",
@@ -642,22 +629,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
           { key: "energy", label: "Depression", type: "rating", max: 5 },
           { key: "anxiety", label: "Anxiety", type: "rating", max: 5 },
           { key: "stress", label: "Stress", type: "rating", max: 5 },
-        ],
-      },
-      {
-        title: "Today's Feels",
-        description: "Name what you feel at each point of the day.",
-        page: 1,
-        columns: 1,
-        fields: [
-          { key: "feelings", label: "Morning — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_morning_other", span: 2 },
-          { key: "feelings_morning_notes", label: "Morning notes", type: "textarea", rows: 3, span: 2 },
-          { key: "feelings_afternoon", label: "Afternoon — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_afternoon_other", span: 2 },
-          { key: "feelings_afternoon_notes", label: "Afternoon notes", type: "textarea", rows: 3, span: 2 },
-          { key: "feelings_evening", label: "Evening — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_evening_other", span: 2 },
-          { key: "feelings_evening_notes", label: "Evening notes", type: "textarea", rows: 3, span: 2 },
-          { key: "feelings_night", label: "Night — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_night_other", span: 2 },
-          { key: "feelings_night_notes", label: "Night notes", type: "textarea", rows: 3, span: 2 },
         ],
       },
       {
@@ -736,7 +707,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
           modeKey: `habit_${n}_mode`,
           span: 2 as const,
         })),
-          { key: "habits_more", label: "More habits today", type: "measurement-grid", span: 2, rowCount: 1, rowLabel: "#", columns: ["Habit", "Begin / Break", "Done / Missed"], growable: true, addLabel: "Add habit" },
         ],
       },
       {
@@ -747,26 +717,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
         fields: [
           { key: "cleaning_rooms", label: "Rooms cleaned today", type: "checkbox-group", options: ["Kitchen", "Dining Room", "Living Room", "Primary Bedroom", "Bedroom 2", "Bedroom 3", "Bathroom 1", "Bathroom 2", "Laundry", "Hallway / Entry", "Office", "Outside / Porch"], span: 2 },
           { key: "cleaning_today", label: "Cleaning today", type: "textarea", rows: 3, span: 2 },
-        ],
-      },
-      {
-        title: "This Week",
-        description: "Today's note for the week — syncs to today's weekday on your Weekly Calendar. Weekly goals live on the Weekly page.",
-        columns: 1,
-        page: 2,
-        fields: [
-          { key: "week_note_today", label: "Today's note for the week", type: "textarea", rows: 3, span: 2 },
-          { key: "week_notes_more", label: "More notes for today", type: "measurement-grid", span: 2, rowCount: 1, rowLabel: "#", columns: ["Note"], growable: true, addLabel: "Add note" },
-        ],
-      },
-      {
-        title: "This Year",
-        description: "Today's note for the year — syncs to this month on your Yearly Calendar. Word of the Year lives on the Yearly page.",
-        columns: 1,
-        page: 2,
-        fields: [
-          { key: "month_note_today", label: "Today's note for the year", type: "textarea", rows: 3, span: 2 },
-          { key: "year_notes_more", label: "More notes for today", type: "measurement-grid", span: 2, rowCount: 1, rowLabel: "#", columns: ["Note"], growable: true, addLabel: "Add note" },
         ],
       },
       {
