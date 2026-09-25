@@ -22,6 +22,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { listDoctors, addDoctor, type Doctor } from "@/lib/doctors";
 import { RichTextField } from "@/components/entry/RichTextField";
@@ -86,6 +87,19 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
   );
 
   switch (field.type) {
+    case "page-links":
+      return (
+        <div className="flex flex-wrap gap-2">
+          {(field.options ?? []).map((opt) => {
+            const [id, name] = opt.split("|");
+            return (
+              <Link key={id} to={`/section/${id}`} className="inline-flex items-center min-h-11 px-4 rounded-full border border-border bg-card text-sm text-foreground hover:bg-accent touch-manipulation">
+                {name}
+              </Link>
+            );
+          })}
+        </div>
+      );
     case "text":
     case "year":
       if (field.compact && isMobile) {
