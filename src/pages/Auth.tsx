@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Loader2, Mail } from "lucide-react";
+import { ArrowLeft, Loader2, LogOut, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,9 +60,25 @@ export default function Auth() {
   };
 
   useEffect(() => {
-    if (!loading && user) routeAfterSignIn();
+    if (!loading && user && !switching) routeAfterSignIn();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, loading]);
+  }, [user, loading, switching]);
+
+  const signOutHere = async () => {
+    setBusy(true);
+    try {
+      await syncSignOut();
+      routingAfterSignIn.current = false;
+      setSwitching(false);
+      setMode("password");
+      toast.success("Signed out — sign in with another account");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't sign out");
+    } finally {
+      setBusy(false);
+    }
+  };
+
 
   const signInGoogle = async () => {
     setBusy(true);
@@ -173,6 +189,30 @@ export default function Auth() {
         <p className="text-sm text-muted-foreground mb-6">
           Sign in once, and your planner — entries, settings, and packs — will follow you to every phone, tablet, or computer.
         </p>
+
+        {user && (
+          <div className="rounded-md border border-border p-3 mb-5 space-y-2">
+            <p className="text-sm">
+              You're signed in as <strong>{user.email ?? "your account"}</strong>.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button variant="outline" className="flex-1 min-h-11" onClick={signOutHere} disabled={busy}>
+                {busy ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <LogOut className="w-4 h-4 mr-2" />}
+                Sign out & switch account
+              </Button>
+              <Button
+                variant="secondary"
+                className="flex-1 min-h-11"
+                onClick={() => { setSwitching(false); routeAfterSignIn(); }}
+                disabled={busy}
+              >
+                Stay signed in
+              </Button>
+            </div>
+          </div>
+        )}
+
+
 
         {mode === "choose" && (
           <div className="space-y-3">

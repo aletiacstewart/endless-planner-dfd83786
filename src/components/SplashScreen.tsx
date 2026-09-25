@@ -110,6 +110,15 @@ export function SplashScreen({ cover, plannerName, ownerName, onOpen }: Props) {
             Owner dashboard
           </button>
         )}
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); navigate("/auth?switch=1"); }}
+          onTouchStart={(e) => e.stopPropagation()}
+          className="min-h-11 px-4 text-xs underline text-muted-foreground touch-manipulation"
+        >
+          Sign out / switch account
+        </button>
+
       </div>
     </div>
   );

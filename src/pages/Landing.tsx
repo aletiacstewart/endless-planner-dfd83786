@@ -6,8 +6,10 @@ import { COVERS, COLLECTIONS, type CoverCollection } from "@/data/covers";
 import { PLANNERS } from "@/data/planners";
 import { CoverCarousel } from "@/components/cover/CoverCarousel";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Landing() {
+  const { user } = useAuth();
   const [code, setCode] = useState("");
   const [resendEmail, setResendEmail] = useState("");
   const [resendStatus, setResendStatus] = useState<"idle" | "sending" | "sent">("idle");
@@ -50,10 +52,10 @@ export default function Landing() {
             Already own
           </a>
           <Link
-            to="/auth"
+            to="/auth?switch=1"
             className="text-[11px] uppercase tracking-[0.2em] text-primary/70 hover:text-primary font-semibold"
           >
-            Sign in
+            {user ? "Sign out" : "Sign in"}
           </Link>
         </div>
       </header>
