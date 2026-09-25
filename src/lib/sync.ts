@@ -544,7 +544,7 @@ async function handleSignIn(userId: string) {
     subChannel = null;
   }
   subChannel = supabase
-    .channel(`sync-sub-${userId}`)
+    .channel(`sync-sub-${userId}-${Date.now()}`)
     .on(
       "postgres_changes",
       { event: "*", schema: "public", table: "subscriptions", filter: `user_id=eq.${userId}` },
