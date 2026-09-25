@@ -98,7 +98,7 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
       }, 0);
       return (
         <div className="space-y-1">
-          {labelEl}
+          {label}
           <div className="min-h-11 flex items-center px-3 rounded-md border border-border bg-muted text-foreground font-medium">
             ${total.toFixed(2)}
           </div>
