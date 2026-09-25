@@ -445,7 +445,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
     id: "complete-tracker",
     name: "Complete Tracker",
     shortName: "Complete",
-    description: "All-in-one daily log in two pages — Page 1: your day & body (goal, priorities, schedule, calendar, meals, vitals, symptoms, wellness, workout, measurements, sleep, mood). Page 2: mind, home & life (gratitude, self-care, habits, cleaning, money, week & year, dates & gifts, notes, journal, brain dump, focus, therapy, medical). Auto-syncs to your individual trackers.",
+    description: "All-in-one daily log in two pages — Page 1: your day & body (goal, priorities, schedule, calendar, meals, vitals, symptoms, wellness, workout, measurements, sleep, mood, dates & gifts). Page 2: mind, home & life (medical, medicines, gratitude, self-care, fun, habits, cleaning, week & year, notes, journal, brain dump, focus, therapy, money). Auto-syncs to your individual trackers.",
     icon: "LayoutGrid",
     sections: [
       {
