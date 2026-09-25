@@ -61,7 +61,7 @@ export default function AdminDashboard() {
         ...data.userPacks.filter((x) => x.user_id === p.user_id).map((x) => x.pack_id),
         ...data.packPurchases.filter((x) => lc(x.email) === email).map((x) => x.pack_id),
       ]);
-      return { ...p, email: p.email ?? "", sub, covers: covers.size, backup: data.backup[p.user_id] };
+      return { ...p, user_id: p.user_id as string, created_at: p.created_at as string, email: (p.email ?? "") as string, sub, covers: covers.size, backup: data.backup[p.user_id] };
     }).filter((c) => !q || lc(c.email).includes(lc(q)));
   }, [data, q]);
 
