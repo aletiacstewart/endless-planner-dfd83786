@@ -844,7 +844,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Dates & Gifts",
         description: "Syncs both ways with your Important Dates and Gift Tracker.",
         columns: 2,
-        page: 2,
+        page: 1,
         fields: [
           { key: "important_today", label: "Important date / activity today", type: "text", span: 2 },
           {
