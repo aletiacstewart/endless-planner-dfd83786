@@ -45,7 +45,7 @@ export default function Home() {
       const all = await getAllEntries();
       const ys = new Set<number>([now, getActiveYear(), ...all.map(entryYear)]);
       setYears([...ys].sort((a, b) => b - a));
-      if (settings.rolloverDone?.[String(now)]) return;
+      if (settings.rolloverDone?.[String(now)] || getActiveYear() >= now && settings.plannerYear === now) return;
       const hasOlder = all.some((e) => entryYear(e) < now);
       const last = settings.plannerYear ?? (hasOlder ? now - 1 : now);
       if (last < now && hasOlder) { navigate("/new-year"); return; }
