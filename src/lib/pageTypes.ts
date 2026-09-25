@@ -529,26 +529,11 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "Gratitude",
-        description: "Three good things — syncs to your Gratitude Log.",
-        page: 2,
-        columns: 1,
+        page: 1,
         fields: [
-          { key: "gratitude", label: "Grateful for", type: "gratitude-list", max: 3, span: 2 },
-          { key: "gratitude_note", label: "One moment worth remembering", type: "textarea", rows: 3, span: 2 },
+          { key: "daily_notes", label: "Wellness Notes", type: "textarea", rows: 5, span: 2 },
         ],
       },
-      {
-        title: "Self-Care",
-        page: 2,
-        columns: 2,
-        fields: [
-          { key: "self_physical", label: "Physical Self-Care", type: "textarea", rows: 3, span: 2 },
-          { key: "self_emotional", label: "Emotional Self-Care", type: "textarea", rows: 3, span: 2 },
-          { key: "self_spiritual", label: "Spiritual Self-Care", type: "textarea", rows: 3, span: 2 },
-        ],
-      },
-
       {
         title: "Workout",
         description: "Syncs both ways with the Fitness & Workout Tracker for this date.",
