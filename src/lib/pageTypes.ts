@@ -445,7 +445,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
     id: "complete-tracker",
     name: "Complete Tracker",
     shortName: "Complete",
-    description: "All-in-one daily log in two pages — Page 1: your day, body & home (calendar, meals, vitals, wellness, workout, measurements, sleep, gratitude, habits, cleaning, money, week & year). Page 2: mind & health (mood, feelings, self-care, journal, brain dump, therapy, notes, medical). Auto-syncs to your individual trackers.",
+    description: "All-in-one daily log in two pages — Page 1: your day & body (goal, priorities, schedule, calendar, meals, vitals, symptoms, wellness, workout, measurements, sleep, mood). Page 2: mind, home & life (gratitude, self-care, habits, cleaning, money, week & year, dates & gifts, notes, journal, brain dump, focus, therapy, medical). Auto-syncs to your individual trackers.",
     icon: "LayoutGrid",
     sections: [
       {
@@ -635,7 +635,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Mood Check-In",
         description: "Overall mood and daily ratings — syncs to your Mood Journal.",
-        page: 2,
+        page: 1,
         columns: 2,
         fields: [
           { key: "mood_overall", label: "Overall mood", type: "mood-rating" },
@@ -647,7 +647,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Today's Feels",
         description: "Name what you feel at each point of the day.",
-        page: 2,
+        page: 1,
         columns: 1,
         fields: [
           { key: "feelings", label: "Morning — name what you feel", type: "checkbox-group", options: FEELING_OPTIONS, otherKey: "feelings_morning_other", span: 2 },
@@ -689,7 +689,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Gratitude",
         description: "Three good things — syncs to your Gratitude Log.",
-        page: 1,
+        page: 2,
         columns: 1,
         fields: [
           { key: "gratitude", label: "Grateful for", type: "gratitude-list", max: 3, span: 2 },
@@ -710,7 +710,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Fun Activity Tracker",
         description: "Write in your own fun activities, then mark Accomplished or Needs Improvement for the day.",
         columns: 1,
-        page: 1,
+        page: 2,
         fields: Array.from({ length: 3 }, (_, i) => i + 1).map((n) => ({
           key: `fun_${n}`,
           label: `Fun ${n}`,
@@ -724,7 +724,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Begin / Break Habits",
         description: "Quick daily check for the day overall, then your named habits — named habits sync to your Yearly Habit Tracker.",
         columns: 1,
-        page: 1,
+        page: 2,
         fields: [
           { key: "daily_habit", label: "Quick daily check", type: "success-fail" as const, span: 2 as const },
           ...Array.from({ length: 3 }, (_, i) => i + 1).map((n) => ({
@@ -742,7 +742,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Cleaning",
         description: "What you cleaned today — syncs to your Cleaning Check List for this day.",
-        page: 1,
+        page: 2,
         columns: 1,
         fields: [
           { key: "cleaning_rooms", label: "Rooms cleaned today", type: "checkbox-group", options: ["Kitchen", "Dining Room", "Living Room", "Primary Bedroom", "Bedroom 2", "Bedroom 3", "Bathroom 1", "Bathroom 2", "Laundry", "Hallway / Entry", "Office", "Outside / Porch"], span: 2 },
@@ -753,7 +753,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "This Week",
         description: "Today's note for the week — syncs to today's weekday on your Weekly Calendar. Weekly goals live on the Weekly page.",
         columns: 1,
-        page: 1,
+        page: 2,
         fields: [
           { key: "week_note_today", label: "Today's note for the week", type: "textarea", rows: 3, span: 2 },
           { key: "week_notes_more", label: "More notes for today", type: "measurement-grid", span: 2, rowCount: 1, rowLabel: "#", columns: ["Note"], growable: true, addLabel: "Add note" },
@@ -763,7 +763,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "This Year",
         description: "Today's note for the year — syncs to this month on your Yearly Calendar. Word of the Year lives on the Yearly page.",
         columns: 1,
-        page: 1,
+        page: 2,
         fields: [
           { key: "month_note_today", label: "Today's note for the year", type: "textarea", rows: 3, span: 2 },
           { key: "year_notes_more", label: "More notes for today", type: "measurement-grid", span: 2, rowCount: 1, rowLabel: "#", columns: ["Note"], growable: true, addLabel: "Add note" },
@@ -830,7 +830,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Money Today",
         description: "Totals roll up to your Monthly Budget, Savings Goals and Debt Tracker.",
         columns: 2,
-        page: 1,
+        page: 2,
         fields: [
           { key: "spend_category", label: "Spending category", type: "text" },
           { key: "spend_amount", label: "Spent today ($)", type: "text" },
@@ -844,7 +844,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Dates & Gifts",
         description: "Syncs both ways with your Important Dates and Gift Tracker.",
         columns: 2,
-        page: 1,
+        page: 2,
         fields: [
           { key: "important_today", label: "Important date / activity today", type: "text", span: 2 },
           {
