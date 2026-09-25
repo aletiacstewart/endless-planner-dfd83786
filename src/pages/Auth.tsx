@@ -60,9 +60,25 @@ export default function Auth() {
   };
 
   useEffect(() => {
-    if (!loading && user) routeAfterSignIn();
+    if (!loading && user && !switching) routeAfterSignIn();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, loading]);
+  }, [user, loading, switching]);
+
+  const signOutHere = async () => {
+    setBusy(true);
+    try {
+      await syncSignOut();
+      routingAfterSignIn.current = false;
+      setSwitching(false);
+      setMode("password");
+      toast.success("Signed out — sign in with another account");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't sign out");
+    } finally {
+      setBusy(false);
+    }
+  };
+
 
   const signInGoogle = async () => {
     setBusy(true);
