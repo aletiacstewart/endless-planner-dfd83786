@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { useUserSettings } from "@/hooks/useUserSettings";
+import { useAuth } from "@/hooks/useAuth";
+import { signOut as syncSignOut } from "@/lib/sync";
 import { getPageImage } from "@/lib/pageImages";
 import { usePlannerCover } from "@/contexts/PlannerCoverContext";
 import { PlannerStyleCard } from "@/components/entry/PlannerStyleCard";
@@ -29,6 +31,7 @@ const NUDGE_DISMISS_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 export default function Home() {
   const navigate = useNavigate();
   const { settings } = useUserSettings();
+  const { user } = useAuth();
   const { showCover } = usePlannerCover();
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [recent, setRecent] = useState<PlannerEntry[]>([]);
@@ -113,6 +116,16 @@ export default function Home() {
     navigate("/app");
   };
 
+  const handleSignOut = async () => {
+    try {
+      await syncSignOut();
+      toast.success("Signed out");
+    } catch {
+      toast.error("Couldn't sign out");
+    }
+    navigate("/auth", { replace: true });
+  };
+
   const openToday = async () => {
     const today = new Date();
     const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
@@ -140,6 +153,16 @@ export default function Home() {
           )}
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          {user && (
+            <button
+              onClick={handleSignOut}
+              aria-label="Sign out"
+              title={`Sign out (${user.email ?? "account"})`}
+              className="w-10 h-10 rounded-full bg-card/80 backdrop-blur flex items-center justify-center shadow-lg hover:bg-card transition-colors"
+            >
+              <Icons.LogOut className="w-5 h-5" />
+            </button>
+          )}
           <Link
             to="/settings"
             aria-label="Settings"

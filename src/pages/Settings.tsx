@@ -302,6 +302,7 @@ function AccountSection() {
           onClick={async () => {
             await syncSignOut();
             toast.success("Signed out");
+            navigate("/auth", { replace: true });
           }}
         >
           <LogOut className="w-4 h-4 mr-2" /> Sign out
