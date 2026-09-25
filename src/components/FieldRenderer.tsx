@@ -112,7 +112,7 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
           {(field.options ?? []).map((opt) => {
             const [id, name] = opt.split("|");
             return (
-              <Link key={id} to={`/section/${id}`} className="inline-flex items-center min-h-11 px-4 rounded-full border border-border bg-card text-sm text-foreground hover:bg-accent touch-manipulation">
+              <Link key={id} to={`/section/${id}`} className="inline-flex items-center min-h-9 px-3 py-1 rounded-full border border-border bg-card text-xs text-foreground hover:bg-accent touch-manipulation">
                 {name}
               </Link>
             );
