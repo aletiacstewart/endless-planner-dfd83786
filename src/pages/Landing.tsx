@@ -6,8 +6,10 @@ import { COVERS, COLLECTIONS, type CoverCollection } from "@/data/covers";
 import { PLANNERS } from "@/data/planners";
 import { CoverCarousel } from "@/components/cover/CoverCarousel";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Landing() {
+  const { user } = useAuth();
   const [code, setCode] = useState("");
   const [resendEmail, setResendEmail] = useState("");
   const [resendStatus, setResendStatus] = useState<"idle" | "sending" | "sent">("idle");
