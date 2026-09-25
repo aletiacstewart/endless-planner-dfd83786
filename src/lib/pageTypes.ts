@@ -479,7 +479,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Meals",
-        page: 2,
+        page: 1,
         fields: [
           { key: "breakfast", label: "Breakfast", type: "text", span: 2 },
           { key: "breakfast_bs", label: "Breakfast — Blood Sugar", type: "text" },
@@ -509,7 +509,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Today’s Vitals",
         description: "One daily reading for each yearly health tracker.",
-        page: 2,
+        page: 1,
         columns: 3,
         fields: [
           { key: "daily_blood_sugar", label: "Blood Sugar", type: "text" },
@@ -519,7 +519,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Wellness",
-        page: 2,
+        page: 1,
         columns: 2,
         fields: [
               { key: "water", label: "Water intake (glasses)", type: "checkbox-group", options: ["1","2","3","4","5","6","7","8"], otherKey: "water_other", span: 2 },
@@ -531,7 +531,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Gratitude",
         description: "Three good things — syncs to your Gratitude Log.",
-        page: 1,
+        page: 2,
         columns: 1,
         fields: [
           { key: "gratitude", label: "Grateful for", type: "gratitude-list", max: 3, span: 2 },
@@ -540,7 +540,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       },
       {
         title: "Self-Care",
-        page: 1,
+        page: 2,
         columns: 2,
         fields: [
           { key: "self_physical", label: "Physical Self-Care", type: "textarea", rows: 3, span: 2 },
@@ -606,7 +606,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        page: 2,
+        page: 1,
         fields: [
           { key: "daily_notes", label: "Wellness Notes", type: "textarea", rows: 5, span: 2 },
         ],
@@ -614,7 +614,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Sleep",
         description: "Bedtime, wake time and quality — syncs to your Sleep Tracker.",
-        page: 2,
+        page: 1,
         columns: 2,
         fields: [
           { key: "bed_time", label: "Bedtime", type: "time-select" },
@@ -681,7 +681,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Fun Activity Tracker",
         description: "Write in your own fun activities, then mark Accomplished or Needs Improvement for the day.",
         columns: 1,
-        page: 1,
+        page: 2,
         fields: Array.from({ length: 3 }, (_, i) => i + 1).map((n) => ({
           key: `fun_${n}`,
           label: `Fun ${n}`,
@@ -695,7 +695,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Begin / Break Habits",
         description: "Write in each habit, choose Begin or Break, then mark Accomplished or Needs Improvement for the day.",
         columns: 1,
-        page: 1,
+        page: 2,
         fields: Array.from({ length: 3 }, (_, i) => i + 1).map((n) => ({
           key: `habit_${n}`,
           label: `Habit ${n}`,
@@ -709,7 +709,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Cleaning",
         description: "What you cleaned today — syncs to your Cleaning Check List for this day.",
-        page: 1,
+        page: 2,
         columns: 1,
         fields: [
           { key: "cleaning_rooms", label: "Rooms cleaned today", type: "checkbox-group", options: ["Kitchen", "Dining Room", "Living Room", "Primary Bedroom", "Bedroom 2", "Bedroom 3", "Bathroom 1", "Bathroom 2", "Laundry", "Hallway / Entry", "Office", "Outside / Porch"], span: 2 },
@@ -720,7 +720,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "This Week",
         description: "Today's note plus the week's goals & reflection — sync to your Weekly Calendar.",
         columns: 1,
-        page: 1,
+        page: 2,
         fields: [
           { key: "week_note_today", label: "Note for today's weekday", type: "textarea", rows: 3, span: 2 },
           { key: "weekly_goals", label: "Weekly Goals", type: "textarea", rows: 3, span: 2 },
@@ -731,7 +731,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "This Year",
         description: "A note for this month plus a yearly focus — sync to your Yearly Calendar.",
         columns: 1,
-        page: 1,
+        page: 2,
         fields: [
           { key: "month_note_today", label: "Note for this month", type: "textarea", rows: 3, span: 2 },
           { key: "yearly_focus", label: "Yearly Focus / Word of the Year", type: "textarea", rows: 2, span: 2 },
