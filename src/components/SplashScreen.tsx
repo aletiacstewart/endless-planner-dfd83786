@@ -16,6 +16,8 @@ type Props = {
  * Tap the cover, press the pill, or swipe right-to-left to open it.
  */
 export function SplashScreen({ cover, plannerName, ownerName, onOpen }: Props) {
+  const navigate = useNavigate();
+  const { admin } = useEntitlements();
   const [hintVisible, setHintVisible] = useState(false);
   const [opening, setOpening] = useState(false);
   const touchStartX = useRef<number | null>(null);
