@@ -754,7 +754,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         page: 2,
         fields: [
           { key: "spend_items", label: "Spending", type: "measurement-grid", span: 2, rowCount: 3, rowLabel: "#", columns: ["Item", "Category", "Amount ($)", "Paid with", "Notes"], columnKinds: ["text", "select", "text", "select", "text"], columnOptions: [null, ["Groceries", "Dining", "Gas", "Bills", "Shopping", "Health", "Kids", "Pets", "Fun", "Other"], null, ["Cash", "Debit", "Credit", "Other"], null], growable: true, addLabel: "Add purchase" },
-          { key: "spend_total", label: "Total spent today ($)", type: "computed-total", sumKey: "spend_items", sumColumn: 2 },
+          { key: "spend_total", label: "Total spent today ($)", type: "computed-total", sumKey: "spend_items", columns: ["Amount ($)"], sumColumn: 0 },
         ],
       },
     ],
@@ -1539,7 +1539,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Spending",
         fields: [
           { key: "spend_items", label: "Spending", type: "measurement-grid", span: 2, rowCount: 3, rowLabel: "#", columns: ["Item", "Category", "Amount ($)", "Paid with", "Notes"], columnKinds: ["text", "select", "text", "select", "text"], columnOptions: [null, ["Groceries", "Dining", "Gas", "Bills", "Shopping", "Health", "Kids", "Pets", "Fun", "Other"], null, ["Cash", "Debit", "Credit", "Other"], null], growable: true, addLabel: "Add purchase" },
-          { key: "spend_total", label: "Total spent today ($)", type: "computed-total", sumKey: "spend_items", sumColumn: 2 },
+          { key: "spend_total", label: "Total spent today ($)", type: "computed-total", sumKey: "spend_items", columns: ["Amount ($)"], sumColumn: 0 },
           { key: "spend_notes", label: "Notes", type: "textarea", rows: 3, span: 2 },
         ],
       },

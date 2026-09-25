@@ -89,10 +89,10 @@ function FieldRendererInner({ field, value, allValues, onChange, onChangeAny, sh
   switch (field.type) {
     case "computed-total": {
       const grid = (allValues?.[field.sumKey ?? ""] as Record<string, string> | undefined) ?? {};
-      const col = field.sumColumn ?? 0;
+      const col = field.columns?.[field.sumColumn ?? 0] ?? "Amount ($)";
       const total = Object.entries(grid).reduce((sum, [k, v]) => {
-        const m = /^(\d+)-(\d+)$/.exec(k);
-        if (!m || Number(m[2]) !== col) return sum;
+        const m = /^(\d+)-(.+)$/.exec(k);
+        if (!m || m[2] !== col) return sum;
         const n = parseFloat(String(v).replace(/[^0-9.-]/g, ""));
         return Number.isFinite(n) ? sum + n : sum;
       }, 0);
