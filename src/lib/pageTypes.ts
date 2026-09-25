@@ -41,6 +41,7 @@ export type FieldType =
   | "time-select" // dropdown of 15-minute times
   | "gratitude-list" // 3 numbered gratitude text rows
   | "drawing" // touch, mouse, and stylus sketch canvas
+  | "page-links" // buttons linking to other pages (options "id|Name")
   | "image"; // private user photo stored in cloud storage
 
 export interface FieldDef {
@@ -445,9 +446,17 @@ export const PAGE_TYPES: PageTypeDef[] = [
     id: "complete-tracker",
     name: "Complete Tracker",
     shortName: "Complete",
-    description: "All-in-one daily log in two pages — Page 1: your day & body (goal, priorities, schedule, calendar, meals, vitals, symptoms, wellness, workout, measurements, sleep, mood, dates & gifts). Page 2: mind, home & life (medical, medicines, gratitude, self-care, fun, habits, cleaning, notes, journal, brain dump, focus, therapy, money). Auto-syncs to your individual trackers.",
+    description: "One day at a glance — links to your other pages at the top, then today from every daily page: Page 1 day & body (goal, priorities, schedule, meals, water, workout, sleep, vitals, symptoms, self-care, cleaning). Page 2 mind & notes (mood, gratitude, journal, brain dump, focus, therapy, medical, medicines, notes). Syncs both ways by date.",
     icon: "LayoutGrid",
     sections: [
+      {
+        title: "Your other pages",
+        description: "Pages that aren't tracked day by day — tap to open.",
+        page: 1,
+        fields: [
+          { key: "_page_links", label: "Open a page", type: "page-links", options: ["my-goals|My Goals", "yearly-calendar|Yearly Calendar", "monthly-calendar|Monthly Calendar", "weekly-calendar|Weekly Calendar", "yearly-habit-tracker|Yearly Habit Tracker", "weight-tracker|Weight Tracker", "measurement-tracker|Measurement Tracker", "blood-sugar-tracker|Blood Sugar", "blood-pressure-tracker|Blood Pressure", "oxygen-tracker|Oxygen (O₂)", "symptom-tracker|Symptom Tracker", "recipe|Recipes", "yearly-focus|Yearly Focus", "budget-monthly|Monthly Budget", "debt-tracker|Debt Tracker", "savings-goals|Savings Goals", "home-info|Household Info", "coping-toolkit|Coping Toolkit", "medications|Medications", "emergency-contacts|Emergency Contacts", "contacts|Contacts", "important-dates|Important Dates", "gift-tracker|Gift Tracker"], span: 2 },
+        ],
+      },
       {
         columns: 2,
         page: 1,
@@ -485,14 +494,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "Monthly Calendar",
-        description: "Quick reference for the month — tap a day to add or view a note.",
-        page: 1,
-        fields: [
-          { key: "month_calendar", label: "Monthly calendar", type: "calendar-grid", compact: true, span: 2 },
-        ],
-      },
-      {
         title: "Meals",
         page: 1,
         fields: [
@@ -522,6 +523,48 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
+        title: "Water & Intake",
+        page: 1,
+        columns: 2,
+        fields: [
+              { key: "water", label: "Water intake (glasses)", type: "checkbox-group", options: ["1","2","3","4","5","6","7","8"], otherKey: "water_other", span: 2 },
+              { key: "meals", label: "Meal intake", type: "checkbox-group", options: ["1","2","3","4","5","6"], otherKey: "meals_other", span: 2 },
+              { key: "caffeine", label: "Caffeine / Other", type: "checkbox-group", options: ["1","2","3","4"], otherKey: "caffeine_other" },
+              { key: "sweets", label: "Sweets / Savory", type: "checkbox-group", options: ["1","2","3","4"], otherKey: "sweets_other" },
+        ],
+      },
+      {
+        title: "Today's Workout",
+        description: "Syncs both ways with the Fitness & Workout Tracker for this date.",
+        page: 1,
+        columns: 1,
+        fields: [
+              {
+                key: "workout_activity",
+                label: "Today's workout — activity",
+                type: "select",
+                options: ["Walking", "Running", "Cycling", "Swimming", "Strength", "Mobility", "Stretching", "Yoga", "Pilates", "Dance", "Sports", "Hiking", "HIIT", "Rehabilitation / PT", "Other"],
+                span: 2,
+              },
+              { key: "workout_duration", label: "Duration", type: "text", span: 2 },
+              { key: "workout_intensity", label: "Intensity", type: "select", options: ["Light", "Moderate", "Hard"], span: 2 },
+              { key: "workout_notes", label: "Workout notes", type: "textarea", rows: 3, span: 2 },
+        ],
+      },
+      {
+        title: "Sleep",
+        description: "Bedtime, wake time and quality — syncs to your Sleep Tracker.",
+        page: 1,
+        columns: 2,
+        fields: [
+          { key: "bed_time", label: "Bedtime", type: "time-select" },
+          { key: "wake_time", label: "Wake time", type: "time-select" },
+          { key: "sleep_hours", label: "Hours slept", type: "select", options: Array.from({ length: 24 }, (_, i) => String(i + 1)) },
+          { key: "sleep_quality", label: "Quality (1-5)", type: "select", options: ["1", "2", "3", "4", "5"] },
+          { key: "sleep_notes", label: "Sleep notes", type: "text", span: 2 },
+        ],
+      },
+      {
         title: "Today’s Vitals",
         description: "One daily reading for each yearly health tracker.",
         page: 1,
@@ -547,82 +590,29 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "Wellness",
+        title: "Self-Care",
         page: 1,
         columns: 2,
         fields: [
-              { key: "water", label: "Water intake (glasses)", type: "checkbox-group", options: ["1","2","3","4","5","6","7","8"], otherKey: "water_other", span: 2 },
-              { key: "meals", label: "Meal intake", type: "checkbox-group", options: ["1","2","3","4","5","6"], otherKey: "meals_other", span: 2 },
-              { key: "caffeine", label: "Caffeine / Other", type: "checkbox-group", options: ["1","2","3","4"], otherKey: "caffeine_other" },
-              { key: "sweets", label: "Sweets / Savory", type: "checkbox-group", options: ["1","2","3","4"], otherKey: "sweets_other" },
+          { key: "self_physical", label: "Physical Self-Care", type: "textarea", rows: 3, span: 2 },
+          { key: "self_emotional", label: "Emotional Self-Care", type: "textarea", rows: 3, span: 2 },
+          { key: "self_spiritual", label: "Spiritual Self-Care", type: "textarea", rows: 3, span: 2 },
         ],
       },
       {
-        page: 1,
-        fields: [
-          { key: "daily_notes", label: "Wellness Notes", type: "textarea", rows: 5, span: 2 },
-        ],
-      },
-      {
-        title: "Today's Workout",
-        description: "Syncs both ways with the Fitness & Workout Tracker for this date.",
+        title: "Cleaning",
+        description: "What you cleaned today — syncs to your Cleaning Check List for this day.",
         page: 1,
         columns: 1,
         fields: [
-              {
-                key: "workout_activity",
-                label: "Today's workout — activity",
-                type: "select",
-                options: ["Walking", "Running", "Cycling", "Swimming", "Strength", "Mobility", "Stretching", "Yoga", "Pilates", "Dance", "Sports", "Hiking", "HIIT", "Rehabilitation / PT", "Other"],
-                span: 2,
-              },
-              { key: "workout_duration", label: "Duration", type: "text", span: 2 },
-              { key: "workout_intensity", label: "Intensity", type: "select", options: ["Light", "Moderate", "Hard"], span: 2 },
-              { key: "workout_notes", label: "Workout notes", type: "textarea", rows: 3, span: 2 },
-        ],
-      },
-      {
-        title: "Measurements",
-        description: "Today's measurements only — start values live on your Measurement and Weight pages.",
-        page: 1,
-        columns: 2,
-        fields: [
-              ...([
-                ["body_fat", "Body Fat %"],
-                ["neck", "Neck"],
-                ["chest", "Chest"],
-                ["bicep", "Bicep"],
-                ["waist", "Waist"],
-                ["hips", "Hips"],
-                ["thigh", "Thigh"],
-                ["calf", "Calf"],
-              ] as const).map(([k, label]) => ({
-                key: `m_${k}_today`,
-                label: `${label} today`,
-                type: "text" as const,
-              })),
-              { key: "weight_today", label: "Weight today", type: "text" },
-              { key: "weight_today_notes", label: "Weight — notes", type: "text" },
-              { key: "measurements_more", label: "More measurements today", type: "measurement-grid", span: 2, rowCount: 1, rowLabel: "#", columns: ["Measurement", "Today", "Notes"], growable: true, addLabel: "Add measurement" },
-        ],
-      },
-      {
-        title: "Sleep",
-        description: "Bedtime, wake time and quality — syncs to your Sleep Tracker.",
-        page: 1,
-        columns: 2,
-        fields: [
-          { key: "bed_time", label: "Bedtime", type: "time-select" },
-          { key: "wake_time", label: "Wake time", type: "time-select" },
-          { key: "sleep_hours", label: "Hours slept", type: "select", options: Array.from({ length: 24 }, (_, i) => String(i + 1)) },
-          { key: "sleep_quality", label: "Quality (1-5)", type: "select", options: ["1", "2", "3", "4", "5"] },
-          { key: "sleep_notes", label: "Sleep notes", type: "text", span: 2 },
+          { key: "cleaning_rooms", label: "Rooms cleaned today", type: "checkbox-group", options: ["Kitchen", "Dining Room", "Living Room", "Primary Bedroom", "Bedroom 2", "Bedroom 3", "Bathroom 1", "Bathroom 2", "Laundry", "Hallway / Entry", "Office", "Outside / Porch"], span: 2 },
+          { key: "cleaning_today", label: "Cleaning today", type: "textarea", rows: 3, span: 2 },
         ],
       },
       {
         title: "Mood Check-In",
         description: "Overall mood and daily ratings — syncs to your Mood Journal.",
-        page: 1,
+        page: 2,
         columns: 2,
         fields: [
           { key: "mood_overall", label: "Overall mood", type: "mood-rating" },
@@ -632,29 +622,9 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "Medical Records",
-        description: "Today's visit — appointment notes, test results and lab notes for this day.",
         page: 2,
         fields: [
-          { key: "doctor_id", label: "Doctor seen today", type: "doctor-picker", span: 2 },
-        ],
-      },
-      {
-        columns: 1,
-        page: 2,
-        fields: [
-          { key: "medical_appointment_notes", label: "Appointment Notes", type: "textarea", rows: 5, span: 2, scopeByKey: "doctor_id" },
-          { key: "test_results", label: "Test Results", type: "textarea", rows: 5, span: 2, scopeByKey: "doctor_id" },
-          { key: "lab_result_notes", label: "Lab Result Notes", type: "textarea", rows: 5, span: 2, scopeByKey: "doctor_id" },
-          { key: "medical_visits_more", label: "Other visits today", type: "measurement-grid", span: 2, rowCount: 1, rowLabel: "#", columns: ["Doctor", "Appointment notes", "Test results", "Lab notes"], growable: true, addLabel: "Add visit" },
-        ],
-      },
-      {
-        title: "Medicines",
-        description: "Medications taken today — tick M (Morning), A (Afternoon), or N (Night).",
-        page: 2,
-        fields: [
-          { key: "med_list", label: "Medications", type: "med-list", rowCount: 3, span: 2, growable: true, addLabel: "Add medication" },
+          { key: "daily_notes", label: "Wellness Notes", type: "textarea", rows: 5, span: 2 },
         ],
       },
       {
@@ -665,67 +635,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
         fields: [
           { key: "gratitude", label: "Grateful for", type: "gratitude-list", max: 3, span: 2 },
           { key: "gratitude_note", label: "One moment worth remembering", type: "textarea", rows: 3, span: 2 },
-        ],
-      },
-      {
-        title: "Self-Care",
-        page: 2,
-        columns: 2,
-        fields: [
-          { key: "self_physical", label: "Physical Self-Care", type: "textarea", rows: 3, span: 2 },
-          { key: "self_emotional", label: "Emotional Self-Care", type: "textarea", rows: 3, span: 2 },
-          { key: "self_spiritual", label: "Spiritual Self-Care", type: "textarea", rows: 3, span: 2 },
-        ],
-      },
-      {
-        title: "Fun Activity Tracker",
-        description: "Write in your own fun activities, then mark Accomplished or Needs Improvement for the day.",
-        columns: 1,
-        page: 2,
-        fields: Array.from({ length: 3 }, (_, i) => i + 1).map((n) => ({
-          key: `fun_${n}`,
-          label: `Fun ${n}`,
-          type: "success-fail" as const,
-          inputKey: `fun_${n}_label`,
-          inputPlaceholder: "Fun activity…",
-          span: 2 as const,
-        })),
-      },
-      {
-        title: "Begin / Break Habits",
-        description: "Quick daily check for the day overall, then your named habits — named habits sync to your Yearly Habit Tracker.",
-        columns: 1,
-        page: 2,
-        fields: [
-          { key: "daily_habit", label: "Quick daily check", type: "success-fail" as const, span: 2 as const },
-          ...Array.from({ length: 3 }, (_, i) => i + 1).map((n) => ({
-          key: `habit_${n}`,
-          label: `Habit ${n}`,
-          type: "success-fail" as const,
-          inputKey: `habit_${n}_label`,
-          inputPlaceholder: "Habit…",
-          modeKey: `habit_${n}_mode`,
-          span: 2 as const,
-        })),
-        ],
-      },
-      {
-        title: "Cleaning",
-        description: "What you cleaned today — syncs to your Cleaning Check List for this day.",
-        page: 2,
-        columns: 1,
-        fields: [
-          { key: "cleaning_rooms", label: "Rooms cleaned today", type: "checkbox-group", options: ["Kitchen", "Dining Room", "Living Room", "Primary Bedroom", "Bedroom 2", "Bedroom 3", "Bathroom 1", "Bathroom 2", "Laundry", "Hallway / Entry", "Office", "Outside / Porch"], span: 2 },
-          { key: "cleaning_today", label: "Cleaning today", type: "textarea", rows: 3, span: 2 },
-        ],
-      },
-      {
-        title: "Today's Notes",
-        description: "Syncs to your Notes page for this day.",
-        columns: 1,
-        page: 2,
-        fields: [
-          { key: "note_today", label: "Notes for today", type: "note-style", span: 2 },
         ],
       },
       {
@@ -777,38 +686,37 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        title: "Money Today",
-        description: "Totals roll up to your Monthly Budget, Savings Goals and Debt Tracker.",
-        columns: 2,
+        title: "Medical Records",
+        description: "Today's visit — appointment notes, test results and lab notes for this day.",
         page: 2,
         fields: [
-          { key: "spend_category", label: "Spending category", type: "text" },
-          { key: "spend_amount", label: "Spent today ($)", type: "text" },
-          { key: "savings_goal_name", label: "Savings goal", type: "text" },
-          { key: "saved_today", label: "Saved today ($)", type: "text" },
-          { key: "debt_creditor", label: "Debt / creditor", type: "text" },
-          { key: "debt_paid_today", label: "Paid today ($)", type: "text" },
+          { key: "doctor_id", label: "Doctor seen today", type: "doctor-picker", span: 2 },
         ],
       },
       {
-        title: "Dates & Gifts",
-        description: "Syncs both ways with your Important Dates and Gift Tracker.",
-        columns: 2,
-        page: 1,
+        columns: 1,
+        page: 2,
         fields: [
-          { key: "important_today", label: "Important date / activity today", type: "text", span: 2 },
-          {
-            key: "important_occasion",
-            label: "Occasion",
-            type: "select",
-            options: ["Birthday", "Anniversary", "Holiday", "Wedding", "Graduation", "Memorial", "Appointment", "Other"],
-          },
-          { key: "important_relationship", label: "Relationship", type: "text" },
-          { key: "gift_person", label: "Gift for", type: "text" },
-          { key: "gift_idea", label: "Gift bought / idea", type: "text" },
-          { key: "gift_budget", label: "Gift cost ($)", type: "text" },
-          { key: "gift_purchased", label: "Purchased", type: "checkbox" },
-          { key: "dates_gifts_more", label: "More dates & gifts today", type: "measurement-grid", span: 2, rowCount: 1, rowLabel: "#", columns: ["Date / activity", "Occasion", "For", "Gift", "Cost ($)"], growable: true, addLabel: "Add date or gift" },
+          { key: "medical_appointment_notes", label: "Appointment Notes", type: "textarea", rows: 5, span: 2, scopeByKey: "doctor_id" },
+          { key: "test_results", label: "Test Results", type: "textarea", rows: 5, span: 2, scopeByKey: "doctor_id" },
+          { key: "lab_result_notes", label: "Lab Result Notes", type: "textarea", rows: 5, span: 2, scopeByKey: "doctor_id" },
+        ],
+      },
+      {
+        title: "Medicines",
+        description: "Medications taken today — tick M (Morning), A (Afternoon), or N (Night).",
+        page: 2,
+        fields: [
+          { key: "med_list", label: "Medications", type: "med-list", rowCount: 3, span: 2, growable: true, addLabel: "Add medication" },
+        ],
+      },
+      {
+        title: "Today's Notes",
+        description: "Syncs to your Notes page for this day.",
+        columns: 1,
+        page: 2,
+        fields: [
+          { key: "note_today", label: "Notes for today", type: "note-style", span: 2 },
         ],
       },
     ],
