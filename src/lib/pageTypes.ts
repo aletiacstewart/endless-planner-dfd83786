@@ -445,7 +445,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
     id: "complete-tracker",
     name: "Complete Tracker",
     shortName: "Complete",
-    description: "All-in-one daily log in two pages — Page 1: your day & body (calendar, meals, vitals, wellness, workout, measurements, sleep). Page 2: mind, home & life (mood, gratitude, habits, notes, journal, money, medical). Auto-syncs to your individual trackers.",
+    description: "All-in-one daily log in two pages — Page 1: your day, body & home (calendar, meals, vitals, wellness, workout, measurements, sleep, gratitude, habits, cleaning, money, week & year). Page 2: mind & health (mood, feelings, self-care, journal, brain dump, therapy, notes, medical). Auto-syncs to your individual trackers.",
     icon: "LayoutGrid",
     sections: [
       {
@@ -591,12 +591,6 @@ export const PAGE_TYPES: PageTypeDef[] = [
         ],
       },
       {
-        page: 1,
-        fields: [
-          { key: "daily_notes", label: "Wellness Notes", type: "textarea", rows: 5, span: 2 },
-        ],
-      },
-      {
         title: "Sleep",
         description: "Bedtime, wake time and quality — syncs to your Sleep Tracker.",
         page: 1,
@@ -665,7 +659,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Gratitude",
         description: "Three good things — syncs to your Gratitude Log.",
-        page: 2,
+        page: 1,
         columns: 1,
         fields: [
           { key: "gratitude", label: "Grateful for", type: "gratitude-list", max: 3, span: 2 },
@@ -686,7 +680,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Fun Activity Tracker",
         description: "Write in your own fun activities, then mark Accomplished or Needs Improvement for the day.",
         columns: 1,
-        page: 2,
+        page: 1,
         fields: Array.from({ length: 3 }, (_, i) => i + 1).map((n) => ({
           key: `fun_${n}`,
           label: `Fun ${n}`,
@@ -700,7 +694,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Begin / Break Habits",
         description: "Write in each habit, choose Begin or Break, then mark Accomplished or Needs Improvement for the day.",
         columns: 1,
-        page: 2,
+        page: 1,
         fields: Array.from({ length: 3 }, (_, i) => i + 1).map((n) => ({
           key: `habit_${n}`,
           label: `Habit ${n}`,
@@ -714,7 +708,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
       {
         title: "Cleaning",
         description: "What you cleaned today — syncs to your Cleaning Check List for this day.",
-        page: 2,
+        page: 1,
         columns: 1,
         fields: [
           { key: "cleaning_rooms", label: "Rooms cleaned today", type: "checkbox-group", options: ["Kitchen", "Dining Room", "Living Room", "Primary Bedroom", "Bedroom 2", "Bedroom 3", "Bathroom 1", "Bathroom 2", "Laundry", "Hallway / Entry", "Office", "Outside / Porch"], span: 2 },
@@ -725,7 +719,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "This Week",
         description: "Today's note plus the week's goals & reflection — sync to your Weekly Calendar.",
         columns: 1,
-        page: 2,
+        page: 1,
         fields: [
           { key: "week_note_today", label: "Note for today's weekday", type: "textarea", rows: 3, span: 2 },
           { key: "weekly_goals", label: "Weekly Goals", type: "textarea", rows: 3, span: 2 },
@@ -736,7 +730,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "This Year",
         description: "A note for this month plus a yearly focus — sync to your Yearly Calendar.",
         columns: 1,
-        page: 2,
+        page: 1,
         fields: [
           { key: "month_note_today", label: "Note for this month", type: "textarea", rows: 3, span: 2 },
           { key: "yearly_focus", label: "Yearly Focus / Word of the Year", type: "textarea", rows: 2, span: 2 },
@@ -803,7 +797,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Money Today",
         description: "Totals roll up to your Monthly Budget, Savings Goals and Debt Tracker.",
         columns: 2,
-        page: 2,
+        page: 1,
         fields: [
           { key: "spend_category", label: "Spending category", type: "text" },
           { key: "spend_amount", label: "Spent today ($)", type: "text" },
@@ -817,7 +811,7 @@ export const PAGE_TYPES: PageTypeDef[] = [
         title: "Dates & Gifts",
         description: "Syncs to your Important Dates and Gift Tracker.",
         columns: 2,
-        page: 2,
+        page: 1,
         fields: [
           { key: "important_today", label: "Important date / activity today", type: "text", span: 2 },
           {
