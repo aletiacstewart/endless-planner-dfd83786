@@ -119,6 +119,49 @@ export function OnboardingFlow() {
     );
   }
 
+  if (step === "device") {
+    const chosen = getCover(coverId);
+    return (
+      <div className="min-h-screen flex flex-col" style={{ background: "var(--gradient-paper)" }}>
+        <div className="flex-1 flex items-center justify-center p-6">
+          <div className="max-w-md w-full">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-14 h-16 rounded-lg overflow-hidden shadow-lg shrink-0">
+                <CoverImage
+                  cover={chosen}
+                  plannerName={plannerName}
+                  ownerName={ownerName}
+                  className="w-full h-full"
+                />
+              </div>
+              <div className="min-w-0">
+                <p className="font-script text-xl text-primary">Last step</p>
+                <h1 className="font-display text-2xl font-semibold truncate">
+                  Keep it on your devices
+                </h1>
+              </div>
+            </div>
+
+            <p className="text-muted-foreground text-sm mb-5">
+              Save {plannerName.trim() || "your planner"} to your home screen so it opens with one
+              tap — and use the same link on your phone, tablet and computer.
+            </p>
+
+            <SaveToDeviceGuide />
+
+            <Button size="lg" className="w-full mt-6" onClick={() => finish(coverId)}>
+              Open my planner
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+            <p className="text-xs text-muted-foreground text-center mt-3">
+              You can find these steps again any time in Settings.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <CoverPicker
       open
@@ -127,8 +170,12 @@ export function OnboardingFlow() {
       plannerName={plannerName}
       ownerName={ownerName}
       onSelect={setCoverId}
-      confirmLabel="Open my planner"
-      onConfirm={(id) => finish(id)}
+      confirmLabel="Next"
+      onConfirm={(id) => {
+        setCoverId(id);
+        setStep("device");
+      }}
     />
   );
+
 }
