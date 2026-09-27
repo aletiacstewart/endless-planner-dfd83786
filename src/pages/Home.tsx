@@ -198,6 +198,14 @@ export default function Home() {
               <Icons.LogOut className="w-5 h-5" />
             </button>
           )}
+          <button
+            onClick={() => setSaveToDeviceOpen(true)}
+            aria-label="Save to device"
+            title="Save this planner to your device"
+            className="w-10 h-10 rounded-full bg-card/80 backdrop-blur flex items-center justify-center shadow-lg hover:bg-card transition-colors"
+          >
+            <Icons.Smartphone className="w-5 h-5" />
+          </button>
           <Link
             to="/settings"
             aria-label="Settings"
@@ -205,6 +213,7 @@ export default function Home() {
           >
             <Icons.Settings className="w-5 h-5" />
           </Link>
+
           <Button
             variant="secondary"
             size="icon"
