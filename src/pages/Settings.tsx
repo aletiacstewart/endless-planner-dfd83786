@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { CoverImage } from "@/components/cover/CoverImage";
 import { CoverPicker } from "@/components/cover/CoverPicker";
 import { CalendarSyncCard } from "@/components/calendar/CalendarSyncCard";
+import { SaveToDeviceGuide } from "@/components/SaveToDevice";
+
 
 import { useUserSettings } from "@/hooks/useUserSettings";
 import { useAuth } from "@/hooks/useAuth";
@@ -93,7 +95,18 @@ export default function Settings() {
           <Button onClick={saveText} className="w-full">Save</Button>
         </section>
 
+        <section className="planner-card space-y-3">
+          <div>
+            <h2 className="font-display text-xl">Save to your devices</h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              Add your planner to a home screen, and open it on your phone, tablet and computer.
+            </p>
+          </div>
+          <SaveToDeviceGuide compact />
+        </section>
+
         <AccountSection />
+
 
         <SubscriptionSection />
 

@@ -23,6 +23,8 @@ import { calendarYear, entryYear, getActiveYear, setActiveYear } from "@/lib/pla
 import { getAllEntries } from "@/lib/db";
 import { saveSettings } from "@/lib/settings";
 import { PlannerStyleCard } from "@/components/entry/PlannerStyleCard";
+import { SaveToDeviceDialog } from "@/components/SaveToDevice";
+
 
 const LAST_BACKUP_KEY = "planner.lastBackupAt";
 const BACKUP_DISMISS_KEY = "planner.backupReminderDismissedUntil";
@@ -36,6 +38,8 @@ export default function Home() {
   const { settings } = useUserSettings();
   const [activeYear, setActiveYearState] = useState(getActiveYear());
   const [years, setYears] = useState<number[]>([getActiveYear()]);
+  const [saveToDeviceOpen, setSaveToDeviceOpen] = useState(false);
+
 
   // New Year: new members start on this year; returning members get the carry-over page once.
   useEffect(() => {
@@ -172,6 +176,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen pb-24" style={{ background: "var(--gradient-paper)" }}>
+      <SaveToDeviceDialog open={saveToDeviceOpen} onOpenChange={setSaveToDeviceOpen} />
+
       <header className="px-4 lg:px-8 pt-5 flex items-center justify-between">
         <div className="min-w-0">
           <h1 className="font-display text-xl truncate">{plannerName}</h1>
@@ -198,6 +204,14 @@ export default function Home() {
               <Icons.LogOut className="w-5 h-5" />
             </button>
           )}
+          <button
+            onClick={() => setSaveToDeviceOpen(true)}
+            aria-label="Save to device"
+            title="Save this planner to your device"
+            className="w-10 h-10 rounded-full bg-card/80 backdrop-blur flex items-center justify-center shadow-lg hover:bg-card transition-colors"
+          >
+            <Icons.Smartphone className="w-5 h-5" />
+          </button>
           <Link
             to="/settings"
             aria-label="Settings"
@@ -205,6 +219,7 @@ export default function Home() {
           >
             <Icons.Settings className="w-5 h-5" />
           </Link>
+
           <Button
             variant="secondary"
             size="icon"
