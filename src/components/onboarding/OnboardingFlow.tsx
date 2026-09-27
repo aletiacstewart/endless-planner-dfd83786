@@ -7,8 +7,9 @@ import { CoverPicker } from "@/components/cover/CoverPicker";
 import { DEFAULT_COVER_ID, getCover } from "@/data/covers";
 import { useUserSettings } from "@/hooks/useUserSettings";
 import { useCoverTheme } from "@/hooks/useCoverTheme";
+import { SaveToDeviceGuide } from "@/components/SaveToDevice";
 
-type Step = "welcome" | "name" | "cover";
+type Step = "welcome" | "name" | "cover" | "device";
 
 export function OnboardingFlow() {
   const { settings, update } = useUserSettings();
@@ -28,6 +29,7 @@ export function OnboardingFlow() {
       onboarded: true,
     });
   };
+
 
   if (step === "welcome") {
     const hero = getCover(DEFAULT_COVER_ID);
