@@ -23,6 +23,8 @@ import { calendarYear, entryYear, getActiveYear, setActiveYear } from "@/lib/pla
 import { getAllEntries } from "@/lib/db";
 import { saveSettings } from "@/lib/settings";
 import { PlannerStyleCard } from "@/components/entry/PlannerStyleCard";
+import { SaveToDeviceDialog } from "@/components/SaveToDevice";
+
 
 const LAST_BACKUP_KEY = "planner.lastBackupAt";
 const BACKUP_DISMISS_KEY = "planner.backupReminderDismissedUntil";
