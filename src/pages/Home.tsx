@@ -38,6 +38,8 @@ export default function Home() {
   const { settings } = useUserSettings();
   const [activeYear, setActiveYearState] = useState(getActiveYear());
   const [years, setYears] = useState<number[]>([getActiveYear()]);
+  const [saveToDeviceOpen, setSaveToDeviceOpen] = useState(false);
+
 
   // New Year: new members start on this year; returning members get the carry-over page once.
   useEffect(() => {
