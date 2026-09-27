@@ -176,6 +176,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen pb-24" style={{ background: "var(--gradient-paper)" }}>
+      <SaveToDeviceDialog open={saveToDeviceOpen} onOpenChange={setSaveToDeviceOpen} />
+
       <header className="px-4 lg:px-8 pt-5 flex items-center justify-between">
         <div className="min-w-0">
           <h1 className="font-display text-xl truncate">{plannerName}</h1>
