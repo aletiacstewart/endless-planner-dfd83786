@@ -93,7 +93,18 @@ export default function Settings() {
           <Button onClick={saveText} className="w-full">Save</Button>
         </section>
 
+        <section className="planner-card space-y-3">
+          <div>
+            <h2 className="font-display text-xl">Save to your devices</h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              Add your planner to a home screen, and open it on your phone, tablet and computer.
+            </p>
+          </div>
+          <SaveToDeviceGuide compact />
+        </section>
+
         <AccountSection />
+
 
         <SubscriptionSection />
 
