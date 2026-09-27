@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { CoverImage } from "@/components/cover/CoverImage";
 import { CoverPicker } from "@/components/cover/CoverPicker";
 import { CalendarSyncCard } from "@/components/calendar/CalendarSyncCard";
+import { SaveToDeviceGuide } from "@/components/SaveToDevice";
+
 
 import { useUserSettings } from "@/hooks/useUserSettings";
 import { useAuth } from "@/hooks/useAuth";
