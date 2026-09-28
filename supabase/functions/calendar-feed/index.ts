@@ -47,6 +47,7 @@ function fromCalendarMap(id: string, values: Record<string, unknown>, key: strin
       date: ymd(year, mi, day),
       title: text.split("\n")[0].slice(0, 120),
       description: [type && `${prefix}${type}`, text].filter(Boolean).join("\n"),
+      kind: prefix ? "medical" : "note",
     });
   }
   return out;
@@ -74,6 +75,32 @@ function fromImportantDates(id: string, values: Record<string, unknown>): Event[
       date,
       title: [who, occasion].filter(Boolean).join(" — ").slice(0, 120),
       description: String(grid[`${r}-Notes`] ?? "").trim() || undefined,
+      kind: "celebration",
+    });
+  }
+  return out;
+}
+
+
+function fromBills(id: string, v: Record<string, unknown>): Event[] {
+  const grid = v.fixed as Record<string, string> | undefined;
+  if (!grid || typeof grid !== "object") return [];
+  const mi = monthIndex(v.month as string);
+  const year = parseInt(String(v.year ?? v.__year ?? ""), 10);
+  const rows = Math.max(16, Number(grid.__rows ?? "") || 0);
+  const out: Event[] = [];
+  for (let r = 1; r <= rows; r += 1) {
+    const bill = (grid[`${r}-Bill`] ?? "").trim();
+    const due = (grid[`${r}-Due`] ?? "").trim();
+    if (!bill || !due) continue;
+    const date = billDate(due, mi, year);
+    if (!date) continue;
+    const amount = (grid[`${r}-Amount`] ?? "").trim();
+    out.push({
+      uid: `${id}-bill-${r}`,
+      date,
+      title: `Bill due: ${bill}${amount ? ` (${amount})` : ""}`.slice(0, 120),
+      kind: "bill",
     });
   }
   return out;
@@ -92,6 +119,44 @@ function fold(line: string): string {
   }
   parts.push(rest);
   return parts.join("\r\n ");
+}
+
+
+/** Bill "Due" cells are free text: "15", "15th", "3/15" or "2026-03-15". */
+function billDate(raw: string, mi: number | null, year: number): string {
+  const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (iso) return `${iso[1]}${iso[2]}${iso[3]}`;
+  const y = Number.isFinite(year) && year > 1000 ? year : new Date().getFullYear();
+  const md = raw.match(/^(\d{1,2})[/-](\d{1,2})/);
+  if (md) return ymd(y, Number(md[1]) - 1, Number(md[2]));
+  const d = raw.match(/^(\d{1,2})/);
+  if (d && mi !== null) {
+    const day = Number(d[1]);
+    if (day >= 1 && day <= 31) return ymd(y, mi, day);
+  }
+  return "";
+}
+
+/** Reminder alarms per kind, relative to the all-day event's midnight start. */
+const ALARMS: Record<string, { trigger: string; label: string }[]> = {
+  bill: [{ trigger: "-PT63H", label: "due in 3 days" }, { trigger: "PT9H", label: "due today" }],
+  celebration: [{ trigger: "-PT15H", label: "tomorrow" }, { trigger: "PT9H", label: "today" }],
+  medical: [{ trigger: "-PT15H", label: "appointment tomorrow" }, { trigger: "PT8H", label: "appointment today" }],
+  note: [{ trigger: "PT9H", label: "today" }],
+};
+
+function alarmLines(kind: string | undefined, title: string): string[] {
+  const out: string[] = [];
+  for (const a of ALARMS[kind ?? "note"] ?? ALARMS.note) {
+    out.push(
+      "BEGIN:VALARM",
+      "ACTION:DISPLAY",
+      `TRIGGER:${a.trigger}`,
+      fold(`DESCRIPTION:${escapeIcs(`${title || "Planner note"} — ${a.label}`)}`),
+      "END:VALARM",
+    );
+  }
+  return out;
 }
 
 function nextDay(date: string): string {
@@ -121,6 +186,7 @@ function buildIcs(events: Event[]): string {
       fold(`SUMMARY:${escapeIcs(e.title || "Planner note")}`),
     );
     if (e.description) lines.push(fold(`DESCRIPTION:${escapeIcs(e.description)}`));
+    lines.push(...alarmLines(e.kind, e.title));
     lines.push("END:VEVENT");
   }
   lines.push("END:VCALENDAR");
@@ -151,7 +217,7 @@ Deno.serve(async (req) => {
     .select("id, page_type, values")
     .eq("user_id", row.user_id)
     .is("deleted_at", null)
-    .in("page_type", ["monthly-calendar", "medical-records", "important-dates"]);
+    .in("page_type", ["monthly-calendar", "medical-records", "important-dates", "budget-monthly"]);
 
   if (error) {
     console.error("feed query failed", error);
@@ -165,6 +231,7 @@ Deno.serve(async (req) => {
     else if (e.page_type === "medical-records") {
       events.push(...fromCalendarMap(e.id, values, "medical_calendar", "Medical: "));
     } else if (e.page_type === "important-dates") events.push(...fromImportantDates(e.id, values));
+    else if (e.page_type === "budget-monthly") events.push(...fromBills(e.id, values));
   }
 
   const seen = new Set<string>();

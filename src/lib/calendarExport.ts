@@ -62,6 +62,7 @@ function eventsFromCalendarMap(
       date: ymd(year, mi, day),
       title: text.split("\n")[0].slice(0, 120),
       description: [type && `${typePrefix}${type}`, text].filter(Boolean).join("\n"),
+      kind: typePrefix ? "medical" : "note",
     });
   }
   return out;
@@ -90,6 +91,33 @@ function eventsFromImportantDates(entry: PlannerEntry): PlannerEvent[] {
       date,
       title: [who, occasion].filter(Boolean).join(" — ").slice(0, 120),
       description: (grid[`${r}-Notes`] ?? "").trim() || undefined,
+      kind: "celebration",
+    });
+  }
+  return out;
+}
+
+
+function eventsFromBills(entry: PlannerEntry): PlannerEvent[] {
+  const v = entry.values as Record<string, unknown>;
+  const grid = v.fixed as Record<string, string> | undefined;
+  if (!grid) return [];
+  const mi = monthIndex(v.month as string);
+  const year = parseInt(String(v.year ?? v.__year ?? ""), 10);
+  const rows = Math.max(16, Number(grid.__rows ?? "") || 0);
+  const out: PlannerEvent[] = [];
+  for (let r = 1; r <= rows; r += 1) {
+    const bill = (grid[`${r}-Bill`] ?? "").trim();
+    const due = (grid[`${r}-Due`] ?? "").trim();
+    if (!bill || !due) continue;
+    const date = billDate(due, mi, year);
+    if (!date) continue;
+    const amount = (grid[`${r}-Amount`] ?? "").trim();
+    out.push({
+      uid: `${entry.id}-bill-${r}`,
+      date,
+      title: `Bill due: ${bill}${amount ? ` (${amount})` : ""}`.slice(0, 120),
+      kind: "bill",
     });
   }
   return out;
@@ -103,6 +131,7 @@ export function collectPlannerEvents(entries: PlannerEntry[]): PlannerEvent[] {
     else if (entry.pageType === "medical-records") {
       out.push(...eventsFromCalendarMap(entry, "medical_calendar", "Medical: "));
     } else if (entry.pageType === "important-dates") out.push(...eventsFromImportantDates(entry));
+    else if (entry.pageType === "budget-monthly") out.push(...eventsFromBills(entry));
   }
   const seen = new Set<string>();
   return out
@@ -123,6 +152,44 @@ function fold(line: string): string {
   }
   parts.push(rest);
   return parts.join("\r\n ");
+}
+
+
+/** Bill "Due" cells are free text: "15", "15th", "3/15" or "2026-03-15". */
+function billDate(raw: string, mi: number | null, year: number): string {
+  const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (iso) return `${iso[1]}${iso[2]}${iso[3]}`;
+  const y = Number.isFinite(year) && year > 1000 ? year : new Date().getFullYear();
+  const md = raw.match(/^(\d{1,2})[/-](\d{1,2})/);
+  if (md) return ymd(y, Number(md[1]) - 1, Number(md[2]));
+  const d = raw.match(/^(\d{1,2})/);
+  if (d && mi !== null) {
+    const day = Number(d[1]);
+    if (day >= 1 && day <= 31) return ymd(y, mi, day);
+  }
+  return "";
+}
+
+/** Reminder alarms per kind, relative to the all-day event's midnight start. */
+const ALARMS: Record<string, { trigger: string; label: string }[]> = {
+  bill: [{ trigger: "-PT63H", label: "due in 3 days" }, { trigger: "PT9H", label: "due today" }],
+  celebration: [{ trigger: "-PT15H", label: "tomorrow" }, { trigger: "PT9H", label: "today" }],
+  medical: [{ trigger: "-PT15H", label: "appointment tomorrow" }, { trigger: "PT8H", label: "appointment today" }],
+  note: [{ trigger: "PT9H", label: "today" }],
+};
+
+function alarmLines(kind: string | undefined, title: string): string[] {
+  const out: string[] = [];
+  for (const a of ALARMS[kind ?? "note"] ?? ALARMS.note) {
+    out.push(
+      "BEGIN:VALARM",
+      "ACTION:DISPLAY",
+      `TRIGGER:${a.trigger}`,
+      fold(`DESCRIPTION:${escapeIcs(`${title || "Planner note"} — ${a.label}`)}`),
+      "END:VALARM",
+    );
+  }
+  return out;
 }
 
 function nextDay(date: string): string {
@@ -153,6 +220,7 @@ export function buildIcs(events: PlannerEvent[], calendarName = "Endless Planner
       fold(`SUMMARY:${escapeIcs(e.title || "Planner note")}`),
     );
     if (e.description) lines.push(fold(`DESCRIPTION:${escapeIcs(e.description)}`));
+    lines.push(...alarmLines(e.kind, e.title));
     lines.push("END:VEVENT");
   }
   lines.push("END:VCALENDAR");
