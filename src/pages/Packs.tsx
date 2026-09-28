@@ -64,7 +64,7 @@ export default function Packs() {
         </p>
         <p className="text-center text-xs text-muted-foreground mb-8">
           Covers are a one-time purchase and yours to keep — buying more never changes your
-          $21.97/month membership or its renewal date.
+          $10/month cloud plan or its renewal date.
         </p>
 
 

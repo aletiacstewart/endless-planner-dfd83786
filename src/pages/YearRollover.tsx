@@ -7,6 +7,8 @@ import { loadSettings, saveSettings } from "@/lib/settings";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useEntitlements } from "@/hooks/useEntitlements";
 
 /** Pages that usually carry over to a new year. */
 const CARRY_OVER = new Set([
@@ -16,6 +18,8 @@ const CARRY_OVER = new Set([
 
 export default function YearRollover() {
   const navigate = useNavigate();
+  const { isActive, loading: subLoading } = useSubscription();
+  const { fullAccess, loading: entLoading } = useEntitlements();
   const toYear = Math.max(calendarYear(), getActiveYear());
   const [fromYear, setFromYear] = useState(toYear - 1);
   const [all, setAll] = useState<PlannerEntry[]>([]);
@@ -70,6 +74,22 @@ export default function YearRollover() {
 
   const toggle = (id: string) =>
     setPicked((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
+
+  if (!subLoading && !entLoading && !isActive && !fullAccess) {
+    return (
+      <div className="min-h-screen bg-background px-4 py-8">
+        <div className="max-w-md mx-auto bg-card rounded-2xl shadow-lg p-6 space-y-4 text-center">
+          <h1 className="font-display text-2xl">Your {toYear} planner is ready to unlock</h1>
+          <p className="text-sm text-muted-foreground">
+            New calendar years are part of the $10/month cloud plan, along with backup, restore and sync.
+            Your earlier years stay open and exactly as you left them.
+          </p>
+          <Button className="w-full" onClick={() => navigate("/subscribe")}>Start cloud plan — $10/month</Button>
+          <Button variant="ghost" className="w-full" onClick={() => navigate("/app")}>Back to my planner</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background px-4 py-8">

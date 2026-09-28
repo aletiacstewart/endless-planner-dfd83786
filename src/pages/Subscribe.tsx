@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
-import { PLANNERS } from "@/data/planners";
+import { PLANNERS, CLOUD_PRICE_ID } from "@/data/planners";
+import { useEntitlements } from "@/hooks/useEntitlements";
 import { toast } from "sonner";
 
 const PLANNER = PLANNERS[0];
@@ -14,19 +15,21 @@ export default function Subscribe() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { isActive, loading: subLoading } = useSubscription();
+  const ent = useEntitlements();
+  const ownsPlanner = ent.hasPlanner(PLANNER.id);
   const { openCheckout, checkoutElement, closeCheckout, isOpen } = useStripeCheckout();
 
   useEffect(() => {
-    if (!authLoading && !user) {
+    if ((!authLoading && !user) || (!ent.loading && user && !ownsPlanner)) {
       // New visitors create their account inside the checkout on the planner page.
       navigate(`/planner/${PLANNER.slug}`, { replace: true });
     }
-  }, [user, authLoading, navigate]);
+  }, [user, authLoading, navigate, ent.loading, ownsPlanner]);
 
   const subscribe = () => {
     if (!user?.email) return;
     openCheckout({
-      priceId: PLANNER.priceId,
+      priceId: CLOUD_PRICE_ID,
       quantity: 1,
       customerEmail: user.email,
       userId: user.id,
@@ -58,18 +61,17 @@ export default function Subscribe() {
       </header>
 
       <section className="px-6 py-12 max-w-xl mx-auto">
-        <h1 className="font-display text-3xl text-center mb-2">Endless Planner membership</h1>
-        <p className="text-center text-muted-foreground mb-8">$21.97/month — cancel anytime.</p>
+        <h1 className="font-display text-3xl text-center mb-2">Cloud plan</h1>
+        <p className="text-center text-muted-foreground mb-8">$10/month — cancel anytime. Your planner stays yours either way.</p>
 
         <ul className="space-y-2 mb-8">
           {[
-            `The complete planner — ${PLANNER.pageTypeIds.length} guided pages`,
-            "1 cover with 42 matching page icons of your choice",
-            "180 illustrated stickers + 60 emojis — 240 library pieces total",
             "Automatic cloud backup of everything you write",
+            "Restore on a new phone, tablet or computer",
             "Sync across phone, tablet, and desktop",
             "Two-way Google & Apple calendar sync",
             "Ongoing planner updates & new features",
+            "Each new calendar year (2027, 2028…) with a page-by-page move",
           ].map((f) => (
             <li key={f} className="flex items-start gap-2 text-sm">
               <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
@@ -80,7 +82,7 @@ export default function Subscribe() {
 
         {isActive ? (
           <div className="planner-card text-center space-y-3">
-            <p className="text-sm">Your membership is active.</p>
+            <p className="text-sm">Your cloud plan is active.</p>
             <Button variant="outline" onClick={() => navigate("/settings")}>Manage in Settings</Button>
           </div>
         ) : (
@@ -89,10 +91,10 @@ export default function Subscribe() {
               Signed in as <span className="font-medium">{user?.email}</span>
             </p>
             <Button size="lg" className="w-full" onClick={subscribe}>
-              Start membership — $21.97/month
+              Start cloud plan — $10/month
             </Button>
             <p className="text-xs text-muted-foreground mt-3 text-center">
-              Extra covers are $5 each — 10% off 2–5, 20% off 6 or more.
+              Without it, your planner keeps working on this device, but backup, sync and new years pause.
             </p>
           </>
         )}

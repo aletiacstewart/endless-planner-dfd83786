@@ -108,7 +108,11 @@ Deno.serve(async (req) => {
     const line_items: any[] = [];
 
     const lookupKeys: string[] = [];
+    const ACTIVATION = "curated_planner_activation_onetime";
+    const CLOUD_MONTHLY = "curated_planner_cloud_monthly";
+    const isActivation = priceId === ACTIVATION;
     if (includesPlanner) lookupKeys.push(priceId);
+    if (isActivation) lookupKeys.push(CLOUD_MONTHLY);
     if (packs.length > 0) lookupKeys.push("cover_pack_flat");
 
     const priceList = lookupKeys.length
@@ -123,6 +127,14 @@ Deno.serve(async (req) => {
       if (!setup) throw new Error(`Price not found (${priceId})`);
       isRecurring = setup.type === "recurring";
       line_items.push({ price: setup.id, quantity: quantity || 1 });
+      // Activation ($21.97 today) always starts the $10/month cloud plan with
+      // a 30-day free first period, so renewals begin a month later.
+      if (isActivation) {
+        const cloud = priceByKey.get(CLOUD_MONTHLY);
+        if (!cloud) throw new Error(`Price not found (${CLOUD_MONTHLY})`);
+        line_items.push({ price: cloud.id, quantity: 1 });
+        isRecurring = true;
+      }
     }
 
     // Subscriptions must be tied to a user account.
@@ -158,17 +170,18 @@ Deno.serve(async (req) => {
 
     // A membership checkout grants the planner, the chosen cover, and any extra
     // covers paid for in the same session.
-    const grantedPackIds = isRecurring
+    const grantedPackIds = isActivation
       ? Array.from(new Set([...(chosenCoverId ? [chosenCoverId] : []), ...packs]))
       : packs;
 
 
     const metadata = {
-      planner_id: includesPlanner ? (plannerId || "wellness-journey") : "",
-      includes_planner: includesPlanner ? "true" : "false",
+      planner_id: (isActivation || (includesPlanner && !isRecurring)) ? (plannerId || "wellness-journey") : "",
+      // Only the activation (or a legacy one-time planner price) grants the planner.
+      includes_planner: (isActivation || (includesPlanner && !isRecurring)) ? "true" : "false",
       pack_ids: grantedPackIds.join(","),
       selected_cover_id: chosenCoverId,
-      subscription_price_id: isRecurring ? priceId : "",
+      subscription_price_id: isRecurring ? (isActivation ? CLOUD_MONTHLY : priceId) : "",
       userId: typeof userId === "string" ? userId : "",
     };
 
@@ -180,7 +193,9 @@ Deno.serve(async (req) => {
       ...(customerId ? { customer: customerId } : (customerEmail && { customer_email: customerEmail })),
       ...(discounts && { discounts }),
       metadata,
-      ...(isRecurring && { subscription_data: { metadata } }),
+      ...(isRecurring && {
+        subscription_data: { metadata, ...(isActivation && { trial_period_days: 30 }) },
+      }),
     });
 
     return new Response(JSON.stringify({ clientSecret: session.client_secret }), {

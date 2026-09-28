@@ -19,7 +19,7 @@ interface Data {
   settingsAt: Record<string, string>;
 }
 
-const PRICE = 21.97;
+const PRICE = 10; // $10/month cloud plan (activation $21.97 is one-time)
 const fmt = (d?: string | null) => (d ? new Date(d).toLocaleDateString() : "—");
 const fmtT = (d?: string | null) => (d ? new Date(d).toLocaleString() : "—");
 const coverName = (id: string) => getCover(id)?.name ?? id;

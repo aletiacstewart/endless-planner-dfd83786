@@ -1,29 +1,13 @@
-/**
- * Turns planner calendar pages into calendar events, an .ics file for Apple/Google
- * Calendar, and one-tap "add this to my calendar" links.
- */
-
-import type { PlannerEntry } from "./db";
-
-export type EventKind = "bill" | "celebration" | "medical" | "note";
-
-export interface PlannerEvent {
-  uid: string;
-  /** YYYYMMDD */
-  date: string;
-  title: string;
-  description?: string;
-  /** Drives reminder alarms. */
-  kind?: EventKind;
-}
-
+// Shared planner → calendar event builders (feed + morning digest).
 const MONTHS = [
   "january", "february", "march", "april", "may", "june",
   "july", "august", "september", "october", "november", "december",
 ];
 
-function monthIndex(month: string | undefined): number | null {
-  const m = (month ?? "").trim().toLowerCase();
+const pad = (n: number) => String(n).padStart(2, "0");
+
+function monthIndex(month: unknown): number | null {
+  const m = String(month ?? "").trim().toLowerCase();
   if (!m) return null;
   const byName = MONTHS.findIndex((n) => n.startsWith(m.slice(0, 3)));
   if (byName >= 0) return byName;
@@ -31,66 +15,58 @@ function monthIndex(month: string | undefined): number | null {
   return n >= 1 && n <= 12 ? n - 1 : null;
 }
 
-const pad = (n: number) => String(n).padStart(2, "0");
+const ymd = (year: number, mi: number, day: number) => `${year}${pad(mi + 1)}${pad(day)}`;
 
-function ymd(year: number, monthIdx: number, day: number): string {
-  return `${year}${pad(monthIdx + 1)}${pad(day)}`;
-}
+export type EventKind = "bill" | "celebration" | "medical" | "note";
+export interface Event { uid: string; date: string; title: string; description?: string; kind?: EventKind }
 
-function eventsFromCalendarMap(
-  entry: PlannerEntry,
-  key: string,
-  typePrefix: string,
-): PlannerEvent[] {
-  const v = entry.values as Record<string, unknown>;
-  const map = v[key] as Record<string, string> | undefined;
-  if (!map) return [];
-  const mi = monthIndex(v.month as string);
-  const year = parseInt(String(v.year ?? ""), 10);
+export function fromCalendarMap(id: string, values: Record<string, unknown>, key: string, prefix: string): Event[] {
+  const map = values[key] as Record<string, string> | undefined;
+  if (!map || typeof map !== "object") return [];
+  const mi = monthIndex(values.month);
+  const year = parseInt(String(values.year ?? ""), 10);
   if (mi === null || !Number.isFinite(year) || year < 1000) return [];
-
-  const out: PlannerEvent[] = [];
+  const out: Event[] = [];
   for (const [k, note] of Object.entries(map)) {
     if (!/^\d+$/.test(k)) continue;
-    const text = (note ?? "").trim();
+    const text = String(note ?? "").trim();
     if (!text) continue;
     const day = Number(k);
     if (day < 1 || day > 31) continue;
-    const type = (map[`t${k}`] ?? "").trim();
+    const type = String(map[`t${k}`] ?? "").trim();
     out.push({
-      uid: `${entry.id}-${key}-${k}`,
+      uid: `${id}-${key}-${k}`,
       date: ymd(year, mi, day),
       title: text.split("\n")[0].slice(0, 120),
-      description: [type && `${typePrefix}${type}`, text].filter(Boolean).join("\n"),
-      kind: typePrefix ? "medical" : "note",
+      description: [type && `${prefix}${type}`, text].filter(Boolean).join("\n"),
+      kind: prefix ? "medical" : "note",
     });
   }
   return out;
 }
 
-function eventsFromImportantDates(entry: PlannerEntry): PlannerEvent[] {
-  const v = entry.values as Record<string, unknown>;
-  const grid = v.date_details as Record<string, string> | undefined;
-  if (!grid) return [];
-  const fallbackYear = parseInt(String(v.year ?? ""), 10);
+export function fromImportantDates(id: string, values: Record<string, unknown>): Event[] {
+  const grid = values.date_details as Record<string, string> | undefined;
+  if (!grid || typeof grid !== "object") return [];
+  const fallbackYear = parseInt(String(values.year ?? ""), 10);
   const rows = Math.max(8, Number(grid.__rows ?? "") || 0);
-  const out: PlannerEvent[] = [];
+  const out: Event[] = [];
   for (let r = 1; r <= rows; r += 1) {
-    const who = (grid[`${r}-Name/Activity`] ?? "").trim();
-    const occasion = (grid[`${r}-Occasion`] ?? "").trim();
-    const raw = (grid[`${r}-Date`] ?? "").trim();
+    const who = String(grid[`${r}-Name/Activity`] ?? "").trim();
+    const occasion = String(grid[`${r}-Occasion`] ?? "").trim();
+    const raw = String(grid[`${r}-Date`] ?? "").trim();
     if (!raw || (!who && !occasion)) continue;
-    let date = "";
     const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
     const md = raw.match(/^(\d{1,2})[/-](\d{1,2})$/);
+    let date = "";
     if (iso) date = `${iso[1]}${iso[2]}${iso[3]}`;
     else if (md && Number.isFinite(fallbackYear)) date = ymd(fallbackYear, Number(md[1]) - 1, Number(md[2]));
     if (!date) continue;
     out.push({
-      uid: `${entry.id}-dates-${r}`,
+      uid: `${id}-dates-${r}`,
       date,
       title: [who, occasion].filter(Boolean).join(" — ").slice(0, 120),
-      description: (grid[`${r}-Notes`] ?? "").trim() || undefined,
+      description: String(grid[`${r}-Notes`] ?? "").trim() || undefined,
       kind: "celebration",
     });
   }
@@ -98,14 +74,13 @@ function eventsFromImportantDates(entry: PlannerEntry): PlannerEvent[] {
 }
 
 
-function eventsFromBills(entry: PlannerEntry): PlannerEvent[] {
-  const v = entry.values as Record<string, unknown>;
+export function fromBills(id: string, v: Record<string, unknown>): Event[] {
   const grid = v.fixed as Record<string, string> | undefined;
-  if (!grid) return [];
+  if (!grid || typeof grid !== "object") return [];
   const mi = monthIndex(v.month as string);
   const year = parseInt(String(v.year ?? v.__year ?? ""), 10);
   const rows = Math.max(16, Number(grid.__rows ?? "") || 0);
-  const out: PlannerEvent[] = [];
+  const out: Event[] = [];
   for (let r = 1; r <= rows; r += 1) {
     const bill = (grid[`${r}-Bill`] ?? "").trim();
     const due = (grid[`${r}-Due`] ?? "").trim();
@@ -114,29 +89,13 @@ function eventsFromBills(entry: PlannerEntry): PlannerEvent[] {
     if (!date) continue;
     const amount = (grid[`${r}-Amount`] ?? "").trim();
     out.push({
-      uid: `${entry.id}-bill-${r}`,
+      uid: `${id}-bill-${r}`,
       date,
       title: `Bill due: ${bill}${amount ? ` (${amount})` : ""}`.slice(0, 120),
       kind: "bill",
     });
   }
   return out;
-}
-
-/** Collect every dated item the planner knows about. */
-export function collectPlannerEvents(entries: PlannerEntry[]): PlannerEvent[] {
-  const out: PlannerEvent[] = [];
-  for (const entry of entries) {
-    if (entry.pageType === "monthly-calendar") out.push(...eventsFromCalendarMap(entry, "calendar", ""));
-    else if (entry.pageType === "medical-records") {
-      out.push(...eventsFromCalendarMap(entry, "medical_calendar", "Medical: "));
-    } else if (entry.pageType === "important-dates") out.push(...eventsFromImportantDates(entry));
-    else if (entry.pageType === "budget-monthly") out.push(...eventsFromBills(entry));
-  }
-  const seen = new Set<string>();
-  return out
-    .filter((e) => (seen.has(e.uid) ? false : (seen.add(e.uid), true)))
-    .sort((a, b) => a.date.localeCompare(b.date));
 }
 
 const escapeIcs = (s: string) =>
@@ -197,8 +156,7 @@ function nextDay(date: string): string {
   return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
 }
 
-/** Build an .ics calendar (all-day events) that Apple, Google and Outlook can read. */
-export function buildIcs(events: PlannerEvent[], calendarName = "Endless Planner"): string {
+export function buildIcs(events: Event[]): string {
   const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
   const lines = [
     "BEGIN:VCALENDAR",
@@ -206,7 +164,7 @@ export function buildIcs(events: PlannerEvent[], calendarName = "Endless Planner
     "PRODID:-//Endless Planner//Planner Calendar//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
-    `X-WR-CALNAME:${escapeIcs(calendarName)}`,
+    "X-WR-CALNAME:Endless Planner",
     "X-PUBLISHED-TTL:PT6H",
     "REFRESH-INTERVAL;VALUE=DURATION:PT6H",
   ];
@@ -227,23 +185,21 @@ export function buildIcs(events: PlannerEvent[], calendarName = "Endless Planner
   return lines.join("\r\n");
 }
 
-export function downloadIcs(events: PlannerEvent[], filename = "endless-planner.ics") {
-  const blob = new Blob([buildIcs(events)], { type: "text/calendar;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
+
+/** Every dated event across a user's planner rows (page_type + values). */
+export function collectEvents(rows: { id: string; page_type: string; values: unknown }[]): Event[] {
+  const events: Event[] = [];
+  for (const e of rows) {
+    const values = (e.values ?? {}) as Record<string, unknown>;
+    if (e.page_type === "monthly-calendar") events.push(...fromCalendarMap(e.id, values, "calendar", ""));
+    else if (e.page_type === "medical-records") events.push(...fromCalendarMap(e.id, values, "medical_calendar", "Medical: "));
+    else if (e.page_type === "important-dates") events.push(...fromImportantDates(e.id, values));
+    else if (e.page_type === "budget-monthly") events.push(...fromBills(e.id, values));
+  }
+  const seen = new Set<string>();
+  return events
+    .filter((e) => (seen.has(e.uid) ? false : (seen.add(e.uid), true)))
+    .sort((a, b) => a.date.localeCompare(b.date));
 }
 
-/** One-tap link that opens Google Calendar with a single event ready to save. */
-export function googleCalendarLink(event: PlannerEvent): string {
-  const params = new URLSearchParams({
-    action: "TEMPLATE",
-    text: event.title || "Planner note",
-    dates: `${event.date}/${nextDay(event.date)}`,
-  });
-  if (event.description) params.set("details", event.description);
-  return `https://calendar.google.com/calendar/render?${params.toString()}`;
-}
+export const EVENT_PAGE_TYPES = ["monthly-calendar", "medical-records", "important-dates", "budget-monthly"];

@@ -30,3 +30,5 @@ project_id = "dgwfvvytyfgefckforqk"
   [functions.calendar-feed]
     verify_jwt = false
 
+  [functions.send-morning-digest]
+    verify_jwt = false
