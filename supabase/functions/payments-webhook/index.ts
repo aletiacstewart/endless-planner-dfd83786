@@ -199,6 +199,7 @@ async function upsertSubscription(sub: any, env: StripeEnv) {
 }
 
 const MEMBERSHIP_PLANNER_ID = "wellness-journey";
+const LEGACY_ALL_ACCESS_PRICE = "endless_planner_all_access_monthly";
 const ACTIVE_STATUSES = ["active", "trialing", "past_due", "incomplete"];
 
 /**
@@ -208,6 +209,11 @@ const ACTIVE_STATUSES = ["active", "trialing", "past_due", "incomplete"];
  */
 async function syncPlannerAccess(userId: string | null, sub: any, email: string | null, env: StripeEnv) {
   if (!userId) return;
+  // Only the retired $21.97/month all-access plan ties planner access to the
+  // subscription. The $10/month cloud plan covers backup/sync only — the planner
+  // itself is owned for life after the $21.97 activation.
+  const subPrice = sub.items?.data?.[0]?.price?.lookup_key;
+  if (subPrice && subPrice !== LEGACY_ALL_ACCESS_PRICE) return;
   const supa = getSupabase();
   const periodEnd = sub.items?.data?.[0]?.current_period_end ?? sub.current_period_end;
   const stillInPeriod = periodEnd ? periodEnd * 1000 > Date.now() : false;

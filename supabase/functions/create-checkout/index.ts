@@ -170,7 +170,7 @@ Deno.serve(async (req) => {
 
     // A membership checkout grants the planner, the chosen cover, and any extra
     // covers paid for in the same session.
-    const grantedPackIds = (isActivation || isRecurring)
+    const grantedPackIds = isActivation
       ? Array.from(new Set([...(chosenCoverId ? [chosenCoverId] : []), ...packs]))
       : packs;
 
