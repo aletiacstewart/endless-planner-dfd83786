@@ -29,7 +29,7 @@ export default function ThankYou() {
         if (data.session) {
           setSignedIn(true);
           setMessage(
-            "Your membership is active — the planner is unlocked, every cover you bought is ready, and your work is backed up and syncing on every device.",
+            "Your planner is activated for life, every cover you bought is ready, and your first 30 days of cloud backup, restore and sync are included.",
           );
         } else {
           setMessage(

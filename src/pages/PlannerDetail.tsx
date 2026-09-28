@@ -190,7 +190,8 @@ export default function PlannerDetail() {
             <p className="text-primary/70 text-base md:text-lg leading-relaxed max-w-lg font-light">
               {planner.tagline}. Every cover includes 42 matching page icons. Your planner also
               includes 180 illustrated stickers and 60 emojis — 240 library pieces total. Pick one
-              cover to include, then add more for $5 each — 10% off 2–5, 20% off 6 or more.
+              cover to include with your $21.97 one-time activation, then add more for $5 each —
+              10% off 2–5, 20% off 6 or more. Cloud is included for 30 days, then $10/month.
             </p>
           </div>
 
@@ -235,7 +236,7 @@ export default function PlannerDetail() {
               )}
             </div>
             <span className="bg-primary text-primary-foreground px-6 py-3 rounded-full text-[11px] font-bold uppercase tracking-[0.2em] shadow-lg shadow-primary/20">
-              ${planner.priceUSD.toFixed(2)} · Checkout
+              ${planner.priceUSD.toFixed(2)} once · Checkout
             </span>
           </button>
         </div>
