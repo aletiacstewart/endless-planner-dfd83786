@@ -1,3 +1,4 @@
+import { MorningDigestToggle } from "@/components/calendar/MorningDigestToggle";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, ImageIcon, Download, Upload, Cloud, CloudOff, LogOut, RefreshCw, CreditCard, Loader2, FileDown } from "lucide-react";
@@ -110,6 +111,7 @@ export default function Settings() {
 
         <SubscriptionSection />
 
+        <MorningDigestToggle />
         <CalendarSyncCard />
 
         <BackupSection />
