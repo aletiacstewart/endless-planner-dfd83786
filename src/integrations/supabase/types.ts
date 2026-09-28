@@ -347,6 +347,30 @@ export type Database = {
         }
         Relationships: []
       }
+      reminder_preferences: {
+        Row: {
+          last_digest_date: string | null
+          morning_digest: boolean
+          timezone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          last_digest_date?: string | null
+          morning_digest?: boolean
+          timezone?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          last_digest_date?: string | null
+          morning_digest?: boolean
+          timezone?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           cancel_at_period_end: boolean | null

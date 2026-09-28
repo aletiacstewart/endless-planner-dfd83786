@@ -43,6 +43,13 @@
       "when": 1790297862877,
       "tag": "0005_admin_events",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790557819472,
+      "tag": "0006_reminder_preferences",
+      "breakpoints": true
     }
   ]
 }
