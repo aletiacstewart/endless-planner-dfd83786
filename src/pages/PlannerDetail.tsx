@@ -188,7 +188,7 @@ export default function PlannerDetail() {
               Curate your <i className="font-normal">digital</i> ritual.
             </h1>
             <p className="text-primary/70 text-base md:text-lg leading-relaxed max-w-lg font-light">
-              {planner.tagline}. Every cover includes 42 matching page icons. Your membership also
+              {planner.tagline}. Every cover includes 42 matching page icons. Your planner also
               includes 180 illustrated stickers and 60 emojis — 240 library pieces total. Pick one
               cover to include, then add more for $5 each — 10% off 2–5, 20% off 6 or more.
             </p>
@@ -235,7 +235,7 @@ export default function PlannerDetail() {
               )}
             </div>
             <span className="bg-primary text-primary-foreground px-6 py-3 rounded-full text-[11px] font-bold uppercase tracking-[0.2em] shadow-lg shadow-primary/20">
-              ${planner.priceUSD.toFixed(2)}/mo · Checkout
+              ${planner.priceUSD.toFixed(2)} · Checkout
             </span>
           </button>
         </div>
@@ -320,7 +320,8 @@ export default function PlannerDetail() {
       <div className="md:hidden fixed inset-x-0 bottom-0 bg-card border-t border-primary/10 p-3 flex items-center justify-between gap-3 z-40 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         <div>
           <div className="text-[10px] uppercase tracking-widest text-primary/60 font-bold">Total</div>
-          <div className="font-storefront text-lg text-primary">${planner.priceUSD.toFixed(2)}/mo</div>
+          <div className="font-storefront text-lg text-primary">${planner.priceUSD.toFixed(2)}</div>
+          <div className="text-[10px] text-primary/60">then $10/mo after 30 days</div>
         </div>
         <button
           onClick={scrollToCart}

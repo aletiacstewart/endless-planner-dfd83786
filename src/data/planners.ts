@@ -9,9 +9,9 @@ export interface PlannerDef {
   tagline: string;
   description: string;
   heroImage: string;
-  /** Monthly membership price — planner + cloud backup, sync & calendar sync. */
+  /** One-time activation price — planner for life + 1 cover + first 30 days of cloud. */
   priceUSD: number;
-  /** Stripe lookup key for the monthly membership price. */
+  /** Stripe lookup key for the activation price (checkout adds the $10/month cloud plan). */
   priceId: string;
   pageTypeIds: string[];
   highlights: string[];
@@ -25,10 +25,10 @@ export const PLANNERS: PlannerDef[] = [
     name: "Curated Planner",
     tagline: "One planner for your whole life — health, home, money, and mind.",
     description:
-      "Track habits, health, goals, meals, workouts, budget, home, and mental wellness in one beautifully organized planner. $21.97/month includes the planner, cloud backup, sync on every device and two-way calendar sync, plus 1 cover with 42 matching page icons and access to 180 illustrated stickers and 60 emojis. Add more covers for $5 each — 10% off 2–5, 20% off 6 or more.",
+      "Track habits, health, goals, meals, workouts, budget, home, and mental wellness in one beautifully organized planner. A one-time $21.97 activation gives you the planner to keep, plus 1 cover with 42 matching page icons and access to 180 illustrated stickers and 60 emojis. Cloud backup, restore, sync on every device, updates and new calendar years are $10/month after your first 30 days free. Add more covers for $5 each — 10% off 2–5, 20% off 6 or more.",
     heroImage,
     priceUSD: 21.97,
-    priceId: "endless_planner_all_access_monthly",
+    priceId: "curated_planner_activation_onetime",
     pageTypeIds: PAGE_TYPES.map((p) => p.id),
     highlights: [
       "42 guided pages — calendars, journal, habits, health, sleep, goals, budget, home & mind",
@@ -37,7 +37,7 @@ export const PLANNERS: PlannerDef[] = [
       "Mental health: mood journal, therapy prep & coping toolkit",
       "Includes 1 cover with 42 matching page icons — add more for $5 each",
       "Shared library: 180 illustrated stickers + 60 emojis (240 pieces total)",
-      "Cloud backup, sync on every device & two-way calendar sync included",
+      "First 30 days of cloud backup & sync included, then $10/month",
     ],
     available: true,
   },
@@ -46,3 +46,7 @@ export const PLANNERS: PlannerDef[] = [
 export function getPlanner(idOrSlug: string): PlannerDef | undefined {
   return PLANNERS.find((p) => p.id === idOrSlug || p.slug === idOrSlug);
 }
+
+/** $10/month cloud plan: backup, restore, sync, updates and new calendar years. */
+export const CLOUD_PRICE_ID = "curated_planner_cloud_monthly";
+export const CLOUD_PRICE_USD = 10;

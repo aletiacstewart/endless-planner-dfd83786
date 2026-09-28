@@ -44,18 +44,18 @@ function MembershipLocked() {
       <div className="planner-card max-w-md w-full text-center space-y-4">
         <h1 className="font-display text-2xl">Your planner is waiting</h1>
         <p className="text-sm text-muted-foreground">
-          The Endless Planner membership is $21.97 a month and includes the whole planner, cloud
-          backup, syncing on every device and two-way calendar sync.
+          Activate your planner once for $21.97 — the whole planner and 1 cover are yours to keep,
+          with 30 days of cloud backup and sync included (then $10/month).
         </p>
         <p className="text-xs text-muted-foreground">
           Everything you've already written, your photos and your settings are safely stored — they
-          come straight back the moment your membership is active again.
+          are safe on this device and in your cloud backup.
         </p>
         <a
           href="/subscribe"
           className="inline-flex items-center justify-center w-full h-11 rounded-md bg-primary text-primary-foreground text-sm font-medium"
         >
-          Start my membership — $21.97/month
+          Activate my planner — $21.97
         </a>
         <a href="/" className="block text-xs underline text-muted-foreground">
           Back to home

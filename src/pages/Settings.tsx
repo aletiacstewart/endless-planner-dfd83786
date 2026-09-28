@@ -365,13 +365,13 @@ function SubscriptionSection() {
       <section className="planner-card space-y-3">
         <div className="flex items-center gap-2">
           <CreditCard className="w-5 h-5 text-muted-foreground" />
-          <h2 className="font-display text-xl">Planner membership</h2>
+          <h2 className="font-display text-xl">Cloud plan</h2>
         </div>
         <p className="text-xs text-muted-foreground">
-          Your $21.97/month membership keeps the planner open, backed up in the cloud, synced on every device and connected to your calendar.
+          $10/month keeps your planner backed up, restorable, synced on every device, updated, and ready for each new calendar year.
         </p>
         <Button className="w-full" onClick={() => navigate("/subscribe")}>
-          Start my membership — $21.97/month
+          Start cloud plan — $10/month
         </Button>
       </section>
     );
@@ -379,7 +379,7 @@ function SubscriptionSection() {
 
   const statusLabel: Record<string, string> = {
     active: "Active",
-    trialing: "Trial",
+    trialing: "Included (first 30 days)",
     past_due: "Payment past due",
     canceled: "Canceled",
     incomplete: "Incomplete",
@@ -391,7 +391,7 @@ function SubscriptionSection() {
     <section className="planner-card space-y-3">
       <div className="flex items-center gap-2">
         <CreditCard className="w-5 h-5 text-primary" />
-        <h2 className="font-display text-xl">Planner membership</h2>
+        <h2 className="font-display text-xl">Cloud plan</h2>
       </div>
       <div className="text-sm space-y-1">
         <p>
@@ -412,7 +412,7 @@ function SubscriptionSection() {
         )}
         {subscription.status === "past_due" && (
           <p className="text-xs text-destructive">
-            Update your card in the billing portal to keep your planner open.
+            Update your card in the billing portal to keep cloud backup and sync running.
           </p>
         )}
       </div>
