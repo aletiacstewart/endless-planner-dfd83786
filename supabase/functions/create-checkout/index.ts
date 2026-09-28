@@ -1,5 +1,19 @@
-const corsHeaders = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type" };
+import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { z } from "npm:zod@3.25.76";
 import { type StripeEnv, createStripeClient } from "../_shared/stripe.ts";
+
+const IdSchema = z.string().regex(/^[a-zA-Z0-9_-]+$/);
+const CheckoutBodySchema = z.object({
+  priceId: IdSchema.optional(),
+  quantity: z.number().int().min(1).max(1).optional(),
+  customerEmail: z.string().email().optional(),
+  returnUrl: z.string().url(),
+  environment: z.enum(["sandbox", "live"]),
+  plannerId: IdSchema.optional(),
+  packIds: z.array(IdSchema).max(100).optional(),
+  selectedCoverId: IdSchema.optional(),
+  userId: IdSchema.optional(),
+});
 
 // Look up (or create) a Stripe Customer with metadata.userId so subsequent
 // reads (portal, dashboards, customers.search) resolve reliably.
@@ -77,7 +91,13 @@ Deno.serve(async (req) => {
     return new Response("Method not allowed", { status: 405, headers: corsHeaders });
   }
   try {
-    const body = await req.json();
+    const parsed = CheckoutBodySchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: parsed.error.flatten().fieldErrors }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     const {
       priceId,
       quantity,
@@ -88,17 +108,10 @@ Deno.serve(async (req) => {
       packIds,
       selectedCoverId,
       userId,
-    } = body;
-
-    if (!returnUrl) throw new Error("returnUrl required");
-    if (environment !== "sandbox" && environment !== "live") throw new Error("Invalid environment");
+    } = parsed.data;
 
     const includesPlanner = Boolean(priceId);
-    if (includesPlanner && !/^[a-zA-Z0-9_-]+$/.test(priceId)) throw new Error("Invalid priceId");
-
-    const packs: string[] = Array.isArray(packIds)
-      ? packIds.filter((p) => typeof p === "string" && /^[a-zA-Z0-9_-]+$/.test(p))
-      : [];
+    const packs = packIds ?? [];
 
     if (!includesPlanner && packs.length === 0) {
       throw new Error("Cart is empty");
@@ -190,9 +203,13 @@ Deno.serve(async (req) => {
       mode: isRecurring ? "subscription" : "payment",
       ui_mode: "embedded_page",
       return_url: returnUrl,
+      managed_payments: { enabled: true },
       ...(customerId ? { customer: customerId } : (customerEmail && { customer_email: customerEmail })),
       ...(discounts && { discounts }),
       metadata,
+      ...(!isRecurring && {
+        payment_intent_data: { description: packs.length > 0 ? "Curated Planner cover packs" : "Curated Planner" },
+      }),
       ...(isRecurring && {
         subscription_data: { metadata, ...(isActivation && { trial_period_days: 30 }) },
       }),

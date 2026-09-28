@@ -81,14 +81,14 @@ export function CartSummary({
         </p>
         <h3 className="font-storefront text-2xl text-primary">Cart summary</h3>
         <p className="text-[11px] text-primary/60 mt-1 font-light">
-          Monthly membership · cancel anytime
+          One-time planner activation + optional cloud plan
         </p>
       </div>
 
       {includedCover ? (
         <div className="rounded-sm border border-primary/30 bg-primary/5 p-3 space-y-2">
           <p className="text-[10px] uppercase tracking-[0.25em] font-bold text-primary">
-            Included with your membership
+            Included with your activation
           </p>
           <div className="flex gap-3 items-center">
             <div className="relative w-16 h-16 rounded-sm overflow-hidden flex-shrink-0 border border-primary/20">
@@ -111,7 +111,7 @@ export function CartSummary({
       ) : (
         <div className="rounded-sm border border-dashed border-primary/30 p-5 text-center space-y-1">
           <p className="text-[10px] uppercase tracking-[0.25em] font-bold text-primary/60">
-            Included with your membership
+            Included with your activation
           </p>
           <p className="text-sm font-storefront text-lg text-primary">Choose your cover</p>
           <p className="text-[11px] text-primary/60 font-light">
@@ -133,7 +133,7 @@ export function CartSummary({
             )}
           </div>
           <div className="text-primary whitespace-nowrap">
-            ${activationPriceUSD.toFixed(2)}/mo
+            ${activationPriceUSD.toFixed(2)} once
           </div>
         </div>
 
@@ -178,8 +178,8 @@ export function CartSummary({
 
         <p className="text-[11px] text-primary/60 text-center font-light">
           {extraPackIds.length > 0
-            ? `Membership $${activationPriceUSD.toFixed(2)} + covers $${packTotal.toFixed(2)} one-time, charged together. Then $${activationPriceUSD.toFixed(2)}/month — covers never recur.`
-            : `Then $${activationPriceUSD.toFixed(2)}/month · cancel anytime.`}
+            ? `Activation $${activationPriceUSD.toFixed(2)} + covers $${packTotal.toFixed(2)}, charged today. Cloud is free for 30 days, then $10/month — covers never recur.`
+            : "Cloud backup, restore, sync, updates and new calendar years are free for 30 days, then $10/month. Cancel anytime; your planner stays yours."}
         </p>
 
 
@@ -277,11 +277,11 @@ export function CartSummary({
         disabled={disabled || busy || !emailValid || !includedCover || (needsAccount && !accountValid)}
       >
         {includedCover
-          ? `Start membership — $${activationPriceUSD.toFixed(2)}/mo`
+          ? `Activate planner — $${activationPriceUSD.toFixed(2)} today`
           : "Choose a cover to continue"}
       </Button>
       <p className="text-[11px] text-primary/60 text-center inline-flex items-center justify-center gap-1 w-full font-light">
-        <Cloud className="w-3 h-3" /> Cloud backup, every-device sync & calendar sync included
+        <Cloud className="w-3 h-3" /> First 30 days of cloud backup, restore and sync included
       </p>
     </aside>
   );

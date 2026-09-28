@@ -1,1 +1,2 @@
 Use each planner's `slug` for customer-facing URLs and keep its `id` for checkout and entitlements, so renaming a page cannot break purchases or access.
+Checkout uses one Stripe subscription session containing the $21.97 one-time activation and the $10/month cloud price with a 30-day trial, so activation charges now while cloud renews later.

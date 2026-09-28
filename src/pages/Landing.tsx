@@ -84,7 +84,7 @@ export default function Landing() {
             </span>
             <Button asChild size="lg" className="rounded-full px-6 md:px-8 text-[11px] uppercase tracking-[0.2em] font-bold">
               <Link to={`/planner/${flagshipPlanner.slug}`}>
-                ${flagshipPlanner.priceUSD} · Start
+                ${flagshipPlanner.priceUSD} once · Start
               </Link>
             </Button>
           </div>
@@ -150,7 +150,7 @@ export default function Landing() {
                 restore, syncing on every device, updates and new calendar years — first 30 days free.
               </p>
               <Button asChild variant="secondary" className="w-full rounded-none text-[10px] uppercase tracking-[0.2em] font-bold h-11">
-                <Link to="/subscribe">
+                <Link to={`/planner/${flagshipPlanner.slug}`}>
                   <Cloud className="w-3.5 h-3.5 mr-2" /> Activate my planner
                 </Link>
               </Button>
@@ -168,7 +168,7 @@ export default function Landing() {
           {[
             { n: "01", t: "Pick your covers", d: "A one-time $21.97 activation gets you the planner and 1 cover of your choice. Add more for $5 each — 10% off 2–5 covers, 20% off 6 or more." },
             { n: "02", t: "Install by email", d: "We'll email your private install link — add it to your phone, tablet, or desktop as an app." },
-            { n: "03", t: "Sync everywhere", d: "Your first 30 days of cloud backup and sync are included, then $10/month. Works offline too." },
+            { n: "03", t: "Keep it current", d: "Your first 30 days of cloud backup, restore and multi-device sync are included. Continue for $10/month to receive ongoing updates and each new calendar year." },
           ].map((s) => (
             <div key={s.n} className="border-t border-primary/20 pt-6">
               <div className="font-storefront text-4xl text-primary/40 mb-4">{s.n}</div>
@@ -242,7 +242,7 @@ export default function Landing() {
         <div className="space-y-6">
           {[
             { q: "Where is my data stored?", a: "On your device and backed up in the cloud, so you can restore on any device. Export a JSON backup any time from Settings." },
-            { q: "What if I get a new phone?", a: "Sign in on the new device and your planner restores automatically — your $10/month cloud plan includes backup and sync." },
+            { q: "What if I get a new phone?", a: "With an active $10/month cloud plan, sign in on the new device and your planner restores automatically. You can also export a personal backup from Settings." },
             { q: "How does pricing work?", a: "$21.97 one time gets you the planner to keep, 1 cover with 42 matching page icons, plus the shared library of 180 illustrated stickers and 60 emojis (240 pieces total), plus 30 days of cloud. After that, cloud backup, restore, sync, updates and new calendar years are $10/month — cancel anytime. Extra covers are $5 each — 10% off 2–5, 20% off 6 or more." },
             { q: "Which devices are supported?", a: "Anything with a modern browser — iPhone, iPad, Android, Mac, Windows, Linux. Install as an app via 'Add to Home Screen'." },
             { q: "Refunds?", a: "Cancel the $10/month cloud plan any time — your planner stays yours and your writing stays on your device; cloud sync and new calendar years pause until you come back. Extra cover purchases are non-refundable. Reach out if something isn't working and we'll make it right." },

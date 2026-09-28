@@ -33,6 +33,7 @@ import { purgeLegacyUnlockKeys } from "./lib/unlock";
 import { PLANNERS } from "./data/planners";
 import { initSync } from "./lib/sync";
 import { PlannerCoverProvider } from "./contexts/PlannerCoverContext";
+import { PaymentTestModeBanner } from "./components/PaymentTestModeBanner";
 
 const queryClient = new QueryClient();
 
@@ -128,6 +129,7 @@ const App = () => {
       <Toaster />
       <Sonner />
       <BuildStamp />
+      <PaymentTestModeBanner />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
