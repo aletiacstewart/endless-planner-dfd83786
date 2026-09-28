@@ -5,12 +5,16 @@
 
 import type { PlannerEntry } from "./db";
 
+export type EventKind = "bill" | "celebration" | "medical" | "note";
+
 export interface PlannerEvent {
   uid: string;
   /** YYYYMMDD */
   date: string;
   title: string;
   description?: string;
+  /** Drives reminder alarms. */
+  kind?: EventKind;
 }
 
 const MONTHS = [

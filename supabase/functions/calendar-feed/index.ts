@@ -25,7 +25,8 @@ function monthIndex(month: unknown): number | null {
 
 const ymd = (year: number, mi: number, day: number) => `${year}${pad(mi + 1)}${pad(day)}`;
 
-interface Event { uid: string; date: string; title: string; description?: string }
+type EventKind = "bill" | "celebration" | "medical" | "note";
+interface Event { uid: string; date: string; title: string; description?: string; kind?: EventKind }
 
 function fromCalendarMap(id: string, values: Record<string, unknown>, key: string, prefix: string): Event[] {
   const map = values[key] as Record<string, string> | undefined;
