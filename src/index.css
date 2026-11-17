@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&family=Caveat:wght@500;600&family=Playfair+Display:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&family=Caveat:wght@500;600&family=Playfair+Display:wght@500;600;700&family=Nunito:wght@400;600;700&family=Work+Sans:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -317,4 +317,46 @@
 [data-entry-styled] .richtext em,
 [data-entry-styled] .richtext u {
   font-family: inherit;
+}
+
+
+/* Branded By theme — matches brandedbywebdesign.com.
+   Scoped so planner cover themes stay untouched. */
+@layer base {
+  .theme-brandedby {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 4%;
+    --primary: 278 36% 54%;            /* #945EB4 amethyst */
+    --primary-foreground: 0 0% 100%;
+    --primary-soft: 278 40% 95%;
+    --secondary: 171 60% 53%;          /* #41D0BB teal */
+    --secondary-foreground: 0 0% 100%;
+    --accent: 205 71% 32%;             /* #185B8B ocean blue */
+    --accent-foreground: 0 0% 100%;
+    --accent-soft: 205 50% 94%;
+    --muted: 40 30% 97%;
+    --muted-foreground: 0 0% 35%;
+    --border: 278 15% 90%;
+    --input: 278 15% 88%;
+    --ring: 278 36% 54%;
+    --brand-peach: 29 100% 75%;        /* #FFBC7D */
+    --radius: 0.5rem;
+    --gradient-sage: linear-gradient(135deg, hsl(278 36% 54%), hsl(205 71% 32%));
+    --gradient-brand: linear-gradient(135deg, hsl(278 36% 54%) 0%, hsl(205 71% 32%) 55%, hsl(171 60% 53%) 100%);
+    --shadow-soft: 0 12px 40px -20px hsl(278 36% 30% / 0.3);
+    --shadow-card: 0 4px 24px -10px hsl(205 71% 20% / 0.15);
+    font-family: 'Work Sans', system-ui, sans-serif;
+    letter-spacing: 0.01em;
+  }
+  .theme-brandedby h1, .theme-brandedby h2, .theme-brandedby h3, .theme-brandedby h4,
+  .theme-brandedby .font-display, .theme-brandedby .font-storefront, .theme-brandedby .font-storefront-body {
+    font-family: 'Work Sans', system-ui, sans-serif;
+    letter-spacing: 0.09em;
+  }
+  .theme-brandedby h1 { font-weight: 300; }
+  .theme-brandedby h2, .theme-brandedby h3 { font-weight: 600; }
 }

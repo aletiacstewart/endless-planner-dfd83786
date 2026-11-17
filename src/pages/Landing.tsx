@@ -39,7 +39,7 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-background font-storefront-body">
+    <div className="theme-brandedby min-h-screen bg-background font-storefront-body">
 
       {/* Header */}
       <header className="px-6 md:px-12 py-5 flex items-center justify-between border-b border-primary/10">
