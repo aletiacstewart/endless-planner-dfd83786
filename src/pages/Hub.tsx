@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { BrandedByHeader, BrandedByFooter } from "@/components/brandedby/BrandedByHeader";
 import { BRANDED_BY_APPS, BRAND_PROCESS } from "@/data/brandedByApps";
+import { BusinessPanel } from "@/components/brandedby/BusinessPanel";
 
 export default function Hub() {
   const apps = BRANDED_BY_APPS.filter((a) => a.id !== "hub");
@@ -16,7 +17,9 @@ export default function Hub() {
           <span className="rounded-full bg-primary px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground">Founding 100</span>
         </div>
 
-        <section className="mt-10 rounded-xl border border-border bg-card p-6">
+        <section className="mt-10"><BusinessPanel /></section>
+
+        <section className="mt-6 rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Launch progress</p>
           <ol className="mt-4 grid gap-3 md:grid-cols-4">
             {BRAND_PROCESS.map((p, i) => (

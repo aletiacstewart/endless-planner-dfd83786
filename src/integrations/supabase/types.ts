@@ -68,6 +68,82 @@ export type Database = {
         }
         Relationships: []
       }
+      booth_items: {
+        Row: {
+          created_at: string
+          id: string
+          org_id: string
+          price_cents: number
+          sku: string
+          stock_qty: number
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          org_id: string
+          price_cents: number
+          sku: string
+          stock_qty?: number
+          title: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          org_id?: string
+          price_cents?: number
+          sku?: string
+          stock_qty?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booth_items_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brand_kits: {
+        Row: {
+          accent_color: string
+          id: string
+          logo_url: string | null
+          org_id: string
+          primary_color: string
+          surface_color: string
+          updated_at: string
+        }
+        Insert: {
+          accent_color?: string
+          id?: string
+          logo_url?: string | null
+          org_id: string
+          primary_color?: string
+          surface_color?: string
+          updated_at?: string
+        }
+        Update: {
+          accent_color?: string
+          id?: string
+          logo_url?: string | null
+          org_id?: string
+          primary_color?: string
+          surface_color?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_kits_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       calendar_feed_tokens: {
         Row: {
           created_at: string
@@ -85,6 +161,41 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      care_tickets: {
+        Row: {
+          created_at: string
+          id: string
+          org_id: string
+          priority: string
+          status: string
+          subject: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          org_id: string
+          priority?: string
+          status?: string
+          subject: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          org_id?: string
+          priority?: string
+          status?: string
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "care_tickets_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       device_activations: {
         Row: {
@@ -218,6 +329,71 @@ export type Database = {
           last_sync_at?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      organization_members: {
+        Row: {
+          created_at: string
+          id: string
+          org_id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          org_id: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          org_id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_members_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          plan_tier: string
+          promo_code: string | null
+          slug: string
+          stripe_customer_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+          plan_tier?: string
+          promo_code?: string | null
+          slug: string
+          stripe_customer_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          plan_tier?: string
+          promo_code?: string | null
+          slug?: string
+          stripe_customer_id?: string | null
         }
         Relationships: []
       }
@@ -370,6 +546,79 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      signal_campaigns: {
+        Row: {
+          channel: string
+          created_at: string
+          id: string
+          name: string
+          org_id: string
+          status: string
+        }
+        Insert: {
+          channel?: string
+          created_at?: string
+          id?: string
+          name: string
+          org_id: string
+          status?: string
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          id?: string
+          name?: string
+          org_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "signal_campaigns_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stash_assets: {
+        Row: {
+          category: string
+          created_at: string
+          file_url: string
+          id: string
+          org_id: string
+          size_bytes: number
+          title: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          file_url: string
+          id?: string
+          org_id: string
+          size_bytes?: number
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          file_url?: string
+          id?: string
+          org_id?: string
+          size_bytes?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stash_assets_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscriptions: {
         Row: {
@@ -547,6 +796,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_organization: {
+        Args: { _name: string; _slug: string }
+        Returns: string
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -567,6 +820,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_org_manager: { Args: { _org_id: string }; Returns: boolean }
+      is_org_member: { Args: { _org_id: string }; Returns: boolean }
       link_user_purchases: { Args: never; Returns: Json }
       move_to_dlq: {
         Args: {
