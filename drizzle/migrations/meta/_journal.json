@@ -64,6 +64,13 @@
       "when": 1794947387532,
       "tag": "0008_booth_sales",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794948058021,
+      "tag": "0009_stash_storage_policies",
+      "breakpoints": true
     }
   ]
 }

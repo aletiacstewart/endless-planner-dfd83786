@@ -17,6 +17,7 @@ import BrandedByHome from "./pages/BrandedByHome.tsx";
 import Hub from "./pages/Hub.tsx";
 import Booth from "./pages/Booth.tsx";
 import Snap from "./pages/Snap.tsx";
+import Stash from "./pages/Stash";
 import Unlock from "./pages/Unlock.tsx";
 import ThankYou from "./pages/ThankYou.tsx";
 import Unsubscribe from "./pages/Unsubscribe.tsx";
@@ -141,6 +142,7 @@ const App = () => {
           <Route path="/hub" element={<Hub />} />
           <Route path="/booth" element={<Booth />} />
           <Route path="/snap" element={<Snap />} />
+          <Route path="/stash" element={<Stash />} />
           <Route path="/planner/:plannerId" element={<PlannerDetail />} />
           <Route path="/packs" element={<Packs />} />
           <Route path="/subscribe" element={<Subscribe />} />

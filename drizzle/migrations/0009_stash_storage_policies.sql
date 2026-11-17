@@ -1,0 +1,3 @@
+CREATE POLICY "Stash members read" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'stash' AND public.is_org_member(((storage.foldername(name))[1])::uuid));
+CREATE POLICY "Stash members upload" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'stash' AND public.is_org_member(((storage.foldername(name))[1])::uuid));
+CREATE POLICY "Stash managers delete" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'stash' AND public.is_org_manager(((storage.foldername(name))[1])::uuid));

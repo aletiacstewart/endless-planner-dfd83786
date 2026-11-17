@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { uploadToStash } from "@/lib/stash";
 
 const STYLES = [
   { id: "studio", label: "Studio", hint: "Clean backdrop, soft light" },
@@ -62,6 +63,15 @@ export default function Snap() {
       return toast.error(msg);
     }
     setResult(`data:image/png;base64,${data.imageBase64}`);
+  };
+
+  const saveToStash = async () => {
+    if (!result || !activeId) return;
+    try {
+      const blob = await (await fetch(result)).blob();
+      await uploadToStash(activeId, new File([blob], `snap-${style}.png`, { type: "image/png" }), `Snap ${style} photo`, "photos");
+      toast.success("Saved to Stash");
+    } catch { toast.error("Couldn't save to Stash."); }
   };
 
   const body = () => {
@@ -126,6 +136,7 @@ export default function Snap() {
               <img src={result} alt="Your new product photo" className="max-h-[560px] rounded-lg object-contain shadow-[var(--shadow-card)]" />
               <div className="mt-4 flex gap-3">
                 <Button asChild className="h-11"><a href={result} download={`snap-${style}.png`}><Download className="mr-2 h-4 w-4" /> Download</a></Button>
+                <Button variant="secondary" className="h-11" onClick={saveToStash}>Save to Stash</Button>
                 <Button variant="outline" className="h-11" onClick={create} disabled={busy}>Try again</Button>
               </div>
             </>
