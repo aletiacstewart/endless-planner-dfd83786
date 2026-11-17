@@ -636,30 +636,86 @@ export type Database = {
         Row: {
           channel: string
           created_at: string
+          email_body: string | null
           id: string
           name: string
           org_id: string
+          sms_body: string | null
           status: string
+          subject: string | null
+          updated_at: string
         }
         Insert: {
           channel?: string
           created_at?: string
+          email_body?: string | null
           id?: string
           name: string
           org_id: string
+          sms_body?: string | null
           status?: string
+          subject?: string | null
+          updated_at?: string
         }
         Update: {
           channel?: string
           created_at?: string
+          email_body?: string | null
           id?: string
           name?: string
           org_id?: string
+          sms_body?: string | null
           status?: string
+          subject?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
             foreignKeyName: "signal_campaigns_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      signal_contacts: {
+        Row: {
+          created_at: string
+          email: string | null
+          email_opt_in: boolean
+          id: string
+          name: string | null
+          org_id: string
+          phone: string | null
+          sms_opt_in: boolean
+          source: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          email_opt_in?: boolean
+          id?: string
+          name?: string | null
+          org_id: string
+          phone?: string | null
+          sms_opt_in?: boolean
+          source?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          email_opt_in?: boolean
+          id?: string
+          name?: string | null
+          org_id?: string
+          phone?: string | null
+          sms_opt_in?: boolean
+          source?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "signal_contacts_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
