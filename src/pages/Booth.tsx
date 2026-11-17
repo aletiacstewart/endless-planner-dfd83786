@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { getStripe, getStripeEnvironment, isPaymentsConfigured } from "@/lib/stripe";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { Minus, Plus, Trash2, Store } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { BrandedByHeader, BrandedByFooter } from "@/components/brandedby/BrandedByHeader";
@@ -22,6 +26,9 @@ export default function Booth() {
   const [pay, setPay] = useState<"card" | "cash" | "other">("card");
   const [form, setForm] = useState({ title: "", sku: "", price: "", stock: "" });
   const [busy, setBusy] = useState(false);
+  const [cardReady, setCardReady] = useState(false);
+  const [cardOpen, setCardOpen] = useState(false);
+  const [params, setParams] = useSearchParams();
 
   const load = useCallback(async () => {
     if (!activeId) return;
@@ -33,6 +40,42 @@ export default function Booth() {
     setSales((s ?? []) as unknown as Sale[]);
   }, [activeId]);
   useEffect(() => { setCart([]); load(); }, [load]);
+
+  useEffect(() => {
+    if (!activeId) return;
+    supabase.from("organizations").select("stripe_charges_enabled").eq("id", activeId).single()
+      .then(({ data }) => setCardReady(Boolean(data?.stripe_charges_enabled)));
+  }, [activeId]);
+
+  // Back from a card payment: confirm it and show the sale.
+  useEffect(() => {
+    const paid = params.get("paid");
+    if (!paid || !signedIn) return;
+    setParams({}, { replace: true });
+    supabase.functions.invoke("booth-card-finalize", { body: { sessionId: paid, environment: getStripeEnvironment() } })
+      .then(({ data, error }) => {
+        if (error || data?.status !== "paid") toast.error("The card payment didn't go through.");
+        else toast.success(`Card payment received — ${formatCents(data.total ?? 0)}`);
+        load();
+      });
+  }, [params, signedIn, setParams, load]);
+
+  const fetchClientSecret = useCallback(async () => {
+    const { data, error } = await supabase.functions.invoke("booth-card-checkout", {
+      body: {
+        orgId: activeId, environment: getStripeEnvironment(),
+        items: cart.map((l) => ({ item_id: l.item_id, qty: l.qty })),
+        returnUrl: `${window.location.origin}/booth?paid={CHECKOUT_SESSION_ID}`,
+      },
+    });
+    if (error || !data?.clientSecret) {
+      const msg = (await (error as any)?.context?.json?.().catch(() => null))?.error ?? data?.error ?? "Couldn't start the card payment.";
+      toast.error(msg);
+      setCardOpen(false);
+      throw new Error(msg);
+    }
+    return data.clientSecret as string;
+  }, [activeId, cart]);
 
   const addProduct = async () => {
     const price = parseDollars(form.price);
@@ -59,6 +102,12 @@ export default function Booth() {
   };
 
   const checkout = async () => {
+    if (pay === "card") {
+      if (!isPaymentsConfigured()) return toast.error("Card payments aren't set up yet.");
+      if (!cardReady) return toast.error("Connect Stripe on the Hub to take card payments.");
+      if (cartTotalCents(cart) < 50) return toast.error("Card sales must be at least $0.50.");
+      return setCardOpen(true);
+    }
     setBusy(true);
     const { error } = await supabase.rpc("record_booth_sale", {
       _org_id: activeId!, _payment_method: pay,
@@ -73,6 +122,7 @@ export default function Booth() {
 
   const shell = (body: React.ReactNode) => (
     <div className="theme-brandedby min-h-screen bg-muted text-foreground">
+      <PaymentTestModeBanner />
       <BrandedByHeader />
       <main className="mx-auto max-w-7xl px-6 py-10">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
@@ -153,8 +203,21 @@ export default function Booth() {
               ))}
             </div>
             <Button variant="secondary" className="mt-4 h-12 w-full uppercase tracking-[0.15em]" disabled={!cart.length || busy} onClick={checkout}>
-              Complete sale
+              {pay === "card" ? "Charge card" : "Complete sale"}
             </Button>
+            {pay === "card" && !cardReady && (
+              <p className="mt-3 text-xs text-muted-foreground">To charge cards, <Link to="/hub" className="underline">connect Stripe on the Hub</Link>. You can still record cash and other sales.</p>
+            )}
+            <Dialog open={cardOpen} onOpenChange={setCardOpen}>
+              <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
+                <DialogHeader><DialogTitle>Card payment — {formatCents(total)}</DialogTitle></DialogHeader>
+                {cardOpen && (
+                  <EmbeddedCheckoutProvider stripe={getStripe()} options={{ fetchClientSecret }}>
+                    <EmbeddedCheckout />
+                  </EmbeddedCheckoutProvider>
+                )}
+              </DialogContent>
+            </Dialog>
           </aside>
         </div>
       </TabsContent>

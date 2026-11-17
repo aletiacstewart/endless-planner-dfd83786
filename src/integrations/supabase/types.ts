@@ -114,6 +114,7 @@ export type Database = {
           items: Json
           org_id: string
           payment_method: string
+          stripe_session_id: string | null
           total_cents: number
         }
         Insert: {
@@ -123,6 +124,7 @@ export type Database = {
           items?: Json
           org_id: string
           payment_method?: string
+          stripe_session_id?: string | null
           total_cents?: number
         }
         Update: {
@@ -132,6 +134,7 @@ export type Database = {
           items?: Json
           org_id?: string
           payment_method?: string
+          stripe_session_id?: string | null
           total_cents?: number
         }
         Relationships: [
@@ -1009,6 +1012,15 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      record_booth_card_sale: {
+        Args: {
+          _created_by: string
+          _items: Json
+          _org_id: string
+          _session_id: string
+        }
+        Returns: string
       }
       record_booth_sale: {
         Args: { _items: Json; _org_id: string; _payment_method: string }

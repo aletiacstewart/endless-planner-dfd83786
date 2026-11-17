@@ -1,6 +1,7 @@
 // Stripe webhook handler — fulfills planner + cover-pack purchases, tracks subscriptions.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { type StripeEnv, verifyWebhook, createStripeClient } from "../_shared/stripe.ts";
+import { recordBoothCardSale } from "../_shared/booth.ts";
 
 let _supabase: ReturnType<typeof createClient> | null = null;
 function getSupabase() {
@@ -282,6 +283,10 @@ Deno.serve(async (req) => {
     switch (event.type) {
       case "checkout.session.completed":
       case "checkout.session.async_payment_succeeded":
+        if (event.data.object?.metadata?.kind === "booth") {
+          await recordBoothCardSale(getSupabase(), event.data.object);
+          break;
+        }
         await fulfill(event.data.object, env, origin);
         break;
       case "customer.subscription.created":

@@ -32,3 +32,9 @@ project_id = "dgwfvvytyfgefckforqk"
 
   [functions.send-morning-digest]
     verify_jwt = false
+
+  [functions.booth-card-checkout]
+    verify_jwt = false
+
+  [functions.booth-card-finalize]
+    verify_jwt = false
