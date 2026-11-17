@@ -13,3 +13,10 @@
 - [x] Verify representative pages at phone, tablet, and desktop sizes
 - [ ] Two-way Google Calendar sync (per-user, private): owner approves App User Connector client card, then build Connect button in Settings, OAuth start/complete edge functions, encrypted key storage, sync push/pull
 - [x] Remove "Change of Life / Wellness Journey" from share preview card image and titles
+
+## Branded By platform
+- [x] Branded By home page as first page; planner shop moved to /shop
+- [x] Hub dashboard shell
+- [ ] Corrected multi-tenant database + security rules
+- [ ] Booth, Snap, Guard, Signal (SignalWire), Stash, Care apps
+- [ ] Stripe tiers + Founding 100 code

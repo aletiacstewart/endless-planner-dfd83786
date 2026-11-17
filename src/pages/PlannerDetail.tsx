@@ -78,7 +78,7 @@ export default function PlannerDetail() {
     [filter]
   );
 
-  if (!planner) return <Navigate to="/" replace />;
+  if (!planner) return <Navigate to="/shop" replace />;
 
   const pages = planner.pageTypeIds
     .map((id) => getPageType(id))
@@ -166,11 +166,11 @@ export default function PlannerDetail() {
 
       {/* Header */}
       <header className="px-6 md:px-12 py-5 flex items-center justify-between border-b border-primary/10">
-        <Link to="/" className="font-storefront text-xl md:text-2xl text-primary">
-          Endless Planner
+        <Link to="/shop" className="font-storefront text-xl md:text-2xl text-primary">
+          Curated Planner
         </Link>
         <Link
-          to="/"
+          to="/shop"
           className="text-[11px] uppercase tracking-[0.2em] text-primary/70 hover:text-primary font-semibold inline-flex items-center gap-1"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> All planners

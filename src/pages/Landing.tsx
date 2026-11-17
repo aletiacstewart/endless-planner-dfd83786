@@ -43,7 +43,7 @@ export default function Landing() {
 
       {/* Header */}
       <header className="px-6 md:px-12 py-5 flex items-center justify-between border-b border-primary/10">
-        <Link to="/" className="font-storefront text-xl md:text-2xl text-primary">Endless Planner</Link>
+        <Link to="/shop" className="font-storefront text-xl md:text-2xl text-primary">Curated Planner</Link>
         <div className="flex items-center gap-5">
           <a href="#covers" className="hidden sm:inline text-[11px] uppercase tracking-[0.2em] text-primary/70 hover:text-primary font-semibold">
             Covers

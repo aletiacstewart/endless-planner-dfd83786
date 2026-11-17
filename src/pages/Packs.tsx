@@ -48,7 +48,7 @@ export default function Packs() {
   return (
     <div className="min-h-screen bg-background">
       <header className="px-6 py-4 flex items-center justify-between border-b border-border">
-        <Link to="/" className="font-display text-xl">Endless Planner</Link>
+        <Link to="/shop" className="font-display text-xl">Curated Planner</Link>
         <Link to="/settings" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1">
           <ArrowLeft className="w-4 h-4" /> Back to planner
         </Link>
