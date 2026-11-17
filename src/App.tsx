@@ -18,6 +18,7 @@ import Hub from "./pages/Hub.tsx";
 import Booth from "./pages/Booth.tsx";
 import Snap from "./pages/Snap.tsx";
 import Stash from "./pages/Stash";
+import Care from "./pages/Care";
 import Unlock from "./pages/Unlock.tsx";
 import ThankYou from "./pages/ThankYou.tsx";
 import Unsubscribe from "./pages/Unsubscribe.tsx";
@@ -143,6 +144,7 @@ const App = () => {
           <Route path="/booth" element={<Booth />} />
           <Route path="/snap" element={<Snap />} />
           <Route path="/stash" element={<Stash />} />
+          <Route path="/care" element={<Care />} />
           <Route path="/planner/:plannerId" element={<PlannerDetail />} />
           <Route path="/packs" element={<Packs />} />
           <Route path="/subscribe" element={<Subscribe />} />

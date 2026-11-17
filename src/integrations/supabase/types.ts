@@ -200,30 +200,77 @@ export type Database = {
         }
         Relationships: []
       }
+      care_onboarding_tasks: {
+        Row: {
+          client_name: string
+          created_at: string
+          done: boolean
+          id: string
+          org_id: string
+          task: string
+        }
+        Insert: {
+          client_name: string
+          created_at?: string
+          done?: boolean
+          id?: string
+          org_id: string
+          task: string
+        }
+        Update: {
+          client_name?: string
+          created_at?: string
+          done?: boolean
+          id?: string
+          org_id?: string
+          task?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "care_onboarding_tasks_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       care_tickets: {
         Row: {
+          client_email: string | null
+          client_name: string | null
           created_at: string
+          details: string | null
           id: string
           org_id: string
           priority: string
           status: string
           subject: string
+          updated_at: string
         }
         Insert: {
+          client_email?: string | null
+          client_name?: string | null
           created_at?: string
+          details?: string | null
           id?: string
           org_id: string
           priority?: string
           status?: string
           subject: string
+          updated_at?: string
         }
         Update: {
+          client_email?: string | null
+          client_name?: string | null
           created_at?: string
+          details?: string | null
           id?: string
           org_id?: string
           priority?: string
           status?: string
           subject?: string
+          updated_at?: string
         }
         Relationships: [
           {

@@ -71,6 +71,13 @@
       "when": 1794948058021,
       "tag": "0009_stash_storage_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794948200710,
+      "tag": "0010_care_ticket_details_and_onboarding",
+      "breakpoints": true
     }
   ]
 }
