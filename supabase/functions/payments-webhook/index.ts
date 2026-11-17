@@ -291,6 +291,21 @@ Deno.serve(async (req) => {
       case "customer.subscription.deleted":
         await markSubscriptionCanceled(event.data.object, env);
         break;
+      case "account.updated": {
+        // Stripe Connect: keep each business's payout status current.
+        const account = event.data.object;
+        const active = Boolean(account.charges_enabled && account.payouts_enabled);
+        await getSupabase()
+          .from("organizations")
+          .update({
+            stripe_charges_enabled: Boolean(account.charges_enabled),
+            stripe_payouts_enabled: Boolean(account.payouts_enabled),
+            stripe_details_submitted: Boolean(account.details_submitted),
+            ...(active ? { stripe_connected_at: new Date().toISOString() } : {}),
+          })
+          .eq("stripe_account_id", account.id);
+        break;
+      }
       default:
         console.log("Unhandled event:", event.type);
     }
