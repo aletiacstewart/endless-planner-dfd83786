@@ -45,7 +45,7 @@ export default function Signal() {
     load();
   };
   const toggleOpt = async (x: Contact, field: "email_opt_in" | "sms_opt_in") => {
-    await supabase.from("signal_contacts").update({ [field]: !x[field] }).eq("id", x.id);
+    await supabase.from("signal_contacts").update(field === "email_opt_in" ? { email_opt_in: !x.email_opt_in } : { sms_opt_in: !x.sms_opt_in }).eq("id", x.id);
     load();
   };
   const delContact = async (id: string) => {
