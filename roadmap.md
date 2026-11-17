@@ -18,5 +18,6 @@
 - [x] Branded By home page as first page; planner shop moved to /shop
 - [x] Hub dashboard shell
 - [x] Corrected multi-tenant database + security rules (create business on Hub)
-- [ ] Booth, Snap, Guard, Signal (SignalWire), Stash, Care apps
+- [x] Booth (products, checkout, sales log)
+- [ ] Snap, Guard, Signal (SignalWire), Stash, Care apps
 - [ ] Stripe tiers + Founding 100 code

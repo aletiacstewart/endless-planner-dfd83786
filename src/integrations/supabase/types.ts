@@ -106,6 +106,44 @@ export type Database = {
           },
         ]
       }
+      booth_sales: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          items: Json
+          org_id: string
+          payment_method: string
+          total_cents: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          items?: Json
+          org_id: string
+          payment_method?: string
+          total_cents?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          items?: Json
+          org_id?: string
+          payment_method?: string
+          total_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booth_sales_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       brand_kits: {
         Row: {
           accent_color: string
@@ -839,6 +877,10 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      record_booth_sale: {
+        Args: { _items: Json; _org_id: string; _payment_method: string }
+        Returns: string
       }
     }
     Enums: {
