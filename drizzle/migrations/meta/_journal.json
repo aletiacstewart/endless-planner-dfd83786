@@ -92,6 +92,13 @@
       "when": 1794948542060,
       "tag": "0012_guard_team_access_rpcs",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1794950200447,
+      "tag": "0013_stripe_connect_on_organizations",
+      "breakpoints": true
     }
   ]
 }

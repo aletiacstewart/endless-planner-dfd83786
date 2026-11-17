@@ -1,10 +1,25 @@
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { BrandedByHeader, BrandedByFooter } from "@/components/brandedby/BrandedByHeader";
 import { BRANDED_BY_APPS, BRAND_PROCESS } from "@/data/brandedByApps";
 import { BusinessPanel } from "@/components/brandedby/BusinessPanel";
+import { ConnectStripeCard } from "@/components/brandedby/ConnectStripeCard";
+import { toast } from "sonner";
 
 export default function Hub() {
   const apps = BRANDED_BY_APPS.filter((a) => a.id !== "hub");
+  const [params, setParams] = useSearchParams();
+
+  useEffect(() => {
+    const connect = params.get("connect");
+    if (!connect) return;
+    if (connect === "success") toast.success("Stripe connected — you can take card payments.");
+    else if (connect === "pending") toast.info("Stripe setup isn't finished yet. Tap Continue setup to complete it.");
+    else toast.error("Stripe setup didn't complete. Please try again.");
+    params.delete("connect");
+    setParams(params, { replace: true });
+  }, [params, setParams]);
+
   return (
     <div className="theme-brandedby min-h-screen bg-muted text-foreground">
       <BrandedByHeader />
@@ -18,6 +33,8 @@ export default function Hub() {
         </div>
 
         <section className="mt-10"><BusinessPanel /></section>
+
+        <ConnectStripeCard />
 
         <section className="mt-6 rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Launch progress</p>

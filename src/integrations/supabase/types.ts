@@ -458,7 +458,12 @@ export type Database = {
           plan_tier: string
           promo_code: string | null
           slug: string
+          stripe_account_id: string | null
+          stripe_charges_enabled: boolean
+          stripe_connected_at: string | null
           stripe_customer_id: string | null
+          stripe_details_submitted: boolean
+          stripe_payouts_enabled: boolean
         }
         Insert: {
           created_at?: string
@@ -468,7 +473,12 @@ export type Database = {
           plan_tier?: string
           promo_code?: string | null
           slug: string
+          stripe_account_id?: string | null
+          stripe_charges_enabled?: boolean
+          stripe_connected_at?: string | null
           stripe_customer_id?: string | null
+          stripe_details_submitted?: boolean
+          stripe_payouts_enabled?: boolean
         }
         Update: {
           created_at?: string
@@ -478,7 +488,12 @@ export type Database = {
           plan_tier?: string
           promo_code?: string | null
           slug?: string
+          stripe_account_id?: string | null
+          stripe_charges_enabled?: boolean
+          stripe_connected_at?: string | null
           stripe_customer_id?: string | null
+          stripe_details_submitted?: boolean
+          stripe_payouts_enabled?: boolean
         }
         Relationships: []
       }
