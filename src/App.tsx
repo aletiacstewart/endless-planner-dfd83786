@@ -20,6 +20,7 @@ import Snap from "./pages/Snap.tsx";
 import Stash from "./pages/Stash";
 import Care from "./pages/Care";
 import Signal from "./pages/Signal";
+import Guard from "./pages/Guard";
 import Unlock from "./pages/Unlock.tsx";
 import ThankYou from "./pages/ThankYou.tsx";
 import Unsubscribe from "./pages/Unsubscribe.tsx";
@@ -147,6 +148,7 @@ const App = () => {
           <Route path="/stash" element={<Stash />} />
           <Route path="/care" element={<Care />} />
           <Route path="/signal" element={<Signal />} />
+          <Route path="/guard" element={<Guard />} />
           <Route path="/planner/:plannerId" element={<PlannerDetail />} />
           <Route path="/packs" element={<Packs />} />
           <Route path="/subscribe" element={<Subscribe />} />

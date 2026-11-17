@@ -937,6 +937,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_org_member_by_email: {
+        Args: { _email: string; _org_id: string; _role: string }
+        Returns: string
+      }
       create_organization: {
         Args: { _name: string; _slug: string }
         Returns: string
@@ -964,6 +968,16 @@ export type Database = {
       is_org_manager: { Args: { _org_id: string }; Returns: boolean }
       is_org_member: { Args: { _org_id: string }; Returns: boolean }
       link_user_purchases: { Args: never; Returns: Json }
+      list_org_members: {
+        Args: { _org_id: string }
+        Returns: {
+          created_at: string
+          email: string
+          id: string
+          role: string
+          user_id: string
+        }[]
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string

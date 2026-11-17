@@ -14,7 +14,7 @@ export const BRANDED_BY_APPS: BrandedByApp[] = [
   { id: "hub", name: "Hub", tagline: "Command center", description: "One place to run your brand, see every app and track your launch.", icon: LayoutGrid, href: "/hub", status: "soon" },
   { id: "booth", name: "Booth", tagline: "Event & pop-up checkout", description: "QR kiosk checkout, live inventory and instant tap-to-pay receipts.", icon: Store, href: "/booth", status: "live" },
   { id: "snap", name: "Snap", tagline: "AI product photos", description: "Studio-quality product photos with your brand kit applied in one click.", icon: Camera, href: "/snap", status: "live" },
-  { id: "guard", name: "Guard", tagline: "Brand protection", description: "Watermark downloads, watch your brand online and manage team access.", icon: ShieldCheck, href: "/hub", status: "soon" },
+  { id: "guard", name: "Guard", tagline: "Brand protection", description: "Watermark your images and manage who on your team can access what.", icon: ShieldCheck, href: "/guard", status: "live" },
   { id: "signal", name: "Signal", tagline: "Email & text campaigns", description: "QR-triggered email and text follow-ups that keep customers coming back.", icon: Send, href: "/signal", status: "live" },
   { id: "stash", name: "Stash", tagline: "Brand asset vault", description: "Store logos, files and artwork, and share delivery portals with clients.", icon: Archive, href: "/stash", status: "live" },
   { id: "care", name: "Care", tagline: "Client care", description: "Onboarding checklists, support inbox and appointment routing.", icon: HeartHandshake, href: "/care", status: "live" },
