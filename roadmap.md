@@ -19,5 +19,6 @@
 - [x] Hub dashboard shell
 - [x] Corrected multi-tenant database + security rules (create business on Hub)
 - [x] Booth (products, checkout, sales log)
-- [ ] Snap, Guard, Signal (SignalWire), Stash, Care apps
+- [x] Snap (AI product photos)
+- [ ] Guard, Signal (SignalWire), Stash, Care apps
 - [ ] Stripe tiers + Founding 100 code
